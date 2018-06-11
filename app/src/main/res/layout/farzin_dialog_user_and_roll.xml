@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+<!--    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/objectInLayoutMarginButton"
+        android:layout_marginLeft="@dimen/objectOutMargin"
+        android:layout_marginRight="@dimen/objectOutMargin"
+        android:layout_marginTop="@dimen/objectInLayoutMarginTop"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_title"
+            style="@style/custom_title_style"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/objectInLayoutMarginAll"
+            android:background="@drawable/border_title"
+            android:padding="@dimen/objectInLayoutMarginAll"
+            android:text="@string/district_dialog_title"
+            android:textStyle="bold" />
+
+        <AutoCompleteTextView
+            android:id="@+id/edt_district_search"
+            style="@style/custom_normal_edittext__border_style"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/objectInLayoutMarginButton"
+            android:layout_marginTop="@dimen/objectInLayoutMarginTop"
+            android:background="@drawable/dark_border"
+            android:drawableLeft="@drawable/search"
+            android:hint="جستجو محله..."
+            android:padding="@dimen/objectInLayoutPadingAll" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcv_list"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/objectInLayoutMarginButton"
+            android:layout_marginTop="@dimen/objectInLayoutMarginTop"
+            android:layout_weight="1"
+            tools:listitem="@layout/item_district" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/color_Divider"
+            android:elevation="1dp"
+            android:orientation="vertical"></LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/txt_submit"
+                style="@style/custom_info_fill_button_style"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/objectInLayoutMarginAll"
+                android:background="@drawable/info_border"
+                android:text="انتخاب" />
+
+        </LinearLayout>
+    </LinearLayout>-->
+</LinearLayout>

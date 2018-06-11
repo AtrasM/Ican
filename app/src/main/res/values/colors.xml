@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2196F3</color>
+    <color name="colorPrimaryDark">#1976D3</color>
+    <color name="colorPrimaryDarkAlpha">#2E303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="color_background">#f4f7f9</color>
+    <color name="color_Success_light">#18ed52</color>
+    <color name="color_Success">#0cc73f</color>
+    <color name="color_Success_Dark">#039b2c</color>
+    <color name="color_Success_Dark2">#016b1d</color>
+    <color name="color_Info">#2196F3</color>
+    <color name="color_Info_Dark">#1D88DE</color>
+    <color name="color_Warning">#ffc306</color>
+    <color name="color_Danger">#E20808</color>
+    <color name="color_txt_Title">#000000</color>
+    <color name="color_txt_SubTitle">#818791</color>
+    <color name="color_txt_Normal">#181717</color>
+    <color name="icons">@color/color_txt_Title</color>
+    <color name="color_EditText">#494a4b</color>
+    <color name="color_Hint">#BEBEBE</color>
+    <color name="color_White">#ffffff</color>
+    <color name="color_Black">#000000</color>
+    <color name="color_captionLight">#ffffff</color>
+    <color name="color_captionDark">#000000</color>
+    <color name="color_Divider">@color/color_border</color>
+    <color name="color_bg_rcv">#F1F5F7</color>
+    <color name="color_border">#DBDBDB</color>
+    <color name="color_bg_tab">#FFFFFF</color>
+    <color name="color_tab_txt_selected">#2196F3</color>
+    <color name="color_tab_txt_unselected">#83C4F8</color>
+    <color name="color_tab_indicator_line">#2196F3</color>
+</resources>
+

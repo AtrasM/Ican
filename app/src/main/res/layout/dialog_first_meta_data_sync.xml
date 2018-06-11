@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:background="@color/color_background"
+    android:orientation="vertical">
+
+ <TextView
+     style="@style/custom_Txt_Title_style"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:textColor="@color/color_White"
+     android:text="@string/title_first_meta_data_sync" />
+
+ <TextView
+     style="@style/custom_Txt_Normal_style"
+     android:layout_width="wrap_content"
+     android:layout_height="wrap_content"
+     android:textColor="@color/color_White"
+     android:text="@string/subtitle_first_meta_data_sync" />
+
+ <LinearLayout
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_gravity="center"
+     android:gravity="center"
+     android:orientation="horizontal">
+
+  <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textColor="@color/color_Info"
+      android:textSize="@dimen/txt_Normal_Size"
+      android:text="@string/Syncing2"
+      android:layout_marginLeft="2dp"/>
+
+  <include layout="@layout/item_sync_loding" />
+ </LinearLayout>
+</LinearLayout>

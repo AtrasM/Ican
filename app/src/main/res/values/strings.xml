@@ -1,0 +1,64 @@
+<resources>
+    <string name="app_name">Ican</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_user_name">نام کاربری</string>
+    <string name="prompt_password">رمز عبور</string>
+    <string name="action_sign_in">ورود</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">ایمیل شما نا معتبر است!</string>
+    <string name="error_invalid_user_name">لطفا نام کاربری را صحیح وارد کنید!</string>
+    <string name="error_invalid_password">طول رمز باید بیشتر از 5 کاراگتر باشد!</string>
+    <string name="error_incorrect_password">رمز نا معتبر است!</string>
+    <string name="prompt_server_url">آدرس سرور</string>
+    <string name="error_incorrect_Url">آدرس نا معتبر است!</string>
+    <string name="agree">تایید</string>
+    <string name="ServerAccessDeniedTitle">مشکل در برقراری ارتباط با سرور</string>
+    <string name="ServerAccessDeniedcontent">لطفا مجدد تلاش فرمایید</string>
+    <string name="refresh">تلاش مجدد</string>
+    <string name="close">بستن</string>
+    <string name="WatingForNetwork">در انتظار شبکه...</string>
+    <string name="WatingForConnecting">در حال اتصال...</string>
+    <string name="Syncing">در حال به روز رسانی...</string>
+    <string name="Syncing2">در حال به روز رسانی</string>
+    <string name="Connected">متصل شد</string>
+    <string name="TitleFarzin">فرزین</string>
+    <string name="NoAction"> </string>
+    <string name="TitleBpms">BPMS</string>
+    <string name="title_activity_farzin_main">فرزین</string>
+    <string name="title_home">خانه</string>
+
+    <string name="navigation_drawer_open">باز کردن منوی کشویی</string>
+    <string name="navigation_drawer_close">بستن منوی کشویی</string>
+    <string name="hint_subject_massage">موضوع</string>
+    <string name="hint_content_massage">متن پیام</string>
+    <string name="strSimpleDateFormat">dd/M/yyyy hh:mm:ss</string>
+    <string name="title_first_meta_data_sync">برنامه احتیاج به بروز رسانی داده های مهم دارد.</string>
+    <string name="subtitle_first_meta_data_sync">لطفا شکیبا باشید.</string>
+    <string name="error_adapter_item_count">خطای Null در اطلاعات</string>
+    <string name="IMAGE_PROVIDER">avida.ican.fileprovider</string>
+    <string name="search_hint">جستجو...</string>
+    <string name="success">تایید</string>
+    <string name="cancel">لغو</string>
+    <string name="title_user_and_role_main">اسامی</string>
+    <string name="title_selects">لیست انتخابی</string>
+    <string name="title_contacts">گیرندگان</string>
+    <string name="delet_question">آیا با حذف این مورد موافق هستید؟</string>
+    <string name="title_nav_home_inbox">کارتابل</string>
+    <string name="title_nav_home_message">پیام</string>
+    <string name="editore_place_holder">با سلام</string>
+    <string name="title_farzin_write_message">ایجاد پیام</string>
+    <string name="title_camera">دوربین</string>
+    <string name="title_photo">عکس</string>
+    <string name="title_video">فیلم</string>
+    <string name="title_voice_recorder">ضبط صدا</string>
+    <string name="title_file">فایل</string>
+    <string name="hint_message_subject">موضوع پیام</string>
+    <string name="error_faild">مشکل در دریافت اطلاعات!</string>
+    <string name="message_sent_successfully">پیام با موفقیت ارسال شد.</string>
+    <string name="error_invalid_minLen">طول داده وارده باید بیش از  2 کارکتر باشد!</string>
+    <string name="error_empty_filed">لطفا فیلد مشخص شده را پر کنید!</string>
+    <string name="error_empty_editor_filed">لطفا متن پیام خود را وارد کنید!</string>
+    <string name="error_empty_recivers">لطفا گیرنده پیام را مشخص کنید!</string>
+
+</resources>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingTop="23dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark"
+    tools:ignore="RtlHardcoded,VectorDrawableCompat,SpUsage">
+
+
+    <LinearLayout
+        android:id="@+id/ln_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:gravity="right|center"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_maximum">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/img_header"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="left|center"
+            android:layout_marginLeft="@dimen/margin"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_launcher_background"
+            android:visibility="visible"
+            app:civ_border_color="@color/color_txt_SubTitle"
+            app:civ_border_width="0dp" />
+
+
+        <TextView
+            android:id="@+id/txt_header"
+            style="@style/custom_Txt_Title_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_weight="1"
+            android:gravity="center|right"
+            android:text="مهدی زمانی"
+            android:textSize="@dimen/txt_Title_Size" />
+
+    </LinearLayout>
+
+</LinearLayout>

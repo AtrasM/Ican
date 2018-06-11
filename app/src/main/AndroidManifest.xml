@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="avida.ican">
+
+    <uses-checkPermission android:name="android.checkPermission.INTERNET" />
+    <uses-checkPermission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
+    <uses-checkPermission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
+    <uses-checkPermission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
+    //______________________________________________________________________________________
+    <uses-checkPermission android:name="android.checkPermission.RECORD_AUDIO" />
+    <uses-checkPermission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
+    <uses-checkPermission android:name="android.checkPermission.WAKE_LOCK" />
+    //______________________________________________________________________________________
+    <application
+        android:name=".Ican.App"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme.NoActionBar"
+        tools:ignore="InnerclassSeparator,HardcodedText"
+        tools:replace="theme, allowBackup">
+
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="avida.ican.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
+
+
+        <activity android:name=".Ican.View.ActivitySplash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Farzin.View.FarzinActivityLogin"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Ican.View.ActivityMain"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Farzin.View.FarzinActivityMain"
+            android:label="@string/title_activity_farzin_main"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Farzin.View.FarzinActivityWriteMessage"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
+
+    </application>
+
+</manifest>

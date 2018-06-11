@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/color_White"
+    android:layoutDirection="ltr"
+    android:orientation="vertical">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fadeScrollbars="false"
+        android:scrollbars="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/padding"
+            android:paddingBottom="@dimen/padding"
+            android:orientation="horizontal">
+
+
+            <ImageButton
+                android:id="@+id/action_bold"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/bold" />
+
+            <ImageButton
+                android:id="@+id/action_italic"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/italic" />
+
+
+            <ImageButton
+                android:id="@+id/action_strikethrough"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/strikethrough" />
+
+            <ImageButton
+                android:id="@+id/action_underline"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/underline" />
+
+            <ImageButton
+                android:id="@+id/action_align_left"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/justify_left" />
+
+            <ImageButton
+                android:id="@+id/action_align_center"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/justify_center" />
+
+            <ImageButton
+                android:id="@+id/action_align_right"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/justify_right" />
+
+
+            <ImageButton
+                android:id="@+id/action_outdent"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/outdent" />
+
+            <ImageButton
+                android:id="@+id/action_indent"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/indent" />
+
+
+            <ImageButton
+                android:id="@+id/action_insert_bullets"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/bullets" />
+
+            <ImageButton
+                android:id="@+id/action_insert_numbers"
+                style="@style/custom_image_button_style"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:contentDescription="@null"
+                android:src="@drawable/number" />
+
+
+        </LinearLayout>
+
+
+    </HorizontalScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        style="@style/custom_divider_style"/>
+</LinearLayout>

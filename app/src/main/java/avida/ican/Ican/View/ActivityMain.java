@@ -1,0 +1,204 @@
+package avida.ican.Ican.View;
+
+import android.annotation.SuppressLint;
+import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.util.Log;
+import android.view.View;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
+import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
+import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.AudioRecorder;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.FilePicker;
+import avida.ican.Ican.View.Custom.MediaPicker;
+import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.AudioRecorderListener;
+import avida.ican.Ican.View.Interface.FilePickerListener;
+import avida.ican.Ican.View.Interface.MediaPickerListener;
+import avida.ican.R;
+import butterknife.BindView;
+
+public class ActivityMain extends BaseActivity implements View.OnClickListener {
+    @BindView(R.id.cv_farzin)
+    CardView cvFarzin;
+    @BindView(R.id.cv_audio_recorder)
+    CardView cvAudioRecorder;
+    @BindView(R.id.cv_file_picker)
+    CardView cvFilePicker;
+    @BindView(R.id.cv_media_picker)
+    CardView cvMediaPicker;
+    @BindView(R.id.cv_user_and_role)
+    CardView cvUserAndRole;
+
+    private DialogUserAndRole dialogUserAndRole;
+
+    private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
+    private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        cvFarzin.setOnClickListener(this);
+        App.setCurentProject(CurentProject.Ican);
+        cvAudioRecorder.setOnClickListener(this);
+        cvFilePicker.setOnClickListener(this);
+        cvMediaPicker.setOnClickListener(this);
+        cvUserAndRole.setOnClickListener(this);
+
+
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+            case R.id.cv_farzin: {
+                goToActivity(FarzinActivityLogin.class);
+                //
+                // Finish();
+                break;
+            }
+            case R.id.cv_audio_recorder: {
+                ShowAudioRecorde();
+                //App.ShowMessage().ShowToast("BPMS", ToastEnum.TOAST_SHORT_TIME);
+                break;
+            }
+            case R.id.cv_file_picker: {
+                ShowFilePicker();
+                //App.ShowMessage().ShowToast("BPMS", ToastEnum.TOAST_SHORT_TIME);
+                break;
+            }
+            case R.id.cv_media_picker: {
+                ShowMediaPicker();
+                //App.ShowMessage().ShowToast("BPMS", ToastEnum.TOAST_SHORT_TIME);
+                break;
+            }
+            case R.id.cv_user_and_role: {
+
+                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresMain), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresSelect), new ListenerUserAndRoll() {
+                    @Override
+                    public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
+                        structuresMain = structureUserAndRolesMain;
+                        structuresSelect = structureUserAndRolesSelect;
+
+                    }
+
+                    @Override
+                    public void onFailed() {
+
+                    }
+
+                    @SuppressLint("StaticFieldLeak")
+                    @Override
+                    public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
+                      /*  new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                for (StructureUserAndRoleDB item : tmpItemSelect) {
+                                    try {
+                                        Thread.sleep(10);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                    int pos = structuresMain.indexOf(item);
+                                    if (pos > -1) {
+                                        structuresMain.get(pos).setSelected(false);
+                                    }
+                                }
+                                return null;
+                            }
+                        }.execute();*/
+
+                    }
+
+
+                });
+                break;
+            }
+        }
+    }
+
+    private void ShowAudioRecorde() {
+        audioRecorder = new AudioRecorder(App.CurentActivity);
+        audioRecorder.setOnListener(new AudioRecorderListener() {
+
+            @Override
+            public void onSuccess(String base64, String fileName) {
+                App.ShowMessage().ShowToast("onSuccess", ToastEnum.TOAST_SHORT_TIME);
+                Log.i("AudioRecorde", base64);
+            }
+
+            @Override
+            public void onFaild() {
+                App.ShowMessage().ShowToast("Faield", ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onCancel() {
+                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+            }
+        });
+    }
+
+    private void ShowFilePicker() {
+        filePicker = new FilePicker(App.CurentActivity);
+        filePicker.setOnListener(new FilePickerListener() {
+
+
+            @Override
+            public void onSuccess(ArrayList<File> files, ArrayList<String> base64s, ArrayList<String> fileNames) {
+                App.ShowMessage().ShowToast("onSuccess", ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onFailed() {
+                App.ShowMessage().ShowToast("Faield", ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onCancel() {
+                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+            }
+        });
+    }
+
+    private void ShowMediaPicker() {
+        mediaPicker = new MediaPicker(App.CurentActivity);
+        mediaPicker.setOnListener(new MediaPickerListener() {
+
+            @Override
+            public void onSuccess(ArrayList<File> files, ArrayList<String> base64s, ArrayList<String> fileNames) {
+                App.ShowMessage().ShowToast("onSuccess", ToastEnum.TOAST_SHORT_TIME);
+
+            }
+
+            @Override
+            public void onFailed() {
+                App.ShowMessage().ShowToast("Faield", ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onCancel() {
+                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+            }
+        }).showMultyPickFromGallery();
+    }
+
+
+}
