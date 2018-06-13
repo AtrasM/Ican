@@ -8,5 +8,5 @@ package avida.ican.Farzin.Model.Interface;
 public interface DataProcessListener {
     void onSuccess(String Xml);
     void onFailed();
-    void onCansel();
+    void onCancel();
 }

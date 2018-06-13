@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/color_White"
     android:layoutDirection="ltr"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:targetApi="jelly_bean_mr1">
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -15,9 +18,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="@dimen/padding"
+            android:orientation="horizontal"
             android:paddingBottom="@dimen/padding"
-            android:orientation="horizontal">
+            android:paddingTop="@dimen/padding">
 
 
             <ImageButton
@@ -26,7 +29,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/bold" />
+                app:srcCompat="@drawable/bold" />
 
             <ImageButton
                 android:id="@+id/action_italic"
@@ -34,8 +37,13 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/italic" />
+                app:srcCompat="@drawable/italic" />
 
+            <Spinner
+                android:id="@+id/sp_size"
+                style="@style/custom_spinner_style"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
 
             <ImageButton
                 android:id="@+id/action_strikethrough"
@@ -43,7 +51,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/strikethrough" />
+                app:srcCompat="@drawable/strikethrough" />
 
             <ImageButton
                 android:id="@+id/action_underline"
@@ -51,7 +59,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/underline" />
+                app:srcCompat="@drawable/underline" />
 
             <ImageButton
                 android:id="@+id/action_align_left"
@@ -59,7 +67,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/justify_left" />
+                app:srcCompat="@drawable/justify_left" />
 
             <ImageButton
                 android:id="@+id/action_align_center"
@@ -67,7 +75,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/justify_center" />
+                app:srcCompat="@drawable/justify_center" />
 
             <ImageButton
                 android:id="@+id/action_align_right"
@@ -75,7 +83,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/justify_right" />
+                app:srcCompat="@drawable/justify_right" />
 
 
             <ImageButton
@@ -84,7 +92,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/outdent" />
+                app:srcCompat="@drawable/outdent" />
 
             <ImageButton
                 android:id="@+id/action_indent"
@@ -92,7 +100,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/indent" />
+                app:srcCompat="@drawable/indent" />
 
 
             <ImageButton
@@ -101,7 +109,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/bullets" />
+                app:srcCompat="@drawable/bullets" />
 
             <ImageButton
                 android:id="@+id/action_insert_numbers"
@@ -109,7 +117,7 @@
                 android:layout_width="32dp"
                 android:layout_height="32dp"
                 android:contentDescription="@null"
-                android:src="@drawable/number" />
+                app:srcCompat="@drawable/number" />
 
 
         </LinearLayout>
@@ -118,7 +126,7 @@
     </HorizontalScrollView>
 
     <LinearLayout
+        style="@style/custom_divider_style"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        style="@style/custom_divider_style"/>
+        android:layout_height="1dp" />
 </LinearLayout>

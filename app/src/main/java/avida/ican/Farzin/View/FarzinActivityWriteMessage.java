@@ -8,13 +8,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.WriteMessageListener;
@@ -60,6 +64,9 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     LinearLayout lnRcvAttach;
     @BindView(R.id.rcv_attach)
     RecyclerView RcvAttach;
+    @BindView(R.id.sp_size)
+    Spinner spSize;
+
 
     private String msgContent = "";
     private DialogUserAndRole dialogUserAndRole;
@@ -197,6 +204,29 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             }
         });
 
+
+        ArrayList<String> msize = new ArrayList<>();
+        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(18, 16, 14, 12, 10));
+        msize.add("H 1");
+        msize.add("H 2");
+        msize.add("H 3");
+        msize.add("H 4");
+        msize.add("H 5");
+        ArrayAdapter<String> adapterSize = new ArrayAdapter<>(App.CurentActivity, R.layout.layout_txt_spinner, msize);
+        adapterSize.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        spSize.setAdapter(adapterSize);
+        spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                App.ShowMessage().ShowToast(""+i, ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
         findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -297,7 +327,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
             @Override
             public void onCancel() {
-                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("Cancel", ToastEnum.TOAST_SHORT_TIME);
             }
         });
     }
@@ -320,7 +350,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
             @Override
             public void onCancel() {
-                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("Cancel", ToastEnum.TOAST_SHORT_TIME);
             }
         });
     }
@@ -439,7 +469,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {
                 for (int i = 0; i < base64Files.size(); i++) {
-                    String fileExtension = new CustomFunction().getFileExtention(names.get(i));
+                    String fileExtension = CustomFunction.getFileExtention(names.get(i));
                     StructureAttach structureAttach = new StructureAttach(base64Files.get(i), names.get(i), fileExtension, resID);
                     structureAttaches.add(structureAttach);
                     try {
@@ -518,9 +548,9 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
 
             @Override
-            public void onCansel() {
+            public void onCancel() {
                 loading.Hide();
-                App.ShowMessage().ShowSnackBar("onCansel", SnackBarEnum.SNACKBAR_SHORT_TIME);
+                App.ShowMessage().ShowSnackBar("onCancel", SnackBarEnum.SNACKBAR_SHORT_TIME);
             }
         });
     }
@@ -540,7 +570,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             isValid = false;
             App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_recivers), SnackBarEnum.SNACKBAR_LONG_TIME);
         } else {
-            if (reMsg.getHtml().toString().isEmpty()) {
+            if (reMsg.getHtml().isEmpty()) {
                 isValid = false;
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_editor_filed), SnackBarEnum.SNACKBAR_LONG_TIME);
             }

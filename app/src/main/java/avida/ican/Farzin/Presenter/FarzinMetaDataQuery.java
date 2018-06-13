@@ -1,5 +1,6 @@
 package avida.ican.Farzin.Presenter;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
 import com.j256.ormlite.dao.Dao;
@@ -35,7 +36,7 @@ import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRoleList;
  * Created by AtrasVida on 2018-04-24 at 9:59 AM
  */
 
-public class FarzinMetaDataQuery {
+class FarzinMetaDataQuery {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "";
@@ -44,14 +45,14 @@ public class FarzinMetaDataQuery {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "FarzinMetaDataQuery";
     private FarzinPrefrences farzinPrefrences;
-    MetaDataSyncListener metaDataSyncListener;
+    private MetaDataSyncListener metaDataSyncListener;
     //_______________________***Dao***______________________________
 
     private Dao<StructureUserAndRoleDB, Integer> mGetUserAndRoleListDao = null;
 
     //_______________________***Dao***______________________________
 
-    public FarzinMetaDataQuery() {
+    FarzinMetaDataQuery() {
         farzinPrefrences = getFarzinPrefrences();
         strSimpleDateFormat = Resorse.getString(R.string.strSimpleDateFormat);
         initDao();
@@ -66,7 +67,7 @@ public class FarzinMetaDataQuery {
         }
     }
 
-    public void Sync() {
+    void Sync() {
         if (App.netWorkStatusListener == null) return;
         App.netWorkStatusListener.Syncing();
         SyncUserAndRoleList();
@@ -82,7 +83,7 @@ public class FarzinMetaDataQuery {
             }
 
             @Override
-            public void onCansel(MetaDataNameEnum metaDataNameEnum) {
+            public void onCancel(MetaDataNameEnum metaDataNameEnum) {
                 SyncTable(metaDataNameEnum.getValue());
             }
 
@@ -98,7 +99,6 @@ public class FarzinMetaDataQuery {
                     e.printStackTrace();
                 }
 
-                return;
             }
 
 
@@ -138,13 +138,14 @@ public class FarzinMetaDataQuery {
             }
 
             @Override
-            public void onCansel() {
-                metaDataSyncListener.onCansel(SyncUserAndRoleList);
+            public void onCancel() {
+                metaDataSyncListener.onCancel(SyncUserAndRoleList);
                 App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
             }
         });
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class SaveUserAndRoleList extends AsyncTask<List<StructureUserAndRoleOPT>, Void, Void> {
 
         @Override
@@ -180,7 +181,7 @@ public class FarzinMetaDataQuery {
         }
     }
 
-    public List<StructureUserAndRoleDB> getUserAndRoleList() {
+    List<StructureUserAndRoleDB> getUserAndRoleList() {
         List<StructureUserAndRoleDB> userAndRoles = new ArrayList<>();
         try {
             userAndRoles = mGetUserAndRoleListDao.queryForAll();
@@ -249,7 +250,6 @@ public class FarzinMetaDataQuery {
             } catch (Exception e) {
                 dataProcessListener.onFailed();
                 e.printStackTrace();
-                return;
             }
         }
 

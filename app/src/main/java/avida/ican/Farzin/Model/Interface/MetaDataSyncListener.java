@@ -10,6 +10,6 @@ import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 public interface MetaDataSyncListener {
     void onSuccess(MetaDataNameEnum metaDataNameEnum);
     void onFailed(MetaDataNameEnum metaDataNameEnum);
-    void onCansel(MetaDataNameEnum metaDataNameEnum);
+    void onCancel(MetaDataNameEnum metaDataNameEnum);
     void onFinish();
 }

@@ -5,9 +5,13 @@ import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
@@ -40,6 +44,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     CardView cvMediaPicker;
     @BindView(R.id.cv_user_and_role)
     CardView cvUserAndRole;
+    @BindView(R.id.sp_size)
+    Spinner spSize;
 
     private DialogUserAndRole dialogUserAndRole;
 
@@ -56,7 +62,23 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         cvMediaPicker.setOnClickListener(this);
         cvUserAndRole.setOnClickListener(this);
 
+        ArrayList<String> strItemsize = new ArrayList<>(Arrays.asList("H 1", " H 2", " H 3", "H 4", "H 5"));
+        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(18, 16, 14, 12, 10));
 
+        ArrayAdapter<String> adapterSize = new ArrayAdapter<>(App.CurentActivity, android.R.layout.simple_spinner_dropdown_item, strItemsize);
+        adapterSize.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spSize.setAdapter(adapterSize);
+        spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                App.ShowMessage().ShowToast(""+i, ToastEnum.TOAST_SHORT_TIME);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
     }
 
     @Override
@@ -151,7 +173,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onCancel() {
-                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("Cancel", ToastEnum.TOAST_SHORT_TIME);
             }
         });
     }
@@ -173,7 +195,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onCancel() {
-                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("Cancel", ToastEnum.TOAST_SHORT_TIME);
             }
         });
     }
@@ -195,7 +217,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
             @Override
             public void onCancel() {
-                App.ShowMessage().ShowToast("Cansel", ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("Cancel", ToastEnum.TOAST_SHORT_TIME);
             }
         }).showMultyPickFromGallery();
     }

@@ -8,6 +8,6 @@ package avida.ican.Farzin.Model.Interface;
 public interface WriteMessageListener {
     void onSuccess();
     void onFailed(String message);
-    void onCansel();
+    void onCancel();
 
 }

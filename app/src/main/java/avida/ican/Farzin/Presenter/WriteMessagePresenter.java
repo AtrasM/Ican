@@ -36,7 +36,6 @@ public class WriteMessagePresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "WriteMessagePresenter";
     private FarzinPrefrences farzinPrefrences;
-    WriteMessageListener writeMessageListener;
     //_______________________***Dao***______________________________
 
     //private Dao<StructureUserAndRoleDB, Integer> mGetUserAndRoleListDao = null;
@@ -59,8 +58,6 @@ public class WriteMessagePresenter {
 
 
     public void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final WriteMessageListener writeMessageListener) {
-        this.writeMessageListener = writeMessageListener;
-
 
         CallApi(MetodeName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override
@@ -80,8 +77,8 @@ public class WriteMessagePresenter {
             }
 
             @Override
-            public void onCansel() {
-                writeMessageListener.onCansel();
+            public void onCancel() {
+                writeMessageListener.onCancel();
                 App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
             }
         });
@@ -155,7 +152,6 @@ public class WriteMessagePresenter {
             } catch (Exception e) {
                 dataProcessListener.onFailed();
                 e.printStackTrace();
-                return;
             }
         }
 
