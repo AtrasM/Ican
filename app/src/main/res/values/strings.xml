@@ -17,9 +17,9 @@
     <string name="ServerAccessDeniedcontent">لطفا مجدد تلاش فرمایید</string>
     <string name="refresh">تلاش مجدد</string>
     <string name="close">بستن</string>
-    <string name="WatingForNetwork">در انتظار شبکه...</string>
-    <string name="WatingForConnecting">در حال اتصال...</string>
-    <string name="Syncing">در حال به روز رسانی...</string>
+    <string name="WatingForNetwork">در انتظار شبکه…</string>
+    <string name="WatingForConnecting">در حال اتصال…</string>
+    <string name="Syncing">در حال به روز رسانی…</string>
     <string name="Syncing2">در حال به روز رسانی</string>
     <string name="Connected">متصل شد</string>
     <string name="TitleFarzin">فرزین</string>
@@ -37,7 +37,7 @@
     <string name="subtitle_first_meta_data_sync">لطفا شکیبا باشید.</string>
     <string name="error_adapter_item_count">خطای Null در اطلاعات</string>
     <string name="IMAGE_PROVIDER">avida.ican.fileprovider</string>
-    <string name="search_hint">جستجو...</string>
+    <string name="search_hint">جستجو…</string>
     <string name="success">تایید</string>
     <string name="cancel">لغو</string>
     <string name="title_user_and_role_main">اسامی</string>
@@ -60,5 +60,7 @@
     <string name="error_empty_filed">لطفا فیلد مشخص شده را پر کنید!</string>
     <string name="error_empty_editor_filed">لطفا متن پیام خود را وارد کنید!</string>
     <string name="error_empty_recivers">لطفا گیرنده پیام را مشخص کنید!</string>
+    <string name="hint_delete_item">حذف</string>
+    <string name="tmpl_text">مقدار</string>
 
 </resources>

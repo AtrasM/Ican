@@ -105,13 +105,11 @@ public class DialogUserAndRole {
             @Override
             public void onFailed() {
                 listenerUserAndRollMain.onFailed();
-                finish();
             }
 
             @Override
             public void onCancel(List<StructureUserAndRoleDB> tmpItemSelect) {
                 listenerUserAndRollMain.onCancel(mtmpItemSelect);
-                finish();
             }
 
 
@@ -162,6 +160,7 @@ public class DialogUserAndRole {
 
     private void initTab() {
         initAdapter();
+        assert viewHolder.smartTabLayout != null;
         viewHolder.smartTabLayout.setCustomTabView(R.layout.layout_txt_tab, R.id.txt_title_tab);
         ViewPagerAdapter adapter = new ViewPagerAdapter(mfragmentManager);
         adapter.addFrag(fragmentUserAndRoleMain, R.string.title_user_and_role_main);
@@ -248,6 +247,6 @@ public class DialogUserAndRole {
     private void finish() {
         App.canBack = true;
         clearFragment();
-        dialog.dismiss();
+        if (dialog != null) dialog.dismiss();
     }
 }

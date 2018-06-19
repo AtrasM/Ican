@@ -6,8 +6,6 @@ import java.util.TimerTask;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
-import avida.ican.Ican.BaseActivity;
-import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
 import avida.ican.Ican.View.Custom.Resorse;
@@ -37,7 +35,6 @@ public class FarzinMetaDataSync {
     public FarzinMetaDataSync() {
         farzinPrefrences = getFarzinPrefrences();
         //farzinPrefrences.putMetaDataSyncDate("");
-        dialogFirstMetaDataSync=new DialogFirstMetaDataSync(App.CurentActivity);
     }
 
     public FarzinMetaDataSync RunONschedule() {
@@ -47,14 +44,14 @@ public class FarzinMetaDataSync {
             public void run() {
                 try {
                     String strSimpleDateFormat = Resorse.getString(R.string.strSimpleDateFormat);
-                    String CurentDateTime = new CustomFunction(App.CurentActivity).getCurentDateTimeAsFormat(strSimpleDateFormat);
+                    new CustomFunction(App.CurentActivity);
+                    String CurentDateTime = CustomFunction.getCurentDateTimeAsFormat(strSimpleDateFormat);
                     String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
                         if (App.networkStatus == NetworkStatus.WatingForNetwork) {
                             new NoNetworkAccess().ShowDialog();
                             onDestory();
                         } else {
-                            dialogFirstMetaDataSync.Creat();
                             new FarzinMetaDataQuery().Sync();
                         }
 

@@ -18,6 +18,7 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.OutPut.StructureUserAndRoleOPT;
 import avida.ican.Farzin.Model.Structure.OutPut.StructureUserAndRoleRowsOPT;
+import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.Model.ChangeXml;
@@ -37,6 +38,7 @@ import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRoleList;
  */
 
 class FarzinMetaDataQuery {
+    private final DialogFirstMetaDataSync dialogFirstMetaDataSync;
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "";
@@ -55,6 +57,7 @@ class FarzinMetaDataQuery {
     FarzinMetaDataQuery() {
         farzinPrefrences = getFarzinPrefrences();
         strSimpleDateFormat = Resorse.getString(R.string.strSimpleDateFormat);
+        dialogFirstMetaDataSync=new DialogFirstMetaDataSync(App.CurentActivity);
         initDao();
 
     }
@@ -69,7 +72,13 @@ class FarzinMetaDataQuery {
 
     void Sync() {
         if (App.netWorkStatusListener == null) return;
-        App.netWorkStatusListener.Syncing();
+        App.CurentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                App.netWorkStatusListener.Syncing();
+            }
+        });
+        dialogFirstMetaDataSync.Creat();
         SyncUserAndRoleList();
         metaDataSyncListener = new MetaDataSyncListener() {
             @Override
@@ -89,7 +98,8 @@ class FarzinMetaDataQuery {
 
             @Override
             public void onFinish() {
-                String CurentDateTime = new CustomFunction(App.CurentActivity).getCurentDateTimeAsFormat(strSimpleDateFormat);
+                new CustomFunction(App.CurentActivity);
+                String CurentDateTime = CustomFunction.getCurentDateTimeAsFormat(strSimpleDateFormat);
                 farzinPrefrences.putMetaDataSyncDate(CurentDateTime);
                 try {
                     if (BaseActivity.dialogMataDataSync != null) {
@@ -98,7 +108,8 @@ class FarzinMetaDataQuery {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
+                BaseActivity.dialogMataDataSync.dismiss();
+                App.canBack = true;
             }
 
 

@@ -1,4 +1,4 @@
-package avida.ican.Ican.Model;
+package avida.ican.Farzin.Model;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

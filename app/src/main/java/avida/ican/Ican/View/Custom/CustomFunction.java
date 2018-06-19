@@ -1,15 +1,16 @@
 package avida.ican.Ican.View.Custom;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -32,8 +33,8 @@ import java.util.Date;
  */
 
 public class CustomFunction {
-    Activity activity;
-    Context context;
+    private Activity activity;
+   private Context context;
 
     public CustomFunction() {
     }
@@ -58,24 +59,21 @@ public class CustomFunction {
         drawable.setStroke(stroke, ContextCompat.getColor(activity, borderColor));
         drawable.setCornerRadius(radius);
         drawable.setColor(ContextCompat.getColor(activity, backGroundColor));
-        view.setBackgroundDrawable(drawable);
+        ViewCompat.setBackground(view,drawable);
     }
 
     /**
      * Example Used: ChengeDrawableColorAndSetToImageView(img,R.drawable.ic_x,R.color.colorPrimary);
-     *
-     * @param imageView
-     * @param mDrawable
-     * @param color
      */
     public void ChengeDrawableColorAndSetToImageView(ImageView imageView, int mDrawable, int color) {
         Drawable drawable = ContextCompat.getDrawable(activity, mDrawable);
+        assert drawable != null;
         drawable.setColorFilter(ContextCompat.getColor(activity, color), PorterDuff.Mode.SRC_ATOP);
         imageView.setImageDrawable(drawable);
     }
 
 
-    public void Call(String phoneNumber) {
+    public  void Call(String phoneNumber) {
         //posted_by = "111-333-222-4";
 
         String uri = "tel:" + phoneNumber.trim();
@@ -107,13 +105,13 @@ public class CustomFunction {
     }
 
 
-    public void SendSms(String content) {
+    public  void SendSms(String content) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"));
         intent.putExtra("sms_body", content);
         activity.startActivity(intent);
     }
 
-    public void InviteChoser(String subject, String content) {
+    public  void InviteChoser(String subject, String content) {
         try {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
@@ -138,43 +136,31 @@ public class CustomFunction {
 
 
     public int getScreenOrientation() {
-        Display getOrient = activity.getWindowManager().getDefaultDisplay();
-        int orientation = Configuration.ORIENTATION_UNDEFINED;
-        if (getOrient.getWidth() == getOrient.getHeight()) {
-            orientation = Configuration.ORIENTATION_SQUARE;
-        } else {
-            if (getOrient.getWidth() < getOrient.getHeight()) {
-                orientation = Configuration.ORIENTATION_PORTRAIT;
-            } else {
-                orientation = Configuration.ORIENTATION_LANDSCAPE;
-            }
-        }
-        return orientation;
+        return activity.getResources().getConfiguration().orientation;
     }
 
     /**
      * @param df example: "dd/M/yyyy hh:mm:ss"
-     * @return
      */
-    public String getCurentDateTimeAsFormat(String df) {
+    public static String getCurentDateTimeAsFormat(String df) {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
         return simpleDateFormat.format(c.getTime());
     }
 
-    public Date getCurentDateTime() {
+    public static Date getCurentDateTime() {
         Calendar c = Calendar.getInstance();
         return c.getTime();
     }
 
-    public void setHtmlText(TextView myTextView, String myText) {
+    public  void setHtmlText(TextView myTextView, String myText) {
         UrlImageParser p = new UrlImageParser(myTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myTextView.setText(htmlSpan);
     }
 
 
-    public int getWidthOrHeightColums(int MOD, boolean isWhidth) {
+    public  int getWidthOrHeightColums(int MOD, boolean isWhidth) {
         Display display = activity.getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
@@ -185,14 +171,13 @@ public class CustomFunction {
         } else {
             dpSize = outMetrics.heightPixels / density;
         }
-        int columns = Math.round(dpSize / MOD);
-        return columns;
+        return Math.round(dpSize / MOD);
     }
 
     /**
      * This method makes a "deep clone" of any Java object it is given.
      */
-    public Object deepClone(Object object) {
+    public static Object deepClone(Object object) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
@@ -207,7 +192,7 @@ public class CustomFunction {
     }
 
     // ignore enter First space on edittext
-    public InputFilter ignoreFirstWhiteSpace() {
+    public  static InputFilter ignoreFirstWhiteSpace() {
         return new InputFilter() {
             public CharSequence filter(CharSequence source, int start, int end,
                                        Spanned dest, int dstart, int dend) {
@@ -223,18 +208,18 @@ public class CustomFunction {
         };
     }
 
-    public String convertArabicCharToPersianChar(String input) {
+    public static String convertArabicCharToPersianChar(String input) {
         return input.replaceAll("ك", "ک").replaceAll("ي", "ی");
     }
-
-    public int dpToPx(int dp) {
+    @SuppressWarnings("WeakerAccess")
+    public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
     public static int pxToDp(int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
-
+    @SuppressWarnings("WeakerAccess")
     public static String getFileName(String filePath) {
         return filePath.substring(filePath.lastIndexOf("/") + 1);
     }

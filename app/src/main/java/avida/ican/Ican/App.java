@@ -1,5 +1,6 @@
 package avida.ican.Ican;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -14,7 +15,7 @@ import com.rahul.media.model.Define;
 import com.squareup.otto.Bus;
 
 import avida.ican.Farzin.View.Enum.CurentProject;
-import avida.ican.Ican.Model.FarzinDatabaseHelper;
+import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.NetWorkChecking;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -27,11 +28,13 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  */
 
 public class App extends Application {
+    @SuppressLint("StaticFieldLeak")
     private static App appInstance;
     private static DisplayImageOptions options;
     private static SharedPreferences sharedPreferencesValue;
     private static Message message;
     private static Handler handler;
+    @SuppressLint("StaticFieldLeak")
     public static Activity CurentActivity;
     public static boolean dialogIsShow = false;
     public static boolean canBack = true;
@@ -44,6 +47,7 @@ public class App extends Application {
 
     private static CurentProject curentProject;
     private static FarzinDatabaseHelper farzinDatabaseHelper;
+    public static String fontPath="font/iran_sans_mobile.ttf";
 
     @Override
     public void onCreate() {
@@ -70,7 +74,7 @@ public class App extends Application {
      */
     private void initializeFont() {
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("font/iran_sans_mobile.ttf")
+                .setDefaultFontPath(fontPath)
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );
@@ -106,12 +110,12 @@ public class App extends Application {
     }
 
     private void initializeImageOpteion() {
+       /* .cacheOnDisc(true)*/
         options = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).resetViewBeforeLoading(true)
+                .resetViewBeforeLoading(true)
                 .showImageForEmptyUri(R.drawable.ic_action_photo)
                 .showImageForEmptyUri(R.drawable.ic_action_photo)
                 .showImageOnLoading(R.drawable.ic_action_photo)
-                .showStubImage(R.drawable.ic_action_photo)
                 .showImageOnFail(R.drawable.ic_action_photo).build();
     }
 

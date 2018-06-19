@@ -12,14 +12,14 @@
      style="@style/custom_Txt_Title_style"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
-     android:textColor="@color/color_White"
+     android:textColor="@color/color_Black"
      android:text="@string/title_first_meta_data_sync" />
 
  <TextView
      style="@style/custom_Txt_Normal_style"
      android:layout_width="wrap_content"
      android:layout_height="wrap_content"
-     android:textColor="@color/color_White"
+     android:textColor="@color/color_Black"
      android:text="@string/subtitle_first_meta_data_sync" />
 
  <LinearLayout
@@ -35,7 +35,8 @@
       android:textColor="@color/color_Info"
       android:textSize="@dimen/txt_Normal_Size"
       android:text="@string/Syncing2"
-      android:layout_marginLeft="2dp"/>
+      android:layout_marginLeft="@dimen/margin_minimum"
+      tools:ignore="RtlHardcoded" />
 
   <include layout="@layout/item_sync_loding" />
  </LinearLayout>

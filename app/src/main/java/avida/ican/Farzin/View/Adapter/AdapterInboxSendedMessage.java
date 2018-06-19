@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chauthai.swipereveallayout.SwipeRevealLayout;
+import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -33,16 +35,18 @@ import butterknife.ButterKnife;
  */
 
 
-public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndRoleMain.ViewHolder> {
+public class AdapterInboxSendedMessage extends RecyclerView.Adapter<AdapterInboxSendedMessage.ViewHolder> {
 
     private List<StructureUserAndRoleDB> itemList;
     private int layout = R.layout.item_user_and_role_main;
     private ImageLoader imageLoader;
     private ListenerAdapterUserAndRole listenerAdapterUserAndRole;
-    public AdapterUserAndRoleMain(List<StructureUserAndRoleDB> itemList, ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
+    private  ViewBinderHelper binderHelper ;
+    public AdapterInboxSendedMessage(List<StructureUserAndRoleDB> itemList, ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
         imageLoader = App.getImageLoader();
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterUserAndRole = listenerAdapterUserAndRole;
+        binderHelper = new ViewBinderHelper();
     }
 
     // inner class to hold a reference to each item of RecyclerView
@@ -50,6 +54,9 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
 
         @BindView(R.id.txt_name)
         TextView txtName;
+
+        @BindView(R.id.swipe_layout)
+        SwipeRevealLayout swipeLayout;
 
         @BindView(R.id.txt_organization_role_name)
         TextView txtOrganizationRoleName;
@@ -72,7 +79,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public AdapterUserAndRoleMain.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterInboxSendedMessage.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         itemLayoutView.setLayoutParams(lp);
@@ -112,6 +119,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
             }
         });
 
+        binderHelper.bind(viewHolder.swipeLayout, "" + position);
 
     }
 

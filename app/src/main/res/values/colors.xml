@@ -16,7 +16,7 @@
     <color name="color_txt_Title">#000000</color>
     <color name="color_txt_SubTitle">#818791</color>
     <color name="color_txt_Normal">#181717</color>
-    <color name="icons">@color/color_txt_Title</color>
+    <color name="color_Icons">#BEBEBE</color>
     <color name="color_EditText">#494a4b</color>
     <color name="color_Hint">#BEBEBE</color>
     <color name="color_White">#ffffff</color>

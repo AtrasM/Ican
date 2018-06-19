@@ -24,7 +24,7 @@ public class DialogFirstMetaDataSync {
     }
 
 
-    public DialogFirstMetaDataSync Creat() {
+    public void Creat() {
 
         BaseActivity.closeKeboard();
         App.canBack = false;
@@ -34,7 +34,7 @@ public class DialogFirstMetaDataSync {
                 BaseActivity.dialogMataDataSync = DialogPlus.newDialog(context)
                         .setContentHolder(new ViewHolder(R.layout.dialog_first_meta_data_sync))
                         .setGravity(Gravity.CENTER)
-                        .setContentHeight(ViewGroup.LayoutParams.MATCH_PARENT)
+                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)
                         //.setContentBackgroundResource(android.R.color.transparent)
                         .create();
@@ -43,7 +43,6 @@ public class DialogFirstMetaDataSync {
             }
 
         });
-        return this;
     }
 
 }
