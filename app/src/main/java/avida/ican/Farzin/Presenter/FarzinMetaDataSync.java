@@ -9,6 +9,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 
@@ -18,14 +19,10 @@ import avida.ican.R;
  */
 
 public class FarzinMetaDataSync {
-    private static long secondsInMilli = 1000;
-    private static long minutesInMilli = secondsInMilli * 60;
-    private static long hoursInMilli = minutesInMilli * 60;
-    private static long daysInMilli = hoursInMilli * 24;
 
-    private static final long PERIOD = (hoursInMilli * 24);
-    private static final long DELAY = secondsInMilli;
-    private static final long LONGDELAY = minutesInMilli;
+
+    private final long PERIOD = TimeValue.HoursInMilli() * 12;
+    private final long LONGDELAY = TimeValue.MinutesInMilli();
     private FarzinPrefrences farzinPrefrences;
     private String Tag = "FarzinMetaDataSync";
     private Timer timerAsync;

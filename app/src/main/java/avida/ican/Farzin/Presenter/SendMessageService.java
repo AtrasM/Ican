@@ -23,18 +23,16 @@ import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.View.Custom.TimeValue;
 
 /**
  * Created by AtrasVida on 2018-06-20 at 3:49 PM
  */
 
 public class SendMessageService extends Service {
-    private static long secondsInMilli = 1000;
-    private static long minutesInMilli = secondsInMilli * 60;
-    private static long hoursInMilli = minutesInMilli * 60;
-    private static long daysInMilli = hoursInMilli * 24;
-    private static final long PERIOD = (minutesInMilli * 2);
-    private static final long DELAY = secondsInMilli * 12;
+
+    private  final long PERIOD = TimeValue.MinutesInMilli();
+    private  final long DELAY = TimeValue.SecondsInMilli()*12;
     private Timer timer;
     private TimerTask timerTask;
     private SendMessageServiceListener sendMessageServiceListener;
