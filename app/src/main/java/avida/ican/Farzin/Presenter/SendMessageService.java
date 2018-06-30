@@ -38,9 +38,9 @@ public class SendMessageService extends Service {
     private Timer timer;
     private TimerTask timerTask;
     private SendMessageServiceListener sendMessageServiceListener;
-    Context context;
-    Handler handler = new Handler();
-    SendMessageToServerPresenter sendMessageToServerPresenter;
+    private Context context;
+    private  Handler handler = new Handler();
+    private SendMessageToServerPresenter sendMessageToServerPresenter;
 
     @Override
     public void onCreate() {
