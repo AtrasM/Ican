@@ -9,7 +9,6 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
 import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Dialog.NoNetworkAccess;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 
@@ -26,6 +25,7 @@ public class FarzinMetaDataSync {
 
     private static final long PERIOD = (hoursInMilli * 24);
     private static final long DELAY = secondsInMilli;
+    private static final long LONGDELAY = minutesInMilli;
     private FarzinPrefrences farzinPrefrences;
     private String Tag = "FarzinMetaDataSync";
     private Timer timerAsync;
@@ -49,16 +49,21 @@ public class FarzinMetaDataSync {
                     String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
                         if (App.networkStatus == NetworkStatus.WatingForNetwork) {
-                            new NoNetworkAccess().ShowDialog();
                             onDestory();
+                            App.getHandler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    RunONschedule();
+                                }
+                            }, LONGDELAY);
                         } else {
-                            new FarzinMetaDataQuery().Sync();
+                            new FarzinMetaDataQuery(App.CurentActivity).Sync();
                         }
 
                     } else {
                         long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, CurentDateTime, MetaDataLastSyncDate).getElapsedDays();
                         if (difrence > 11) {
-                            new FarzinMetaDataQuery().Sync();
+                            new FarzinMetaDataQuery(App.CurentActivity).Sync();
                         }
                     }
 

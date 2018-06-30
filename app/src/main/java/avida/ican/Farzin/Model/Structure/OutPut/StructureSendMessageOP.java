@@ -4,7 +4,7 @@ package avida.ican.Farzin.Model.Structure.OutPut;
  * Created by AtrasVida on 2018-03-17 at 3:33 PM
  */
 
-public class StructureSendMessage {
+public class StructureSendMessageOP {
     private int SendMessageResult;
     private String strErrorMsg;
 

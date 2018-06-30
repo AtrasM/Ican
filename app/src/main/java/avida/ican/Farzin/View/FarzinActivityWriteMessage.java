@@ -21,10 +21,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.WriteMessageListener;
+import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Input.MessageFile;
-import avida.ican.Farzin.Presenter.WriteMessagePresenter;
+import avida.ican.Farzin.Model.Structure.Input.StructureMessageFileIP;
+import avida.ican.Farzin.Presenter.FarzinMessageQuery;
+import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
@@ -67,7 +69,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @BindView(R.id.sp_size)
     Spinner spSize;
 
-
     private String msgContent = "";
     private DialogUserAndRole dialogUserAndRole;
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
@@ -81,7 +82,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @BindDimen(R.dimen.txt_editor_Size)
     int textSize;
 
-    WriteMessagePresenter writeMessagePresenter;
     private Loading loading;
 
     @Override
@@ -94,7 +94,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         super.onCreate(savedInstanceState);
         exTxtContacts.setText("");
         loading = new Loading(App.CurentActivity).Creat();
-        Resorse.getDimens(R.dimen.txt_SubTitle_Size);
         initTollBar(Resorse.getString(R.string.title_farzin_write_message));
         setUpRichEditore();
         initAdapter();
@@ -114,7 +113,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void showUserAndRoleDialog() {
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresMain), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresSelect), new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 structuresMain = structureUserAndRolesMain;
@@ -218,7 +217,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                App.ShowMessage().ShowToast(""+i, ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("" + i, ToastEnum.TOAST_SHORT_TIME);
             }
 
             @Override
@@ -464,7 +463,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @SuppressLint("StaticFieldLeak")
     private void addAllToAttach(final ArrayList<String> base64Files, final ArrayList<String> names, final int resID) {
         final ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
-        final ArrayList<MessageFile> messageFiles = new ArrayList<>();
+        final ArrayList<StructureMessageFileIP> structureMessageFileIPS = new ArrayList<>();
         new AsyncTask<Void, Void, ArrayList<StructureAttach>>() {
             @Override
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {
@@ -512,7 +511,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             public boolean onMenuItemClick(MenuItem menuItem) {
 
                 if (isValid()) {
-                    sendMessage();
+                    SaveMessage();
                 }
 
                 return false;
@@ -528,31 +527,35 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
-    private void sendMessage() {
+    private void SaveMessage() {
         loading.Show();
         String Subject = "" + edtSubject.getText().toString();
-        writeMessagePresenter = new WriteMessagePresenter();
-        writeMessagePresenter.SendMessage(Subject, reMsg.getHtml(), structureAttaches, structuresSelect, new WriteMessageListener() {
-            @Override
-            public void onSuccess() {
-                loading.Hide();
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.message_sent_successfully), SnackBarEnum.SNACKBAR_SHORT_TIME);
-            }
+        StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
 
-            @Override
-            public void onFailed(String message) {
-                loading.Hide();
-                if (!message.isEmpty())
-                    App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_LONG_TIME);
-            }
+        new FarzinMessageQuery().SaveMessage("" + structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, structuresSelect, new
+
+                MessageQuerySaveListener() {
+                    @Override
+                    public void onSuccess() {
+                        loading.Hide();
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.message_sent_successfully), SnackBarEnum.SNACKBAR_SHORT_TIME);
+                    }
+
+                    @Override
+                    public void onFailed(String message) {
+                        loading.Hide();
+                        if (!message.isEmpty())
+                            App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        loading.Hide();
+                        App.ShowMessage().ShowSnackBar("onCancel", SnackBarEnum.SNACKBAR_SHORT_TIME);
+                    }
+                });
 
 
-            @Override
-            public void onCancel() {
-                loading.Hide();
-                App.ShowMessage().ShowSnackBar("onCancel", SnackBarEnum.SNACKBAR_SHORT_TIME);
-            }
-        });
     }
 
     private boolean isValid() {
@@ -579,5 +582,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         return isValid;
     }
 
-
+    private FarzinPrefrences getFarzinPrefrences() {
+        return new FarzinPrefrences().init();
+    }
 }

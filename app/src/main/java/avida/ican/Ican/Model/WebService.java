@@ -1,5 +1,6 @@
 package avida.ican.Ican.Model;
 
+import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
-import avida.ican.Ican.View.Dialog.NoServerAccess;
 
 /**
  * Created by AtrasVida on 2018-03-13 at 1:14 PM
@@ -60,6 +60,7 @@ public class WebService {
         this.BASE_URL = BaseUrl;
         this.EndPoint = endPoint + ".asmx?wsdl";
         this.URL = SERVER_URL + BASE_URL + EndPoint;
+        Log.i(Tag,"Request is: " + this.URL);
     }
 
     public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl) {
@@ -69,6 +70,7 @@ public class WebService {
         this.SERVER_URL = ServerUrl;
         this.BASE_URL = BaseUrl;
         this.URL = SERVER_URL + BASE_URL;
+        Log.i(Tag,"Request is: " + this.URL);
     }
 
     public WebService SoapSerializationEnvelopeVersion(int version) {
@@ -96,7 +98,7 @@ public class WebService {
             this.EndPoint = EndPoint;
             this.URL = SERVER_URL + BASE_URL + EndPoint;
         }
-
+        Log.i(Tag,"Request is: " + this.URL);
         return this;
     }
 
@@ -156,6 +158,7 @@ public class WebService {
 
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class SoapRequest extends AsyncTask<Void, Void, WebServiceResponse> {
 
         @Override
@@ -171,7 +174,9 @@ public class WebService {
                 e.printStackTrace();
             } catch (SocketTimeoutException e) {
                 Log.i(Tag, "SocketTimeoutException  = " + e.toString());
-                new NoServerAccess().ShowDialog();
+               /* if(App.CurentActivity!=null){
+                    new NoServerAccess().ShowDialog();
+                }*/
                 e.printStackTrace();
             } catch (IOException e) {
                 Log.i(Tag, "IOException = " + e.toString());

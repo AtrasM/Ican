@@ -10,50 +10,50 @@ import java.io.Serializable;
  */
 @DatabaseTable(tableName = "userAndRoleList")
 public class StructureUserAndRoleDB implements Serializable {
-    final String FIELD_NAME_ID     = "id";
+    final private String FIELD_NAME_ID = "id";
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
     @DatabaseField()
     private String User_ID;
     @DatabaseField()
-    private  String UserName;
+    private String UserName;
     @DatabaseField()
-    private  String FirstName;
+    private String FirstName;
     @DatabaseField()
-    private  String LastName;
+    private String LastName;
     @DatabaseField()
-    private  String Role_ParentID;
+    private String Role_ParentID;
     @DatabaseField()
-    private  String IsDefForCardTableString;
+    private String IsDefForCardTableString;
     @DatabaseField()
-    private   String RoleCode;
+    private String RoleCode;
     @DatabaseField()
-    private   String RoleName;
+    private String RoleName;
     @DatabaseField()
-    private  String Role_ID;
+    private String Role_ID;
     @DatabaseField()
-    private   String OrganCode;
+    private String OrganCode;
     @DatabaseField()
-    private   String OrganizationRoleName;
+    private String OrganizationRoleName;
     @DatabaseField()
-    private   String OrganizationRole_ID;
+    private String OrganizationRole_ID;
     @DatabaseField()
-    private  String DepartmentID;
+    private String DepartmentID;
     @DatabaseField()
-    private   String Mobile;
+    private String Mobile;
     @DatabaseField()
-    private    String Gender;
+    private String Gender;
     @DatabaseField()
-    private  String BirthDate;
+    private String BirthDate;
     @DatabaseField()
-    private   String E_Mail;
+    private String E_Mail;
     @DatabaseField()
-    private   String NativeID;
+    private String NativeID;
 
     private boolean Selected;
 
 
-    public StructureUserAndRoleDB(){
+    public StructureUserAndRoleDB() {
         //empty
     }
 
@@ -76,6 +76,13 @@ public class StructureUserAndRoleDB implements Serializable {
         BirthDate = birthDate;
         E_Mail = e_Mail;
         NativeID = nativeID;
+    }
+
+    public StructureUserAndRoleDB(String user_name, int user_id, int role_id, String native_id) {
+        User_ID = "" + user_id;
+        UserName = user_name;
+        Role_ID = "" + role_id;
+        NativeID = native_id;
     }
 
     public int getUser_ID() {

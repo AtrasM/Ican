@@ -1,6 +1,9 @@
 package avida.ican.Ican.View.Custom;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 
 import avida.ican.Ican.App;
@@ -10,17 +13,26 @@ import avida.ican.Ican.App;
  */
 
 public class Resorse {
-    public static   int getColor(int color) {
-        return  ContextCompat.getColor(App.getAppContext() ,color);
+    static int getColor(int color) {
+        return ContextCompat.getColor(App.getAppContext(), color);
     }
+
     public static Drawable getDrawable(int drawable) {
-        return  ContextCompat.getDrawable(App.getAppContext() ,drawable);
+        return ContextCompat.getDrawable(App.getAppContext(), drawable);
     }
+
+    @NonNull
     public static String getString(int resorseString) {
-       return App.CurentActivity.getResources().getString(resorseString);
+        return App.CurentActivity.getResources().getString(resorseString);
     }
+
+    @NonNull
+    public static String getString(Context context, int resorseString) {
+        return context.getResources().getString(resorseString);
+    }
+
     public static int getDimens(int resorseDimens) {
-       return (int) App.CurentActivity.getResources().getDimension(resorseDimens);
+        return (int) Resources.getSystem().getDimension(resorseDimens);
     }
 
 }

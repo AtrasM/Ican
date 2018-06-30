@@ -9,23 +9,23 @@ import java.util.Hashtable;
  * Created by AtrasVida in 2018-06-10 at 9:45 AM
  */
 
-public class Receiver implements KvmSerializable {
+public class StructureReceiverIP implements KvmSerializable {
 
-    String RoleID;
-    int UserID;
-    String UserName;
-    String NativeID;
+    private String RoleID;
+    private  int UserID;
+    private  String UserName;
+    private String NativeID;
 
 
-    public Receiver() {
+    public StructureReceiverIP() {
     }
 
-    public Receiver(String roleID, int userID) {
+    public StructureReceiverIP(String roleID, int userID) {
         RoleID = roleID;
         UserID = userID;
     }
 
-    public Receiver(String roleID, int userID, String userName, String nativeID) {
+    public StructureReceiverIP(String roleID, int userID, String userName, String nativeID) {
         RoleID = roleID;
         UserID = userID;
         UserName = userName;

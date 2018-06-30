@@ -5,10 +5,10 @@ package avida.ican.Ican.Model.Structure;
  */
 
 public class StructureAttach {
-    String base64File;
-    String Name;
-    String FileExtension;
-    int icon;
+    private String base64File;
+    private String Name;
+    private  String FileExtension;
+    private int icon;
 
     public String getBase64File() {
         return base64File;
@@ -47,5 +47,10 @@ public class StructureAttach {
         this. Name = name;
         this. FileExtension = fileExtension;
         this.icon = icon;
+    }
+    public StructureAttach(String base64File, String name,String fileExtension ) {
+        this.base64File = base64File;
+        this. Name = name;
+        this. FileExtension = fileExtension;
     }
 }

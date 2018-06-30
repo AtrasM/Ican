@@ -3,28 +3,40 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
 
-    <uses-checkPermission android:name="android.checkPermission.INTERNET" />
-    <uses-checkPermission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
-    <uses-checkPermission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
-    <uses-checkPermission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
-    //______________________________________________________________________________________
-    <uses-checkPermission android:name="android.checkPermission.RECORD_AUDIO" />
-    <uses-checkPermission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
-    <uses-checkPermission android:name="android.checkPermission.WAKE_LOCK" />
-    //______________________________________________________________________________________
+    <uses-permission android:name="android.checkPermission.INTERNET" />
+    <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
+    <!--______________________________________________________________________________________-->
+    <uses-permission android:name="android.checkPermission.RECORD_AUDIO" />
+    <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.checkPermission.WAKE_LOCK" />
+    <!--______________________________________________________________________________________-->
     <application
         android:name=".Ican.App"
-        android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="InnerclassSeparator,HardcodedText"
-        tools:replace="theme, allowBackup">
+        tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator"
+        tools:replace="theme, allowBackup"
+        android:fullBackupContent="true"
+        android:allowBackup="true">
 
 
+        <receiver android:name=".Farzin.FarzinBroadcastReceiver"
+            tools:ignore="ExtraText">
+            android:enabled="true"
+            android:exported="true"
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
+            </intent-filter>
+        </receiver>
+        <service android:name=".Farzin.Presenter.SendMessageService"
+            android:enabled="true"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="avida.ican.fileprovider"
@@ -56,6 +68,8 @@
         <activity
             android:name=".Farzin.View.FarzinActivityWriteMessage"
             android:windowSoftInputMode="adjustNothing|stateHidden" />
+
+
 
     </application>
 

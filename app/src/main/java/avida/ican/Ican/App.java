@@ -14,8 +14,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.rahul.media.model.Define;
 import com.squareup.otto.Bus;
 
-import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
+import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.NetWorkChecking;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -47,7 +47,9 @@ public class App extends Application {
 
     private static CurentProject curentProject;
     private static FarzinDatabaseHelper farzinDatabaseHelper;
-    public static String fontPath="font/iran_sans_mobile.ttf";
+    public static String fontPath = "font/iran_sans_mobile.ttf";
+    @SuppressLint("StaticFieldLeak")
+    private static Context serviceContext;
 
     @Override
     public void onCreate() {
@@ -67,10 +69,10 @@ public class App extends Application {
 
     /**
      * note: after init font should add this code in base activity.
-     *  @Override
-    protected void attachBaseContext(Context newBase) {
-    super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
+     *
+     * @Override protected void attachBaseContext(Context newBase) {
+     * super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+     * }
      */
     private void initializeFont() {
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
@@ -82,6 +84,14 @@ public class App extends Application {
 
     public static Context getAppContext() {
         return appInstance.getApplicationContext();
+    }
+
+    public static void setServiceContext(Context context) {
+        serviceContext = context;
+    }
+
+    public static Context getServiceContext() {
+        return serviceContext;
     }
 
     public static DisplayImageOptions getImageOption() {
@@ -126,10 +136,12 @@ public class App extends Application {
     public static FarzinDatabaseHelper getFarzinDatabaseHelper() {
         return farzinDatabaseHelper;
     }
+
     public static ImageLoader getImageLoader() {
         ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.init(ImageLoaderConfiguration.createDefault(getAppContext()));
         return imageLoader;
     }
-   
+
+
 }

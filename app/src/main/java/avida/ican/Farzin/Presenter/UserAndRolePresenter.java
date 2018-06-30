@@ -39,16 +39,16 @@ public class UserAndRolePresenter {
 
     public UserAndRolePresenter execute() {
         if (structuresMain.isEmpty()) {
-            structuresMain = new FarzinMetaDataQuery().getUserAndRoleList();
+            structuresMain = new FarzinMetaDataQuery(App.CurentActivity).getUserAndRoleList();
             if (structuresMain.isEmpty()) {
-                new FarzinMetaDataQuery().Sync();
+                new FarzinMetaDataQuery(App.CurentActivity).Sync();
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.Syncing), SnackBarEnum.SNACKBAR_SHORT_TIME);
                 listenerUserAndRollDialog.onFailed();
             } else {
                 listenerUserAndRollDialog.onSuccess(structuresMain, structuresSelect);
             }
         } else {
-            listenerUserAndRollDialog.onSuccess(new ArrayList<StructureUserAndRoleDB>(structuresMain), new ArrayList<StructureUserAndRoleDB>(structuresSelect));
+            listenerUserAndRollDialog.onSuccess(new ArrayList<>(structuresMain), new ArrayList<>(structuresSelect));
         }
 
         return this;
@@ -62,14 +62,13 @@ public class UserAndRolePresenter {
     @SuppressLint("StaticFieldLeak")
     private void Searching(String query) {
         structuresSearch = new ArrayList<>();
-        final CustomFunction customFunction = new CustomFunction();
-        query = customFunction.convertArabicCharToPersianChar(query);
+        query = CustomFunction.convertArabicCharToPersianChar(query);
         final String finalQuery = query;
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 for (int i = 0; i < structuresMain.size(); i++) {
-                    if (customFunction.convertArabicCharToPersianChar(structuresMain.get(i).getFirstName()).contains(finalQuery) || customFunction.convertArabicCharToPersianChar(structuresMain.get(i).getLastName()).contains(finalQuery) || customFunction.convertArabicCharToPersianChar(structuresMain.get(i).getOrganizationRoleName()).contains(finalQuery)) {
+                    if (CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getFirstName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getLastName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getOrganizationRoleName()).contains(finalQuery)) {
                         structuresSearch.add(structuresMain.get(i));
                     }
                 }

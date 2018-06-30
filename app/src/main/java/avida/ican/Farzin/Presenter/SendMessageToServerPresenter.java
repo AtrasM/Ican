@@ -6,35 +6,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
-import avida.ican.Farzin.Model.Interface.WriteMessageListener;
+import avida.ican.Farzin.Model.Interface.SendMessageListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Input.MessageFile;
-import avida.ican.Farzin.Model.Structure.Input.Receiver;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureSendMessage;
-import avida.ican.Ican.App;
+import avida.ican.Farzin.Model.Structure.Input.StructureMessageFileIP;
+import avida.ican.Farzin.Model.Structure.Input.StructureReceiverIP;
+import avida.ican.Farzin.Model.Structure.OutPut.StructureSendMessageOP;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
-import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Enum.ToastEnum;
-import avida.ican.R;
 
 /**
  * Created by AtrasVida on 2018-06-09 at 14:59 PM
  */
 
-public class WriteMessagePresenter {
+class SendMessageToServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "MessageSystemManagment";
     private String MetodeName = "SendMessage";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "WriteMessagePresenter";
+    private String Tag = "SendMessageToServerPresenter";
     private FarzinPrefrences farzinPrefrences;
     //_______________________***Dao***______________________________
 
@@ -42,7 +38,7 @@ public class WriteMessagePresenter {
 
     //_______________________***Dao***______________________________
 
-    public WriteMessagePresenter() {
+    SendMessageToServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
         //initDao();
 
@@ -57,29 +53,29 @@ public class WriteMessagePresenter {
     }*/
 
 
-    public void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final WriteMessageListener writeMessageListener) {
+    void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final SendMessageListener sendMessageListener) {
 
         CallApi(MetodeName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                StructureSendMessage structureSendMessage = xmlToObject.XmlToObject(Xml, StructureSendMessage.class);
-                if (structureSendMessage.getSendMessageResult() > 0) {
-                    writeMessageListener.onSuccess();
+                StructureSendMessageOP structureSendMessageOP = xmlToObject.XmlToObject(Xml, StructureSendMessageOP.class);
+                if (structureSendMessageOP.getSendMessageResult() > 0) {
+                    sendMessageListener.onSuccess();
                 } else {
-                    writeMessageListener.onFailed("" + structureSendMessage.getStrErrorMsg());
+                    sendMessageListener.onFailed("" + structureSendMessageOP.getStrErrorMsg());
                 }
             }
 
             @Override
             public void onFailed() {
-                writeMessageListener.onFailed("");
-                App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
+                sendMessageListener.onFailed("");
+                //App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
             }
 
             @Override
             public void onCancel() {
-                writeMessageListener.onCancel();
-                App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
+                sendMessageListener.onCancel();
+                //App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
             }
         });
     }
@@ -93,8 +89,8 @@ public class WriteMessagePresenter {
         SoapObject messageFileHeader = new SoapObject(NameSpace, "messagefile");
 
         for (int i = 0; i < structureAttaches.size(); i++) {
-            MessageFile messageFile = new MessageFile(structureAttaches.get(i).getName(), structureAttaches.get(i).getBase64File(), structureAttaches.get(i).getFileExtension());
-            messageFileHeader.addProperty("MessageFile", messageFile);
+            StructureMessageFileIP structureMessageFileIP = new StructureMessageFileIP(structureAttaches.get(i).getName(), structureAttaches.get(i).getBase64File(), structureAttaches.get(i).getFileExtension());
+            messageFileHeader.addProperty("MessageFile", structureMessageFileIP);
         }
         //*******___________________________________________________________________________********
 
@@ -102,8 +98,8 @@ public class WriteMessagePresenter {
         SoapObject receiverHeader = new SoapObject(NameSpace, "receiver");
 
         for (int i = 0; i < structureUserAndRole.size(); i++) {
-            Receiver receiver = new Receiver(structureUserAndRole.get(i).getRole_ID(), structureUserAndRole.get(i).getUser_ID());
-            receiverHeader.addProperty("Receiver", receiver);
+            StructureReceiverIP structureReceiverIP = new StructureReceiverIP(structureUserAndRole.get(i).getRole_ID(), structureUserAndRole.get(i).getUser_ID());
+            receiverHeader.addProperty("Receiver", structureReceiverIP);
         }
         //*******___________________________________________________________________________********
 

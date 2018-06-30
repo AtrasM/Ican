@@ -79,6 +79,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
             }
         });
+
     }
 
     @Override
@@ -113,7 +114,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             }
             case R.id.cv_user_and_role: {
 
-                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresMain), (List<StructureUserAndRoleDB>) new CustomFunction().deepClone(structuresSelect), new ListenerUserAndRoll() {
+                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
                     @Override
                     public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                         structuresMain = structureUserAndRolesMain;

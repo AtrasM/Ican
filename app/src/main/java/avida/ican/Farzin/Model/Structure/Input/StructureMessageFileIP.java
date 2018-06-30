@@ -9,11 +9,11 @@ import java.util.Hashtable;
  * Created by AtrasVida in 2018-06-9 at 16:20 PM
  */
 
-public class MessageFile implements KvmSerializable {
+public class StructureMessageFileIP implements KvmSerializable {
 
-    String FileName;
-    String FileBinary;
-    String FileExtension;
+    private  String FileName;
+    private  String FileBinary;
+    private  String FileExtension;
 
     public String getFileName() {
         return FileName;
@@ -39,10 +39,10 @@ public class MessageFile implements KvmSerializable {
         FileExtension = fileExtension;
     }
 
-    public MessageFile() {
+    public StructureMessageFileIP() {
     }
 
-    public MessageFile(String fileName, String fileBinary, String fileExtension) {
+    public StructureMessageFileIP(String fileName, String fileBinary, String fileExtension) {
         FileName = fileName;
         FileBinary = fileBinary;
         FileExtension = fileExtension;

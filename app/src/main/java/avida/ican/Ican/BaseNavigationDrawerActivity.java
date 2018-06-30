@@ -1,5 +1,6 @@
 package avida.ican.Ican;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
@@ -44,23 +46,24 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
     public BaseNavigationDrawerActivity setTollbarTitle(String title) {
         this.title = title;
+        assert txtTitle != null;
         txtTitle.setText(title);
         return this;
     }
 
     public void initNavigationBar(String title, int menuRes) {
         setSupportActionBar(toolbar);
+        assert txtTitle != null;
         txtTitle.setText(title);
         //***********************toolbar*****************************
+        assert drawer != null;
         drawer.closeDrawers();
-       /* toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);*/
+
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        //getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
 
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
         setUpNavigationItemSelectedListener(menuRes);
        /*  navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.color_BG_Light)));*/
@@ -112,6 +115,10 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
             }
             case R.id.nav_log_out: {
                 //App.canBack = true;
+                Intent intent=new Intent(App.CurentActivity,FarzinActivityLogin.class);
+                intent.putExtra("LogOut",true);
+                goToActivity(FarzinActivityLogin.class);
+
                 Finish();
                 break;
             }
@@ -147,11 +154,10 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                if (drawer.isDrawerOpen(GravityCompat.START)) {
-                    drawer.closeDrawer(GravityCompat.START);
-                } else {
-
+                if (!drawer.isDrawerOpen(GravityCompat.START)) {
                     Finish();
+                } else {
+                    drawer.closeDrawer(GravityCompat.START);
                 }
                 break;
             }
@@ -162,11 +168,10 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (drawer.isDrawerOpen(GravityCompat.START)) {
-                drawer.closeDrawer(GravityCompat.START);
-            } else {
-
+            if (!drawer.isDrawerOpen(GravityCompat.START)) {
                 Finish();
+            } else {
+                drawer.closeDrawer(GravityCompat.START);
             }
             return true;
         }

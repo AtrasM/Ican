@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * Created by AtrasVida on 2018-04-18 at 5:24 PM
  */
-public class StructureUserAndRoleRowsOPT {
-    mGetUserAndRoleListResponse GetUserAndRoleListResult = new mGetUserAndRoleListResponse();
-    String StrErrorMsg;
+public class StructureUserAndRoleRowsOP {
+    private mGetUserAndRoleListResponse GetUserAndRoleListResult = new mGetUserAndRoleListResponse();
+    private String StrErrorMsg;
 
     public mGetUserAndRoleListResponse getGetUserAndRoleListResult() {
         return GetUserAndRoleListResult;
@@ -41,13 +41,13 @@ public class StructureUserAndRoleRowsOPT {
 
     //_______________________________<mrows>_______________________________
     public class mrows {
-        List<StructureUserAndRoleOPT> row;
+        List<StructureUserAndRoleOP> row;
 
-        public List<StructureUserAndRoleOPT> getRowList() {
+        public List<StructureUserAndRoleOP> getRowList() {
             return row;
         }
 
-        public void setRow(List<StructureUserAndRoleOPT> row) {
+        public void setRow(List<StructureUserAndRoleOP> row) {
             this.row = row;
         }
     }

@@ -5,43 +5,43 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Created by AtrasVida on 2018-04-18 at 5:24 PM
  */
-public class StructureUserAndRoleOPT {
+public class StructureUserAndRoleOP {
     @SerializedName("@User_ID")
-     String User_ID;
+    private String User_ID;
     @SerializedName("@UserName")
-      String UserName;
+    private  String UserName;
     @SerializedName("@FirstName")
-      String FirstName;
+    private   String FirstName;
      @SerializedName("@LastName")
-      String LastName;
+     private    String LastName;
      @SerializedName("@Role_ParentID")
-      String Role_ParentID;
+     private   String Role_ParentID;
      @SerializedName("@IsDefForCardTableString")
-      String IsDefForCardTableString;
+     private    String IsDefForCardTableString;
      @SerializedName("@RoleCode")
-       String RoleCode;
+     private   String RoleCode;
      @SerializedName("@RoleName")
-       String RoleName;
+        private   String RoleName;
      @SerializedName("@Role_ID")
-      String Role_ID;
+       private   String Role_ID;
      @SerializedName("@OrganCode")
-       String OrganCode;
+        private   String OrganCode;
      @SerializedName("@OrganizationRoleName")
-       String OrganizationRoleName;
+        private   String OrganizationRoleName;
      @SerializedName("@OrganizationRole_ID")
-       String OrganizationRole_ID;
+        private   String OrganizationRole_ID;
      @SerializedName("@DepartmentID")
-      String DepartmentID;
+       private   String DepartmentID;
      @SerializedName("@Mobile")
-       String Mobile;
+        private   String Mobile;
      @SerializedName("@Gender")
-        String Gender;
+         private   String Gender;
      @SerializedName("@BirthDate")
-      String BirthDate;
+       private   String BirthDate;
      @SerializedName("@E_Mail")
-       String E_Mail;
+        private   String E_Mail;
      @SerializedName("@NativeID")
-       String NativeID;
+        private   String NativeID;
 
 
 
