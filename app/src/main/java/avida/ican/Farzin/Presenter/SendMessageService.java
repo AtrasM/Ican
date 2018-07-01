@@ -31,14 +31,16 @@ import avida.ican.Ican.View.Custom.TimeValue;
 
 public class SendMessageService extends Service {
 
-    private  final long PERIOD = TimeValue.MinutesInMilli();
-    private  final long DELAY = TimeValue.SecondsInMilli()*12;
+    private final long PERIOD = TimeValue.MinutesInMilli();
+    private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private Timer timer;
     private TimerTask timerTask;
     private SendMessageServiceListener sendMessageServiceListener;
     private Context context;
-    private  Handler handler = new Handler();
+    private Handler handler = new Handler();
     private SendMessageToServerPresenter sendMessageToServerPresenter;
+    private static int tryCount = 0;
+    private final static int MaxTry = 3;
 
     @Override
     public void onCreate() {
@@ -56,11 +58,12 @@ public class SendMessageService extends Service {
 
             @Override
             public void onSuccess(List<StructureMessageQueueDB> structureMessageQueueDBS) {
-                if (structureMessageQueueDBS.size() == 0) {
+                if (structureMessageQueueDBS.size() > 0) {
+                    SendMessage(structureMessageQueueDBS);
+                } else {
                     onFinish();
-                    return;
                 }
-                SendMessage(structureMessageQueueDBS);
+
             }
 
             @Override
@@ -69,8 +72,20 @@ public class SendMessageService extends Service {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
+
                         ShowToast("onFailed");
-                        SendMessage(structureMessageQueueDBS);
+                        if (tryCount == MaxTry) {
+                            structureMessageQueueDBS.remove(0);
+                            tryCount = 0;
+                        }
+                        if (structureMessageQueueDBS.size() > 0) {
+                            tryCount++;
+                            SendMessage(structureMessageQueueDBS);
+                        } else {
+                            onFinish();
+                        }
+
+
                     }
                 }, DELAY);
 

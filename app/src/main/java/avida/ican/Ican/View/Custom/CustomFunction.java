@@ -34,7 +34,7 @@ import java.util.Date;
 
 public class CustomFunction {
     private Activity activity;
-   private Context context;
+    private Context context;
 
     public CustomFunction() {
     }
@@ -59,7 +59,7 @@ public class CustomFunction {
         drawable.setStroke(stroke, ContextCompat.getColor(activity, borderColor));
         drawable.setCornerRadius(radius);
         drawable.setColor(ContextCompat.getColor(activity, backGroundColor));
-        ViewCompat.setBackground(view,drawable);
+        ViewCompat.setBackground(view, drawable);
     }
 
     /**
@@ -73,7 +73,7 @@ public class CustomFunction {
     }
 
 
-    public  void Call(String phoneNumber) {
+    public void Call(String phoneNumber) {
         //posted_by = "111-333-222-4";
 
         String uri = "tel:" + phoneNumber.trim();
@@ -105,13 +105,13 @@ public class CustomFunction {
     }
 
 
-    public  void SendSms(String content) {
+    public void SendSms(String content) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("sms:"));
         intent.putExtra("sms_body", content);
         activity.startActivity(intent);
     }
 
-    public  void InviteChoser(String subject, String content) {
+    public void InviteChoser(String subject, String content) {
         try {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("text/plain");
@@ -153,14 +153,14 @@ public class CustomFunction {
         return c.getTime();
     }
 
-    public  void setHtmlText(TextView myTextView, String myText) {
+    public void setHtmlText(TextView myTextView, String myText) {
         UrlImageParser p = new UrlImageParser(myTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myTextView.setText(htmlSpan);
     }
 
 
-    public  int getWidthOrHeightColums(int MOD, boolean isWhidth) {
+    public int getWidthOrHeightColums(int MOD, boolean isWhidth) {
         Display display = activity.getWindowManager().getDefaultDisplay();
         DisplayMetrics outMetrics = new DisplayMetrics();
         display.getMetrics(outMetrics);
@@ -192,7 +192,7 @@ public class CustomFunction {
     }
 
     // ignore enter First space on edittext
-    public  static InputFilter ignoreFirstWhiteSpace() {
+    public static InputFilter ignoreFirstWhiteSpace() {
         return new InputFilter() {
             public CharSequence filter(CharSequence source, int start, int end,
                                        Spanned dest, int dstart, int dend) {
@@ -211,6 +211,7 @@ public class CustomFunction {
     public static String convertArabicCharToPersianChar(String input) {
         return input.replaceAll("ك", "ک").replaceAll("ي", "ی");
     }
+
     @SuppressWarnings("WeakerAccess")
     public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
@@ -219,11 +220,17 @@ public class CustomFunction {
     public static int pxToDp(int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
+
     @SuppressWarnings("WeakerAccess")
     public static String getFileName(String filePath) {
         return filePath.substring(filePath.lastIndexOf("/") + 1);
     }
+
     public static String getFileExtention(String fileName) {
-        return fileName.substring(fileName.lastIndexOf(".") );
+        return fileName.substring(fileName.lastIndexOf("."));
+    }
+
+    public static String AddXmlCData(String data) {
+        return "<![CDATA[" + data + "]]>";
     }
 }

@@ -19,6 +19,7 @@ import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Enum.ToastEnum;
 
 
@@ -77,6 +78,7 @@ public class FarzinMessageQuery {
         @Override
         protected Void doInBackground(Void... voids) {
             StructureMessageDB structureMessageDB;
+            content = CustomFunction.AddXmlCData(content);
             structureMessageDB = new StructureMessageDB(sender_user_id, sender_role_id, subject, content);
             try {
                 messageDao.create(structureMessageDB);
@@ -95,7 +97,7 @@ public class FarzinMessageQuery {
                     threadSleep();
                 }
 
-                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id,structureMessageDB);
+                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id, structureMessageDB);
                 messageQueueDao.create(structureMessageQueueDB);
                 messageQuerySaveListener.onSuccess();
 
@@ -144,7 +146,7 @@ public class FarzinMessageQuery {
         return isDelet;
     }
 
-    public List<StructureMessageDB> getMessage(int user_id,int role_id) {
+    public List<StructureMessageDB> getMessage(int user_id, int role_id) {
         QueryBuilder<StructureMessageDB, Integer> queryBuilder = messageDao.queryBuilder();
 
         List<StructureMessageDB> structureMessageDBS = new ArrayList<>();
