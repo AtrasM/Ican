@@ -6,11 +6,13 @@ import android.os.AsyncTask;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.MessageQueueStatus;
 import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
@@ -97,7 +99,7 @@ public class FarzinMessageQuery {
                     threadSleep();
                 }
 
-                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id, structureMessageDB);
+                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id, MessageQueueStatus.WAITING, structureMessageDB);
                 messageQueueDao.create(structureMessageQueueDB);
                 messageQuerySaveListener.onSuccess();
 
@@ -121,11 +123,11 @@ public class FarzinMessageQuery {
         }
     }
 
-    List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id) {
+    List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id,MessageQueueStatus status) {
         QueryBuilder<StructureMessageQueueDB, Integer> queryBuilder = messageQueueDao.queryBuilder();
         List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
         try {
-            queryBuilder.where().eq("sender_user_id", user_id).and().eq("sender_role_id", role_id);
+            queryBuilder.where().eq("sender_user_id", user_id).and().eq("sender_role_id", role_id).and().eq("status",status);
             structureMessageQueueDBS = queryBuilder.query();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -144,6 +146,16 @@ public class FarzinMessageQuery {
             e.printStackTrace();
         }
         return isDelet;
+    }
+
+    void ChangeMessageStatus(int id, MessageQueueStatus status) {
+        try {
+            UpdateBuilder<StructureMessageQueueDB, Integer> updateBuilder = messageQueueDao.updateBuilder();
+            updateBuilder.where().eq("id", id);
+            updateBuilder.updateColumnValue("status", status);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public List<StructureMessageDB> getMessage(int user_id, int role_id) {

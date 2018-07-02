@@ -7,6 +7,7 @@ import android.content.Intent;
 
 import avida.ican.Farzin.Presenter.SendMessageService;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.NetWorkCheckingService;
 
 /**
  * Created by AtrasVida on 2018-06-25 at 4:28 PM
@@ -19,6 +20,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent iintent) {
         App.setServiceContext(context);
         context.startService(new Intent(context, SendMessageService.class));
+        context.startService(new Intent(context, NetWorkCheckingService.class));
 
     }
 }

@@ -32,4 +32,10 @@ public class CheckNetworkAvailability {
         }
         return NetWorkState.DISCONNECTED;
     }
+
+    public  boolean isConnected(Context context) {
+        ConnectivityManager connectivityManager = ((ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isAvailable() && networkInfo.isConnected();
+    }
 }

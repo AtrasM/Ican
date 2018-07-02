@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import avida.ican.Ican.View.Custom.NetWorkChecking;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.NetWorkStatusListener;
 import avida.ican.R;
@@ -38,7 +37,6 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     @BindView(R.id.txt_net_status)
     TextView txtNetworkStatus;
 
-    private NetWorkChecking netWorkChecking;
     private NetWorkStatusListener netWorkStatusListener;
 
     @Override
@@ -65,11 +63,10 @@ public abstract class BaseToolbarActivity extends BaseActivity {
         return this;
     }
 
-
-    public BaseToolbarActivity setTollbarTitle(String title) {
+    @SuppressWarnings("SameParameterValue")
+    public void setTollbarTitle(String title) {
         this.title = title;
         txtTitle.setText(title);
-        return this;
     }
 
     public void initTollBar(String title) {
@@ -86,7 +83,8 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     private void RunNetWorkChecking() {
         netWorkStatusListener = new NetWorkStatusListener() {
 
-            public String NetWorkStatusTitle = "";
+
+            String NetWorkStatusTitle = "";
 
             @Override
             public void Connected() {
@@ -122,19 +120,18 @@ public abstract class BaseToolbarActivity extends BaseActivity {
                 SetNetworkStatus(NetWorkStatusTitle, View.GONE);
             }
         };
-        if (App.netWorkChecking == null) {
-            netWorkChecking = new NetWorkChecking();
-            App.netWorkChecking = this.netWorkChecking;
+        App.netWorkStatusListener = this.netWorkStatusListener;
+       /* if (App.netWorkCheckingService == null) {
             App.netWorkStatusListener = this.netWorkStatusListener;
         } else {
             RefreshNetworkStatus();
-        }
+        }*/
 
     }
 
 
     private void RefreshNetworkStatus() {
-        //App.netWorkChecking = this.netWorkChecking;
+        //App.netWorkCheckingService = this.netWorkCheckingService;
         App.netWorkStatusListener = this.netWorkStatusListener;
         switch (App.networkStatus) {
             case Syncing: {
@@ -170,7 +167,7 @@ public abstract class BaseToolbarActivity extends BaseActivity {
         }
 
     }
-
+    @SuppressWarnings("SameParameterValue")
     public void setlnToolbarTitleMargin(int marginLeft) {
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,

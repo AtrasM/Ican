@@ -44,11 +44,10 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
     private String title = "";
 
-    public BaseNavigationDrawerActivity setTollbarTitle(String title) {
+    public void setTollbarTitle(String title) {
         this.title = title;
         assert txtTitle != null;
         txtTitle.setText(title);
-        return this;
     }
 
     public void initNavigationBar(String title, int menuRes) {

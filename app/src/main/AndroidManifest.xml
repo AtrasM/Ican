@@ -37,6 +37,8 @@
         </receiver>
         <service android:name=".Farzin.Presenter.SendMessageService"
             android:enabled="true"/>
+        <service android:name=".Ican.View.Custom.NetWorkCheckingService"
+            android:enabled="true"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="avida.ican.fileprovider"

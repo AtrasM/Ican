@@ -17,7 +17,6 @@ import com.squareup.otto.Bus;
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Ican.View.Custom.Message;
-import avida.ican.Ican.View.Custom.NetWorkChecking;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.NetWorkStatusListener;
 import avida.ican.R;
@@ -39,7 +38,6 @@ public class App extends Application {
     public static boolean dialogIsShow = false;
     public static boolean canBack = true;
     public static boolean isLoading = false;
-    public static NetWorkChecking netWorkChecking;
     public static NetWorkStatusListener netWorkStatusListener;
     public static NetworkStatus networkStatus = NetworkStatus.Connected;
     private static Bus sBus;
