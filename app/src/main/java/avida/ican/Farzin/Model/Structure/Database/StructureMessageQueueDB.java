@@ -18,9 +18,9 @@ public class StructureMessageQueueDB implements Serializable {
     @DatabaseField( canBeNull = false,generatedId = true)
     private int id;
     @DatabaseField()
-    private String sender_user_id;
+    private int sender_user_id;
     @DatabaseField()
-    private String sender_role_id;
+    private int sender_role_id;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private MessageQueueStatus status;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = Message_ID_FIELD_NAME)
@@ -30,7 +30,7 @@ public class StructureMessageQueueDB implements Serializable {
     }
 
 
-    public StructureMessageQueueDB(String sender_user_id, String sender_role_id, MessageQueueStatus status, StructureMessageDB message) {
+    public StructureMessageQueueDB(int sender_user_id, int sender_role_id, MessageQueueStatus status, StructureMessageDB message) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.status = status;

@@ -532,7 +532,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         String Subject = "" + edtSubject.getText().toString();
         StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
 
-        new FarzinMessageQuery().SaveMessage("" + structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, structuresSelect, new
+        new FarzinMessageQuery().SaveMessage( structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, structuresSelect, new
 
                 MessageQuerySaveListener() {
                     @Override

@@ -7,49 +7,48 @@ import com.google.gson.annotations.SerializedName;
  */
 public class StructureUserAndRoleOP {
     @SerializedName("@User_ID")
-    private String User_ID;
+    private int User_ID;
     @SerializedName("@UserName")
-    private  String UserName;
+    private String UserName;
     @SerializedName("@FirstName")
-    private   String FirstName;
-     @SerializedName("@LastName")
-     private    String LastName;
-     @SerializedName("@Role_ParentID")
-     private   String Role_ParentID;
-     @SerializedName("@IsDefForCardTableString")
-     private    String IsDefForCardTableString;
-     @SerializedName("@RoleCode")
-     private   String RoleCode;
-     @SerializedName("@RoleName")
-        private   String RoleName;
-     @SerializedName("@Role_ID")
-       private   String Role_ID;
-     @SerializedName("@OrganCode")
-        private   String OrganCode;
-     @SerializedName("@OrganizationRoleName")
-        private   String OrganizationRoleName;
-     @SerializedName("@OrganizationRole_ID")
-        private   String OrganizationRole_ID;
-     @SerializedName("@DepartmentID")
-       private   String DepartmentID;
-     @SerializedName("@Mobile")
-        private   String Mobile;
-     @SerializedName("@Gender")
-         private   String Gender;
-     @SerializedName("@BirthDate")
-       private   String BirthDate;
-     @SerializedName("@E_Mail")
-        private   String E_Mail;
-     @SerializedName("@NativeID")
-        private   String NativeID;
+    private String FirstName;
+    @SerializedName("@LastName")
+    private String LastName;
+    @SerializedName("@Role_ParentID")
+    private String Role_ParentID;
+    @SerializedName("@IsDefForCardTableString")
+    private String IsDefForCardTableString;
+    @SerializedName("@RoleCode")
+    private String RoleCode;
+    @SerializedName("@RoleName")
+    private String RoleName;
+    @SerializedName("@Role_ID")
+    private int Role_ID;
+    @SerializedName("@OrganCode")
+    private String OrganCode;
+    @SerializedName("@OrganizationRoleName")
+    private String OrganizationRoleName;
+    @SerializedName("@OrganizationRole_ID")
+    private String OrganizationRole_ID;
+    @SerializedName("@DepartmentID")
+    private String DepartmentID;
+    @SerializedName("@Mobile")
+    private String Mobile;
+    @SerializedName("@Gender")
+    private String Gender;
+    @SerializedName("@BirthDate")
+    private String BirthDate;
+    @SerializedName("@E_Mail")
+    private String E_Mail;
+    @SerializedName("@NativeID")
+    private String NativeID;
 
 
-
-    public String getUser_ID() {
+    public int getUser_ID() {
         return User_ID;
     }
 
-    public void setUser_ID(String user_ID) {
+    public void setUser_ID(int user_ID) {
         User_ID = user_ID;
     }
 
@@ -109,11 +108,11 @@ public class StructureUserAndRoleOP {
         RoleName = roleName;
     }
 
-    public String getRole_ID() {
+    public int getRole_ID() {
         return Role_ID;
     }
 
-    public void setRole_ID(String role_ID) {
+    public void setRole_ID(int role_ID) {
         Role_ID = role_ID;
     }
 

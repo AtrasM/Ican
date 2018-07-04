@@ -40,7 +40,7 @@ public class FarzinActivityLogin extends BaseToolbarActivity {
     private String ServerUrl;
     private FarzinPrefrences farzinPrefrences;
     Loading loading;
-    private boolean isLogOut=false;
+    private boolean isLogOut = false;
 
     @Override
     protected int getLayoutResource() {
@@ -54,29 +54,32 @@ public class FarzinActivityLogin extends BaseToolbarActivity {
         loading.Show();
         initTollBar(Title);
         App.setCurentProject(CurentProject.Ican);
-        isLogOut=getIntent().getBooleanExtra("LogOut",false);
-if(!isLogOut){
-    loginPresenter.AutoAuthentiocation(new LoginViewListener() {
-        @Override
-        public void onSuccess() {
-            goToActivity(FarzinActivityMain.class);
-            loading.Hide();
-            Finish();
-        }
-
-        @Override
-        public void onAccessDenied() {
+        isLogOut = getIntent().getBooleanExtra("LogOut", false);
+        if (isLogOut) {
             lnMain.setVisibility(View.VISIBLE);
             loading.Hide();
-        }
+        }else{
+            loginPresenter.AutoAuthentiocation(new LoginViewListener() {
+                @Override
+                public void onSuccess() {
+                    goToActivity(FarzinActivityMain.class);
+                    loading.Hide();
+                    Finish();
+                }
 
-        @Override
-        public void onFailed() {
-            lnMain.setVisibility(View.VISIBLE);
-            loading.Hide();
+                @Override
+                public void onAccessDenied() {
+                    lnMain.setVisibility(View.VISIBLE);
+                    loading.Hide();
+                }
+
+                @Override
+                public void onFailed() {
+                    lnMain.setVisibility(View.VISIBLE);
+                    loading.Hide();
+                }
+            });
         }
-    });
-}
         btnSignIn.setOnClickListener(new View.OnClickListener() {
 
             @Override

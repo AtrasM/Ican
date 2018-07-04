@@ -11,7 +11,7 @@ import java.util.Hashtable;
 
 public class StructureReceiverIP implements KvmSerializable {
 
-    private String RoleID;
+    private int RoleID;
     private  int UserID;
     private  String UserName;
     private String NativeID;
@@ -20,12 +20,12 @@ public class StructureReceiverIP implements KvmSerializable {
     public StructureReceiverIP() {
     }
 
-    public StructureReceiverIP(String roleID, int userID) {
+    public StructureReceiverIP(int roleID, int userID) {
         RoleID = roleID;
         UserID = userID;
     }
 
-    public StructureReceiverIP(String roleID, int userID, String userName, String nativeID) {
+    public StructureReceiverIP(int roleID, int userID, String userName, String nativeID) {
         RoleID = roleID;
         UserID = userID;
         UserName = userName;
@@ -56,7 +56,7 @@ public class StructureReceiverIP implements KvmSerializable {
         switch (index) {
             case 0: {
                 propertyInfo.name = "RoleID";
-                propertyInfo.type = PropertyInfo.STRING_CLASS;
+                propertyInfo.type = PropertyInfo.INTEGER_CLASS;
                 break;
             }
             case 1: {
@@ -84,7 +84,7 @@ public class StructureReceiverIP implements KvmSerializable {
     public void setProperty(int index, Object value) {
         switch (index) {
             case 0: {
-                this.RoleID = value.toString();
+                this.RoleID =Integer.parseInt(value.toString());
                 break;
             }
             case 1: {

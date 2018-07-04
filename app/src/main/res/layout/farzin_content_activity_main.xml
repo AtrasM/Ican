@@ -28,7 +28,6 @@
         android:layout_gravity="bottom|right"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
-        android:layoutDirection="ltr"
         app:fab_colorNormal="#DA4336"
         app:fab_colorPressed="#E75043"
         app:fab_colorRipple="#99FFFFFF"
@@ -48,7 +47,8 @@
         app:fab_showShadow="true"
         app:fab_size="normal"
         app:srcCompat="@drawable/ic_refresh"
-        fab:menu_labels_style="@style/MenuLabelsStyle">
+        fab:menu_labels_style="@style/MenuLabelsStyle"
+        tools:ignore="RtlHardcoded">
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_new_msg"
@@ -78,6 +78,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
+        app:itemBackground="@color/color_White"
         app:menu="@menu/navigation_bottom" />
 
 </LinearLayout>

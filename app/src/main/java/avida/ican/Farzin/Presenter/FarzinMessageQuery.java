@@ -32,8 +32,8 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 public class FarzinMessageQuery {
     private String Tag = "FarzinMessageQuery";
     private MessageQuerySaveListener messageQuerySaveListener;
-    private String sender_user_id;
-    private String sender_role_id;
+    private int sender_user_id;
+    private int sender_role_id;
     private String subject;
     private String content;
     private ArrayList<StructureAttach> structureAttaches;
@@ -62,7 +62,7 @@ public class FarzinMessageQuery {
         }
     }
 
-    public void SaveMessage(String sender_user_id, String sender_role_id, String subject, String content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureReceiver, MessageQuerySaveListener messageQuerySaveListener) {
+    public void SaveMessage(int sender_user_id, int sender_role_id, String subject, String content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureReceiver, MessageQuerySaveListener messageQuerySaveListener) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.subject = subject;
@@ -94,7 +94,7 @@ public class FarzinMessageQuery {
                 }
                 for (int i = 0; i < structureReceiver.size(); i++) {
                     StructureUserAndRoleDB UserAndRole = structureReceiver.get(i);
-                    StructureReceiverDB structureReceiverDB = new StructureReceiverDB(structureMessageDB, UserAndRole.getUser_ID(), Integer.parseInt(UserAndRole.getRole_ID()), UserAndRole.getUserName(), UserAndRole.getNativeID());
+                    StructureReceiverDB structureReceiverDB = new StructureReceiverDB(structureMessageDB, UserAndRole.getUser_ID(), UserAndRole.getRole_ID(), UserAndRole.getUserName(), UserAndRole.getNativeID());
                     receiverDao.create(structureReceiverDB);
                     threadSleep();
                 }

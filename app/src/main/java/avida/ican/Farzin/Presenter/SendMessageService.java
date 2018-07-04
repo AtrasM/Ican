@@ -14,7 +14,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import avida.ican.Farzin.Model.Enum.MessageQueueStatus;
-import avida.ican.Farzin.Model.Interface.SendMessageListener;
+import avida.ican.Farzin.Model.Interface.MessageListener;
 import avida.ican.Farzin.Model.Interface.SendMessageServiceListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
@@ -75,8 +75,8 @@ public class SendMessageService extends Service {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        ShowToast("onFailed -->> "+ App.networkStatus +" ****** " + App.netWorkStatusListener);
-                        if (App.networkStatus!= NetworkStatus.Connected) {
+                        ShowToast("onFailed -->> " + App.networkStatus + " ****** " + App.netWorkStatusListener);
+                        if (App.networkStatus != NetworkStatus.Connected) {
                             ShowToast("WatingForNetwork");
                             onFailed("", structureMessageQueueDBS);
                         } else {
@@ -149,7 +149,7 @@ public class SendMessageService extends Service {
 
         //___________________-----------------------------_____________end block StructureReceiverDB____________--------------------------------------_____________________
 
-        sendMessageToServerPresenter.SendMessage(structureMessageDBS.getSubject(), structureMessageDBS.getContent(), structureAttaches, structureUserAndRole, new SendMessageListener() {
+        sendMessageToServerPresenter.SendMessage(structureMessageDBS.getSubject(), structureMessageDBS.getContent(), structureAttaches, structureUserAndRole, new MessageListener() {
 
 
             @Override
@@ -205,13 +205,13 @@ public class SendMessageService extends Service {
                     StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(context).getUserInfo(getFarzinPrefrences().getUserName());
 
                     if (structureUserAndRoleDB != null) {
-                        List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), Integer.parseInt(structureUserAndRoleDB.getRole_ID()), MessageQueueStatus.WAITING);
+                        List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), MessageQueueStatus.WAITING);
 
                         if (structureMessageQueueDBS.size() > 0) {
                             SendMessage(structureMessageQueueDBS);
                             timer.cancel();
                         } else {
-                            structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), Integer.parseInt(structureUserAndRoleDB.getRole_ID()), MessageQueueStatus.STOPED);
+                            structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), MessageQueueStatus.STOPED);
                             if (structureMessageQueueDBS.size() > 0) {
                                 SendMessage(structureMessageQueueDBS);
                                 timer.cancel();

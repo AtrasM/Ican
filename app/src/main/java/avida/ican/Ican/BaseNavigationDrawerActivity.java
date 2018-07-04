@@ -116,7 +116,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
                 //App.canBack = true;
                 Intent intent=new Intent(App.CurentActivity,FarzinActivityLogin.class);
                 intent.putExtra("LogOut",true);
-                goToActivity(FarzinActivityLogin.class);
+                goToActivity(intent);
 
                 Finish();
                 break;

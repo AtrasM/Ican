@@ -16,9 +16,9 @@ public class StructureMessageDB implements Serializable {
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
     @DatabaseField()
-    private String sender_user_id;
+    private int sender_user_id;
     @DatabaseField()
-    private String sender_role_id;
+    private int sender_role_id;
     @DatabaseField()
     private String subject;
     @DatabaseField()
@@ -32,7 +32,7 @@ public class StructureMessageDB implements Serializable {
     public StructureMessageDB() {
     }
 
-    public StructureMessageDB(String sender_user_id, String sender_role_id, String subject, String content) {
+    public StructureMessageDB(int sender_user_id, int sender_role_id, String subject, String content) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.subject = subject;
@@ -47,11 +47,11 @@ public class StructureMessageDB implements Serializable {
         return id;
     }
 
-    public String getSender_user_id() {
+    public int getSender_user_id() {
         return sender_user_id;
     }
 
-    public String getSender_role_id() {
+    public int getSender_role_id() {
         return sender_role_id;
     }
 

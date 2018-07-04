@@ -14,7 +14,7 @@ public class StructureUserAndRoleDB implements Serializable {
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
     @DatabaseField()
-    private String User_ID;
+    private int User_ID;
     @DatabaseField()
     private String UserName;
     @DatabaseField()
@@ -30,7 +30,7 @@ public class StructureUserAndRoleDB implements Serializable {
     @DatabaseField()
     private String RoleName;
     @DatabaseField()
-    private String Role_ID;
+    private int Role_ID;
     @DatabaseField()
     private String OrganCode;
     @DatabaseField()
@@ -57,7 +57,7 @@ public class StructureUserAndRoleDB implements Serializable {
         //empty
     }
 
-    public StructureUserAndRoleDB(String user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, String role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
+    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
         User_ID = user_ID;
         UserName = userName;
         FirstName = firstName;
@@ -79,17 +79,17 @@ public class StructureUserAndRoleDB implements Serializable {
     }
 
     public StructureUserAndRoleDB(String user_name, int user_id, int role_id, String native_id) {
-        User_ID = "" + user_id;
+        User_ID =  user_id;
         UserName = user_name;
-        Role_ID = "" + role_id;
+        Role_ID =  role_id;
         NativeID = native_id;
     }
 
     public int getUser_ID() {
-        return Integer.parseInt(User_ID);
+        return User_ID;
     }
 
-    public void setUser_ID(String user_ID) {
+    public void setUser_ID(int user_ID) {
         User_ID = user_ID;
     }
 
@@ -149,11 +149,11 @@ public class StructureUserAndRoleDB implements Serializable {
         RoleName = roleName;
     }
 
-    public String getRole_ID() {
+    public int getRole_ID() {
         return Role_ID;
     }
 
-    public void setRole_ID(String role_ID) {
+    public void setRole_ID(int role_ID) {
         Role_ID = role_ID;
     }
 
