@@ -1,6 +1,5 @@
 package avida.ican.Ican.Model;
 
-import android.os.AsyncTask;
 import android.os.Handler;
 
 /**
@@ -14,7 +13,7 @@ public class DataSync {
     }
 
     public void excute() {
-// TODO: 2018-04-08 new class Syncronize and excute 
+// TODO: 2018-04-08 new class Syncronize and excute
     }
 
 

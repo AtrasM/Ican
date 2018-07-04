@@ -8,16 +8,18 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Interface.MessageListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Presenter.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
-import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
@@ -51,6 +53,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
+    private GetMessageFromServerPresenter getMessageFromServerPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +74,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                App.ShowMessage().ShowToast(""+i, ToastEnum.TOAST_SHORT_TIME);
+                App.ShowMessage().ShowToast("" + i, ToastEnum.TOAST_SHORT_TIME);
             }
 
             @Override
@@ -92,9 +95,25 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-                goToActivity(FarzinActivityLogin.class);
-                //
-                // Finish();
+                getMessageFromServerPresenter = new GetMessageFromServerPresenter();
+                getMessageFromServerPresenter.GetRecieveMessageList(1, new MessageListener() {
+                    @Override
+                    public void onSuccess() {
+                        App.ShowMessage().ShowToast("onSuccess", Toast.LENGTH_SHORT);
+                    }
+
+                    @Override
+                    public void onFailed(String message) {
+                        App.ShowMessage().ShowToast("onFailed " + message, Toast.LENGTH_SHORT);
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        App.ShowMessage().ShowToast("onCancel" , Toast.LENGTH_SHORT);
+                    }
+                });
+                //goToActivity(FarzinActivityLogin.class);
+
                 break;
             }
             case R.id.cv_audio_recorder: {
@@ -114,7 +133,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             }
             case R.id.cv_user_and_role: {
 
-                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
+                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
                     @Override
                     public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                         structuresMain = structureUserAndRolesMain;

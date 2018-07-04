@@ -40,7 +40,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @BindView(R.id.fab_edit_msg)
     FloatingActionButton fabEditMsg;
 
-
     private String Title = "فرزین";
     private boolean menuShow = false;
     private FarzinMetaDataSync farzinMetaDataSync;
@@ -162,7 +161,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 return true;
             }
         }
-        Log.i ("isMyServiceRunning?", false+"");
+        Log.i("isMyServiceRunning?", false + "");
         return false;
     }
 
