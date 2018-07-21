@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <item
         android:id="@+id/nav_about"
         android:icon="@mipmap/ic_launcher"
-        android:title="درباره ما / مشاهده وبسایت" />
+        android:title="درباره ما / مشاهده وبسایت"
+        tools:ignore="HardcodedText"/>
 
         <item
             android:id="@+id/nav_contact_us"
 
             android:icon="@mipmap/ic_launcher"
-            android:title="تماس با ما" />
+            android:title="تماس با ما"
+            tools:ignore="HardcodedText"/>
     <item
         android:id="@+id/nav_log_out"
         android:icon="@mipmap/ic_launcher"
-        android:title="خروج از حساب کاربری" />
+        android:title="خروج از حساب کاربری"
+        tools:ignore="HardcodedText"/>
 
 
 </menu>

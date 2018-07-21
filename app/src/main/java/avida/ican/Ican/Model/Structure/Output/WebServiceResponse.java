@@ -10,10 +10,10 @@ import java.util.List;
  */
 
 public class WebServiceResponse {
-    HttpTransportSE httpTransportSE;
-    List headerList;
-    SoapSerializationEnvelope envelope;
-    boolean response=false;
+    private HttpTransportSE httpTransportSE;
+    private List headerList;
+    private SoapSerializationEnvelope envelope;
+    private boolean response=false;
 
     public HttpTransportSE getHttpTransportSE() {
         return httpTransportSE;

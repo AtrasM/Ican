@@ -16,7 +16,7 @@ import butterknife.ButterKnife;
 
 public abstract class BaseFragment extends Fragment {
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         View view = inflater.inflate(getLayoutResId(), container, false);
         ButterKnife.bind(this, view);

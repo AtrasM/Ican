@@ -1,8 +1,5 @@
 package avida.ican.Ican.View.Custom;
 
-/**
- * Created by AtrasVida on 2018-04-11 at 11:09 AM
- */
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -16,17 +13,20 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import avida.ican.Ican.App;
+/**
+ * Created by AtrasVida on 2018-04-11 at 11:09 AM
+ */
 
 public class UrlImageParser implements ImageGetter {
-    Context c;
-    View container;
+    private Context c;
+    private View container;
 
     /***
      * Construct the URLImageParser which will execute AsyncTask and refresh the container
      * @param t
      * @param c
      */
-    public UrlImageParser(View t, Context c) {
+    UrlImageParser(View t, Context c) {
         this.c = c;
         this.container = t;
     }
@@ -61,8 +61,7 @@ public class UrlImageParser implements ImageGetter {
         @Override
         protected void onPostExecute(Drawable result) {
             // set the correct bound according to the result from HTTP call
-            urlDrawable.setBounds(0, 0, 0 + result.getIntrinsicWidth(), 0
-                    + result.getIntrinsicHeight());
+            urlDrawable.setBounds(0, 0, result.getIntrinsicWidth(), result.getIntrinsicHeight());
 
             // change the reference of the current drawable to the result
             // from the HTTP call

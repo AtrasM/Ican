@@ -1,7 +1,9 @@
 package avida.ican.Farzin.View.Fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
@@ -14,6 +16,7 @@ import butterknife.BindView;
 
 public class FragmentSecond extends BaseFragment {
 
+   @SuppressLint("StaticFieldLeak")
    private static FragmentSecond fragment;
     //private OnFragmentInteractionListener mListener;
     @BindView(R.id.txt_msg)
@@ -45,9 +48,10 @@ public class FragmentSecond extends BaseFragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         btnMsg.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {
                 b++;

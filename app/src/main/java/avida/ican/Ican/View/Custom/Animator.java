@@ -18,7 +18,7 @@ import avida.ican.R;
 public class Animator {
     private Animation animation;
     private Context context;
-    final Handler HANDLER = new Handler();
+    private final Handler HANDLER = new Handler();
 
     public Animator(Context context) {
         this.context = context;
@@ -90,7 +90,7 @@ public class Animator {
         viewToAnimate.startAnimation(animation);
     }
 
-    public void slideInFromDown(View viewToAnimate) {
+    private void slideInFromDown(View viewToAnimate) {
         viewToAnimate.setVisibility(View.VISIBLE);
         animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_down);
         viewToAnimate.startAnimation(animation);

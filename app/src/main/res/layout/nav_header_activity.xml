@@ -41,7 +41,8 @@
             android:layout_weight="1"
             android:gravity="center|right"
             android:text="مهدی زمانی"
-            android:textSize="@dimen/txt_Title_Size" />
+            android:textSize="@dimen/txt_Title_Size"
+            tools:ignore="HardcodedText" />
 
     </LinearLayout>
 

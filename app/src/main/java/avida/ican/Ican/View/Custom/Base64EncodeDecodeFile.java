@@ -56,7 +56,7 @@ public class Base64EncodeDecodeFile {
 
     //___________________========String==========____________________________________
 
-    public String EncodeFileToBase64(String filePath) {
+    String EncodeFileToBase64(String filePath) {
         Uri uri = Uri.parse(filePath);
         File file = new File(uri.getPath());
         byte[] bytes = new byte[0];
@@ -86,7 +86,7 @@ public class Base64EncodeDecodeFile {
         return encodFiles;
     }
 
-    public StructureFileStringTypeList EncodeFilesPathToFileAndBase64(ArrayList<String> filesPath) {
+    StructureFileStringTypeList EncodeFilesPathToFileAndBase64(ArrayList<String> filesPath) {
         ArrayList<String> fileNames = new ArrayList<>();
         ArrayList<String> encodFiles = new ArrayList<>();
         ArrayList<File> files = new ArrayList<>();
@@ -102,8 +102,8 @@ public class Base64EncodeDecodeFile {
             }
 
             encodFiles.add(Base64.encodeToString(bytes, 0));
-            fileNames.add(new CustomFunction().getFileName(filePath));
-            fileNames.add(new CustomFunction().getFileName(filePath));
+            fileNames.add(CustomFunction.getFileName(filePath));
+            fileNames.add(CustomFunction.getFileName(filePath));
             files.add(file);
 
         }
@@ -113,7 +113,7 @@ public class Base64EncodeDecodeFile {
         return structureFileStringTypeList;
     }
 
-    public StructureFileStringTypeList EncodeFilesPathToFileAndBase64(String[] filesPath) {
+    StructureFileStringTypeList EncodeFilesPathToFileAndBase64(String[] filesPath) {
         ArrayList<String> fileNames = new ArrayList<>();
         ArrayList<String> encodFiles = new ArrayList<>();
         ArrayList<File> files = new ArrayList<>();

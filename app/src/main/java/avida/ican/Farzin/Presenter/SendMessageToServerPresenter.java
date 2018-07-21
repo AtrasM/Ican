@@ -9,9 +9,9 @@ import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.MessageListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Input.StructureMessageFileIP;
-import avida.ican.Farzin.Model.Structure.Input.StructureReceiverIP;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureSendMessageOP;
+import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
+import avida.ican.Farzin.Model.Structure.Request.StructureReceiverREQ;
+import avida.ican.Farzin.Model.Structure.Response.StructureSendMessageRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -43,11 +43,11 @@ class SendMessageToServerPresenter {
         CallApi(MetodName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                StructureSendMessageOP structureSendMessageOP = xmlToObject.XmlToObject(Xml, StructureSendMessageOP.class);
-                if (structureSendMessageOP.getSendMessageResult() > 0) {
+                StructureSendMessageRES structureSendMessageRES = xmlToObject.DeserializationGsonXml(Xml, StructureSendMessageRES.class);
+                if (structureSendMessageRES.getSendMessageResult() > 0) {
                     messageListener.onSuccess();
                 } else {
-                    messageListener.onFailed("" + structureSendMessageOP.getStrErrorMsg());
+                    messageListener.onFailed("" + structureSendMessageRES.getStrErrorMsg());
                 }
             }
 
@@ -74,8 +74,8 @@ class SendMessageToServerPresenter {
         SoapObject messageFileHeader = new SoapObject(NameSpace, "messagefile");
 
         for (int i = 0; i < structureAttaches.size(); i++) {
-            StructureMessageFileIP structureMessageFileIP = new StructureMessageFileIP(structureAttaches.get(i).getName(), structureAttaches.get(i).getBase64File(), structureAttaches.get(i).getFileExtension());
-            messageFileHeader.addProperty("MessageFile", structureMessageFileIP);
+            StructureMessageFileREQ structureMessageFileREQ = new StructureMessageFileREQ(structureAttaches.get(i).getName(), structureAttaches.get(i).getBase64File(), structureAttaches.get(i).getFileExtension());
+            messageFileHeader.addProperty("MessageFile", structureMessageFileREQ);
         }
         //*******___________________________________________________________________________********
 
@@ -83,8 +83,8 @@ class SendMessageToServerPresenter {
         SoapObject receiverHeader = new SoapObject(NameSpace, "receiver");
 
         for (int i = 0; i < structureUserAndRole.size(); i++) {
-            StructureReceiverIP structureReceiverIP = new StructureReceiverIP(structureUserAndRole.get(i).getRole_ID(), structureUserAndRole.get(i).getUser_ID());
-            receiverHeader.addProperty("Receiver", structureReceiverIP);
+            StructureReceiverREQ structureReceiverREQ = new StructureReceiverREQ(structureUserAndRole.get(i).getRole_ID(), structureUserAndRole.get(i).getUser_ID());
+            receiverHeader.addProperty("Receiver", structureReceiverREQ);
         }
         //*******___________________________________________________________________________********
 

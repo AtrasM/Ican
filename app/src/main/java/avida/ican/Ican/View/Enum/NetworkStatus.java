@@ -17,7 +17,7 @@ public enum NetworkStatus {
     NoAction(R.string.NoAction);
     private int mResId = -1;
 
-    private NetworkStatus(int resId) {
+     NetworkStatus(int resId) {
         mResId = resId;
     }
 

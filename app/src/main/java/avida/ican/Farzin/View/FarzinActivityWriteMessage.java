@@ -24,7 +24,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Input.StructureMessageFileIP;
+import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Presenter.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
@@ -463,7 +463,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @SuppressLint("StaticFieldLeak")
     private void addAllToAttach(final ArrayList<String> base64Files, final ArrayList<String> names, final int resID) {
         final ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
-        final ArrayList<StructureMessageFileIP> structureMessageFileIPS = new ArrayList<>();
+        final ArrayList<StructureMessageFileREQ> structureMessageFileREQS = new ArrayList<>();
         new AsyncTask<Void, Void, ArrayList<StructureAttach>>() {
             @Override
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {

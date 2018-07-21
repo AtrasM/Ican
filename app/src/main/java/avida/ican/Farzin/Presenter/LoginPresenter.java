@@ -3,7 +3,7 @@ package avida.ican.Farzin.Presenter;
 import android.util.Log;
 
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureLoginOP;
+import avida.ican.Farzin.Model.Structure.Response.StructureLoginRES;
 import avida.ican.Farzin.View.Interface.LoginViewListener;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
@@ -88,8 +88,8 @@ public class LoginPresenter {
         try {
             Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
             Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
-            StructureLoginOP structureLoginOP = xmlToObject.XmlToObject(Xml, StructureLoginOP.class);
-            if (structureLoginOP.isLoginResult()) {
+            StructureLoginRES structureLoginRES = xmlToObject.DeserializationGsonXml(Xml, StructureLoginRES.class);
+            if (structureLoginRES.isLoginResult()) {
                 if (!IsPasswordEncript) {
                     Password = WebService.EncriptToSHA1(Password);
                 }

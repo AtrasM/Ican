@@ -1,5 +1,6 @@
 package avida.ican.Ican.View.Custom;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
@@ -20,6 +21,7 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 
 public class ChangeAligneViewLayoutToRtl extends AsyncTask<Void, Void, Void> {
     private String app_locale = "fa";
+    @SuppressLint("StaticFieldLeak")
     private Activity context;
 
 

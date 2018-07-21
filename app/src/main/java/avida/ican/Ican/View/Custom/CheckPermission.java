@@ -13,15 +13,15 @@ import android.support.v4.content.ContextCompat;
  * Created by AtrasVida on 2018-04-10 at 12:35 PM
  */
 
-public class CheckPermission {
+class CheckPermission {
     /**
      * Example: CheckPermission.requestPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
      */
 
-    public boolean recordAudio(int requestCode, Activity activity){
+    boolean recordAudio(int requestCode, Activity activity){
         return  requestPermission(requestCode, activity, Manifest.permission.RECORD_AUDIO);
     }
-    public boolean writeExternalStorage(int requestCode, Activity activity){
+    boolean writeExternalStorage(int requestCode, Activity activity){
         return  requestPermission(requestCode, activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
 

@@ -10,7 +10,7 @@ public enum SnackBarEnum {
     SNACKBAR_INDEFINITE(2);
     private int intValue;
 
-    private SnackBarEnum(int value) {
+     SnackBarEnum(int value) {
         intValue = value;
     }
 

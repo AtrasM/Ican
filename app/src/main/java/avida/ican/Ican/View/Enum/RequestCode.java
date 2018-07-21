@@ -10,7 +10,7 @@ public enum RequestCode {
     MediaPickerRequestCode(222);
     private int intValue;
 
-     private   RequestCode(int value) {
+        RequestCode(int value) {
         intValue = value;
     }
     public int getValue() {

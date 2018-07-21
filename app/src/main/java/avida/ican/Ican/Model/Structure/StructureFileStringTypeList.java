@@ -8,9 +8,9 @@ import java.util.ArrayList;
  */
 
 public class StructureFileStringTypeList {
-    ArrayList<String> encodeBase64ArrayList=new ArrayList<>();
-    ArrayList<String> fileNames=new ArrayList<>();
-    ArrayList<File> fileArrayList=new ArrayList<>();
+    private ArrayList<String> encodeBase64ArrayList=new ArrayList<>();
+    private ArrayList<String> fileNames=new ArrayList<>();
+    private ArrayList<File> fileArrayList=new ArrayList<>();
 
     public ArrayList<String> getEncodeBase64ArrayList() {
         return encodeBase64ArrayList;

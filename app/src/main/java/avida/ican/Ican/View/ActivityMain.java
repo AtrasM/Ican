@@ -15,8 +15,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.MessageListener;
+import avida.ican.Farzin.Model.Interface.MessageListListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Response.MessageRES;
 import avida.ican.Farzin.Presenter.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -96,9 +97,11 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.cv_farzin: {
                 getMessageFromServerPresenter = new GetMessageFromServerPresenter();
-                getMessageFromServerPresenter.GetRecieveMessageList(1, new MessageListener() {
+                getMessageFromServerPresenter.GetSentMessageList(1, new MessageListListener() {
+
+
                     @Override
-                    public void onSuccess() {
+                    public void onSuccess(ArrayList<MessageRES> messageList) {
                         App.ShowMessage().ShowToast("onSuccess", Toast.LENGTH_SHORT);
                     }
 
@@ -109,7 +112,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
                     @Override
                     public void onCancel() {
-                        App.ShowMessage().ShowToast("onCancel" , Toast.LENGTH_SHORT);
+                        App.ShowMessage().ShowToast("onCancel", Toast.LENGTH_SHORT);
                     }
                 });
                 //goToActivity(FarzinActivityLogin.class);

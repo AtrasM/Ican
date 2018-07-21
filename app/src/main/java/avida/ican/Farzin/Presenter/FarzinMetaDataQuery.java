@@ -18,8 +18,8 @@ import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureUserAndRoleOP;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureUserAndRoleRowsOP;
+import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
@@ -140,9 +140,9 @@ public class FarzinMetaDataQuery {
             @Override
             public void onSuccess(String Xml) {
                 //App.ShowMessage().ShowToast("داده ها با موفقیت دریافت شد.", ToastEnum.TOAST_LONG_TIME);
-                StructureUserAndRoleRowsOP structureUserAndRoleRowsOP = xmlToObject.XmlToObject(Xml, StructureUserAndRoleRowsOP.class);
-                List<StructureUserAndRoleOP> structureUserAndRoleOPS = structureUserAndRoleRowsOP.getGetUserAndRoleListResult().getRows().getRowList();
-                new SaveUserAndRoleList().execute(structureUserAndRoleOPS);
+                StructureUserAndRoleRowsRES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(Xml, StructureUserAndRoleRowsRES.class);
+                List<StructureUserAndRoleRES> structureUserAndRoleRES = structureUserAndRoleRowsRES.getGetUserAndRoleListResult().getRows().getRowList();
+                new SaveUserAndRoleList().execute(structureUserAndRoleRES);
 
             }
 
@@ -161,10 +161,10 @@ public class FarzinMetaDataQuery {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private class SaveUserAndRoleList extends AsyncTask<List<StructureUserAndRoleOP>, Void, Void> {
+    private class SaveUserAndRoleList extends AsyncTask<List<StructureUserAndRoleRES>, Void, Void> {
 
         @Override
-        protected Void doInBackground(List<StructureUserAndRoleOP>[] usersAndRolesOPTS) {
+        protected Void doInBackground(List<StructureUserAndRoleRES>[] usersAndRolesOPTS) {
 
 
             try {
@@ -172,14 +172,14 @@ public class FarzinMetaDataQuery {
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            List<StructureUserAndRoleOP> structureUserAndRoleOPS = new ArrayList<>();
+            List<StructureUserAndRoleRES> structureUserAndRolesRES = new ArrayList<>();
             if (usersAndRolesOPTS.length > 0) {
-                structureUserAndRoleOPS = usersAndRolesOPTS[0];
+                structureUserAndRolesRES = usersAndRolesOPTS[0];
             }
-            for (int i = 0; i < structureUserAndRoleOPS.size(); i++) {
-                StructureUserAndRoleOP structureUserAndRoleOP = structureUserAndRoleOPS.get(i);
+            for (int i = 0; i < structureUserAndRolesRES.size(); i++) {
+                StructureUserAndRoleRES structureUserAndRoleRES = structureUserAndRolesRES.get(i);
                 //StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
-                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB(structureUserAndRoleOP.getUser_ID(), structureUserAndRoleOP.getUserName(), structureUserAndRoleOP.getFirstName(), structureUserAndRoleOP.getLastName(), structureUserAndRoleOP.getRole_ParentID(), structureUserAndRoleOP.getIsDefForCardTableString(), structureUserAndRoleOP.getRoleCode(), structureUserAndRoleOP.getRoleName(), structureUserAndRoleOP.getRole_ID(), structureUserAndRoleOP.getOrganCode(), structureUserAndRoleOP.getOrganizationRoleName(), structureUserAndRoleOP.getOrganizationRole_ID(), structureUserAndRoleOP.getDepartmentID(), structureUserAndRoleOP.getMobile(), structureUserAndRoleOP.getGender(), structureUserAndRoleOP.getBirthDate(), structureUserAndRoleOP.getE_Mail(), structureUserAndRoleOP.getNativeID());
+                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB(structureUserAndRoleRES.getUser_ID(), structureUserAndRoleRES.getUserName(), structureUserAndRoleRES.getFirstName(), structureUserAndRoleRES.getLastName(), structureUserAndRoleRES.getRole_ParentID(), structureUserAndRoleRES.getIsDefForCardTableString(), structureUserAndRoleRES.getRoleCode(), structureUserAndRoleRES.getRoleName(), structureUserAndRoleRES.getRole_ID(), structureUserAndRoleRES.getOrganCode(), structureUserAndRoleRES.getOrganizationRoleName(), structureUserAndRoleRES.getOrganizationRole_ID(), structureUserAndRoleRES.getDepartmentID(), structureUserAndRoleRES.getMobile(), structureUserAndRoleRES.getGender(), structureUserAndRoleRES.getBirthDate(), structureUserAndRoleRES.getE_Mail(), structureUserAndRoleRES.getNativeID());
                 try {
                     userAndRoleListDao.create(structureUserAndRoleDB);
                 } catch (SQLException e) {

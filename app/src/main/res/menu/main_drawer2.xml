@@ -1,21 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/nav_1"
         android:icon="@mipmap/ic_launcher"
-        android:title="آیتم اول" />
+        android:title="آیتم اول"
+        tools:ignore="HardcodedText" />
 
         <item
             android:id="@+id/nav_2"
 
             android:icon="@mipmap/ic_launcher"
-            android:title="آیتم دوم" />
+            android:title="آیتم دوم"
+            tools:ignore="HardcodedText" />
     <item
         android:id="@+id/nav_3"
         android:icon="@mipmap/ic_launcher"
-        android:title="آیتم سوم" />
+        android:title="آیتم سوم"
+        tools:ignore="HardcodedText"/>
 
 
 </menu>

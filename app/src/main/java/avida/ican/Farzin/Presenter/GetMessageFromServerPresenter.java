@@ -2,10 +2,15 @@ package avida.ican.Farzin.Presenter;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
-import avida.ican.Farzin.Model.Interface.MessageListener;
+import avida.ican.Farzin.Model.Interface.MessageListListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.OutPut.StructureMessageListResultOP;
+import avida.ican.Farzin.Model.Structure.Response.MessageRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureRecieveMessageListRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureSentMessageListRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -32,41 +37,72 @@ public class GetMessageFromServerPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    @SuppressWarnings("SameParameterValue")
-    public void GetRecieveMessageList(int page, MessageListener messageListener) {
+    public void GetRecieveMessageList(int page, MessageListListener messageListListener) {
         this.MetodName = "GetRecieveMessageList";
-        GetMessage(page, messageListener);
+        GetMessage(page, true, messageListListener);
     }
 
 
-    public void GetSentMessageList(int page, MessageListener messageListener) {
+    public void GetSentMessageList(int page, MessageListListener messageListListener) {
         this.MetodName = "GetSentMessageList";
-        GetMessage(page, messageListener);
+        GetMessage(page, false, messageListListener);
     }
 
-    private void GetMessage(int page, final MessageListener messageListener) {
+    private void GetMessage(int page, final boolean RecieveMessage, final MessageListListener messageListListener) {
 
         CallApi(MetodName, EndPoint, getSoapObject(page, COUNT), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                StructureMessageListResultOP structureMessageListResultOP = xmlToObject.XmlToObject(Xml, StructureMessageListResultOP.class);
-                if (structureMessageListResultOP.getGetRecieveMessageListResult().getMessage().size() > 0) {
-                    messageListener.onSuccess();
+                if (RecieveMessage) {
+                    CheckReciverMessageListStructure(Xml, messageListListener);
                 } else {
-                    messageListener.onFailed("" + structureMessageListResultOP.getStrErrorMsg());
+                    CheckSentMessageListStructure(Xml, messageListListener);
                 }
+
+
             }
 
             @Override
             public void onFailed() {
-                messageListener.onFailed("");
+                messageListListener.onFailed("");
             }
 
             @Override
             public void onCancel() {
-                messageListener.onCancel();
+                messageListListener.onCancel();
             }
         });
+
+    }
+
+    private void CheckSentMessageListStructure(String xml, MessageListListener messageListListener) {
+        StructureSentMessageListRES structureSentMessageListRES = xmlToObject.DeserializationGsonXml(xml, StructureSentMessageListRES.class);
+        if (structureSentMessageListRES.getStrErrorMsg() != null) {
+            messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
+        } else {
+            if (structureSentMessageListRES.getGetSentMessageListResult().size() <= 0) {
+                messageListListener.onSuccess(new ArrayList<MessageRES>());
+            } else {
+                List<MessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
+                // changeXml.CharDecoder(structureMessageList.get())
+                messageListListener.onSuccess(new ArrayList<MessageRES>(messageListResult));
+            }
+        }
+    }
+
+    private void CheckReciverMessageListStructure(String xml, MessageListListener messageListListener) {
+        StructureRecieveMessageListRES structureRecieveMessageListRES = xmlToObject.DeserializationGsonXml(xml, StructureRecieveMessageListRES.class);
+        if (structureRecieveMessageListRES.getStrErrorMsg() != null) {
+            messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
+        } else {
+            if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
+                messageListListener.onSuccess(new ArrayList<MessageRES>());
+            } else {
+                List<MessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
+                // changeXml.CharDecoder(structureMessageList.get())
+                messageListListener.onSuccess(new ArrayList<MessageRES>(messageListResult));
+            }
+        }
     }
 
     private SoapObject getSoapObject(int page, int count) {
@@ -104,9 +140,8 @@ public class GetMessageFromServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
-                //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

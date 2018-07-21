@@ -10,11 +10,13 @@
         android:id="@+id/txt_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="خالی" />
+        android:text="خالی"
+        tools:ignore="HardcodedText" />
 <Button
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:id="@+id/btn_msg"
     android:text="ست کردن پیغام"
-    android:layout_gravity="center"/>
+    android:layout_gravity="center"
+    tools:ignore="HardcodedText" />
 </LinearLayout>

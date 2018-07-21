@@ -8,7 +8,7 @@ public enum MetaDataNameEnum {
     SyncUserAndRoleList(0);
     private int intValue;
 
-    private   MetaDataNameEnum(int value) {
+       MetaDataNameEnum(int value) {
         intValue = value;
     }
     public int getValue() {

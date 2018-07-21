@@ -1,6 +1,7 @@
 package avida.ican.Ican.Model;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
@@ -21,6 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 
@@ -60,7 +63,7 @@ public class WebService {
         this.BASE_URL = BaseUrl;
         this.EndPoint = endPoint + ".asmx?wsdl";
         this.URL = SERVER_URL + BASE_URL + EndPoint;
-        Log.i(Tag,"Request is: " + this.URL);
+        Log.i(Tag, "Request is: " + this.URL);
     }
 
     public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl) {
@@ -70,7 +73,7 @@ public class WebService {
         this.SERVER_URL = ServerUrl;
         this.BASE_URL = BaseUrl;
         this.URL = SERVER_URL + BASE_URL;
-        Log.i(Tag,"Request is: " + this.URL);
+        Log.i(Tag, "Request is: " + this.URL);
     }
 
     public WebService SoapSerializationEnvelopeVersion(int version) {
@@ -98,7 +101,7 @@ public class WebService {
             this.EndPoint = EndPoint;
             this.URL = SERVER_URL + BASE_URL + EndPoint;
         }
-        Log.i(Tag,"Request is: " + this.URL);
+        Log.i(Tag, "Request is: " + this.URL);
         return this;
     }
 
@@ -190,12 +193,42 @@ public class WebService {
 
         @Override
         protected void onPostExecute(WebServiceResponse webServiceResponse) {
-            if (webserviceResponseListener != null)
-                webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+            if (webserviceResponseListener != null) {
+                boolean invalidLogin = false;
+                if (webServiceResponse.isResponse()) {
+                    String xml = webServiceResponse.getHttpTransportSE().responseDump;
+                    invalidLogin = xml.contains("Invalid Login");
+                }
+                if (invalidLogin && App.CurentActivity != null) {
+                    gotoActivityLogin();
+                } else {
+                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                }
+            }
+
 
             super.onPostExecute(webServiceResponse);
         }
 
+    }
+
+    private void gotoActivityLogin() {
+        Class<?> cls;
+        switch (App.getCurentProject()) {
+            case Farzin: {
+                cls = FarzinActivityLogin.class;
+                break;
+            }
+            default: {
+                cls = FarzinActivityLogin.class;
+            }
+        }
+        Intent intent = new Intent(App.CurentActivity, cls);
+        intent.putExtra("LogOut", true);
+        App.CurentActivity.startActivity(intent);
+        App.isLoading = false;
+        App.canBack = true;
+        App.CurentActivity.finish();
     }
 
     private WebServiceResponse Request() throws NoSuchAlgorithmException, XmlPullParserException, IOException, InterruptedException {

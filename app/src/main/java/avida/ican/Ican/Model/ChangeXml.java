@@ -20,7 +20,7 @@ public class ChangeXml {
         return xmlString;
     }
 
-    public String RemoveTag(String xmlString, String StartTag, String EndTag) {
+    private String RemoveTag(String xmlString, String StartTag, String EndTag) {
         try {
             xmlString = xmlString.replaceAll(StartTag, "").replace(EndTag, "");
         } catch (Exception e) {

@@ -11,11 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="خالی" />
+        android:text="خالی"
+        tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btn_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ست کردن پیغام صفحه دوم" />
+        android:text="ست کردن پیغام صفحه دوم"
+        tools:ignore="HardcodedText" />
 </LinearLayout>

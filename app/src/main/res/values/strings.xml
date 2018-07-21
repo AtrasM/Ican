@@ -62,5 +62,8 @@
     <string name="error_empty_recivers">لطفا گیرنده پیام را مشخص کنید!</string>
     <string name="hint_delete_item">حذف</string>
     <string name="tmpl_text">مقدار</string>
+    <string name="wrong_to_connect_to_internet">مشکل در ارتباط با اینترنت</string>
+    <string name="please_check_youre_internet_access">اتصال به اینترنت را بررسی کرده و دوباره تلاش کنید</string>
+    <string name="close">بستن</string>
 
 </resources>

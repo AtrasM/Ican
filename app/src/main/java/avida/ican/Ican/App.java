@@ -2,11 +2,11 @@ package avida.ican.Ican;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDexApplication;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -26,7 +26,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  * Created by AtrasVida on 96-11-21 at 5:31 PM
  */
 
-public class App extends Application {
+public class App extends MultiDexApplication {
     @SuppressLint("StaticFieldLeak")
     private static App appInstance;
     private static DisplayImageOptions options;

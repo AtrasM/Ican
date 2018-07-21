@@ -230,6 +230,7 @@ public class CustomFunction {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
+
     public static String AddXmlCData(String data) {
         return "<![CDATA[" + data + "]]>";
     }

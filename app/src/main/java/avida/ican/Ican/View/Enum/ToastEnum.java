@@ -10,7 +10,7 @@ public enum ToastEnum {
     TOAST_SHORT_TIME(0);
     private int intValue;
 
-    private   ToastEnum(int value) {
+       ToastEnum(int value) {
         intValue = value;
     }
 

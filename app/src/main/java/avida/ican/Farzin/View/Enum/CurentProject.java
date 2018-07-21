@@ -6,5 +6,5 @@ package avida.ican.Farzin.View.Enum;
 
 public enum CurentProject {
     Ican,
-    Farzin;
+    Farzin
 }
