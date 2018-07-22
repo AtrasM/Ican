@@ -8,7 +8,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.MessageListListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Response.MessageRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureSentMessageListRES;
 import avida.ican.Ican.Model.ChangeXml;
@@ -76,31 +76,31 @@ public class GetMessageFromServerPresenter {
     }
 
     private void CheckSentMessageListStructure(String xml, MessageListListener messageListListener) {
-        StructureSentMessageListRES structureSentMessageListRES = xmlToObject.DeserializationGsonXml(xml, StructureSentMessageListRES.class);
+        StructureSentMessageListRES structureSentMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureSentMessageListRES.class);
         if (structureSentMessageListRES.getStrErrorMsg() != null) {
             messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
         } else {
             if (structureSentMessageListRES.getGetSentMessageListResult().size() <= 0) {
-                messageListListener.onSuccess(new ArrayList<MessageRES>());
+                messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
             } else {
-                List<MessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
+                List<StructureMessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
                 // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<MessageRES>(messageListResult));
+                messageListListener.onSuccess(new ArrayList<StructureMessageRES>(messageListResult));
             }
         }
     }
 
     private void CheckReciverMessageListStructure(String xml, MessageListListener messageListListener) {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = xmlToObject.DeserializationGsonXml(xml, StructureRecieveMessageListRES.class);
+        StructureRecieveMessageListRES structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
         if (structureRecieveMessageListRES.getStrErrorMsg() != null) {
             messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
         } else {
             if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
-                messageListListener.onSuccess(new ArrayList<MessageRES>());
+                messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
             } else {
-                List<MessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
+                List<StructureMessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
                 // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<MessageRES>(messageListResult));
+                messageListListener.onSuccess(new ArrayList<StructureMessageRES>(messageListResult));
             }
         }
     }

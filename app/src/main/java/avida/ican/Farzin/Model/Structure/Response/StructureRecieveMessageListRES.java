@@ -14,16 +14,16 @@ import java.util.List;
 public class StructureRecieveMessageListRES {
 
     @ElementList(required = false)
-    private List<MessageRES> GetRecieveMessageListResult;
+    private List<StructureMessageRES> GetRecieveMessageListResult;
 
     @Element(required = false)
     private String StrErrorMsg;
 
-    public List<MessageRES> getGetRecieveMessageListResult() {
+    public List<StructureMessageRES> getGetRecieveMessageListResult() {
         return GetRecieveMessageListResult;
     }
 
-    public void setGetRecieveMessageListResult(List<MessageRES> getRecieveMessageListResult) {
+    public void setGetRecieveMessageListResult(List<StructureMessageRES> getRecieveMessageListResult) {
         GetRecieveMessageListResult = getRecieveMessageListResult;
     }
 

@@ -17,7 +17,7 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.MessageListListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Response.MessageRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
 import avida.ican.Farzin.Presenter.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -98,10 +98,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             case R.id.cv_farzin: {
                 getMessageFromServerPresenter = new GetMessageFromServerPresenter();
                 getMessageFromServerPresenter.GetSentMessageList(1, new MessageListListener() {
-
-
                     @Override
-                    public void onSuccess(ArrayList<MessageRES> messageList) {
+                    public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                         App.ShowMessage().ShowToast("onSuccess", Toast.LENGTH_SHORT);
                     }
 

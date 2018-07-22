@@ -15,16 +15,16 @@ import java.util.List;
 public class StructureSentMessageListRES {
 
     @ElementList(required = false)
-    private List<MessageRES> GetSentMessageListResult;
+    private List<StructureMessageRES> GetSentMessageListResult;
 
     @Element(required = false)
     private String StrErrorMsg;
 
-    public List<MessageRES> getGetSentMessageListResult() {
+    public List<StructureMessageRES> getGetSentMessageListResult() {
         return GetSentMessageListResult;
     }
 
-    public void setGetSentMessageListResult(List<MessageRES> getSentMessageListResult) {
+    public void setGetSentMessageListResult(List<StructureMessageRES> getSentMessageListResult) {
         GetSentMessageListResult = getSentMessageListResult;
     }
 

@@ -5,16 +5,20 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import org.simpleframework.xml.Element;
+
 import java.io.Serializable;
 
 /**
  * Created by AtrasVida on 2018-06-19 at 1:24 PM
  */
-@DatabaseTable(tableName = "MessageRES")
+@DatabaseTable(tableName = "StructureMessageRES")
 public class StructureMessageDB implements Serializable {
     final private String FIELD_NAME_ID = "id";
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
+    @DatabaseField(canBeNull = false)
+    private int main_id;
     @DatabaseField()
     private int sender_user_id;
     @DatabaseField()

@@ -11,9 +11,9 @@ public class ChangeXml {
         try {
             xmlString = xmlString.substring(xmlString.indexOf("<" + METHOD_NAME + "Response"), xmlString.indexOf("</" + METHOD_NAME + "Response>") + (11 + METHOD_NAME.length()));
 
-        if(xmlString.contains("![CDATA[")){
-            xmlString=RemoveTag(xmlString,"<![CDATA[","]]>");
-        }
+            if (xmlString.contains("![CDATA[")) {
+                xmlString = RemoveTag(xmlString, "<![CDATA[", "]]>");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -38,7 +38,7 @@ public class ChangeXml {
         return xmlString;
     }
 
-    public  String CharDecoder(String xml) {
+    public String CharDecoder(String xml) {
 
         xml = xml.replaceAll("&amp;", "&")
                 .replaceAll("&lt;", "<")

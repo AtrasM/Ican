@@ -72,7 +72,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private String msgContent = "";
     private DialogUserAndRole dialogUserAndRole;
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
-    private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
+    private List<StructureUserAndRoleDB> userAndRoleDBS = new ArrayList<>();
     private ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
     private AdapterAttach adapterAttach;
     private String audioExetention = ".waw";
@@ -113,12 +113,12 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void showUserAndRoleDialog() {
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>)  CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRoleDBS), new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 structuresMain = structureUserAndRolesMain;
-                structuresSelect = structureUserAndRolesSelect;
-                ShowSelectionItem(structuresSelect);
+                userAndRoleDBS = structureUserAndRolesSelect;
+                ShowSelectionItem(userAndRoleDBS);
             }
 
             @Override
@@ -532,7 +532,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         String Subject = "" + edtSubject.getText().toString();
         StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
 
-        new FarzinMessageQuery().SaveMessage( structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, structuresSelect, new
+        new FarzinMessageQuery().SaveMessage(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, userAndRoleDBS, new
 
                 MessageQuerySaveListener() {
                     @Override
@@ -569,7 +569,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 edtSubject.setError(Resorse.getString(R.string.error_invalid_minLen));
             }
         }
-        if (structuresSelect.size() == 0) {
+        if (userAndRoleDBS.size() == 0) {
             isValid = false;
             App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_recivers), SnackBarEnum.SNACKBAR_LONG_TIME);
         } else {

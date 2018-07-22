@@ -41,7 +41,7 @@ public class StructureUserAndRoleRES {
     @SerializedName("@E_Mail")
     private String E_Mail;
     @SerializedName("@NativeID")
-    private String NativeID;
+    private int NativeID;
 
 
     public int getUser_ID() {
@@ -180,13 +180,11 @@ public class StructureUserAndRoleRES {
         E_Mail = e_Mail;
     }
 
-    public String getNativeID() {
+    public int getNativeID() {
         return NativeID;
     }
 
-    public void setNativeID(String nativeID) {
+    public void setNativeID(int nativeID) {
         NativeID = nativeID;
     }
-
-
 }

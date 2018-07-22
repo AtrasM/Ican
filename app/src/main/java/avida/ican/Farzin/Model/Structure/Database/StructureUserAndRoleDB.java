@@ -48,7 +48,7 @@ public class StructureUserAndRoleDB implements Serializable {
     @DatabaseField()
     private String E_Mail;
     @DatabaseField()
-    private String NativeID;
+    private int NativeID;
 
     private boolean Selected;
 
@@ -57,7 +57,7 @@ public class StructureUserAndRoleDB implements Serializable {
         //empty
     }
 
-    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
+    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, int nativeID) {
         User_ID = user_ID;
         UserName = userName;
         FirstName = firstName;
@@ -78,10 +78,10 @@ public class StructureUserAndRoleDB implements Serializable {
         NativeID = nativeID;
     }
 
-    public StructureUserAndRoleDB(String user_name, int user_id, int role_id, String native_id) {
-        User_ID =  user_id;
+    public StructureUserAndRoleDB(String user_name, int user_id, int role_id, int native_id) {
+        User_ID = user_id;
         UserName = user_name;
-        Role_ID =  role_id;
+        Role_ID = role_id;
         NativeID = native_id;
     }
 
@@ -221,11 +221,11 @@ public class StructureUserAndRoleDB implements Serializable {
         E_Mail = e_Mail;
     }
 
-    public String getNativeID() {
+    public int getNativeID() {
         return NativeID;
     }
 
-    public void setNativeID(String nativeID) {
+    public void setNativeID(int nativeID) {
         NativeID = nativeID;
     }
 

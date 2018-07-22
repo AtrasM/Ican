@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 @Root(name = "Message")
-public class MessageRES {
+public class StructureMessageRES {
 
     @Element
     private int ID;
@@ -24,6 +24,8 @@ public class MessageRES {
     private String SentDate;
     @ElementList
     private List<StructureReceiverRES> Receivers;
+    @ElementList(required = false)
+    private List<StructureMessageAttachRES> MessageFiles;
 
     public String getSubject() {
         return Subject;
@@ -63,5 +65,13 @@ public class MessageRES {
 
     public void setReceivers(List<StructureReceiverRES> receivers) {
         Receivers = receivers;
+    }
+
+    public List<StructureMessageAttachRES> getMessageFiles() {
+        return MessageFiles;
+    }
+
+    public void setMessageFiles(List<StructureMessageAttachRES> messageFiles) {
+        MessageFiles = messageFiles;
     }
 }
