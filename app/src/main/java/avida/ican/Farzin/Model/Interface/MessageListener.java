@@ -6,7 +6,7 @@ package avida.ican.Farzin.Model.Interface;
  */
 
 public interface MessageListener {
-    void onSuccess();
+    void onSuccess(int MessageID);
 
     void onFailed(String message);
 

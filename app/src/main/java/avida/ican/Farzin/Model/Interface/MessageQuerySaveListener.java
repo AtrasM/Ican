@@ -7,6 +7,7 @@ package avida.ican.Farzin.Model.Interface;
 
 public interface MessageQuerySaveListener {
     void onSuccess();
+    void onExisting();
     void onFailed(String message);
     void onCancel();
 

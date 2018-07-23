@@ -45,7 +45,8 @@ class SendMessageToServerPresenter {
             public void onSuccess(String Xml) {
                 StructureSendMessageRES structureSendMessageRES = xmlToObject.DeserializationGsonXml(Xml, StructureSendMessageRES.class);
                 if (structureSendMessageRES.getSendMessageResult() > 0) {
-                    messageListener.onSuccess();
+                    int ID=structureSendMessageRES.getSendMessageResult();
+                    messageListener.onSuccess(ID);
                 } else {
                     messageListener.onFailed("" + structureSendMessageRES.getStrErrorMsg());
                 }

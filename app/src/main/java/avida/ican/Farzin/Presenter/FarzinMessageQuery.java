@@ -12,7 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MessageQueueStatus;
+import avida.ican.Farzin.Model.Enum.MessageStatus;
 import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
@@ -49,6 +49,7 @@ public class FarzinMessageQuery {
     private Dao<StructureMessageFileDB, Integer> messageFileDao = null;
     private Dao<StructureReceiverDB, Integer> receiverDao = null;
     private Dao<StructureMessageQueueDB, Integer> messageQueueDao = null;
+    private MessageStatus status = MessageStatus.WAITING;
 
     //_______________________***Dao***______________________________
 
@@ -76,25 +77,36 @@ public class FarzinMessageQuery {
         this.structureAttaches = structureAttaches;
         this.structureReceiver = structureReceiver;
         this.messageQuerySaveListener = messageQuerySaveListener;
+        this.status = MessageStatus.WAITING;
         new SaveMessage().execute();
     }
 
-    public void SaveMessage(int sender_user_id, int sender_role_id, StructureMessageRES structureMessageRES, MessageQuerySaveListener messageQuerySaveListener) {
-        this.sender_user_id = sender_user_id;
-        this.sender_role_id = sender_role_id;
-        this.subject = structureMessageRES.getSubject();
-        this.content = changeXml.CharDecoder(structureMessageRES.getDescription());
-        for (int i = 0; i < structureMessageRES.getMessageFiles().size(); i++) {
-            StructureMessageAttachRES MessageAttachRES = structureMessageRES.getMessageFiles().get(i);
-            this.structureAttaches.add(new StructureAttach(MessageAttachRES.getFileBinary(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
+    public void SaveMessage(int sender_user_id, int sender_role_id, StructureMessageRES structureMessageRES, MessageStatus status, MessageQuerySaveListener messageQuerySaveListener) {
+        int ID = structureMessageRES.getID();
+
+        if (IsMessageExist(ID)) {
+            messageQuerySaveListener.onExisting();
+        } else {
+            this.sender_user_id = sender_user_id;
+            this.sender_role_id = sender_role_id;
+            this.subject = structureMessageRES.getSubject();
+            this.content = changeXml.CharDecoder(structureMessageRES.getDescription());
+            this.status = status;
+
+            for (int i = 0; i < structureMessageRES.getMessageFiles().size(); i++) {
+                StructureMessageAttachRES MessageAttachRES = structureMessageRES.getMessageFiles().get(i);
+                this.structureAttaches.add(new StructureAttach(MessageAttachRES.getFileBinary(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
+            }
+
+            for (int i = 0; i < structureMessageRES.getReceivers().size(); i++) {
+                StructureReceiverRES receiverRES = structureMessageRES.getReceivers().get(i);
+                this.structureReceiver.add(new StructureUserAndRoleDB(receiverRES.getUserName(), receiverRES.getUserID(), receiverRES.getRoleID()));
+            }
+            this.messageQuerySaveListener = messageQuerySaveListener;
+
+            new SaveMessage().execute();
         }
 
-        for (int i = 0; i < structureMessageRES.getReceivers().size(); i++) {
-            StructureReceiverRES receiverRES = structureMessageRES.getReceivers().get(i);
-            this.structureReceiver.add(new StructureUserAndRoleDB(receiverRES.getUserName(), receiverRES.getUserID(), receiverRES.getRoleID(), -1));
-        }
-        this.messageQuerySaveListener = messageQuerySaveListener;
-        new SaveMessage().execute();
     }
 
 
@@ -105,7 +117,7 @@ public class FarzinMessageQuery {
         protected Void doInBackground(Void... voids) {
             StructureMessageDB structureMessageDB;
             content = CustomFunction.AddXmlCData(content);
-            structureMessageDB = new StructureMessageDB(sender_user_id, sender_role_id, subject, content);
+            structureMessageDB = new StructureMessageDB(sender_user_id, sender_role_id, subject, content, status);
             try {
                 messageDao.create(structureMessageDB);
 
@@ -123,7 +135,7 @@ public class FarzinMessageQuery {
                     threadSleep();
                 }
 
-                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id, MessageQueueStatus.WAITING, structureMessageDB);
+                StructureMessageQueueDB structureMessageQueueDB = new StructureMessageQueueDB(sender_user_id, sender_role_id, MessageStatus.WAITING, structureMessageDB);
                 messageQueueDao.create(structureMessageQueueDB);
                 messageQuerySaveListener.onSuccess();
 
@@ -147,7 +159,7 @@ public class FarzinMessageQuery {
         }
     }
 
-    List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id, MessageQueueStatus status) {
+    List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id, MessageStatus status) {
         QueryBuilder<StructureMessageQueueDB, Integer> queryBuilder = messageQueueDao.queryBuilder();
         List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
         try {
@@ -172,7 +184,7 @@ public class FarzinMessageQuery {
         return isDelet;
     }
 
-    void ChangeMessageStatus(int id, MessageQueueStatus status) {
+    void UpdateMessageQueueStatus(int id, MessageStatus status) {
         try {
             UpdateBuilder<StructureMessageQueueDB, Integer> updateBuilder = messageQueueDao.updateBuilder();
             updateBuilder.where().eq("id", id);
@@ -182,14 +194,27 @@ public class FarzinMessageQuery {
         }
     }
 
-    void SetMessageID(int id, MessageQueueStatus status) {
+    void UpdateMessageID(int CurentID, int NewID) {
         try {
-            UpdateBuilder<StructureMessageQueueDB, Integer> updateBuilder = messageQueueDao.updateBuilder();
-            updateBuilder.where().eq("id", id);
-            updateBuilder.updateColumnValue("status", status);
+            UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
+            updateBuilder.where().eq("id", CurentID);
+            updateBuilder.updateColumnValue("main_id", NewID);
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    boolean IsMessageExist(int ID) {
+        boolean existing = false;
+        QueryBuilder<StructureMessageQueueDB, Integer> queryBuilder = messageQueueDao.queryBuilder();
+        try {
+            queryBuilder.where().eq("main_id", ID);
+            long count = queryBuilder.countOf();
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
     }
 
     public List<StructureMessageDB> getMessage(int user_id, int role_id) {

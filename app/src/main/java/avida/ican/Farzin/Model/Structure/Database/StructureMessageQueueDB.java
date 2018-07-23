@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
-import avida.ican.Farzin.Model.Enum.MessageQueueStatus;
+import avida.ican.Farzin.Model.Enum.MessageStatus;
 
 /**
  * Created by AtrasVida in 2018-06-19 at 15:25 PM
@@ -22,7 +22,7 @@ public class StructureMessageQueueDB implements Serializable {
     @DatabaseField()
     private int sender_role_id;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
-    private MessageQueueStatus status;
+    private MessageStatus status;
     @DatabaseField(foreign = true, foreignAutoRefresh = true, columnName = Message_ID_FIELD_NAME)
     private StructureMessageDB message;
 
@@ -30,7 +30,7 @@ public class StructureMessageQueueDB implements Serializable {
     }
 
 
-    public StructureMessageQueueDB(int sender_user_id, int sender_role_id, MessageQueueStatus status, StructureMessageDB message) {
+    public StructureMessageQueueDB(int sender_user_id, int sender_role_id, MessageStatus status, StructureMessageDB message) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.status = status;

@@ -1,13 +1,14 @@
 package avida.ican.Farzin.Model.Structure.Database;
 
 import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import org.simpleframework.xml.Element;
-
 import java.io.Serializable;
+
+import avida.ican.Farzin.Model.Enum.MessageStatus;
 
 /**
  * Created by AtrasVida on 2018-06-19 at 1:24 PM
@@ -32,23 +33,22 @@ public class StructureMessageDB implements Serializable {
     @ForeignCollectionField(eager = true)
     private ForeignCollection<StructureReceiverDB> receivers;
 
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
+    private MessageStatus status;
 
     public StructureMessageDB() {
     }
 
-    public StructureMessageDB(int sender_user_id, int sender_role_id, String subject, String content) {
+    public StructureMessageDB(int sender_user_id, int sender_role_id, String subject, String content,MessageStatus status) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.subject = subject;
         this.content = content;
+        this.status = status;
     }
 
-    public String getFIELD_NAME_ID() {
-        return FIELD_NAME_ID;
-    }
-
-    public int getId() {
-        return id;
+    public int getMain_id() {
+        return main_id;
     }
 
     public int getSender_user_id() {
@@ -73,5 +73,13 @@ public class StructureMessageDB implements Serializable {
 
     public ForeignCollection<StructureReceiverDB> getReceivers() {
         return receivers;
+    }
+
+    public MessageStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(MessageStatus status) {
+        this.status = status;
     }
 }

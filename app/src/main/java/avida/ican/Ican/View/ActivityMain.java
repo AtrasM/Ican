@@ -21,6 +21,7 @@ import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
 import avida.ican.Farzin.Presenter.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;

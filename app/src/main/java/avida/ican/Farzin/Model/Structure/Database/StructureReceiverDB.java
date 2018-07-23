@@ -23,12 +23,12 @@ public class StructureReceiverDB implements Serializable {
     @DatabaseField()
     private String user_name;
     @DatabaseField()
-    private int native_id;
+    private String native_id;
 
     public StructureReceiverDB() {
     }
 
-    public StructureReceiverDB(StructureMessageDB message, int user_id, int role_id, String user_name, int native_id) {
+    public StructureReceiverDB(StructureMessageDB message, int user_id, int role_id, String user_name, String native_id) {
         this.message = message;
         this.user_id = user_id;
         this.role_id = role_id;
@@ -52,11 +52,11 @@ public class StructureReceiverDB implements Serializable {
         return role_id;
     }
 
-    public int getNative_id() {
+    public String getNative_id() {
         return native_id;
     }
 
-    public void setNative_id(int native_id) {
+    public void setNative_id(String native_id) {
         this.native_id = native_id;
     }
 

@@ -48,7 +48,7 @@ public class StructureUserAndRoleDB implements Serializable {
     @DatabaseField()
     private String E_Mail;
     @DatabaseField()
-    private int NativeID;
+    private String NativeID;
 
     private boolean Selected;
 
@@ -57,7 +57,7 @@ public class StructureUserAndRoleDB implements Serializable {
         //empty
     }
 
-    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, int nativeID) {
+    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
         User_ID = user_ID;
         UserName = userName;
         FirstName = firstName;
@@ -78,11 +78,10 @@ public class StructureUserAndRoleDB implements Serializable {
         NativeID = nativeID;
     }
 
-    public StructureUserAndRoleDB(String user_name, int user_id, int role_id, int native_id) {
+    public StructureUserAndRoleDB(String user_name, int user_id, int role_id) {
         User_ID = user_id;
         UserName = user_name;
         Role_ID = role_id;
-        NativeID = native_id;
     }
 
     public int getUser_ID() {
@@ -221,11 +220,11 @@ public class StructureUserAndRoleDB implements Serializable {
         E_Mail = e_Mail;
     }
 
-    public int getNativeID() {
+    public String getNativeID() {
         return NativeID;
     }
 
-    public void setNativeID(int nativeID) {
+    public void setNativeID(String nativeID) {
         NativeID = nativeID;
     }
 
