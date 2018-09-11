@@ -32,10 +32,21 @@
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
-        <service android:name=".Farzin.Presenter.SendMessageService"
-            android:enabled="true"/>
+        <receiver android:name=".Farzin.FarzinMessageNotificationReceiver"
+            tools:ignore="ExtraText">
+            android:enabled="true"
+            android:exported="true"
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
+            </intent-filter>
+        </receiver>
         <service android:name=".Ican.View.Custom.NetWorkCheckingService"
             android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Message.SendMessageService"/>
+        <service android:name=".Farzin.Presenter.Service.Message.GetSentMessageService" />
+        <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService" />
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="avida.ican.fileprovider"
@@ -67,6 +78,11 @@
         <activity
             android:name=".Farzin.View.FarzinActivityWriteMessage"
             android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity
+            android:name=".Farzin.View.FarzinActivityDetailMessage"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity
+            android:name=".Farzin.View.FarzinNotificationClickManager" />
 
 
 

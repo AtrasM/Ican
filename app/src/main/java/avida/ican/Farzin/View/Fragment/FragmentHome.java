@@ -18,22 +18,16 @@ public class FragmentHome extends BaseFragment {
 
 
     //private OnFragmentInteractionListener mListener;
-    @BindView(R.id.txt_msg)
-    TextView txtMsg;
-    @BindView(R.id.btn_msg)
-    Button btnMsg;
-    private int a=0;
+   /* @BindView(R.id.txt_msg)
+    TextView txtMsg;*/
+
+    private int a = 0;
+    public static String Tag = "FragmentHome";
 
     public FragmentHome() {
         // Required empty public constructor
     }
 
-
-    public static FragmentHome newInstance() {
-        FragmentHome fragment = new FragmentHome();
-        App.canRecreatFragment = true;
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,21 +38,13 @@ public class FragmentHome extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        btnMsg.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View view) {
-                a++;
-                txtMsg.setText("A now is :"+a);
-            }
-        });
+
     }
 
     @Override
     public int getLayoutResId() {
         return R.layout.fragment_home;
     }
-
 
 
     @Override
@@ -82,6 +68,8 @@ public class FragmentHome extends BaseFragment {
     public void onDetach() {
         super.onDetach();
     }
+
+
 /*
     *//*
       This interface must be implemented by activities that contain this
@@ -98,4 +86,6 @@ public class FragmentHome extends BaseFragment {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }*/
+
+
 }

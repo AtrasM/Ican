@@ -5,6 +5,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -16,16 +17,22 @@ public class StructureMessageRES {
 
     @Element
     private int ID;
+    @Element
+    private boolean IsRead;
     @Element(required = false)
     private String Subject;
     @Element(required = false)
     private String Description;
     @Element(required = false)
     private String SentDate;
-    @ElementList
+    @Element(required = false)
+    private String ViewDate;
+    @ElementList(required = false)
     private List<StructureReceiverRES> Receivers;
     @ElementList(required = false)
     private List<StructureMessageAttachRES> MessageFiles;
+    @Element(required = false)
+    private StructureSenderRES Sender;
 
     public String getSubject() {
         return Subject;
@@ -73,5 +80,29 @@ public class StructureMessageRES {
 
     public void setMessageFiles(List<StructureMessageAttachRES> messageFiles) {
         MessageFiles = messageFiles;
+    }
+
+    public StructureSenderRES getSender() {
+        return Sender;
+    }
+
+    public void setSender(StructureSenderRES sender) {
+        Sender = sender;
+    }
+
+    public void setRead(boolean read) {
+        IsRead = read;
+    }
+
+    public boolean isRead() {
+        return IsRead;
+    }
+
+    public String getViewDate() {
+        return ViewDate;
+    }
+
+    public void setViewDate(String viewDate) {
+        ViewDate = viewDate;
     }
 }

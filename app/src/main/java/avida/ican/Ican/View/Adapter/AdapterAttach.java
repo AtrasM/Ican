@@ -1,5 +1,6 @@
 package avida.ican.Ican.View.Adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,12 +12,18 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogDelet;
+import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
+import avida.ican.Ican.View.Interface.ListenerAttach;
 import avida.ican.Ican.View.Interface.ListenerDelet;
 import avida.ican.R;
 import butterknife.BindView;
@@ -34,11 +41,16 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
     private int layout = R.layout.item_attach;
     private ImageLoader imageLoader;
     private Activity context;
+    private boolean canDelete;
+    private ListenerAdapterAttach listenerAdapterAttach;
 
-    public AdapterAttach(Activity context, ArrayList<StructureAttach> itemList) {
+    public AdapterAttach(Activity context, ArrayList<StructureAttach> itemList, boolean canDelete, ListenerAdapterAttach listenerAdapterAttach) {
         imageLoader = App.getImageLoader();
         this.itemList = itemList;
         this.context = context;
+        this.canDelete = canDelete;
+        this.listenerAdapterAttach = listenerAdapterAttach;
+
     }
 
     // inner class to hold a reference to each item of RecyclerView
@@ -76,11 +88,45 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @SuppressLint({"SetTextI18n", "NewApi"})
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureAttach item = itemList.get(position);
-        viewHolder.txtName.setText(item.getName());
-       viewHolder.imgAttachIcon.setBackground( Resorse.getDrawable(item.getIcon()));
+
+
+        if (!item.getFileExtension().isEmpty()) {
+            viewHolder.txtName.setText(item.getName() + item.getFileExtension());
+            ExtensionEnum extensionEnum = new CustomFunction(App.CurentActivity).getExtensionCategory(item.getFileExtension());
+            switch (extensionEnum) {
+                case IMAGE: {
+                    item.setIcon(R.drawable.ic_photo);
+                    break;
+                }
+                case AUDIO: {
+                    item.setIcon(R.drawable.ic_voice);
+                    break;
+                }
+                case VIDEO: {
+                    item.setIcon(R.drawable.ic_video);
+                    break;
+                }
+                default: {
+                    item.setIcon(R.drawable.ic_attach_file);
+                    break;
+                }
+            }
+        } else {
+            viewHolder.txtName.setText(item.getName());
+            item.setIcon(R.drawable.ic_attach_file);
+        }
+
+
+        viewHolder.imgAttachIcon.setBackground(Resorse.getDrawable(item.getIcon()));
+
+
+        if (canDelete) {
+            viewHolder.imgDelet.setVisibility(View.VISIBLE);
+        }
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,15 +143,24 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                 }).Show();
             }
         });
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerAdapterAttach.onOpenFile(item);
+            }
+        });
     }
 
     public void add(StructureAttach structureAttach) {
         itemList.add(structureAttach);
-        notifyItemRangeChanged(itemList.size() - 1, 1);
+        notifyDataSetChanged();
+        //notifyItemRangeChanged(itemList.size() - 1, 1);
     }
-  public void addAll(ArrayList<StructureAttach> structureAttachs) {
+
+    public void addAll(ArrayList<StructureAttach> structureAttachs) {
         itemList.addAll(structureAttachs);
-        notifyItemRangeChanged(itemList.size() - 1, structureAttachs.size());
+        notifyDataSetChanged();
+        //notifyItemRangeChanged(itemList.size() - 1, structureAttachs.size());
     }
 
 

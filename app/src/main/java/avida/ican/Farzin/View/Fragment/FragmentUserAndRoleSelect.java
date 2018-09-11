@@ -20,13 +20,13 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
     RecyclerView rcvSelected;
     private Activity context;
     private static AdapterUserAndRoleSelected adapterUserAndRoleSelected;
+    public static String Tag = "FragmentUserAndRoleSelect";
 
 
     public FragmentUserAndRoleSelect newInstance(Activity context, AdapterUserAndRoleSelected adapterUserAndRoleSelected) {
         FragmentUserAndRoleSelect fragment = new FragmentUserAndRoleSelect();
         this.context = context;
         this.adapterUserAndRoleSelected = adapterUserAndRoleSelected;
-        App.canRecreatFragment = true;
         return fragment;
     }
 

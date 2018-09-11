@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="avida.ican.Farzin.View.FarzinActivityWriteMessage">
+
+    <include layout="@layout/farzin_custome_toolbar" />
+
+    <LinearLayout
+        android:id="@+id/ln_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/margin_maximum"
+            android:layout_marginTop="@dimen/margin_maximum"
+            android:background="@drawable/border_layout"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/padding">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center|right"
+                    android:orientation="vertical"
+                    tools:ignore="RtlHardcoded">
+
+                    <TextView
+                        android:id="@+id/txt_sender_name"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|right"
+                        android:paddingBottom="0dp"
+                        android:text="نام" />
+
+                    <TextView
+                        android:id="@+id/txt_sender_role_name"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|right"
+                        android:paddingTop="0dp"
+                        android:text="سمت"
+                        tools:ignore="RtlHardcoded" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|left"
+                    android:orientation="vertical"
+                    tools:ignore="RtlHardcoded">
+
+                    <TextView
+                        android:id="@+id/txt_date"
+                        style="@style/custom_Txt_Sub_Title_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:paddingBottom="0dp"
+                        android:text="تاریخ"
+                        tools:ignore="RtlHardcoded" />
+
+                    <TextView
+                        android:id="@+id/txt_time"
+                        style="@style/custom_Txt_Sub_Title_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|left"
+                        android:paddingTop="0dp"
+                        android:text="ساعت"
+                        tools:ignore="RtlHardcoded" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/txt_subject"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center|right"
+                android:text="موضوع"
+                android:textColor="@color/color_txt_SubTitle"
+                tools:ignore="RtlHardcoded" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/border_layout"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_gravity="center|top"
+                android:layout_marginBottom="@dimen/margin_minimum"
+                android:layout_marginTop="@dimen/margin_minimum"
+                android:layout_weight="1"
+                android:background="@color/color_White"
+                android:gravity="center|top"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+
+                <android.support.v4.widget.NestedScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.ms.square.android.expandabletextview.ExpandableTextView xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/ex_txt_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        expandableTextView:animDuration="150"
+                        expandableTextView:maxCollapsedLines="4">
+
+                        <TextView
+                            android:id="@id/expandable_text"
+                            style="@style/custom_Txt_Normal_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/color_Info_Dark" />
+
+                        <ImageButton
+                            android:id="@id/expand_collapse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@color/color_White"
+                            android:padding="@dimen/padding_maximum" />
+                    </com.ms.square.android.expandabletextview.ExpandableTextView>
+
+
+                </android.support.v4.widget.NestedScrollView>
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <avida.ican.Ican.View.Custom.MaxHeightLinearLayout
+                    android:id="@+id/ln_rcv_attach"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|bottom"
+                    android:orientation="horizontal"
+                    android:paddingBottom="@dimen/padding_minimum"
+                    app:maxHeightDp="180">
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rcv_attach"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+                </avida.ican.Ican.View.Custom.MaxHeightLinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_border">
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_minimum"
+                android:background="@color/color_background"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/ln_reply"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/img_reply"
+                        style="@style/custom_icon_style"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_reply" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/img_forward"
+                        style="@style/custom_icon_style"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_forward" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.3"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/img_delet"
+                        style="@style/custom_icon_style"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:srcCompat="@drawable/ic_trash" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

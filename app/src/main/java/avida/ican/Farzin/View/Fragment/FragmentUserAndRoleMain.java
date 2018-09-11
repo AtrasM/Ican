@@ -32,13 +32,13 @@ public class FragmentUserAndRoleMain extends BaseFragment {
     private static AdapterUserAndRoleMain adapterUserAndRoleMain;
     private static DialogUserAndRole dialogUserAndRole;
 
+    public static String Tag = "FragmentUserAndRoleMain";
 
     public FragmentUserAndRoleMain newInstance(Activity context, AdapterUserAndRoleMain adapterUserAndRoleMain, DialogUserAndRole dialogUserAndRole) {
         FragmentUserAndRoleMain fragment = new FragmentUserAndRoleMain();
         this.context = context;
         this.dialogUserAndRole = dialogUserAndRole;
         this.adapterUserAndRoleMain = adapterUserAndRoleMain;
-        App.canRecreatFragment = true;
         return fragment;
     }
 

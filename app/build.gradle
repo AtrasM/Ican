@@ -26,9 +26,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:support-v4:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'com.android.support:support-vector-drawable:27.1.1'
-    implementation 'com.android.support:support-v4:27.1.1'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -85,7 +85,7 @@ dependencies {
     //multy image,video Picker with list croper
     implementation 'com.crop.multiple:multipleImagePickerLib:1.4.4'
 
-    implementation  'com.booking:rtlviewpager:1.0.1'
+    implementation 'com.booking:rtlviewpager:1.0.1'
 
     //--------------------------Tab----Layout--------------------
     implementation 'com.ogaclejapan.smarttablayout:library:1.6.1@aar'
@@ -100,9 +100,9 @@ dependencies {
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     //swipelayout
-    implementation  'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
+    implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
 
-    implementation  'com.android.support:multidex:1.0.3'
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation('com.stanfy:gson-xml-java:0.1.+') {
         exclude group: 'xmlpull', module: 'xmlpull'
@@ -113,4 +113,11 @@ dependencies {
         exclude module: 'stax-api'
         exclude module: 'xpp3'
     }
+
+    //Date Converter
+    implementation 'com.github.samanzamani.persiandate:PersianDate:0.4'
+
+    //BottomNavigation
+    implementation  'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
+
 }

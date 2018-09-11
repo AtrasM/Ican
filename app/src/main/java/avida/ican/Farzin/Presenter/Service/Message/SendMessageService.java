@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter;
+package avida.ican.Farzin.Presenter.Service.Message;
 
 import android.annotation.SuppressLint;
 import android.app.Service;
@@ -22,6 +22,8 @@ import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureMessageQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
+import avida.ican.Farzin.Presenter.Message.SendMessageToServerPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.TimeValue;
@@ -75,9 +77,9 @@ public class SendMessageService extends Service {
                 handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        ShowToast("onFailed -->> " + App.networkStatus + " ****** " + App.netWorkStatusListener);
+                        //ShowToast("onFailed -->> " + App.networkStatus + " ****** " + App.netWorkStatusListener);
                         if (App.networkStatus != NetworkStatus.Connected) {
-                            ShowToast("WatingForNetwork");
+                            //ShowToast("WatingForNetwork");
                             onFailed("", structureMessageQueueDBS);
                         } else {
                             if (tryCount == MaxTry) {
@@ -92,7 +94,6 @@ public class SendMessageService extends Service {
                                 onFinish();
                             }
                         }
-
 
                     }
                 }, DELAY);
@@ -153,13 +154,17 @@ public class SendMessageService extends Service {
             @Override
             public void onSuccess(int MessageID) {
                 FarzinMessageQuery farzinMessageQuery = new FarzinMessageQuery();
-                int id = structureMessageQueueDBS.get(0).getId();
-                farzinMessageQuery.UpdateMessageID(id, MessageID);
-                boolean isdelet = farzinMessageQuery.DeletMessageQueueRowWithId(id);
+                int idMessageQueue = structureMessageQueueDBS.get(0).getId();
+                int mainId = structureMessageQueueDBS.get(0).getMessage().getId();
+                farzinMessageQuery.UpdateMessageID(mainId, MessageID);
+                farzinMessageQuery.UpdateMessageStatus(mainId, MessageStatus.UnRead);
+                boolean isdelet = farzinMessageQuery.DeletMessageQueueRowWithId(idMessageQueue);
                 if (isdelet) {
                     structureMessageQueueDBS.remove(0);
                 }
-
+                if (App.fragmentMessageList != null) {
+                    App.fragmentMessageList.UpdateSendMessageStatus(farzinMessageQuery.GetMessage(MessageID));
+                }
                 sendMessageServiceListener.onSuccess(structureMessageQueueDBS);
             }
 
@@ -202,22 +207,20 @@ public class SendMessageService extends Service {
             @Override
             public void run() {
                 try {
-                    StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(context).getUserInfo(getFarzinPrefrences().getUserName());
 
-                    if (structureUserAndRoleDB != null) {
-                        List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), MessageStatus.WAITING);
+                    List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), MessageStatus.WAITING);
 
+                    if (structureMessageQueueDBS.size() > 0) {
+                        SendMessage(structureMessageQueueDBS);
+                        timer.cancel();
+                    } else {
+                        structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), MessageStatus.STOPED);
                         if (structureMessageQueueDBS.size() > 0) {
                             SendMessage(structureMessageQueueDBS);
                             timer.cancel();
-                        } else {
-                            structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), MessageStatus.STOPED);
-                            if (structureMessageQueueDBS.size() > 0) {
-                                SendMessage(structureMessageQueueDBS);
-                                timer.cancel();
-                            }
                         }
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -15,7 +15,21 @@ public class StructureReceiverRES {
     private int UserID;
     @Element
     private String UserName;
+    @Element
+    private boolean IsRead;
+    @Element(required = false)
+    private String ViewDate;
 
+    public StructureReceiverRES() {
+    }
+
+    public StructureReceiverRES(int roleID, int userID, String userName, boolean isRead, String viewDate) {
+        RoleID = roleID;
+        UserID = userID;
+        UserName = userName;
+        IsRead = isRead;
+        ViewDate = viewDate;
+    }
 
     public int getRoleID() {
         return RoleID;
@@ -39,6 +53,22 @@ public class StructureReceiverRES {
 
     public void setUserName(String userName) {
         UserName = userName;
+    }
+
+    public boolean isRead() {
+        return IsRead;
+    }
+
+    public void setRead(boolean read) {
+        IsRead = read;
+    }
+
+    public String getViewDate() {
+        return ViewDate;
+    }
+
+    public void setViewDate(String viewDate) {
+        ViewDate = viewDate;
     }
 }
 

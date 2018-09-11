@@ -22,16 +22,14 @@ import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
-import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
-import avida.ican.R;
 
 import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRoleList;
 
@@ -49,7 +47,7 @@ public class FarzinMetaDataQuery {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "FarzinMetaDataQuery";
     private FarzinPrefrences farzinPrefrences;
-    private MetaDataSyncListener metaDataSyncListener;
+    private MetaDataSyncListener mainMetaDataSyncListener;
     private Context context;
     //_______________________***Dao***______________________________
 
@@ -58,9 +56,9 @@ public class FarzinMetaDataQuery {
     //_______________________***Dao***______________________________
 
     public FarzinMetaDataQuery(Context context) {
-        this.context=context;
+        this.context = context;
         farzinPrefrences = getFarzinPrefrences();
-        strSimpleDateFormat = Resorse.getString(context,R.string.strSimpleDateFormat);
+        strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
         dialogFirstMetaDataSync = new DialogFirstMetaDataSync(App.CurentActivity);
         initDao();
 
@@ -74,7 +72,7 @@ public class FarzinMetaDataQuery {
         }
     }
 
-    void Sync() {
+    void Sync(final MetaDataSyncListener metaDataSyncListener) {
         if (App.netWorkStatusListener == null) return;
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
@@ -84,7 +82,7 @@ public class FarzinMetaDataQuery {
         });
         dialogFirstMetaDataSync.Creat();
         SyncUserAndRoleList();
-        metaDataSyncListener = new MetaDataSyncListener() {
+        mainMetaDataSyncListener = new MetaDataSyncListener() {
             @Override
             public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
                 SyncTable(metaDataNameEnum.getValue() + 1);
@@ -102,17 +100,32 @@ public class FarzinMetaDataQuery {
 
             @Override
             public void onFinish() {
-                new CustomFunction(App.CurentActivity);
-                String CurentDateTime = CustomFunction.getCurentDateTimeAsFormat(strSimpleDateFormat);
-                farzinPrefrences.putMetaDataSyncDate(CurentDateTime);
+
                 try {
-                    if (BaseActivity.dialogMataDataSync != null) {
-                        BaseActivity.dialogMataDataSync.dismiss();
-                    }
+              /*      App.CurentActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    });*/
+                    String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
+                    farzinPrefrences.putMetaDataSyncDate(CurentDateTime);
+                    FarzinPrefrences farzinPrefrences = new FarzinPrefrences().init();
+                    String userName = farzinPrefrences.getUserName();
+                    StructureUserAndRoleDB UserAndRoleDB = getUserInfo(userName);
+                    farzinPrefrences.putUserBaseInfo(UserAndRoleDB.getUser_ID(), UserAndRoleDB.getRole_ID());
+                    App.CurentActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            metaDataSyncListener.onFinish();
+                        }
+                    });
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                BaseActivity.dialogMataDataSync.dismiss();
+                //BaseActivity.dialogMataDataSync.dismiss();
                 App.canBack = true;
             }
 
@@ -125,7 +138,7 @@ public class FarzinMetaDataQuery {
         if (i == SyncUserAndRoleList.getValue()) {
             SyncUserAndRoleList();
         } else {
-            metaDataSyncListener.onFinish();
+            mainMetaDataSyncListener.onFinish();
         }
 
     }
@@ -148,16 +161,31 @@ public class FarzinMetaDataQuery {
 
             @Override
             public void onFailed() {
-                metaDataSyncListener.onFailed(SyncUserAndRoleList);
+                mainMetaDataSyncListener.onFailed(SyncUserAndRoleList);
                 App.ShowMessage().ShowToast("خطا", ToastEnum.TOAST_LONG_TIME);
             }
 
             @Override
             public void onCancel() {
-                metaDataSyncListener.onCancel(SyncUserAndRoleList);
+                mainMetaDataSyncListener.onCancel(SyncUserAndRoleList);
                 App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
             }
         });
+    }
+
+    public int getUserID(String userName) {
+        QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();
+        StructureUserAndRoleDB userAndRoles = new StructureUserAndRoleDB();
+        try {
+            queryBuilder.where().eq("UserName", userName);
+            userAndRoles = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        if (userAndRoles == null) {
+            return -1;
+        }
+        return userAndRoles.getUser_ID();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -179,18 +207,18 @@ public class FarzinMetaDataQuery {
             for (int i = 0; i < structureUserAndRolesRES.size(); i++) {
                 StructureUserAndRoleRES structureUserAndRoleRES = structureUserAndRolesRES.get(i);
                 //StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
-                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB(structureUserAndRoleRES.getUser_ID(), structureUserAndRoleRES.getUserName(), structureUserAndRoleRES.getFirstName(), structureUserAndRoleRES.getLastName(), structureUserAndRoleRES.getRole_ParentID(), structureUserAndRoleRES.getIsDefForCardTableString(), structureUserAndRoleRES.getRoleCode(), structureUserAndRoleRES.getRoleName(), structureUserAndRoleRES.getRole_ID(), structureUserAndRoleRES.getOrganCode(), structureUserAndRoleRES.getOrganizationRoleName(), structureUserAndRoleRES.getOrganizationRole_ID(), structureUserAndRoleRES.getDepartmentID(), structureUserAndRoleRES.getMobile(), structureUserAndRoleRES.getGender(), structureUserAndRoleRES.getBirthDate(), structureUserAndRoleRES.getE_Mail(), structureUserAndRoleRES.getNativeID());
+                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB(structureUserAndRoleRES.getUser_ID(), structureUserAndRoleRES.getUserName(), structureUserAndRoleRES.getFirstName(), structureUserAndRoleRES.getLastName(), structureUserAndRoleRES.getRole_ParentID(), structureUserAndRoleRES.getIsDefForCardTable(), structureUserAndRoleRES.getRoleCode(), structureUserAndRoleRES.getRoleName(), structureUserAndRoleRES.getRole_ID(), structureUserAndRoleRES.getOrganCode(), structureUserAndRoleRES.getOrganizationRoleName(), structureUserAndRoleRES.getOrganizationRole_ID(), structureUserAndRoleRES.getDepartmentID(), structureUserAndRoleRES.getMobile(), structureUserAndRoleRES.getGender(), structureUserAndRoleRES.getBirthDate(), structureUserAndRoleRES.getE_Mail(), structureUserAndRoleRES.getNativeID());
                 try {
                     userAndRoleListDao.create(structureUserAndRoleDB);
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    metaDataSyncListener.onFailed(SyncUserAndRoleList);
+                    mainMetaDataSyncListener.onFailed(SyncUserAndRoleList);
                     App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها" + " i= " + i, ToastEnum.TOAST_LONG_TIME);
                     return null;
                 }
 
             }
-            metaDataSyncListener.onSuccess(SyncUserAndRoleList);
+            mainMetaDataSyncListener.onSuccess(SyncUserAndRoleList);
             App.ShowMessage().ShowToast("داده ها با موفقیت ذخیر شدن.", ToastEnum.TOAST_LONG_TIME);
             return null;
         }
@@ -211,7 +239,25 @@ public class FarzinMetaDataQuery {
         QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();
         StructureUserAndRoleDB userAndRoles = new StructureUserAndRoleDB();
         try {
-            queryBuilder.where().eq("UserName", user_name);
+            queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "1");
+            userAndRoles = queryBuilder.queryForFirst();
+            if (userAndRoles.getUserName() != user_name) {
+                queryBuilder.reset();
+                queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "0");
+                userAndRoles = queryBuilder.queryForFirst();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userAndRoles;
+    }
+
+    public StructureUserAndRoleDB getUserInfo(int user_id, int role_id) {
+
+        QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();
+        StructureUserAndRoleDB userAndRoles = new StructureUserAndRoleDB();
+        try {
+            queryBuilder.where().eq("User_ID", user_id).and().eq("Role_ID", role_id);
             userAndRoles = queryBuilder.queryForFirst();
         } catch (SQLException e) {
             e.printStackTrace();

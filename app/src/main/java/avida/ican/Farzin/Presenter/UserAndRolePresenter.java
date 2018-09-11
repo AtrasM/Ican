@@ -2,10 +2,13 @@ package avida.ican.Farzin.Presenter;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRollSearch;
@@ -40,12 +43,46 @@ public class UserAndRolePresenter {
     public UserAndRolePresenter execute() {
         if (structuresMain.isEmpty()) {
             structuresMain = new FarzinMetaDataQuery(App.CurentActivity).getUserAndRoleList();
+
             if (structuresMain.isEmpty()) {
-                new FarzinMetaDataQuery(App.CurentActivity).Sync();
+                new FarzinMetaDataQuery(App.CurentActivity).Sync(new MetaDataSyncListener() {
+                    @Override
+                    public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
+
+                    }
+
+                    @Override
+                    public void onFailed(MetaDataNameEnum metaDataNameEnum) {
+
+                    }
+
+                    @Override
+                    public void onCancel(MetaDataNameEnum metaDataNameEnum) {
+
+                    }
+
+                    @Override
+                    public void onFinish() {
+
+                    }
+                });
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.Syncing), SnackBarEnum.SNACKBAR_SHORT_TIME);
                 listenerUserAndRollDialog.onFailed();
             } else {
-                listenerUserAndRollDialog.onSuccess(structuresMain, structuresSelect);
+                if (structuresSelect.size() > 0) {
+                    for (int k = 0; k < structuresSelect.size(); k++) {
+                        for (int i = 0; i < structuresMain.size(); i++) {
+                            if (structuresMain.get(i).getUser_ID() == structuresSelect.get(k).getUser_ID() && structuresMain.get(i).getRole_ID() == structuresSelect.get(k).getRole_ID()) {
+                                structuresMain.get(i).setSelected(true);
+                                break;
+                            }
+                        }
+                    }
+                    listenerUserAndRollDialog.onSuccess(structuresMain, structuresSelect);
+                } else {
+                    listenerUserAndRollDialog.onSuccess(structuresMain, structuresSelect);
+                }
+
             }
         } else {
             listenerUserAndRollDialog.onSuccess(new ArrayList<>(structuresMain), new ArrayList<>(structuresSelect));
@@ -68,7 +105,7 @@ public class UserAndRolePresenter {
             @Override
             protected Void doInBackground(Void... voids) {
                 for (int i = 0; i < structuresMain.size(); i++) {
-                    if (CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getFirstName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getLastName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getOrganizationRoleName()).contains(finalQuery)) {
+                    if (CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getFirstName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getLastName()).contains(finalQuery) || CustomFunction.convertArabicCharToPersianChar(structuresMain.get(i).getRoleName()).contains(finalQuery)) {
                         structuresSearch.add(structuresMain.get(i));
                     }
                 }

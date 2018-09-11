@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
+import avida.ican.Ican.App;
 import avida.ican.Ican.View.Enum.RequestCode;
 import avida.ican.Ican.View.Interface.AudioRecorderListener;
 import avida.ican.R;
@@ -42,7 +43,7 @@ public class AudioRecorder extends AppCompatActivity {
 
     private void initDefultValue() {
         color = Resorse.getColor(R.color.colorPrimaryDark);
-        filePath = Environment.getExternalStorageDirectory() + "/recorded_audio.wav";
+        filePath = App.DEFAULTPATH + "/recorded_audio.wav";
         autoStart = false;
         keepDisplayOn = false;
     }

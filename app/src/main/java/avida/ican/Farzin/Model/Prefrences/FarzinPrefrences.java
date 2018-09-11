@@ -28,6 +28,12 @@ public class FarzinPrefrences {
         putCookie(headerList);
     }
 
+    public void putUserBaseInfo(int UserID, int RoleID) {
+        putUserID(UserID);
+        putRoleID(RoleID);
+    }
+
+
     public void putServerUrl(String serverUrl) {
         sharedPreferencesValue.edit().putString(TAG + "ServerUrl", serverUrl).apply();
     }
@@ -67,6 +73,14 @@ public class FarzinPrefrences {
         sharedPreferencesValue.edit().putString(TAG + "userName", userName).apply();
     }
 
+    private void putRoleID(int roleID) {
+        sharedPreferencesValue.edit().putInt(TAG + "roleID", roleID).apply();
+    }
+
+    private void putUserID(int userID) {
+        sharedPreferencesValue.edit().putInt(TAG + "userID", userID).apply();
+    }
+
     public String getCookie() {
         return sharedPreferencesValue.getString(TAG + "cookie", "");
     }
@@ -79,14 +93,29 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "userName", "-1");
     }
 
+    public int getUserID() {
+        return sharedPreferencesValue.getInt(TAG + "userID", -1);
+    }
+
+    public int getRoleID() {
+        return sharedPreferencesValue.getInt(TAG + "roleID", -1);
+    }
 
 
     public void putMetaDataSyncDate(String DateTime) {
         sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
     }
 
+    public void putMessageViewSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
+    }
+
     public String getMetaDataLastSyncDate() {
         return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
+    }
+
+    public String getMessageViewLastSyncDate() {
+        return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
     }
 
 

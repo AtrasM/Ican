@@ -22,7 +22,12 @@ import avida.ican.R;
     public static Drawable getDrawable(String string) {
         mGenerator = ColorGenerator.MATERIAL;
         if(!string.isEmpty()){
-            string=string.substring(0,1);
+            if(string.length()>=2){
+                string=string.substring(0,2);
+            }else{
+                string=string.substring(0,1);
+            }
+
         }
 
         string=  CustomFunction.convertArabicCharToPersianChar(string);

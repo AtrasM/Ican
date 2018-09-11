@@ -16,8 +16,8 @@ public class StructureUserAndRoleRES {
     private String LastName;
     @SerializedName("@Role_ParentID")
     private String Role_ParentID;
-    @SerializedName("@IsDefForCardTableString")
-    private String IsDefForCardTableString;
+    @SerializedName("@IsDefForCardTable")
+    private String IsDefForCardTable;
     @SerializedName("@RoleCode")
     private String RoleCode;
     @SerializedName("@RoleName")
@@ -84,12 +84,12 @@ public class StructureUserAndRoleRES {
         Role_ParentID = role_ParentID;
     }
 
-    public String getIsDefForCardTableString() {
-        return IsDefForCardTableString;
+    public String getIsDefForCardTable() {
+        return IsDefForCardTable;
     }
 
-    public void setIsDefForCardTableString(String isDefForCardTableString) {
-        IsDefForCardTableString = isDefForCardTableString;
+    public void setIsDefForCardTable(String isDefForCardTable) {
+        IsDefForCardTable = isDefForCardTable;
     }
 
     public String getRoleCode() {

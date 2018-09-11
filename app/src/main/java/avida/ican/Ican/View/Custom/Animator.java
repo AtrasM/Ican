@@ -90,7 +90,7 @@ public class Animator {
         viewToAnimate.startAnimation(animation);
     }
 
-    private void slideInFromDown(View viewToAnimate) {
+    public void slideInFromDown(View viewToAnimate) {
         viewToAnimate.setVisibility(View.VISIBLE);
         animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_down);
         viewToAnimate.startAnimation(animation);

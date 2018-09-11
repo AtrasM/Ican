@@ -39,7 +39,7 @@
                 tools:ignore="RtlHardcoded" />
 
             <TextView
-                android:id="@+id/txt_organization_role_name"
+                android:id="@+id/txt_role_name"
                 style="@style/custom_Txt_Normal_style"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"

@@ -43,8 +43,6 @@
 
         </LinearLayout>
 
-        <include layout="@layout/custom_util_editore" />
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -57,20 +55,22 @@
             android:padding="@dimen/padding">
 
             <LinearLayout
+                android:id="@+id/ln_add_contacts"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/ln_add_contacts"
                 android:orientation="horizontal">
+
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/ic_add_contact" />
+
                 <TextView
                     style="@style/custom_Txt_Normal_style"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center|right"
                     android:layout_marginRight="@dimen/margin_minimum"
+                    android:gravity="center|right"
                     android:text="@string/title_contacts" />
 
 
@@ -107,6 +107,8 @@
             </LinearLayout>
         </LinearLayout>
 
+        <include layout="@layout/custom_util_editore" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -116,12 +118,11 @@
             <jp.wasabeef.richeditor.RichEditor
                 android:id="@+id/re_msg"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_gravity="right"
                 android:layout_weight="1"
                 android:padding="@dimen/padding"
-                android:textAlignment="textStart"
-                tools:ignore="RtlCompat" />
+                tools:ignore="RtlCompat,RtlHardcoded" />
 
 
             <avida.ican.Ican.View.Custom.MaxHeightLinearLayout

@@ -10,41 +10,45 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
-import com.github.clans.fab.FloatingActionButton;
-import com.github.clans.fab.FloatingActionMenu;
+import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import java.util.HashMap;
+import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
+import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
-import avida.ican.Farzin.Presenter.SendMessageService;
+import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
-import avida.ican.Farzin.View.Fragment.FragmentSecond;
+import avida.ican.Farzin.View.Fragment.FragmentMessageList;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
-import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 
 public class FarzinActivityMain extends BaseNavigationDrawerActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-    Fragment selectedFragment;
-    @BindView(R.id.bottom_navigation)
-    BottomNavigationView bottomNavigation;
 
-    @BindView(R.id.fab_msg)
-    FloatingActionMenu fabMsg;
-    @BindView(R.id.fab_new_msg)
-    FloatingActionButton fabNewMsg;
-    @BindView(R.id.fab_edit_msg)
-    FloatingActionButton fabEditMsg;
+    @BindView(R.id.bottom_navigation)
+    BottomNavigationViewEx bottomNavigation;
+    private static BottomNavigationViewEx staticbottomNavigation;
+
 
     private String Title = "فرزین";
     private boolean menuShow = false;
     private FarzinMetaDataSync farzinMetaDataSync;
     private FarzinBroadcastReceiver broadcastReceiver;
     private IntentFilter intentFilter;
+
+    private static final String TAB_HOME = "tab_home";
+    private static final String TAB_DASHBOARD = "tab_dashboard";
+    private static final String TAB_Message = "tab_message_list";
+    private String mCurrentTab = "";
+    private Fragment CurentFragment = null;
 
     @Override
     protected int getLayoutResource() {
@@ -64,29 +68,30 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         App.setCurentProject(CurentProject.Farzin);
         initFarzinMetaDataSyncClass();
 
-        if (!isMyServiceRunning(SendMessageService.class)) {
-            initBroadcastReceiver();
-        }
+        initFragmentStack();
 
+        //bottomNavigation.setSelectedItemId(R.id.navigation_home);
+
+
+    }
+
+
+    private void initFragmentStack() {
+        App.fragmentStacks = new HashMap<>();
+        App.fragmentStacks.put(TAB_HOME, new Stack<Fragment>());
+        App.fragmentStacks.put(TAB_DASHBOARD, new Stack<Fragment>());
+        App.fragmentStacks.put(TAB_Message, new Stack<Fragment>());
+        CurentFragment = new FragmentHome();
+     /*   Title = "خانه";
+        selectedTab(Title, R.menu.main_drawer, TAB_HOME);*/
+        initBottomNavigation();
+    }
+
+    private void initBottomNavigation() {
         bottomNavigation.setOnNavigationItemSelectedListener(this);
-        selectedFragment = FragmentHome.newInstance();
-        StartFragment();
-
-        fabMsg.showMenu(!menuShow);
-        fabEditMsg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                App.ShowMessage().ShowToast("ویرایش پیام", ToastEnum.TOAST_SHORT_TIME);
-            }
-        });
-        fabNewMsg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fabMsg.showMenu(!menuShow);
-                goToActivity(FarzinActivityWriteMessage.class);
-            }
-        });
-
+        bottomNavigation.setTextVisibility(false);
+        bottomNavigation.setCurrentItem(1);
+        staticbottomNavigation = bottomNavigation;
     }
 
     private void initBroadcastReceiver() {
@@ -101,55 +106,139 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void initFarzinMetaDataSyncClass() {
-        farzinMetaDataSync = new FarzinMetaDataSync().RunONschedule();
+        farzinMetaDataSync = new FarzinMetaDataSync().RunONschedule(new MetaDataSyncListener() {
+            @Override
+            public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
+
+            }
+
+            @Override
+            public void onFailed(MetaDataNameEnum metaDataNameEnum) {
+
+            }
+
+            @Override
+            public void onCancel(MetaDataNameEnum metaDataNameEnum) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if (BaseActivity.dialogMataDataSync != null) {
+
+                    BaseActivity.dialogMataDataSync.dismiss();
+                }
+                if (!isMyServiceRunning(SendMessageService.class)) {
+                    initBroadcastReceiver();
+                }
+            }
+        });
+
+
     }
 
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        String Title = "";
         switch (item.getItemId()) {
 
             case R.id.navigation_home: {
-                selectedFragment = FragmentHome.newInstance();
-                setTollbarTitle("تب اول");
-                changeDrawerMenu(R.menu.main_drawer);
+                Title = "خانه";
+                selectedTab(Title, R.menu.main_drawer, TAB_HOME);
                 break;
             }
             case R.id.navigation_message: {
-                item.setTitle("ok");
-                setTollbarTitle("تب دوم");
-                changeDrawerMenu(R.menu.main_drawer2);
-                selectedFragment = FragmentSecond.newInstance();
+                Title = "سیستم پیام";
+                selectedTab(Title, R.menu.main_drawer2, TAB_Message);
 
                 break;
             }
 
         }
-        StartFragment();
+        //StartFragment(selectedFragment, BACK_STACK_ROOT_TAG);
         return true;
     }
 
-    private void StartFragment() {
-        final String BACK_STACK_ROOT_TAG = "root_fragment";
-        if (selectedFragment != null) {
-          /* if(selectedFragment.isVisible()) {
-               selectedFragment.setMenuVisibility(false);
-           }*/
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.frm_main, selectedFragment)
-                    .addToBackStack(BACK_STACK_ROOT_TAG)
-                    .commit();
-            /*FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            if(App.canRecreatFragment){
-                transaction.replace(R.id.frm_main, selectedFragment);
-            }else{
-                transaction.show(selectedFragment);
+    private void selectedTab(String title, int drawer, String tabId) {
+        mCurrentTab = tabId;
+
+        if (App.fragmentStacks.get(tabId).size() == 0) {
+         /*   if (drawer > 0) {
+                changeDrawerMenu(drawer);
+            }*/
+            setTollbarTitle(title);
+      /*
+       *    First time this tab is selected. So add first fragment of that tab.
+       *    Dont need animation, so that argument is false.
+       *    We are adding a new fragment which is not present in stack. So add to stack is true.
+       */
+
+            switch (tabId) {
+                case TAB_HOME: {
+                    pushFragments(tabId, new FragmentHome(), true);
+                    break;
+                }
+                case TAB_DASHBOARD: {
+                    pushFragments(tabId, new FragmentHome(), true);
+                    break;
+                }
+
+                case TAB_Message: {
+                    App.fragmentMessageList = new FragmentMessageList().newInstance(getSupportFragmentManager());
+                    Fragment fragment = App.fragmentMessageList;
+                    pushFragments(tabId, fragment, true);
+                    break;
+                }
+
             }
 
-            transaction.commit();*/
-            // selectedFragment.setMenuVisibility(true);
+        } else {
+      /*
+       *    We are switching tabs, and target tab is already has atleast one fragment.
+       *    No need of animation, no need of stack pushing. Just show the target fragment
+       */
+            pushFragments(tabId, App.fragmentStacks.get(tabId).lastElement(), false);
         }
+    }
+
+    public void pushFragments(String tag, Fragment fragment, boolean shouldAdd) {
+        if (shouldAdd) {
+            App.fragmentStacks.get(tag).push(fragment);
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .hide(CurentFragment)
+                    .add(R.id.frm_main, fragment)
+                    .commit();
+        } else {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .hide(CurentFragment)
+                    .show(fragment)
+                    .commit();
+        }
+
+
+        CurentFragment = fragment;
+
+
+    }
+
+    public void popFragments() {
+  /*
+   *    Select the second last fragment in current tab's stack..
+   *    which will be shown after the fragment transaction given below
+   */
+        Fragment fragment = App.fragmentStacks.get(mCurrentTab).elementAt(App.fragmentStacks.get(mCurrentTab).size() - 2);
+
+  /*pop current fragment from stack.. */
+        // fragment=   App.fragmentStacks.get(mCurrentTab).pop();
+
+  /* We have the target fragment in hand.. Just show it.. Show a standard navigation animation*/
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.frm_main, fragment)
+                .commit();
 
     }
 
@@ -165,10 +254,32 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         return false;
     }
 
+    public void openMessageList() {
+        if (staticbottomNavigation != null) {
+            staticbottomNavigation.setCurrentItem(2);
+        }
+
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (broadcastReceiver != null) {
+
+            unregisterReceiver(broadcastReceiver);
+        }
         farzinMetaDataSync.onDestory();
-        unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
+            // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
+            finish();
+            return;
+        }
+
+    /* Goto previous fragment in navigation stack of this tab */
+        popFragments();
     }
 }

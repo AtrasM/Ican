@@ -2,6 +2,8 @@ package avida.ican.Ican.View.Custom;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,24 +11,44 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewCompat;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ms.square.android.expandabletextview.ExpandableTextView;
+
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
+import avida.ican.Ican.App;
+import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.View.Enum.ExtensionEnum;
+import saman.zamani.persiandate.PersianDate;
+import saman.zamani.persiandate.PersianDateFormat;
+
 
 /**
  * Created by AtrasVida on 2018-04-11 at 10:37 AM
@@ -35,6 +57,14 @@ import java.util.Date;
 public class CustomFunction {
     private Activity activity;
     private Context context;
+/*    String[] ImagesExtension = {".jpg", ".jpeg", ".png", ".tiff", ".bmp"};
+    List<String> ImageExtensionList = Arrays.asList(ImagesExtension);
+    String[] VideosExtension = {".mp4", ".mkv", ".avi", ".gif", ".flv"};
+    List<String> VideosExtensionList = Arrays.asList(VideosExtension);
+    String[] AudiosExtension = {".wav", ".mp3"};
+    List<String> AudiosExtensionList = Arrays.asList(AudiosExtension);
+    String[] TextsExtension = {".pdf", ".doc", ".txt"};
+    List<String> TextsExtensionList = Arrays.asList(AudiosExtension);*/
 
     public CustomFunction() {
     }
@@ -134,6 +164,115 @@ public class CustomFunction {
         activity.startActivity(Intent.createChooser(emailIntent, "ارسال ایمیل"));
     }
 
+    public ExtensionEnum getExtensionCategory(String fileExtension) {
+        fileExtension = fileExtension.replace("waw", "wav");
+
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
+        type=type.substring(0,type.indexOf("/"));
+        ExtensionEnum extensionEnum = ExtensionEnum.NONE;
+
+        switch (type) {
+            case "image": {
+                extensionEnum = ExtensionEnum.IMAGE;
+                break;
+            }
+            case "video": {
+                extensionEnum = ExtensionEnum.VIDEO;
+                break;
+            }
+            case "audio": {
+                extensionEnum = ExtensionEnum.AUDIO;
+                break;
+            }
+            case "text": {
+                extensionEnum = ExtensionEnum.TEXT;
+                break;
+            }
+        }
+
+ /*       if (ImageExtensionList.contains(fileExtension)) {
+            extensionEnum = ExtensionEnum.IMAGE;
+        } else if (VideosExtensionList.contains(fileExtension)) {
+            extensionEnum = ExtensionEnum.VIDEO;
+        } else if (AudiosExtensionList.contains(fileExtension)) {
+            extensionEnum = ExtensionEnum.AUDIO;
+        } else if (TextsExtensionList.contains(fileExtension)) {
+            extensionEnum = ExtensionEnum.TEXT;
+        }*/
+        return extensionEnum;
+    }
+
+    private String getIntentType(ExtensionEnum extensionEnum) {
+
+        String type = "*.*";
+        switch (extensionEnum) {
+            case IMAGE: {
+                type = "image/*";
+                break;
+            }
+            case VIDEO: {
+                type = "video/*";
+                break;
+            }
+            case AUDIO: {
+                type = "audio/*";
+                break;
+            }
+            case TEXT: {
+                type = "text/*";
+                break;
+            }
+        }
+        return type;
+    }
+
+    public File OpenFile(byte[] fileAsBytes, String fileName, String fileExtension) {
+        fileExtension = fileExtension.replace("waw", "wav");
+        boolean b = new CheckPermission().writeExternalStorage(1, activity);
+        File file = null;
+        if (b) {
+            //String type = getIntentType(getExtensionCategory(fileExtension));
+            MimeTypeMap mime = MimeTypeMap.getSingleton();
+            String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
+            try {
+                File dir = new File(App.DEFAULTPATH);
+                file = new File(dir, fileName + fileExtension);
+                if (!file.exists()) {
+                    file.getParentFile().mkdirs();
+                    file.createNewFile();
+                }
+
+                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                bos.write(fileAsBytes);
+                bos.flush();
+                bos.close();
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
+                    intent.setDataAndType(contentUri, type);
+                } else {
+                    intent.setDataAndType(Uri.fromFile(file), type);
+                }
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                activity.startActivity(intent);
+
+           /*     App.getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        boolean b1 = file.delete();
+                    }
+                }, 10000);*/
+            } catch (
+                    IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return file;
+    }
+
 
     public int getScreenOrientation() {
         return activity.getResources().getConfiguration().orientation;
@@ -142,10 +281,24 @@ public class CustomFunction {
     /**
      * @param df example: "dd/M/yyyy hh:mm:ss"
      */
-    public static String getCurentDateTimeAsFormat(String df) {
+    public static String getCurentDateTimeAsStringFormat(String df) {
         Calendar c = Calendar.getInstance();
         @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
         return simpleDateFormat.format(c.getTime());
+    }
+
+    public static Date getCurentDateTimeAsDateFormat(String df) {
+        Calendar c = Calendar.getInstance();
+        Date date = null;// = new Date(c.getTime().toString());
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
+        String strDate = simpleDateFormat.format(c.getTime());
+        try {
+            date = simpleDateFormat.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
     }
 
     public static Date getCurentDateTime() {
@@ -153,10 +306,38 @@ public class CustomFunction {
         return c.getTime();
     }
 
+    public static String MiladyToJalaly(String DateTime) {
+        String JalalyDate = "";
+        Date d = new Date(DateTime);
+      /*  GregorianCalendar calendar=new GregorianCalendar(date.getYear(),);
+        Date d=new Date(DateTime);*/
+        PersianDate pdate = new PersianDate(d);
+        PersianDateFormat pdformater = new PersianDateFormat("Y/m/d H:i:s");
+        JalalyDate = pdformater.format(pdate);
+        return JalalyDate;
+    }
+
+
     public void setHtmlText(TextView myTextView, String myText) {
+        ChangeXml changeXml = new ChangeXml();
+        if (myText.contains("![CDATA[")) {
+            myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
+        }
+        myText = changeXml.CharDecoder(myText);
         UrlImageParser p = new UrlImageParser(myTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myTextView.setText(htmlSpan);
+    }
+
+    public void setHtmlText(ExpandableTextView myExTextView, String myText) {
+        ChangeXml changeXml = new ChangeXml();
+        if (myText.contains("![CDATA[")) {
+            myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
+        }
+        myText = changeXml.CharDecoder(myText);
+        UrlImageParser p = new UrlImageParser(myExTextView, activity);
+        Spanned htmlSpan = Html.fromHtml(myText, p, null);
+        myExTextView.setText(htmlSpan);
     }
 
 
@@ -233,5 +414,29 @@ public class CustomFunction {
 
     public static String AddXmlCData(String data) {
         return "<![CDATA[" + data + "]]>";
+    }
+
+    public static boolean isNotificationVisible(Context context, int ID, Intent notificationIntent) {
+        PendingIntent test = PendingIntent.getActivity(context, ID, notificationIntent, PendingIntent.FLAG_NO_CREATE);
+        return test != null;
+    }
+
+    public static void DismissNotification(Context context, int ID) {
+        Log.i("Notif", "DismissNotification");
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        try {
+            mNotificationManager.cancel(ID);
+            new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
+            Log.i("Notif", "UpdateAllNewMessageStatusToUnreadStatus");
+        } catch (Exception e) {
+            Log.i("Notif", "error update status");
+            e.printStackTrace();
+        }
+    }
+
+    public static String repeatChar(char c, int length) {
+        char[] data = new char[length];
+        Arrays.fill(data, c);
+        return new String(data);
     }
 }

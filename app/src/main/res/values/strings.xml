@@ -32,7 +32,6 @@
     <string name="navigation_drawer_close">بستن منوی کشویی</string>
     <string name="hint_subject_massage">موضوع</string>
     <string name="hint_content_massage">متن پیام</string>
-    <string name="strSimpleDateFormat">dd/M/yyyy hh:mm:ss</string>
     <string name="title_first_meta_data_sync">برنامه احتیاج به بروز رسانی داده های مهم دارد.</string>
     <string name="subtitle_first_meta_data_sync">لطفا شکیبا باشید.</string>
     <string name="error_adapter_item_count">خطای Null در اطلاعات</string>
@@ -48,6 +47,10 @@
     <string name="title_nav_home_message">پیام</string>
     <string name="editore_place_holder">با سلام</string>
     <string name="title_farzin_write_message">ایجاد پیام</string>
+    <string name="title_farzin_reply_message">پاسخ به پیام</string>
+    <string name="reply_message">پاسخ به پیام:</string>
+    <string name="sender">فرستنده:</string>
+    <string name="title_farzin_fwd_message">هدایت پیام</string>
     <string name="title_camera">دوربین</string>
     <string name="title_photo">عکس</string>
     <string name="title_video">فیلم</string>
@@ -64,5 +67,12 @@
     <string name="tmpl_text">مقدار</string>
     <string name="wrong_to_connect_to_internet">مشکل در ارتباط با اینترنت</string>
     <string name="please_check_youre_internet_access">اتصال به اینترنت را بررسی کرده و دوباره تلاش کنید</string>
-
+    <string name="newMessageFrom">پیام جدید از</string>
+    <string name="newMessage">پیام جدید</string>
+    <string name="NewMessageContent">پیام جدید</string>
+    <string name="set_message">پیام های ارسالی</string>
+    <string name="receive_message">پیام های دریافتی</string>
+    <string name="Group_Message">پیام گروهی</string>
+    <string name="no_data">موردی وجود ندارد!</string>
+    <string name="TitleDetailMessage">جزییات پیام</string>
 </resources>

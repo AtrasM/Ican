@@ -20,9 +20,9 @@ public class ChangeXml {
         return xmlString;
     }
 
-    private String RemoveTag(String xmlString, String StartTag, String EndTag) {
+    public String RemoveTag(String xmlString, String StartTag, String EndTag) {
         try {
-            xmlString = xmlString.replaceAll(StartTag, "").replace(EndTag, "");
+            xmlString = xmlString.replace(StartTag, "").replace(EndTag, "");
         } catch (Exception e) {
             e.printStackTrace();
         }

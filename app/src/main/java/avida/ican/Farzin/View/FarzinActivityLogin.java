@@ -1,10 +1,16 @@
 package avida.ican.Farzin.View;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Presenter.LoginPresenter;
@@ -13,8 +19,10 @@ import avida.ican.Farzin.View.Interface.LoginViewListener;
 import avida.ican.Farzin.View.Validation.Validation;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
+import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -56,15 +64,27 @@ public class FarzinActivityLogin extends BaseToolbarActivity {
         App.setCurentProject(CurentProject.Ican);
         isLogOut = getIntent().getBooleanExtra("LogOut", false);
         if (isLogOut) {
-            lnMain.setVisibility(View.VISIBLE);
-            loading.Hide();
-        }else{
+            CloseActivitys(new ListenerCloseActivitys() {
+                @Override
+                public void onFinish() {
+                    lnMain.setVisibility(View.VISIBLE);
+                    loading.Hide();
+                }
+
+                @Override
+                public void onCancel() {
+                    lnMain.setVisibility(View.VISIBLE);
+                    loading.Hide();
+                }
+            });
+
+        } else {
             loginPresenter.AutoAuthentiocation(new LoginViewListener() {
                 @Override
                 public void onSuccess() {
                     goToActivity(FarzinActivityMain.class);
                     loading.Hide();
-                    Finish();
+                    Finish(App.CurentActivity);
                 }
 
                 @Override
@@ -96,13 +116,14 @@ public class FarzinActivityLogin extends BaseToolbarActivity {
         });
     }
 
+
     private void Login() {
         loginPresenter.Authentiocation(UserName, Password, ServerUrl, new LoginViewListener() {
             @Override
             public void onSuccess() {
                 goToActivity(FarzinActivityMain.class);
                 loading.Hide();
-                Finish();
+                Finish(App.CurentActivity);
             }
 
             @Override

@@ -1,10 +1,12 @@
 package avida.ican.Ican;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -15,11 +17,18 @@ import android.widget.EditText;
 
 import com.orhanobut.dialogplus.DialogPlus;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Stack;
+
+import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.ChangeAligneViewLayoutToRtl;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.MediaPicker;
 import avida.ican.Ican.View.Enum.RequestCode;
+import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 import avida.ican.R;
 import butterknife.ButterKnife;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -57,8 +66,21 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.CurentActivity = this;
-        setContentView(getLayoutResource());
 
+        if (App.activityStacks != null) {
+            String tag = App.CurentActivity.getClass().getSimpleName();
+            if (App.activityStacks.get(tag) == null) {
+                App.activityStacks.put(tag, new Stack<Activity>());
+                App.activityStacks.get(tag).push(App.CurentActivity);
+            }
+        } else {
+            App.activityStacks = new HashMap<>();
+            String tag = App.CurentActivity.getClass().getSimpleName();
+            App.activityStacks.put(tag, new Stack<Activity>());
+            App.activityStacks.get(tag).push(App.CurentActivity);
+        }
+
+        setContentView(getLayoutResource());
         ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -112,16 +134,41 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     }
 
-    public boolean Finish() {
+    public boolean Finish(Activity activity) {
         if (App.isLoading) return false;
         if (!App.canBack) return false;
-        App.CurentActivity.finish();
-        App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        activity.finish();
+        activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        App.activityStacks.values().remove(activity.getClass().getSimpleName());
         return true;
     }
 
+    public void CloseActivitys(ListenerCloseActivitys listenerCloseActivitys) {
+
+        if (App.activityStacks == null) {
+            listenerCloseActivitys.onCancel();
+        } else {
+            App.canBack = false;
+            Iterator mIterator = App.activityStacks.keySet().iterator();
+            while (mIterator.hasNext()) {
+                String key = (String) mIterator.next();
+                Activity activity = App.activityStacks.get(key).lastElement();
+                if (!activity.getClass().getSimpleName().equals(this.getClass().getSimpleName()) && !activity.getClass().getSimpleName().equals(ActivityMain.class.getSimpleName())) {
+                    activity.finish();
+                    App.activityStacks.values().remove(key);
+                }
+
+            }
+            listenerCloseActivitys.onFinish();
+            App.canBack = true;
+        }
+
+    }
+
     public static void goToActivity(Class<?> cls) {
+
         Intent intent = new Intent(App.CurentActivity, cls);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         App.CurentActivity.startActivity(intent);
         App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -129,9 +176,14 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public static void goToActivity(Intent intent) {
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        App.CurentActivity.startActivity(intent);
-        App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            App.CurentActivity.startActivity(intent);
+            App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -139,6 +191,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static void goToActivityForResult(Intent intent) {
         App.CurentActivity.startActivityForResult(intent, 1);
         App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
+
+    public static Activity getActivityFromStackMap(String Tag) {
+        if (App.activityStacks.get(Tag).size() > 0) {
+            return App.activityStacks.get(Tag).lastElement();
+        }
+        return null;
     }
 
     @Override
@@ -165,7 +224,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Finish();
+            Finish(App.CurentActivity);
             return true;
         }
 

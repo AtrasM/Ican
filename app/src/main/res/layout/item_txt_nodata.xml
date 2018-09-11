@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/txt_no_data"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_centerHorizontal="true"
+    android:layout_centerVertical="true"
+    android:background="@color/color_background"
+    android:gravity="center"
+    android:text="@string/no_data"
+    style="@style/custom_Txt_Title_style"
+    android:textColor="@color/color_Hint"
+    android:visibility="visible" />

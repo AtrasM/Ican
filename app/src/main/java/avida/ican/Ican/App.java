@@ -4,9 +4,11 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.multidex.MultiDexApplication;
+import android.support.v4.app.Fragment;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -14,8 +16,13 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.rahul.media.model.Define;
 import com.squareup.otto.Bus;
 
+import java.util.HashMap;
+import java.util.Stack;
+
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.FarzinActivityMain;
+import avida.ican.Farzin.View.Fragment.FragmentMessageList;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.NetWorkStatusListener;
@@ -41,14 +48,17 @@ public class App extends MultiDexApplication {
     public static NetWorkStatusListener netWorkStatusListener;
     public static NetworkStatus networkStatus = NetworkStatus.Connected;
     private static Bus sBus;
-    public static boolean canRecreatFragment = false;
+   // public static boolean canRecreatFragment = false;
 
     private static CurentProject curentProject;
     private static FarzinDatabaseHelper farzinDatabaseHelper;
     public static String fontPath = "font/iran_sans_mobile.ttf";
     @SuppressLint("StaticFieldLeak")
     private static Context serviceContext;
-
+    public static String DEFAULTPATH= Environment.getExternalStorageDirectory() + "/ican_temp/";
+    public static FragmentMessageList fragmentMessageList=null;
+    public static HashMap<String, Stack<Fragment>> fragmentStacks;
+    public static HashMap<String, Stack<Activity>> activityStacks;
     @Override
     public void onCreate() {
         super.onCreate();

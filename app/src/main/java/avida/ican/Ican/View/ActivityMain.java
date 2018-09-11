@@ -1,6 +1,7 @@
 package avida.ican.Ican.View;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.util.Log;
@@ -8,17 +9,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.MessageListListener;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
-import avida.ican.Farzin.Presenter.GetMessageFromServerPresenter;
+import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.FarzinActivityLogin;
@@ -56,10 +54,12 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        context = this;
         cvFarzin.setOnClickListener(this);
         App.setCurentProject(CurentProject.Ican);
         cvAudioRecorder.setOnClickListener(this);
@@ -97,8 +97,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-                getMessageFromServerPresenter = new GetMessageFromServerPresenter();
-                getMessageFromServerPresenter.GetSentMessageList(1, new MessageListListener() {
+            /*    getMessageFromServerPresenter = new GetMessageFromServerPresenter();
+                getMessageFromServerPresenter.GetRecieveMessageList(1, new MessageListListener() {
                     @Override
                     public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                         App.ShowMessage().ShowToast("onSuccess", Toast.LENGTH_SHORT);
@@ -113,8 +113,10 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                     public void onCancel() {
                         App.ShowMessage().ShowToast("onCancel", Toast.LENGTH_SHORT);
                     }
-                });
-                //goToActivity(FarzinActivityLogin.class);
+                });*/
+                goToActivity(FarzinActivityLogin.class);
+             /*   StructureMessageDB structureMessageDB=new FarzinMessageQuery().GetMessage(2651);
+                structureMessageDB=structureMessageDB;*/
 
                 break;
             }
@@ -243,6 +245,49 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             }
         }).showMultyPickFromGallery();
     }
+
+/*    void callNotification(String title, String message) {
+        int notifyID = 1;
+        String CHANNEL_ID = "my_channel_01";// The id of the channel.
+        CharSequence name = "atrasChannel";// The user-visible name of the channel.
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+
+        Intent intent = new Intent(this, FarzinActivityLogin.class);
+        intent.putExtra("LogOut", true);
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        this,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_CANCEL_CURRENT
+                );
+        Intent intentCancell = new Intent(this, FarzinMessageNotificationReceiver.class);
+        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this.getApplicationContext(), 0, intentCancell, 0);
+
+
+        NotificationChannel mChannel = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+        }
+        Notification notification =
+                new NotificationCompat.Builder(this)
+                        .setContentIntent(pendingIntent)
+                        .setDeleteIntent(pendingIntentCancell)
+                        .setSmallIcon(R.drawable.ic_album)
+                        .setContentTitle(title)
+                        .setContentText(message)
+                        .setChannelId(CHANNEL_ID).build();
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
+
+        // Issue the notification.
+        mNotificationManager.notify(notifyID, notification);
+
+    }*/
 
 
 }

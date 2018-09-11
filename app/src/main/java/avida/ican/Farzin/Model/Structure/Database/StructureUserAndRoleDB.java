@@ -24,7 +24,7 @@ public class StructureUserAndRoleDB implements Serializable {
     @DatabaseField()
     private String Role_ParentID;
     @DatabaseField()
-    private String IsDefForCardTableString;
+    private String IsDefForCardTable;
     @DatabaseField()
     private String RoleCode;
     @DatabaseField()
@@ -57,13 +57,13 @@ public class StructureUserAndRoleDB implements Serializable {
         //empty
     }
 
-    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTableString, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
+    public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTable, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
         User_ID = user_ID;
         UserName = userName;
         FirstName = firstName;
         LastName = lastName;
         Role_ParentID = role_ParentID;
-        IsDefForCardTableString = isDefForCardTableString;
+        IsDefForCardTable = isDefForCardTable;
         RoleCode = roleCode;
         RoleName = roleName;
         Role_ID = role_ID;
@@ -124,12 +124,12 @@ public class StructureUserAndRoleDB implements Serializable {
         Role_ParentID = role_ParentID;
     }
 
-    public String getIsDefForCardTableString() {
-        return IsDefForCardTableString;
+    public String getIsDefForCardTable() {
+        return IsDefForCardTable;
     }
 
-    public void setIsDefForCardTableString(String isDefForCardTableString) {
-        IsDefForCardTableString = isDefForCardTableString;
+    public void setIsDefForCardTable(String IsDefForCardTable) {
+        IsDefForCardTable = IsDefForCardTable;
     }
 
     public String getRoleCode() {

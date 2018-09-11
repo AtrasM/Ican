@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter;
+package avida.ican.Farzin.Presenter.Message;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -30,27 +30,26 @@ public class GetMessageFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "SendMessageToServerPresenter";
     private FarzinPrefrences farzinPrefrences;
-    private final int COUNT = 1;
 
 
     public GetMessageFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void GetRecieveMessageList(int page, MessageListListener messageListListener) {
+    public void GetRecieveMessageList(int page,int count, MessageListListener messageListListener) {
         this.MetodName = "GetRecieveMessageList";
-        GetMessage(page, true, messageListListener);
+        GetMessage(page,count, true, messageListListener);
     }
 
 
-    public void GetSentMessageList(int page, MessageListListener messageListListener) {
+    public void GetSentMessageList(int page,int count, MessageListListener messageListListener) {
         this.MetodName = "GetSentMessageList";
-        GetMessage(page, false, messageListListener);
+        GetMessage(page,count, false, messageListListener);
     }
 
-    private void GetMessage(int page, final boolean RecieveMessage, final MessageListListener messageListListener) {
+    private void GetMessage(int page,int count, final boolean RecieveMessage, final MessageListListener messageListListener) {
 
-        CallApi(MetodName, EndPoint, getSoapObject(page, COUNT), new DataProcessListener() {
+        CallApi(MetodName, EndPoint, getSoapObject(page, count), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 if (RecieveMessage) {
@@ -85,7 +84,7 @@ public class GetMessageFromServerPresenter {
             } else {
                 List<StructureMessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
                 // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<StructureMessageRES>(messageListResult));
+                messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
         }
     }
@@ -100,7 +99,7 @@ public class GetMessageFromServerPresenter {
             } else {
                 List<StructureMessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
                 // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<StructureMessageRES>(messageListResult));
+                messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
         }
     }

@@ -39,6 +39,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
     private int layout = R.layout.item_user_and_role_main;
     private ImageLoader imageLoader;
     private ListenerAdapterUserAndRole listenerAdapterUserAndRole;
+
     public AdapterUserAndRoleMain(List<StructureUserAndRoleDB> itemList, ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
         imageLoader = App.getImageLoader();
         this.itemList = new ArrayList<>(itemList);
@@ -51,8 +52,8 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
         @BindView(R.id.txt_name)
         TextView txtName;
 
-        @BindView(R.id.txt_organization_role_name)
-        TextView txtOrganizationRoleName;
+        @BindView(R.id.txt_role_name)
+        TextView txtRoleName;
 
         @BindView(R.id.img_check_box)
         ImageView imgCheck;
@@ -95,13 +96,16 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
         CheckItemSelected(item, viewHolder, true);
 
 
-        viewHolder.txtName.setText(item.getFirstName());
-        if (!item.getFirstName().isEmpty() && item.getFirstName().length() > 1) {
+        viewHolder.txtName.setText(item.getFirstName() + " " + item.getLastName());
+        if (!item.getLastName().isEmpty() && item.getLastName().length() >= 1) {
+           String Char = item.getLastName().substring(0, 1);
+            viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
+        }else{
             String Char = item.getFirstName().substring(0, 1);
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
         }
 
-        viewHolder.txtOrganizationRoleName.setText(" [ " + item.getOrganizationRoleName() + " ] ");
+        viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -158,10 +162,16 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
 
         new AsyncTask<Void, Void, Integer>() {
             @Override
+            protected void onPreExecute() {
+                listenerAdapterUserAndRole.showLoading();
+                super.onPreExecute();
+            }
+
+            @Override
             protected Integer doInBackground(Void... voids) {
                 for (int i = 0; i < itemList.size(); i++) {
                     sleep();
-                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID()) {
+                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID() && structureUserAndRoleDB.getRole_ID() == itemList.get(i).getRole_ID()) {
                         return i;
                     }
                 }

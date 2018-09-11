@@ -118,7 +118,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
                 intent.putExtra("LogOut",true);
                 goToActivity(intent);
 
-                Finish();
+                Finish(App.CurentActivity);
                 break;
             }
         }
@@ -154,7 +154,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         switch (item.getItemId()) {
             case android.R.id.home: {
                 if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                    Finish();
+                    Finish(App.CurentActivity);
                 } else {
                     drawer.closeDrawer(GravityCompat.START);
                 }
@@ -168,7 +168,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                Finish();
+                Finish(App.CurentActivity);
             } else {
                 drawer.closeDrawer(GravityCompat.START);
             }

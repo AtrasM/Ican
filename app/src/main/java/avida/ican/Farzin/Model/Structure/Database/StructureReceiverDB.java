@@ -5,6 +5,8 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
+import avida.ican.Farzin.Model.Structure.Response.StructureReceiverRES;
+
 /**
  * Created by AtrasVida in 2018-06-19 at 15:25 PM
  */
@@ -24,16 +26,32 @@ public class StructureReceiverDB implements Serializable {
     private String user_name;
     @DatabaseField()
     private String native_id;
+    @DatabaseField
+    private boolean is_read;
+    @DatabaseField
+    private String view_date;
 
     public StructureReceiverDB() {
     }
 
-    public StructureReceiverDB(StructureMessageDB message, int user_id, int role_id, String user_name, String native_id) {
+    public StructureReceiverDB(StructureMessageDB message, StructureReceiverRES structureReceiverRES, StructureUserAndRoleDB structureUserAndRoleDB) {
+        this.message = message;
+        this.user_id = structureUserAndRoleDB.getUser_ID();
+        this.role_id = structureUserAndRoleDB.getRole_ID();
+        this.user_name = structureUserAndRoleDB.getUserName();
+        this.native_id = structureUserAndRoleDB.getNativeID();
+        this.is_read = structureReceiverRES.isRead();
+        this.view_date = structureReceiverRES.getViewDate();
+    }
+
+    public StructureReceiverDB(StructureMessageDB message, int user_id, int role_id, String user_name, String native_id, boolean is_read, String view_date) {
         this.message = message;
         this.user_id = user_id;
         this.role_id = role_id;
         this.user_name = user_name;
         this.native_id = native_id;
+        this.is_read = is_read;
+        this.view_date = view_date;
     }
 
     public StructureMessageDB getMessage() {
@@ -74,6 +92,14 @@ public class StructureReceiverDB implements Serializable {
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
+    }
+
+    public boolean Is_read() {
+        return is_read;
+    }
+
+    public String getView_date() {
+        return view_date;
     }
 }
 

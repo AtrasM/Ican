@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/navigation_home_inbox"
         android:icon="@drawable/ic_nav_home_inbox"
@@ -12,6 +13,7 @@
     <item
         android:id="@+id/navigation_message"
         android:icon="@drawable/ic_nav_home_message"
+        app:showAsAction="collapseActionView"
         android:title="@string/title_nav_home_message" />
 
     <!--  <item

@@ -3,6 +3,7 @@ package avida.ican.Farzin.View;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -23,17 +24,21 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReply;
+import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
-import avida.ican.Farzin.Presenter.FarzinMessageQuery;
+import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
+import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.AudioRecorder;
+import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
@@ -46,6 +51,7 @@ import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.AudioRecorderListener;
 import avida.ican.Ican.View.Interface.FilePickerListener;
+import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
 import avida.ican.Ican.View.Interface.ListenerAttach;
 import avida.ican.Ican.View.Interface.MediaPickerListener;
 import avida.ican.R;
@@ -75,7 +81,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private List<StructureUserAndRoleDB> userAndRoleDBS = new ArrayList<>();
     private ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
     private AdapterAttach adapterAttach;
-    private String audioExetention = ".waw";
+    private String audioExetention = ".wav";
 
     @BindDimen(R.dimen.padding)
     int defPading;
@@ -83,6 +89,17 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     int textSize;
 
     private Loading loading;
+    private File file;
+    private String message = "";
+    public static StructureFwdReply structureFwdReply = new StructureFwdReply();
+
+    @Override
+    protected void onResume() {
+        if (file != null) {
+            file.delete();
+        }
+        super.onResume();
+    }
 
     @Override
     protected int getLayoutResource() {
@@ -92,20 +109,53 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        boolean ISFwdReplyMessage = getIntent().getBooleanExtra(PutExtraEnum.ISFwdReplyMessage.getValue(), false);
+
         exTxtContacts.setText("");
         loading = new Loading(App.CurentActivity).Creat();
-        initTollBar(Resorse.getString(R.string.title_farzin_write_message));
         setUpRichEditore();
         initAdapter();
+
+        if (ISFwdReplyMessage) {
+            //structureFwdReply = (StructureFwdReply) bundleObject.getSerializable(PutExtraEnum.ISFwdReplyMessage.getValue());
+            if (structureFwdReply.isReply()) {
+
+                initTollBar(Resorse.getString(R.string.title_farzin_reply_message));
+                String subject = Resorse.getString(R.string.reply_message) + " " + structureFwdReply.getSubject();
+                edtSubject.setText(subject);
+                String divider = CustomFunction.repeatChar('-', 80);
+                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReply.getSenderFullName() + structureFwdReply.getSenderRoleName() + ") <br> " + structureFwdReply.getContent() + " <br> " + divider + " <br> ";
+                reMsg.setHtml(content);
+                StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReply.getSender_user_id(), structureFwdReply.getSender_role_id());
+                userAndRoleDBS.add(structureUserAndRoleDB);
+                ShowSelectionItem(userAndRoleDBS);
+                structureAttaches = structureFwdReply.getStructureAttaches();
+                adapterAttach.addAll(structureAttaches);
+            } else {
+                initTollBar(Resorse.getString(R.string.title_farzin_fwd_message));
+                edtSubject.setText(structureFwdReply.getSubject());
+                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReply.getSenderFullName() + structureFwdReply.getSenderRoleName() + ") <br> " + structureFwdReply.getContent() + " <br> ";
+                reMsg.setHtml(content);
+            }
+
+
+        } else {
+            initTollBar(Resorse.getString(R.string.title_farzin_write_message));
+        }
+
+
         lnAddContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showUserAndRoleDialog();
             }
         });
         exTxtContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 showUserAndRoleDialog();
             }
         });
@@ -157,7 +207,14 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private void initAdapter() {
         LinearLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new LinearLayoutManagerWithSmoothScroller(App.CurentActivity);
         RcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
-        adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches);
+        adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, true, new ListenerAdapterAttach() {
+            @Override
+            public void onOpenFile(StructureAttach structureAttach) {
+                byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
+                file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
+
+            }
+        });
         RcvAttach.setAdapter(adapterAttach);
     }
 
@@ -191,8 +248,11 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
     private void setUpRichEditore() {
         //reMsg.setEditorHeight(200);
-        reMsg.setEditorFontSize(textSize);
         reMsg.setAlignRight();
+        reMsg.setEditorFontSize(textSize);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            reMsg.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+        }
         reMsg.setEditorFontColor(Color.BLACK);
         reMsg.setPadding(defPading, defPading, defPading, defPading);
         reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
@@ -304,8 +364,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 reMsg.setNumbers();
             }
         });
-
-
     }
 
 
@@ -530,31 +588,57 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private void SaveMessage() {
         loading.Show();
         String Subject = "" + edtSubject.getText().toString();
-        StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
+        // StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
+        int user_id = getFarzinPrefrences().getUserID();
+        int role_id = getFarzinPrefrences().getRoleID();
+        new FarzinMessageQuery().SaveSendLocalMessage(user_id, role_id, Subject, message, structureAttaches, userAndRoleDBS, new MessageQuerySaveListener() {
 
-        new FarzinMessageQuery().SaveMessage(structureUserAndRoleDB.getUser_ID(), structureUserAndRoleDB.getRole_ID(), Subject, reMsg.getHtml(), structureAttaches, userAndRoleDBS, new
+            @Override
+            public void onSuccess(final StructureMessageDB structureMessageDB) {
+                showSnackStatus(Resorse.getString(R.string.message_sent_successfully));
+                if (App.fragmentMessageList != null) {
+                    App.CurentActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            App.fragmentMessageList.AddSendNewMessage(structureMessageDB);
+                            // UpdateAllNewMessageStatusToUnreadStatus();
+                        }
+                    });
 
-                MessageQuerySaveListener() {
-                    @Override
-                    public void onSuccess() {
-                        loading.Hide();
-                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.message_sent_successfully), SnackBarEnum.SNACKBAR_SHORT_TIME);
-                    }
 
-                    @Override
-                    public void onFailed(String message) {
-                        loading.Hide();
-                        if (!message.isEmpty())
-                            App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_LONG_TIME);
-                    }
+                }
 
-                    @Override
-                    public void onCancel() {
-                        loading.Hide();
-                        App.ShowMessage().ShowSnackBar("onCancel", SnackBarEnum.SNACKBAR_SHORT_TIME);
-                    }
-                });
+            }
 
+            @Override
+            public void onExisting() {
+
+            }
+
+            @Override
+            public void onFailed(final String message) {
+                showSnackStatus(message);
+
+            }
+
+            @Override
+            public void onCancel() {
+                showSnackStatus("onCancel");
+
+            }
+        });
+
+
+    }
+
+    private void showSnackStatus(final String message) {
+        App.CurentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loading.Hide();
+                App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_SHORT_TIME);
+            }
+        });
 
     }
 
@@ -573,9 +657,10 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             isValid = false;
             App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_recivers), SnackBarEnum.SNACKBAR_LONG_TIME);
         } else {
-            if (reMsg.getHtml().isEmpty()) {
-                isValid = false;
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_editor_filed), SnackBarEnum.SNACKBAR_LONG_TIME);
+            if (reMsg.getHtml() != null) {
+                message = reMsg.getHtml();
+                /*isValid = false;
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_editor_filed), SnackBarEnum.SNACKBAR_LONG_TIME);*/
             }
         }
 

@@ -9,6 +9,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
@@ -70,6 +71,8 @@ public class DialogUserAndRole {
         Button btnOk;
         @BindView(R.id.btn_cancel)
         Button btnCancel;
+        @BindView(R.id.ln_loading)
+        LinearLayout lnLoading;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -124,7 +127,7 @@ public class DialogUserAndRole {
         App.canBack = false;
         dialog = DialogPlus.newDialog(context)
                 .setHeader(R.layout.item_dialog_header)
-                .setContentHolder(new ViewHolder(R.layout.dialog_activity_user_and_roll))
+                .setContentHolder(new ViewHolder(R.layout.dialog_activity_user_and_role))
                 .setGravity(Gravity.CENTER)
                 .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                 .setCancelable(false)
@@ -152,6 +155,13 @@ public class DialogUserAndRole {
             public void onClick(View view) {
                 listenerUserAndRollMain.onCancel(mtmpItemSelect);
                 finish();
+            }
+        });
+
+        viewheder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
         dialog.show();
@@ -186,6 +196,16 @@ public class DialogUserAndRole {
 
 
             }
+
+            @Override
+            public void showLoading() {
+                ShowLoading();
+            }
+
+            @Override
+            public void hideLoading() {
+                HideLoading();
+            }
         });
 
         adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, new ListenerAdapterUserAndRole() {
@@ -199,9 +219,27 @@ public class DialogUserAndRole {
                 adapterUserAndRoleMain.unSelect(structureUserAndRoleDB);
                 adapterUserAndRoleSelected.delet(structureUserAndRoleDB);
             }
+
+            @Override
+            public void showLoading() {
+                ShowLoading();
+            }
+
+            @Override
+            public void hideLoading() {
+                HideLoading();
+            }
         });
 
         initViewPagerFragment();
+    }
+
+    private void HideLoading() {
+        viewHolder.lnLoading.setVisibility(View.GONE);
+    }
+
+    private void ShowLoading() {
+        viewHolder.lnLoading.setVisibility(View.VISIBLE);
     }
 
     private void initViewPagerFragment() {

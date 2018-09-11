@@ -7,6 +7,8 @@ package avida.ican.Farzin.Model.Enum;
 public enum MessageStatus {
     WAITING,
     STOPED,
-    SENDED,
-    Received
+    READ,
+    UnRead,
+    IsNew
+
 }

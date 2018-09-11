@@ -25,7 +25,7 @@ public class ActivitySplash extends BaseActivity {
             @Override
             public void run() {
                 goToActivity(ActivityMain.class);
-                Finish();
+                Finish(App.CurentActivity);
             }
         }, 1000);
     }

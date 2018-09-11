@@ -143,7 +143,7 @@ public class Base64EncodeDecodeFile {
 
 
     public byte[] DecodeBase64ToByte(String encodedBase64File) {
-        return decoded = Base64.decode(encoded, 0);
+        return decoded = Base64.decode(encodedBase64File, 0);
     }
 }
   /*  try

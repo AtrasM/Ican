@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
    style="@style/custom_item_rcv_style"
@@ -18,8 +19,7 @@
             android:id="@+id/img_attach_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            style="@style/custom_ic_right_style"
-            app:srcCompat="@drawable/ic_attach_file" />
+            style="@style/custom_ic_right_style" />
 
             <TextView
                 android:id="@+id/txt_name"
@@ -29,7 +29,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/margin"
                 android:gravity="center|right"
-                android:text="نام" />
+                android:text="نام"
+                tools:ignore="RtlHardcoded" />
 
 
         <ImageView
@@ -37,6 +38,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             style="@style/custom_ic_left_style"
+            android:visibility="gone"
             app:srcCompat="@drawable/delete" />
     </LinearLayout>
 

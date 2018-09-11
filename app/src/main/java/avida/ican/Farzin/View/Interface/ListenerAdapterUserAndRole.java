@@ -10,4 +10,6 @@ public interface ListenerAdapterUserAndRole {
     void onSelect(StructureUserAndRoleDB structureUserAndRoleDB);
 
     void unSelect(StructureUserAndRoleDB structureUserAndRoleDB);
+    void showLoading();
+    void hideLoading();
 }

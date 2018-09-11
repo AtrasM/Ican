@@ -3,15 +3,15 @@ package avida.ican.Farzin.Presenter;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
-import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
-import avida.ican.R;
 
 
 /**
@@ -34,15 +34,15 @@ public class FarzinMetaDataSync {
         //farzinPrefrences.putMetaDataSyncDate("");
     }
 
-    public FarzinMetaDataSync RunONschedule() {
+    public FarzinMetaDataSync RunONschedule(final MetaDataSyncListener metaDataSyncListener) {
         timerAsync = new Timer();
         timerTaskAsync = new TimerTask() {
             @Override
             public void run() {
                 try {
-                    String strSimpleDateFormat = Resorse.getString(R.string.strSimpleDateFormat);
+                    String strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
                     new CustomFunction(App.CurentActivity);
-                    String CurentDateTime = CustomFunction.getCurentDateTimeAsFormat(strSimpleDateFormat);
+                    String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
                     String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
                         if (App.networkStatus == NetworkStatus.WatingForNetwork) {
@@ -50,17 +50,25 @@ public class FarzinMetaDataSync {
                             App.getHandler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    RunONschedule();
+                                    RunONschedule(metaDataSyncListener);
                                 }
                             }, LONGDELAY);
                         } else {
-                            new FarzinMetaDataQuery(App.CurentActivity).Sync();
+                            new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
                         }
 
                     } else {
                         long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, CurentDateTime, MetaDataLastSyncDate).getElapsedDays();
                         if (difrence > 11) {
-                            new FarzinMetaDataQuery(App.CurentActivity).Sync();
+                            new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
+                        }else{
+
+                            App.CurentActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    metaDataSyncListener.onFinish();
+                                }
+                            });
                         }
                     }
 

@@ -181,7 +181,7 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                Finish();
+                Finish(App.CurentActivity);
                 break;
             }
         }
@@ -191,7 +191,7 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Finish();
+            Finish(App.CurentActivity);
             return true;
         }
 

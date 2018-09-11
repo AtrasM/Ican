@@ -18,6 +18,7 @@ import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
@@ -36,6 +37,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     private ImageLoader imageLoader;
     private ListenerAdapterUserAndRole listenerAdapterUserAndRole;
     private Activity context;
+    private Loading loading;
 
     public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
         imageLoader = App.getImageLoader();
@@ -49,8 +51,8 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
         @BindView(R.id.txt_name)
         TextView txtName;
-        @BindView(R.id.txt_organization_role_name)
-        TextView txtOrganizationRoleName;
+        @BindView(R.id.txt_role_name)
+        TextView txtRoleName;
 
         @BindView(R.id.img_delet)
         ImageView imgDelet;
@@ -83,8 +85,8 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureUserAndRoleDB item = itemList.get(position);
-        viewHolder.txtName.setText(item.getFirstName());
-        viewHolder.txtOrganizationRoleName.setText(" [ " + item.getOrganizationRoleName() + " ] ");
+        viewHolder.txtName.setText(item.getFirstName()+" "+item.getLastName());
+        viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -114,10 +116,16 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     public void delet(final StructureUserAndRoleDB structureUserAndRoleDB) {
         new AsyncTask<Void, Void, Integer>() {
             @Override
+            protected void onPreExecute() {
+                listenerAdapterUserAndRole.showLoading();
+                super.onPreExecute();
+            }
+
+            @Override
             protected Integer doInBackground(Void... voids) {
                 for (int i = 0; i < itemList.size(); i++) {
-                    sleep(10);
-                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID()) {
+                    //sleep(10);
+                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID()&&structureUserAndRoleDB.getRole_ID() == itemList.get(i).getRole_ID()) {
                         return i;
                     }
                 }
@@ -127,10 +135,11 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
             @Override
             protected void onPostExecute(Integer pos) {
                 if (pos > -1) {
-                    int position = (int) pos;
+                    int position =  pos;
                     itemList.remove(position);
                     notifyItemRemoved(position);
                 }
+                listenerAdapterUserAndRole.hideLoading();
                 super.onPostExecute(pos);
             }
         }.execute();

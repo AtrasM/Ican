@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter;
+package avida.ican.Farzin.Presenter.Message;
 
 import org.ksoap2.serialization.SoapObject;
 
@@ -23,7 +23,7 @@ import avida.ican.Ican.Model.XmlToObject;
  * Created by AtrasVida on 2018-06-09 at 14:59 PM
  */
 
-class SendMessageToServerPresenter {
+public class SendMessageToServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "MessageSystemManagment";
@@ -33,12 +33,12 @@ class SendMessageToServerPresenter {
     private String Tag = "SendMessageToServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-    SendMessageToServerPresenter() {
+    public SendMessageToServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
 
-    void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final MessageListener messageListener) {
+    public void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final MessageListener messageListener) {
 
         CallApi(MetodName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override

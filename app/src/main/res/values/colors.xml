@@ -18,7 +18,7 @@
     <color name="color_txt_Normal">#181717</color>
     <color name="color_Icons">#BEBEBE</color>
     <color name="color_EditText">#494a4b</color>
-    <color name="color_Hint">#BEBEBE</color>
+    <color name="color_Hint">#B3B3B3</color>
     <color name="color_White">#ffffff</color>
     <color name="color_Black">#000000</color>
     <color name="color_captionLight">#ffffff</color>
@@ -30,5 +30,11 @@
     <color name="color_tab_txt_selected">#2196F3</color>
     <color name="color_tab_txt_unselected">#83C4F8</color>
     <color name="color_tab_indicator_line">#2196F3</color>
+    <color name="shadow">#66000000</color>
+
+    <color name="color_message_list_attach">#EE822F</color>
+    <color name="color_fab">#536DFE</color>
+    <color name="color_bg_item_rcv">#ffffff</color>
+    <color name="dialog_background">#80bebebe</color>
 </resources>
 
