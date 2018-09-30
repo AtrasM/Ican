@@ -16,11 +16,11 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Adapter.AdapterReceiveMessageList;
 import avida.ican.Farzin.View.Adapter.AdapterSentMessageList;
@@ -197,7 +197,7 @@ public class FragmentMessageList extends BaseFragment {
 
     private void GetAllNewReceiveMessage() {
         List<StructureMessageDB> ReceiveMessages = new ArrayList<>();
-        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, MessageStatus.IsNew, 0, -1);
+        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, Status.IsNew, 0, -1);
         ReceiveMessageStart = ReceiveMessageStart + ReceiveMessages.size();
         mstructuresReceiveMessages.addAll(0, ReceiveMessages);
         adapterReceiveMessageList.updateData(0, ReceiveMessages);
@@ -266,7 +266,7 @@ public class FragmentMessageList extends BaseFragment {
         fragmentReceiveMessageList = new FragmentReceiveMessageList().newInstance(App.CurentActivity, adapterReceiveMessageList, new ListenerRcv() {
             @Override
             public void onLoadData() {
-                continueGetMessage(MessageType.RECEIVED);
+                continueGetMessage(Type.RECEIVED);
             }
 
             @Override
@@ -277,7 +277,7 @@ public class FragmentMessageList extends BaseFragment {
         fragmentSentMessageList = new FragmentSentMessageList().newInstance(App.CurentActivity, adapterSentMessageList, new ListenerRcv() {
             @Override
             public void onLoadData() {
-                continueGetMessage(MessageType.SENDED);
+                continueGetMessage(Type.SENDED);
             }
 
             @Override
@@ -289,10 +289,10 @@ public class FragmentMessageList extends BaseFragment {
 
     }
 
-    private void continueGetMessage(MessageType type) {
+    private void continueGetMessage(Type type) {
         final Loading loading = new Loading(App.CurentActivity).Creat();
         loading.Show();
-        if (type == MessageType.RECEIVED) {
+        if (type == Type.RECEIVED) {
             List<StructureMessageDB> receiveMessages = new ArrayList<>();
             receiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, null, ReceiveMessageStart, Count);
             if (receiveMessages.size() > 0) {

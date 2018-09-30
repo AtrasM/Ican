@@ -169,7 +169,7 @@ public class CustomFunction {
 
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
-        type=type.substring(0,type.indexOf("/"));
+        type = type.substring(0, type.indexOf("/"));
         ExtensionEnum extensionEnum = ExtensionEnum.NONE;
 
         switch (type) {
@@ -304,6 +304,28 @@ public class CustomFunction {
     public static Date getCurentDateTime() {
         Calendar c = Calendar.getInstance();
         return c.getTime();
+    }
+
+    public static String StandardizeTheDateFormat(String date) {
+        //String dateDefault = "0001/01/01 00:00:00";
+        String dateDefault = "";
+        if (date != null && !date.isEmpty()) {
+            try {
+                date = date.replace("T", " ");
+                date = date.replace("-", "/");
+                int dotPos=date.indexOf(".");
+                if(dotPos>0){
+                    date= date.substring(0,dotPos);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                //return null;
+            }
+        } else {
+            return dateDefault;
+        }
+
+        return date;
     }
 
     public static String MiladyToJalaly(String DateTime) {

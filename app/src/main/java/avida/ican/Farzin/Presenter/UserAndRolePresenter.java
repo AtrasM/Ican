@@ -2,14 +2,13 @@ package avida.ican.Farzin.Presenter;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
-import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRollSearch;
 import avida.ican.Ican.App;

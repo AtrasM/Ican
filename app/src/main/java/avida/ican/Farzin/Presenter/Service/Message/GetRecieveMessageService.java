@@ -16,16 +16,16 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinMessageNotificationReceiver;
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
-import avida.ican.Farzin.Model.Interface.MessageListListener;
-import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
-import avida.ican.Farzin.Model.Structure.Response.StructureReceiverRES;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
@@ -49,7 +49,7 @@ public class GetRecieveMessageService extends Service {
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private FarzinMessageQuery farzinMessageQuery;
     private int pageNumber = 1;
-    private MessageStatus messageStatus = MessageStatus.IsNew;
+    private Status status = Status.IsNew;
     private int Count = 1;
     private final int MaxCount = 10;
     private final int MinCount = 1;
@@ -109,7 +109,7 @@ public class GetRecieveMessageService extends Service {
         StructureReceiverRES receiverRES = new StructureReceiverRES(UserAndRoleDB.getRole_ID(), UserAndRoleDB.getUser_ID(), UserAndRoleDB.getLastName(), false, "");
         receiversRES.add(receiverRES);
         structureMessageRES.setReceivers(receiversRES);
-        farzinMessageQuery.SaveMessage(structureMessageRES, MessageType.RECEIVED, messageStatus, new MessageQuerySaveListener() {
+        farzinMessageQuery.SaveMessage(structureMessageRES, Type.RECEIVED, status, new MessageQuerySaveListener() {
 
             @Override
             public void onSuccess(StructureMessageDB structureMessageDB) {
@@ -163,7 +163,7 @@ public class GetRecieveMessageService extends Service {
 
     private void CallMulltiMessageNotification() {
         int UserId = getFarzinPrefrences().getUserID();
-        MessageSize = new FarzinMessageQuery().GetMessageCount(UserId, MessageType.RECEIVED, MessageStatus.IsNew);
+        MessageSize = new FarzinMessageQuery().GetMessageCount(UserId, Type.RECEIVED, Status.IsNew);
         if (MessageSize > 0) {
             String title = Resorse.getString(context, R.string.newMessage);
             String message = MessageSize + " " + Resorse.getString(context, R.string.NewMessageContent);

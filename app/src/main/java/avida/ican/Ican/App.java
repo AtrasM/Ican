@@ -19,9 +19,11 @@ import com.squareup.otto.Bus;
 import java.util.HashMap;
 import java.util.Stack;
 
+import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.FarzinActivityMain;
+import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentMessageList;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -48,17 +50,20 @@ public class App extends MultiDexApplication {
     public static NetWorkStatusListener netWorkStatusListener;
     public static NetworkStatus networkStatus = NetworkStatus.Connected;
     private static Bus sBus;
-   // public static boolean canRecreatFragment = false;
+    // public static boolean canRecreatFragment = false;
 
     private static CurentProject curentProject;
     private static FarzinDatabaseHelper farzinDatabaseHelper;
     public static String fontPath = "font/iran_sans_mobile.ttf";
     @SuppressLint("StaticFieldLeak")
     private static Context serviceContext;
-    public static String DEFAULTPATH= Environment.getExternalStorageDirectory() + "/ican_temp/";
-    public static FragmentMessageList fragmentMessageList=null;
+    public static String DEFAULTPATH = Environment.getExternalStorageDirectory() + "/ican_temp/";
+    public static FragmentMessageList fragmentMessageList = null;
+    public static FragmentCartable fragmentCartable = null;
     public static HashMap<String, Stack<Fragment>> fragmentStacks;
     public static HashMap<String, Stack<Activity>> activityStacks;
+    private static FarzinBroadcastReceiver farzinBroadCastReceiver;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -121,6 +126,14 @@ public class App extends MultiDexApplication {
 
     public static void setCurentProject(CurentProject curentProject) {
         App.curentProject = curentProject;
+    }
+
+    public static void setFarzinBroadCastReceiver(FarzinBroadcastReceiver farzinBroadCastReceiver) {
+        App.farzinBroadCastReceiver = farzinBroadCastReceiver;
+    }
+
+    public static FarzinBroadcastReceiver getFarzinBroadCastReceiver() {
+        return App.farzinBroadCastReceiver;
     }
 
     private void initializeSharePrefrences() {

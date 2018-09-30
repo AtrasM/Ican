@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
-import avida.ican.Farzin.Model.Interface.MessageListListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
-import avida.ican.Farzin.Model.Structure.Response.StructureRecieveMessageListRES;
-import avida.ican.Farzin.Model.Structure.Response.StructureSentMessageListRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureSentMessageListRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -28,7 +28,7 @@ public class GetMessageFromServerPresenter {
     private String MetodName = "";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "SendMessageToServerPresenter";
+    private String Tag = "GetMessageFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
 
@@ -36,18 +36,17 @@ public class GetMessageFromServerPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void GetRecieveMessageList(int page,int count, MessageListListener messageListListener) {
+    public void GetRecieveMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetRecieveMessageList";
-        GetMessage(page,count, true, messageListListener);
+        GetMessage(page, count, true, messageListListener);
     }
 
-
-    public void GetSentMessageList(int page,int count, MessageListListener messageListListener) {
+    public void GetSentMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetSentMessageList";
-        GetMessage(page,count, false, messageListListener);
+        GetMessage(page, count, false, messageListListener);
     }
 
-    private void GetMessage(int page,int count, final boolean RecieveMessage, final MessageListListener messageListListener) {
+    private void GetMessage(int page, int count, final boolean RecieveMessage, final MessageListListener messageListListener) {
 
         CallApi(MetodName, EndPoint, getSoapObject(page, count), new DataProcessListener() {
             @Override

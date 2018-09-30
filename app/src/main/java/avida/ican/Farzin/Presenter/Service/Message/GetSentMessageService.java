@@ -9,13 +9,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
-import avida.ican.Farzin.Model.Interface.MessageListListener;
-import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Ican.App;
@@ -33,7 +33,7 @@ public class GetSentMessageService extends Service {
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private FarzinMessageQuery farzinMessageQuery;
     private int pageNumber = 1;
-    private MessageStatus messageStatus = MessageStatus.UnRead;
+    private Status status = Status.UnRead;
     private int Count = 1;
     private final int MaxCount = 10;
     private final int MinCount = 1;
@@ -86,7 +86,7 @@ public class GetSentMessageService extends Service {
     private void SaveMessage(final ArrayList<StructureMessageRES> messageList) {
         final StructureMessageRES structureMessageRES = messageList.get(0);
 
-        farzinMessageQuery.SaveMessage(structureMessageRES, MessageType.SENDED, messageStatus, new MessageQuerySaveListener() {
+        farzinMessageQuery.SaveMessage(structureMessageRES, Type.SENDED, status, new MessageQuerySaveListener() {
 
             @Override
             public void onSuccess(final StructureMessageDB structureMessageDB) {

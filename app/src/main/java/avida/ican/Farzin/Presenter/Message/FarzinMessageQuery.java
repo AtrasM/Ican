@@ -14,18 +14,18 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
-import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageQueueDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageAttachRES;
-import avida.ican.Farzin.Model.Structure.Response.StructureMessageRES;
-import avida.ican.Farzin.Model.Structure.Response.StructureReceiverRES;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageAttachRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -49,7 +49,7 @@ public class FarzinMessageQuery {
     private ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
     private List<StructureUserAndRoleDB> structureUserAndRole = new ArrayList<>();
     private ChangeXml changeXml;
-    private MessageStatus status = MessageStatus.WAITING;
+    private Status status = Status.WAITING;
     private int MessageID = -1;
     private boolean SendFromApp = false;
     private List<StructureReceiverRES> structureReceiverRES;
@@ -89,13 +89,13 @@ public class FarzinMessageQuery {
         this.structureAttaches = structureAttaches;
         this.structureUserAndRole = structureReceiver;
         this.messageQuerySaveListener = messageQuerySaveListener;
-        this.status = MessageStatus.WAITING;
+        this.status = Status.WAITING;
         this.Date = CustomFunction.getCurentDateTimeAsDateFormat(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue()).toString();
         this.SendFromApp = true;
-        new SaveMessage().execute(MessageType.SENDED);
+        new SaveMessage().execute(Type.SENDED);
     }
 
-    public void SaveMessage(StructureMessageRES structureMessageRES, MessageType type, MessageStatus status, MessageQuerySaveListener messageQuerySaveListener) {
+    public void SaveMessage(StructureMessageRES structureMessageRES, Type type, Status status, MessageQuerySaveListener messageQuerySaveListener) {
         int ID = structureMessageRES.getID();
         this.structureUserAndRole.clear();
         this.structureAttaches.clear();
@@ -135,14 +135,14 @@ public class FarzinMessageQuery {
 
 
     @SuppressLint("StaticFieldLeak")
-    private class SaveMessage extends AsyncTask<MessageType, Void, Void> {
+    private class SaveMessage extends AsyncTask<Type, Void, Void> {
 
         @Override
-        protected Void doInBackground(MessageType... messageTypes) {
+        protected Void doInBackground(Type... types) {
             StructureMessageDB structureMessageDB;
             content = CustomFunction.AddXmlCData(content);
-            java.util.Date date = new Date(Date);
-            structureMessageDB = new StructureMessageDB(MessageID, sender_user_id, sender_role_id, subject, content, date , status);
+            java.util.Date date = new Date(CustomFunction.StandardizeTheDateFormat(Date));
+            structureMessageDB = new StructureMessageDB(MessageID, sender_user_id, sender_role_id, subject, content, date, status);
             try {
                 messageDao.create(structureMessageDB);
 
@@ -168,8 +168,8 @@ public class FarzinMessageQuery {
                         threadSleep();
                     }
                 }
-               /* if (messageTypes != null) {
-                    if (messageTypes[0] == MessageType.RECEIVED) {
+               /* if (types != null) {
+                    if (types[0] == Type.RECEIVED) {
                         if (App.fragmentMessageList != null) {
                             final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
                             structureMessagesDB.add(GetMessage(structureMessageDB.getMain_id()));
@@ -211,7 +211,7 @@ public class FarzinMessageQuery {
         }
     }
 
-    public List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id, MessageStatus status) {
+    public List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id, Status status) {
 
         QueryBuilder<StructureMessageQueueDB, Integer> queryBuilder = messageQueueDao.queryBuilder();
         List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
@@ -228,7 +228,7 @@ public class FarzinMessageQuery {
         QueryBuilder<StructureMessageDB, Integer> queryBuilder = messageDao.queryBuilder();
         StructureMessageDB structureMessageDB = new StructureMessageDB();
         try {
-            queryBuilder.where().eq("main_id", ID).and().ne("status", MessageStatus.STOPED);
+            queryBuilder.where().eq("main_id", ID).and().ne("status", Status.STOPED);
             queryBuilder.orderBy("sent_date", false);
             structureMessageDB = queryBuilder.queryForFirst();
         } catch (SQLException e) {
@@ -238,7 +238,7 @@ public class FarzinMessageQuery {
     }
 
 
-    public List<StructureMessageDB> GetReceiveMessages(int user_id, MessageStatus status, long start, long count) {
+    public List<StructureMessageDB> GetReceiveMessages(int user_id, Status status, long start, long count) {
         QueryBuilder<StructureMessageDB, Integer> messageQB = messageDao.queryBuilder();
         QueryBuilder<StructureReceiverDB, Integer> receiverQB = receiverDao.queryBuilder();
         List<StructureMessageDB> structureMessageDBS = new ArrayList<>();
@@ -262,13 +262,13 @@ public class FarzinMessageQuery {
         return structureMessageDBS;
     }
 
-    public List<StructureMessageDB> GetSendMessages(int user_id, MessageStatus status, long start, long count) {
+    public List<StructureMessageDB> GetSendMessages(int user_id, Status status, long start, long count) {
         QueryBuilder<StructureMessageDB, Integer> messageQB = messageDao.queryBuilder();
         QueryBuilder<StructureReceiverDB, Integer> receiverQB = receiverDao.queryBuilder();
         List<StructureMessageDB> structureMessageDBS = new ArrayList<>();
         try {
             if (status != null) {
-                messageQB.where().eq("status", status).and().eq("sender_user_id", user_id).and().ne("status", MessageStatus.STOPED);
+                messageQB.where().eq("status", status).and().eq("sender_user_id", user_id).and().ne("status", Status.STOPED);
                 ;
             } else {
                 messageQB.where().eq("sender_user_id", user_id);
@@ -284,9 +284,9 @@ public class FarzinMessageQuery {
         return structureMessageDBS;
     }
 
-    public long GetMessageCount(int user_id, MessageType type, MessageStatus status) {
+    public long GetMessageCount(int user_id, Type type, Status status) {
         long count = 0;
-        if (type == MessageType.RECEIVED) {
+        if (type == Type.RECEIVED) {
             count = GetReceiveMessages(user_id, status, 0, -1).size();
         } else {
             count = GetSendMessages(user_id, status, 0, -1).size();
@@ -321,7 +321,7 @@ public class FarzinMessageQuery {
         return isDelet;
     }
 
-    public void UpdateMessageQueueStatus(int id, MessageStatus status) {
+    public void UpdateMessageQueueStatus(int id, Status status) {
         try {
             UpdateBuilder<StructureMessageQueueDB, Integer> updateBuilder = messageQueueDao.updateBuilder();
             updateBuilder.where().eq("id", id);
@@ -332,7 +332,7 @@ public class FarzinMessageQuery {
         }
     }
 
-    public void UpdateMessageStatus(int id, MessageStatus status) {
+    public void UpdateMessageStatus(int id, Status status) {
         try {
             UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
             updateBuilder.where().eq("id", id);
@@ -347,8 +347,8 @@ public class FarzinMessageQuery {
     public void UpdateAllNewMessageStatusToUnreadStatus() {
         try {
             UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
-            updateBuilder.where().eq("status", MessageStatus.IsNew);
-            updateBuilder.updateColumnValue("status", MessageStatus.UnRead);
+            updateBuilder.where().eq("status", Status.IsNew);
+            updateBuilder.updateColumnValue("status", Status.UnRead);
             updateBuilder.update();
             Log.i("Notif", "Message Status change to UnRead");
         } catch (SQLException e) {
@@ -359,8 +359,8 @@ public class FarzinMessageQuery {
     public void UpdateNewReceiveMessageStatusToUnreadStatus() {
         try {
             UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
-            updateBuilder.where().eq("status", MessageStatus.IsNew);
-            updateBuilder.updateColumnValue("status", MessageStatus.UnRead);
+            updateBuilder.where().eq("status", Status.IsNew);
+            updateBuilder.updateColumnValue("status", Status.UnRead);
             updateBuilder.update();
             Log.i("Notif", "Message Status change to UnRead");
         } catch (SQLException e) {
@@ -380,18 +380,18 @@ public class FarzinMessageQuery {
         }
     }
 
-    public void UpdateMessageView(StructureMessageRES MessageRES, MessageType type) {
+    public void UpdateMessageView(StructureMessageRES MessageRES, Type type) {
         try {
             UpdateBuilder<StructureMessageDB, Integer> updateBuilderMessage = messageDao.updateBuilder();
             updateBuilderMessage.where().eq("main_id", MessageRES.getID());
             if (MessageRES.isRead()) {
-                status = MessageStatus.READ;
+                status = Status.READ;
             } else {
-                status = MessageStatus.UnRead;
+                status = Status.UnRead;
             }
             updateBuilderMessage.updateColumnValue("status", status);
             updateBuilderMessage.update();
-            if (type != MessageType.RECEIVED) {
+            if (type != Type.RECEIVED) {
                 StructureMessageDB MessageDB = GetMessage(MessageRES.getID());
                 DeletMessageReceiver(MessageDB);
                 for (StructureReceiverRES receiverRES : MessageRES.getReceivers()) {

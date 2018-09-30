@@ -2,10 +2,9 @@ package avida.ican.Farzin.Model.Structure.Bundle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 
-import avida.ican.Farzin.Model.Enum.MessageType;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
 
 /**
  * Created by AtrasVida on 2018-08-26 at 3:18 PM
@@ -21,13 +20,13 @@ public class StructureDetailMessageBND implements Serializable {
     private String content;
     private String sent_date;
     private String sent_time;
-    private MessageType messageType;
+    private Type messageType;
     private ArrayList<StructureMessageFileDB> message_files=new ArrayList<>();
 
     public StructureDetailMessageBND() {
     }
 
-    public StructureDetailMessageBND(int main_id, int sender_user_id, int sender_role_id, String senderFullName, String senderRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files,MessageType messageType) {
+    public StructureDetailMessageBND(int main_id, int sender_user_id, int sender_role_id, String senderFullName, String senderRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files,Type type) {
         this.main_id = main_id;
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
@@ -38,7 +37,7 @@ public class StructureDetailMessageBND implements Serializable {
         this.sent_date = sent_date;
         this.sent_time = sent_time;
         this.message_files = message_files;
-        this.messageType = messageType;
+        this.messageType = type;
     }
 
     public int getMain_id() {
@@ -121,11 +120,11 @@ public class StructureDetailMessageBND implements Serializable {
         SenderRoleName = senderRoleName;
     }
 
-    public MessageType getMessageType() {
+    public Type getMessageType() {
         return messageType;
     }
 
-    public void setMessageType(MessageType messageType) {
-        this.messageType = messageType;
+    public void setMessageType(Type type) {
+        this.messageType = type;
     }
 }

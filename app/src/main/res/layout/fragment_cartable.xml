@@ -1,0 +1,71 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <avida.ican.Ican.View.Custom.MaxHeightLinearLayout
+            android:id="@+id/ln_rcv_pin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/padding_minimum"
+            android:visibility="gone"
+            app:maxHeightDp="180">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin"
+                android:layout_gravity="center">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/rcv_pin"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/margin_maximum" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/color_Divider"
+                    android:layout_marginTop="@dimen/margin_maximum" />
+
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|top"
+                    app:srcCompat="@drawable/ic_pin" />
+
+
+            </FrameLayout>
+
+        </avida.ican.Ican.View.Custom.MaxHeightLinearLayout>
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rcv_action"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_White"
+            android:layout_marginTop="@dimen/margin" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_new_msg"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="@dimen/margin_maximum"
+        android:scaleType="center"
+        app:backgroundTint="@color/color_fab"
+        app:srcCompat="@drawable/ic_plus"
+        tools:ignore="RtlHardcoded" />
+</FrameLayout>

@@ -14,7 +14,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.Resorse;

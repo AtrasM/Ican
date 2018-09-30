@@ -10,12 +10,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.StructureCartableAction;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -114,6 +118,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                         App.ShowMessage().ShowToast("onCancel", Toast.LENGTH_SHORT);
                     }
                 });*/
+             //ArrayList<StructureCartableAction> structureCartableActions= new FarzinCartableQuery().getCartableAction();
                 goToActivity(FarzinActivityLogin.class);
              /*   StructureMessageDB structureMessageDB=new FarzinMessageQuery().GetMessage(2651);
                 structureMessageDB=structureMessageDB;*/

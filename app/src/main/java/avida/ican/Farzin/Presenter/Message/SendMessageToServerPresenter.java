@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
-import avida.ican.Farzin.Model.Interface.MessageListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructureReceiverREQ;
-import avida.ican.Farzin.Model.Structure.Response.StructureSendMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureSendMessageRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;

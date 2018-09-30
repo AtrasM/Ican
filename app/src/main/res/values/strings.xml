@@ -75,4 +75,12 @@
     <string name="Group_Message">پیام گروهی</string>
     <string name="no_data">موردی وجود ندارد!</string>
     <string name="TitleDetailMessage">جزییات پیام</string>
+    <string name="Pin">افزودن به میانبر ها</string>
+    <string name="unPin">حذف از میانبر ها</string>
+    <string name="cartable_document">سند کارتابل</string>
+    <string name="Cartable">کارتابل وارده</string>
+    <string name="title_list_hamesh">لیست هامش</string>
+    <string name="title_gardesh_madrak">گردش مدرک</string>
+    <string name="title_zanjireh_madrak">زنجیره مدرک</string>
+    <string name="referralComission">دستور ارجاع</string>
 </resources>

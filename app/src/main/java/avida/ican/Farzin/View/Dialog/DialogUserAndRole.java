@@ -19,7 +19,7 @@ import com.orhanobut.dialogplus.ViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.UserAndRolePresenter;
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleMain;
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleSelected;

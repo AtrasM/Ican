@@ -17,6 +17,7 @@ public class FarzinPrefrences {
     private SharedPreferences sharedPreferencesValue;
     private String TAG = "Farzin_";
 
+
     public FarzinPrefrences init() {
         sharedPreferencesValue = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         return this;
@@ -106,12 +107,20 @@ public class FarzinPrefrences {
         sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
     }
 
+    public void putCartableDocumentDataSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDat", DateTime).apply();
+    }
+
     public void putMessageViewSyncDate(String DateTime) {
         sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
     }
 
     public String getMetaDataLastSyncDate() {
         return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
+    }
+
+    public String getCartableDocumentDataSyncDat() {
+        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDat", "");
     }
 
     public String getMessageViewLastSyncDate() {

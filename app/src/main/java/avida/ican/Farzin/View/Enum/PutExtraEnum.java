@@ -8,6 +8,7 @@ public enum PutExtraEnum {
     ID("ID"),
     LogOut("LogOut"),
     BundleMessage("BundleMessage"),
+    BundleCartableDocument("BundleCartableDocument"),
     MultyMessage("MultyMessage"),
     Notification("Notification"),
     ISFwdReplyMessage("ISFwdReplyMessage");

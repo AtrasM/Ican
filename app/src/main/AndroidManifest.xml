@@ -1,6 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
+
     <uses-permission android:name="android.checkPermission.INTERNET" />
     <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
@@ -11,6 +12,8 @@
     <!--______________________________________________________________________________________-->
     <application
         android:name=".Ican.App"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,34 +21,39 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator"
-        tools:replace="theme, allowBackup"
-        android:fullBackupContent="true"
-        android:allowBackup="true">
+        tools:replace="theme, allowBackup">
 
 
-        <receiver android:name=".Farzin.FarzinBroadcastReceiver"
+        <receiver
+            android:name=".Farzin.FarzinBroadcastReceiver"
             tools:ignore="ExtraText">
             android:enabled="true"
             android:exported="true"
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Farzin.FarzinMessageNotificationReceiver"
+        <receiver
+            android:name=".Farzin.FarzinMessageNotificationReceiver"
             tools:ignore="ExtraText">
             android:enabled="true"
             android:exported="true"
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
-        <service android:name=".Ican.View.Custom.NetWorkCheckingService"
-            android:enabled="true"/>
-        <service android:name=".Farzin.Presenter.Service.Message.SendMessageService"/>
+
+        <service
+            android:name=".Ican.View.Custom.NetWorkCheckingService"
+            android:enabled="true" />
+        <service android:name=".Farzin.Presenter.Service.Message.SendMessageService" />
         <service android:name=".Farzin.Presenter.Service.Message.GetSentMessageService" />
         <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService" />
+        <service android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentService" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -82,8 +90,9 @@
             android:name=".Farzin.View.FarzinActivityDetailMessage"
             android:windowSoftInputMode="adjustNothing|stateHidden" />
         <activity
-            android:name=".Farzin.View.FarzinNotificationClickManager" />
-
+            android:name=".Farzin.View.FarzinActivityCartableDocument"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity android:name=".Farzin.View.FarzinNotificationClickManager" />
 
 
     </application>

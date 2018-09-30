@@ -1,8 +1,6 @@
 package avida.ican.Farzin.View.Adapter;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,13 +17,13 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Interface.ListenerAdapterMessageList;
 import avida.ican.Ican.App;
@@ -137,7 +135,7 @@ public class AdapterSentMessageList extends RecyclerView.Adapter<AdapterSentMess
         }
 
         viewHolder.txtSubject.setText("" + item.getSubject());
-        if (item.getStatus() == MessageStatus.WAITING) {
+        if (item.getStatus() == Status.WAITING) {
             viewHolder.imgWaiting.setVisibility(View.VISIBLE);
         } else {
             viewHolder.imgWaiting.setVisibility(View.GONE);
@@ -146,7 +144,7 @@ public class AdapterSentMessageList extends RecyclerView.Adapter<AdapterSentMess
             StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDBS.get(0).getUser_id(), structureReceiverDBS.get(0).getRole_id());
             Name = "" + structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
 
-            if (item.getStatus() == MessageStatus.WAITING) {
+            if (item.getStatus() == Status.WAITING) {
                 viewHolder.imgStatus.setVisibility(View.GONE);
             } else {
                 if (structureReceiverDBS.get(0).Is_read()) {
@@ -176,8 +174,8 @@ public class AdapterSentMessageList extends RecyclerView.Adapter<AdapterSentMess
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (item.getStatus() != MessageStatus.WAITING && item.getStatus() != MessageStatus.STOPED) {
-                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS, MessageType.SENDED);
+                if (item.getStatus() != Status.WAITING && item.getStatus() != Status.STOPED) {
+                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS, Type.SENDED);
                     listenerAdapterMessageList.onItemClick(structureDetailMessageBND);
                 }
 
@@ -186,7 +184,7 @@ public class AdapterSentMessageList extends RecyclerView.Adapter<AdapterSentMess
         viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (item.getStatus() != MessageStatus.WAITING && item.getStatus() != MessageStatus.STOPED) {
+                if (item.getStatus() != Status.WAITING && item.getStatus() != Status.STOPED) {
                     listenerAdapterMessageList.onDelet(item);
                 }
 

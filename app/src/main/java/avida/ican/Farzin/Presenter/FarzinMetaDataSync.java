@@ -3,7 +3,7 @@ package avida.ican.Farzin.Presenter;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;

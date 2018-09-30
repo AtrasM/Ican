@@ -21,6 +21,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Dialog.Loading;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 import avida.ican.R;
@@ -60,10 +61,14 @@ public class FarzinActivityLogin extends BaseToolbarActivity {
         super.onCreate(savedInstanceState);
         loading = new Loading(this).Creat();
         loading.Show();
+        App.networkStatus = NetworkStatus.NoAction;
         initTollBar(Title);
         App.setCurentProject(CurentProject.Ican);
         isLogOut = getIntent().getBooleanExtra("LogOut", false);
         if (isLogOut) {
+            if (App.getFarzinBroadCastReceiver() != null) {
+                App.getFarzinBroadCastReceiver().stopServices();
+            }
             CloseActivitys(new ListenerCloseActivitys() {
                 @Override
                 public void onFinish() {

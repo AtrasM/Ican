@@ -10,11 +10,13 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageQueueDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureReceiverDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 
 /**
  * Created by AtrasVida on 2018-04-18 at 5:36 PM
@@ -30,6 +32,8 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureMessageFileDB, Integer> mMessageFileDao = null;
     private Dao<StructureReceiverDB, Integer> mReceiverDao = null;
     private Dao<StructureMessageQueueDB, Integer> mMessageQueueDao = null;
+    private Dao<StructureInboxDocumentDB, Integer> mCartableDocumentDao = null;
+    private Dao<StructureHameshDB, Integer> mHameshDao = null;
 
     public FarzinDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -44,6 +48,8 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureMessageFileDB.class);
             TableUtils.createTable(connectionSource, StructureReceiverDB.class);
             TableUtils.createTable(connectionSource, StructureMessageQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureInboxDocumentDB.class);
+            TableUtils.createTable(connectionSource, StructureHameshDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -58,6 +64,8 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, StructureMessageFileDB.class, true);
             TableUtils.dropTable(connectionSource, StructureReceiverDB.class, true);
             TableUtils.dropTable(connectionSource, StructureMessageQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureInboxDocumentDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureHameshDB.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -71,6 +79,14 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
 
         return mGetUserAndRoleListDao;
+    }
+
+    public Dao<StructureInboxDocumentDB, Integer> getCartableDocumentDao() throws SQLException {
+        if (mCartableDocumentDao == null) {
+            mCartableDocumentDao = getDao(StructureInboxDocumentDB.class);
+        }
+
+        return mCartableDocumentDao;
     }
 
     public Dao<StructureMessageDB, Integer> getMessageDao() throws SQLException {
@@ -96,12 +112,21 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
         return mReceiverDao;
     }
+
     public Dao<StructureMessageQueueDB, Integer> getGetMessageQueueDao() throws SQLException {
         if (mMessageQueueDao == null) {
             mMessageQueueDao = getDao(StructureMessageQueueDB.class);
         }
 
         return mMessageQueueDao;
+    }
+
+    public Dao<StructureHameshDB, Integer> getHameshDao() throws SQLException {
+        if (mHameshDao == null) {
+            mHameshDao = getDao(StructureHameshDB.class);
+        }
+
+        return mHameshDao;
     }
 
 
@@ -112,6 +137,8 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         mMessageFileDao = null;
         mReceiverDao = null;
         mMessageQueueDao = null;
+        mCartableDocumentDao = null;
+        mHameshDao = null;
         super.close();
     }
 
@@ -143,5 +170,15 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
         TableUtils.clearTable(getConnectionSource(), StructureMessageQueueDB.class);
 
+    }
+
+    public void ClearCartableDocument() throws SQLException {
+
+        TableUtils.clearTable(getConnectionSource(), StructureInboxDocumentDB.class);
+
+    }
+
+    public void ClearHamesh() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureHameshDB.class);
     }
 }

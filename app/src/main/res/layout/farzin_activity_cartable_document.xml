@@ -1,0 +1,32 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/farzin_custome_toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rcv_main"
+                style="@style/custom_item_rcv_style"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingLeft="0dp"
+                android:paddingStart="0dp"
+                tools:ignore="RtlSymmetry" />
+
+
+            <include layout="@layout/layout_fab_list_move_up" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/color_White"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/btn_pin"
+        style="@style/custom_attach_button_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:text="@string/Pin" />
+
+    <Button
+        android:id="@+id/btn_unpin"
+        style="@style/custom_attach_button_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/border"
+        android:text="@string/unPin" />
+    <Button
+        android:id="@+id/btn_cancel"
+        style="@style/custom_cancel_button_style"
+        android:layout_margin="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel" />
+
+</LinearLayout>

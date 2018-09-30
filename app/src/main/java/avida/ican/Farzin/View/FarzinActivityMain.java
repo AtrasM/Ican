@@ -18,10 +18,11 @@ import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
-import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
 import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
 import avida.ican.Farzin.View.Fragment.FragmentMessageList;
 import avida.ican.Ican.App;
@@ -44,7 +45,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private FarzinBroadcastReceiver broadcastReceiver;
     private IntentFilter intentFilter;
 
-    private static final String TAB_HOME = "tab_home";
+    private static final String TAB_CARTABLE = "tab_cartable";
     private static final String TAB_DASHBOARD = "tab_dashboard";
     private static final String TAB_Message = "tab_message_list";
     private String mCurrentTab = "";
@@ -67,7 +68,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
         initFarzinMetaDataSyncClass();
-
         initFragmentStack();
 
         //bottomNavigation.setSelectedItemId(R.id.navigation_home);
@@ -78,9 +78,9 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     private void initFragmentStack() {
         App.fragmentStacks = new HashMap<>();
-        App.fragmentStacks.put(TAB_HOME, new Stack<Fragment>());
         App.fragmentStacks.put(TAB_DASHBOARD, new Stack<Fragment>());
         App.fragmentStacks.put(TAB_Message, new Stack<Fragment>());
+        App.fragmentStacks.put(TAB_CARTABLE, new Stack<Fragment>());
         CurentFragment = new FragmentHome();
      /*   Title = "خانه";
         selectedTab(Title, R.menu.main_drawer, TAB_HOME);*/
@@ -103,6 +103,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         registerReceiver(broadcastReceiver, intentFilter);
         Intent intent = new Intent(BROADCAST);
         sendBroadcast(intent);
+        App.setFarzinBroadCastReceiver(broadcastReceiver);
     }
 
     private void initFarzinMetaDataSyncClass() {
@@ -145,12 +146,18 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             case R.id.navigation_home: {
                 Title = "خانه";
-                selectedTab(Title, R.menu.main_drawer, TAB_HOME);
+                selectedTab(Title, R.menu.main_drawer, TAB_DASHBOARD);
                 break;
             }
             case R.id.navigation_message: {
                 Title = "سیستم پیام";
                 selectedTab(Title, R.menu.main_drawer2, TAB_Message);
+
+                break;
+            }
+            case R.id.navigation_cartable: {
+                Title = "کارتابل";
+                selectedTab(Title, R.menu.main_drawer2, TAB_CARTABLE);
 
                 break;
             }
@@ -175,12 +182,14 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
        */
 
             switch (tabId) {
-                case TAB_HOME: {
+                case TAB_DASHBOARD: {
                     pushFragments(tabId, new FragmentHome(), true);
                     break;
                 }
-                case TAB_DASHBOARD: {
-                    pushFragments(tabId, new FragmentHome(), true);
+                case TAB_CARTABLE: {
+                    App.fragmentCartable = new FragmentCartable().newInstance(getSupportFragmentManager());
+                    Fragment fragment = App.fragmentCartable;
+                    pushFragments(tabId, fragment, true);
                     break;
                 }
 

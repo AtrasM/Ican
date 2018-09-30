@@ -1,8 +1,6 @@
 package avida.ican.Farzin.View.Adapter;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,26 +14,22 @@ import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MessageStatus;
-import avida.ican.Farzin.Model.Enum.MessageType;
+import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Interface.ListenerAdapterMessageList;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;
-import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
@@ -155,7 +149,7 @@ public class AdapterReceiveMessageList extends RecyclerView.Adapter<AdapterRecei
                 viewHolder.imgAttach.setVisibility(View.GONE);
             }
         }
-        if (item.getStatus() == MessageStatus.READ) {
+        if (item.getStatus() == Status.READ) {
             viewHolder.imgSeen.setVisibility(View.INVISIBLE);
         } else {
             viewHolder.imgSeen.setVisibility(View.VISIBLE);
@@ -165,7 +159,7 @@ public class AdapterReceiveMessageList extends RecyclerView.Adapter<AdapterRecei
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS, MessageType.RECEIVED);
+                StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS, Type.RECEIVED);
                 listenerAdapterMessageList.onItemClick(structureDetailMessageBND);
             }
         });

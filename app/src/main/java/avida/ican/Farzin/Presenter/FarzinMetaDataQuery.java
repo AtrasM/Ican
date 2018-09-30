@@ -15,9 +15,9 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
-import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
@@ -241,7 +241,7 @@ public class FarzinMetaDataQuery {
         try {
             queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "1");
             userAndRoles = queryBuilder.queryForFirst();
-            if (userAndRoles.getUserName() != user_name) {
+            if (!userAndRoles.getUserName().equals(user_name) ) {
                 queryBuilder.reset();
                 queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "0");
                 userAndRoles = queryBuilder.queryForFirst();

@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.MessageQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReply;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
@@ -91,7 +91,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private Loading loading;
     private File file;
     private String message = "";
-    public static StructureFwdReply structureFwdReply = new StructureFwdReply();
+    public static StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND();
 
     @Override
     protected void onResume() {
@@ -118,24 +118,24 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         initAdapter();
 
         if (ISFwdReplyMessage) {
-            //structureFwdReply = (StructureFwdReply) bundleObject.getSerializable(PutExtraEnum.ISFwdReplyMessage.getValue());
-            if (structureFwdReply.isReply()) {
+            //structureFwdReplyBND = (StructureFwdReplyBND) bundleObject.getSerializable(PutExtraEnum.ISFwdReplyMessage.getValue());
+            if (structureFwdReplyBND.isReply()) {
 
                 initTollBar(Resorse.getString(R.string.title_farzin_reply_message));
-                String subject = Resorse.getString(R.string.reply_message) + " " + structureFwdReply.getSubject();
+                String subject = Resorse.getString(R.string.reply_message) + " " + structureFwdReplyBND.getSubject();
                 edtSubject.setText(subject);
                 String divider = CustomFunction.repeatChar('-', 80);
-                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReply.getSenderFullName() + structureFwdReply.getSenderRoleName() + ") <br> " + structureFwdReply.getContent() + " <br> " + divider + " <br> ";
+                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReplyBND.getSenderFullName() + structureFwdReplyBND.getSenderRoleName() + ") <br> " + structureFwdReplyBND.getContent() + " <br> " + divider + " <br> ";
                 reMsg.setHtml(content);
-                StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReply.getSender_user_id(), structureFwdReply.getSender_role_id());
+                StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReplyBND.getSender_user_id(), structureFwdReplyBND.getSender_role_id());
                 userAndRoleDBS.add(structureUserAndRoleDB);
                 ShowSelectionItem(userAndRoleDBS);
-                structureAttaches = structureFwdReply.getStructureAttaches();
+                structureAttaches = structureFwdReplyBND.getStructureAttaches();
                 adapterAttach.addAll(structureAttaches);
             } else {
                 initTollBar(Resorse.getString(R.string.title_farzin_fwd_message));
-                edtSubject.setText(structureFwdReply.getSubject());
-                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReply.getSenderFullName() + structureFwdReply.getSenderRoleName() + ") <br> " + structureFwdReply.getContent() + " <br> ";
+                edtSubject.setText(structureFwdReplyBND.getSubject());
+                String content = "(" + Resorse.getString(R.string.sender) + structureFwdReplyBND.getSenderFullName() + structureFwdReplyBND.getSenderRoleName() + ") <br> " + structureFwdReplyBND.getContent() + " <br> ";
                 reMsg.setHtml(content);
             }
 

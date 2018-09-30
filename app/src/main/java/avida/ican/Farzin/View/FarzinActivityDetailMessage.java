@@ -13,11 +13,11 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 import java.io.File;
 import java.util.ArrayList;
 
-import avida.ican.Farzin.Model.Enum.MessageType;
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
-import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReply;
-import avida.ican.Farzin.Model.Structure.Database.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
@@ -101,7 +101,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
 /*        Bundle bundleObject = getIntent().getExtras();
         structureDetailMessageBND = (StructureDetailMessageBND) bundleObject.getSerializable(PutExtraEnum.BundleMessage.getValue());
        */
-        if (structureDetailMessageBND.getMessageType() == MessageType.SENDED) {
+        if (structureDetailMessageBND.getMessageType() == Type.SENDED) {
             lnReply.setVisibility(View.GONE);
         }
         initTollBar(Title);
@@ -129,9 +129,9 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     }
 
     private void gotoActivityWriteMessage(boolean isReply) {
-        StructureFwdReply structureFwdReply = new StructureFwdReply(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getSenderFullName(), structureDetailMessageBND.getSenderRoleName(), structureDetailMessageBND.getSubject(), exTxtMessage.getText().toString(), structureAttaches, isReply);
-        FarzinActivityWriteMessage.structureFwdReply = structureFwdReply;
-        // bundleObject.putSerializable(PutExtraEnum.ISFwdReplyMessage.getValue(), structureFwdReply);
+        StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getSenderFullName(), structureDetailMessageBND.getSenderRoleName(), structureDetailMessageBND.getSubject(), exTxtMessage.getText().toString(), structureAttaches, isReply);
+        FarzinActivityWriteMessage.structureFwdReplyBND = structureFwdReplyBND;
+        // bundleObject.putSerializable(PutExtraEnum.ISFwdReplyMessage.getValue(), structureFwdReplyBND);
         Intent intent = new Intent(App.CurentActivity, FarzinActivityWriteMessage.class);
         intent.putExtra(PutExtraEnum.ISFwdReplyMessage.getValue(), true);
         goToActivity(intent);

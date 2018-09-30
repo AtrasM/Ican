@@ -22,7 +22,7 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
 
         String Extra = getIntent().getStringExtra(PutExtraEnum.Notification.getValue());
         if (Extra.equals(PutExtraEnum.MultyMessage.getValue())) {
-            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());// TODO: 2018-09-24
             FarzinActivityMain activityMain;
             if (App.activityStacks != null) {
 
