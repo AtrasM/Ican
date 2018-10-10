@@ -10,4 +10,4 @@
     android:text="@string/no_data"
     style="@style/custom_Txt_Title_style"
     android:textColor="@color/color_Hint"
-    android:visibility="visible" />
+    android:visibility="gone" />

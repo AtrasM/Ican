@@ -13,7 +13,7 @@ import avida.ican.Ican.App;
  */
 
 public class Resorse {
-    static int getColor(int color) {
+    public static int getColor(int color) {
         return ContextCompat.getColor(App.getAppContext(), color);
     }
 

@@ -7,7 +7,6 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -20,8 +19,8 @@ import java.util.List;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Presenter.Cartable.FarzinHameshListPresenter;
 import avida.ican.Farzin.View.Adapter.AdapterHameshList;
-import avida.ican.Farzin.View.Interface.ListenerAdapterHameshList;
-import avida.ican.Farzin.View.Interface.ListenerHamesh;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -43,13 +42,14 @@ public class DialogCartableHameshList {
     private int Ec;
     private AdapterHameshList adapterHameshList;
     private int start = 0;
-    private int COUNT = 10;
+    private int COUNT = -1;
 
     public DialogCartableHameshList(Activity context) {
         this.context = context;
     }
 
     private FarzinHameshListPresenter farzinHameshListPresenter;
+
 
     public class Binding {
         @BindView(R.id.srl_refresh)
@@ -98,6 +98,12 @@ public class DialogCartableHameshList {
     }
 
     private void initView() {
+        viewHolder.srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reGetData();
+            }
+        });
         initRcv();
     }
 
@@ -110,14 +116,55 @@ public class DialogCartableHameshList {
     private void initHameshPresenter() {
         farzinHameshListPresenter = new FarzinHameshListPresenter(Etc, Ec, new ListenerHamesh() {
             @Override
-            public void newData(StructureHameshDB structureHameshDB) {
+            public void newData(final StructureHameshDB structureHameshDB) {
                 start = start + 1;
-                viewHolder.txtNoData.setVisibility(View.GONE);
-                adapterHameshList.updateData(0, structureHameshDB);
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewHolder.lnLoading.setVisibility(View.GONE);
+                        viewHolder.txtNoData.setVisibility(View.GONE);
+                        adapterHameshList.updateData(0, structureHameshDB);
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void noData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(viewHolder.lnLoading.getVisibility()==View.VISIBLE){
+                            viewHolder.lnLoading.setVisibility(View.GONE);
+                            viewHolder.txtNoData.setVisibility(View.VISIBLE);
+                        }
+                    }
+                });
+
             }
         });
         initData();
 
+    }
+    public boolean isShowing() {
+       return dialog.isShowing();
+    }
+
+
+    private void reGetData() {
+        start = 0;
+        viewHolder.lnLoading.setVisibility(View.VISIBLE);
+        List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
+        if (structureHameshDBS.size() <= 0) {
+            viewHolder.txtNoData.setVisibility(View.VISIBLE);
+        }
+        farzinHameshListPresenter.GetHameshFromServer();
+
+        start = structureHameshDBS.size();
+        adapterHameshList.updateData(structureHameshDBS);
+        viewHolder.lnLoading.setVisibility(View.GONE);
+        viewHolder.srlRefresh.setRefreshing(false);
     }
 
     private void initData() {
@@ -125,8 +172,9 @@ public class DialogCartableHameshList {
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
         if (structureHameshDBS.size() <= 0) {
             viewHolder.txtNoData.setVisibility(View.VISIBLE);
-            farzinHameshListPresenter.GetHameshFromServer();
         }
+        farzinHameshListPresenter.GetHameshFromServer();
+
         start = structureHameshDBS.size();
         initAdapter(new ArrayList<>(structureHameshDBS));
         viewHolder.lnLoading.setVisibility(View.GONE);
@@ -142,7 +190,7 @@ public class DialogCartableHameshList {
         viewHolder.rcvHameshList.setAdapter(adapterHameshList);
     }
 
-    private void dismiss() {
+    public void dismiss() {
         dialog.dismiss();
         App.canBack = true;
     }

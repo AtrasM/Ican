@@ -40,7 +40,7 @@ import avida.ican.R;
  */
 
 public class GetCartableDocumentService extends Service {
-    private final long DELAY = TimeValue.SecondsInMilli() * 35;
+    private final long DELAY = TimeValue.MinutesInMilli() * 35;
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -48,11 +48,13 @@ public class GetCartableDocumentService extends Service {
     private FarzinCartableQuery farzinCartableQuery;
     private Status status = Status.IsNew;
     private int Count = 1;
-    private final int MaxCount = 2;
+    private final int MaxCount = 50;
     private final int MinCount = 1;
     private long MessageSize = 0;
     private int notifyID = 1;
     private Intent NotificationIntent;
+    private static int existCont = 0;
+    private static int dataSize = 0;
 
     @Override
     public void onCreate() {
@@ -69,10 +71,13 @@ public class GetCartableDocumentService extends Service {
         cartableDocumentListListener = new CartableDocumentListListener() {
             @Override
             public void onSuccess(ArrayList<StructureInboxDocumentRES> inboxCartableDocumentList) {
+                existCont = 0;
+                dataSize = 0;
                 if (inboxCartableDocumentList.size() == 0) {
                     reGetData(MaxCount);
                 } else {
                     SaveData(inboxCartableDocumentList);
+                    dataSize = inboxCartableDocumentList.size();
                 }
             }
 
@@ -115,8 +120,13 @@ public class GetCartableDocumentService extends Service {
 
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
-                    GetCartableDocument(Count);
-                    CallMulltiMessageNotification();
+                    if (existCont == dataSize) {
+                        reGetData(MinCount);
+                    } else {
+                        GetCartableDocument(Count);
+                        CallMulltiMessageNotification();
+                    }
+
                     //reGetData();
                 } else {
                     SaveData(inboxCartableDocumentList);
@@ -125,10 +135,23 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onExisting() {
-                ShowToast("Duplicate message");
-                CallMulltiMessageNotification();
-                reGetData(MinCount);
+                ShowToast("Duplicate ducument");
+                //CallMulltiMessageNotification();
+                existCont++;
+                inboxCartableDocumentList.remove(0);
+                if (inboxCartableDocumentList.size() == 0) {
+                    if (existCont == dataSize) {
+                        reGetData(MinCount);
+                    } else {
+                        GetCartableDocument(Count);
+                        CallMulltiMessageNotification();
+                    }
 
+                    //reGetData();
+                } else {
+                    SaveData(inboxCartableDocumentList);
+                }
+                //reGetData(MinCount);
             }
 
             @Override

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by AtrasVida on 2018-09-26 at 11:27 AM
  */
 
-@Root(name = "GetHameshListResponse")
+@Root(name = "GetHameshListResponse" )
 public class StructureHameshListRES {
 
     @ElementList(required = false)

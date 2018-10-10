@@ -8,51 +8,84 @@
     android:orientation="vertical"
     tools:ignore="ContentDescription,RtlHardcoded">
 
-
-    <com.chauthai.swipereveallayout.SwipeRevealLayout
-        android:id="@+id/swipe_layout"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:dragEdge="right"
-        app:mode="same_level">
+        android:layout_height="wrap_content">
 
-        <FrameLayout
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
-            android:background="@color/color_Danger"
-            android:gravity="center">
-
-            <LinearLayout
-                android:id="@+id/ln_delete"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="vertical"
-                tools:ignore="UseCompoundDrawables,UselessParent">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_trash" />
-
-                <TextView
-                    style="@style/custom_Txt_Normal_style"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="0dp"
-                    android:text="@string/hint_delete_item"
-                    android:textColor="@color/color_White"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-
-        </FrameLayout>
-
-        <FrameLayout
+        <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color_White">
+            app:clickToClose="true"
+            app:drag_edge="left|right"
+            app:show_mode="pull_out">
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@color/colorPrimaryDark"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:id="@+id/ln_send"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    tools:ignore="UseCompoundDrawables,UselessParent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:srcCompat="@drawable/ic_comission" />
+
+                    <TextView
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:text="@string/hint_comission"
+                        android:textColor="@color/color_White"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@color/color_Success"
+                android:weightSum="1">
+
+                <LinearLayout
+                    android:id="@+id/ln_taeed"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:weightSum="1"
+                    tools:ignore="UseCompoundDrawables,UselessParent">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginBottom="@dimen/margin"
+                        app:srcCompat="@drawable/ic_confirm" />
+
+                    <TextView
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="0dp"
+                        android:text="@string/hint_confirm"
+                        android:textColor="@color/color_White"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/ln_main"
@@ -287,6 +320,7 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ln_history_list"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.3"
@@ -331,8 +365,16 @@
                 </LinearLayout>
 
             </LinearLayout>
-        </FrameLayout>
-    </com.chauthai.swipereveallayout.SwipeRevealLayout>
+        </com.daimajia.swipe.SwipeLayout>
+
+        <jp.shts.android.library.TriangleLabelView
+            android:id="@+id/tlv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            app:backgroundColor="@color/color_Black"
+            app:corner="rightTop" />
+    </FrameLayout>
 
     <LinearLayout
         style="@style/custom_divider_style"

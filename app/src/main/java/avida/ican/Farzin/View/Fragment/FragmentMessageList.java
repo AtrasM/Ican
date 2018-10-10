@@ -26,7 +26,7 @@ import avida.ican.Farzin.View.Adapter.AdapterReceiveMessageList;
 import avida.ican.Farzin.View.Adapter.AdapterSentMessageList;
 import avida.ican.Farzin.View.FarzinActivityDetailMessage;
 import avida.ican.Farzin.View.FarzinActivityWriteMessage;
-import avida.ican.Farzin.View.Interface.ListenerAdapterMessageList;
+import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;

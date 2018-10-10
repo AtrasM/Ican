@@ -271,8 +271,8 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         msize.add("H 3");
         msize.add("H 4");
         msize.add("H 5");
-        ArrayAdapter<String> adapterSize = new ArrayAdapter<>(App.CurentActivity, R.layout.layout_txt_spinner, msize);
-        adapterSize.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+
+        ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(msize);
         spSize.setAdapter(adapterSize);
         spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override

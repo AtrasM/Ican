@@ -6,9 +6,83 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    tools:ignore="HardcodedText"
-    tools:context="avida.ican.Ican.View.ActivityMain">
+    tools:context="avida.ican.Ican.View.ActivityMain"
+    tools:ignore="HardcodedText">
 
+    <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/swip_layout"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        app:clickToClose="true"
+        app:drag_edge="left|right"
+        app:show_mode="pull_out">
+
+        <LinearLayout
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:background="#660a0d1a"
+            android:tag="Bottom1"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="@color/color_txt_Normal"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="left2"
+                android:textColor="#992a2a" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="#C7C7CC"
+                android:gravity="center"
+                android:text="left1" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_wrapper"
+            android:layout_width="160dp"
+            android:layout_height="match_parent"
+            android:background="#66ddff00"
+            android:tag="Bottom1"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/archive"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="@color/color_txt_Normal"
+                android:clickable="true"
+                android:gravity="center"
+                android:text="right2"
+                android:textColor="#fff" />
+
+            <TextView
+                android:id="@+id/delete"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:background="#C7C7CC"
+                android:gravity="center"
+                android:text="right1" />
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/color_White"
+            android:padding="10dp"
+            android:tag="Hover"
+            android:text="要有最樸素的生活和最遙遠的夢想，即使明天天寒地凍，山高水遠，路遠馬亡。" />
+
+    </com.daimajia.swipe.SwipeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,12 +91,12 @@
         android:layout_margin="@dimen/margin_maximum"
         android:gravity="center"
         android:orientation="horizontal">
-       <android.support.v7.widget.AppCompatSpinner
-           android:id="@+id/sp_size"
-           android:layout_width="wrap_content"
-           android:clickable="true"
-           android:layout_height="wrap_content"
-           android:focusable="true" />
+
+        <Spinner
+            android:id="@+id/sp_size"
+            style="@style/custom_spinner_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.CardView
             android:id="@+id/cv_audio_recorder"
@@ -33,6 +107,7 @@
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="59dp">
 
+
             <TextView
                 style="@style/custom_Txt_Title_style"
                 android:layout_width="wrap_content"
@@ -41,8 +116,7 @@
                 android:layout_margin="@dimen/margin"
                 android:gravity="center"
                 android:text="ضبط صدا"
-                android:textColor="@color/color_White"
-                />
+                android:textColor="@color/color_White" />
 
         </android.support.v7.widget.CardView>
 
@@ -68,6 +142,7 @@
         </android.support.v7.widget.CardView>
 
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -97,8 +172,6 @@
         </android.support.v7.widget.CardView>
 
 
-
-
         <android.support.v7.widget.CardView
             android:id="@+id/cv_media_picker"
             android:layout_width="100dp"
@@ -120,6 +193,7 @@
 
         </android.support.v7.widget.CardView>
     </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

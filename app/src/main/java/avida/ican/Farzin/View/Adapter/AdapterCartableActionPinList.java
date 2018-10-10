@@ -12,7 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
-import avida.ican.Farzin.View.Interface.ListenerAdapterCartableAction;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;

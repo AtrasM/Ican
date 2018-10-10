@@ -21,9 +21,13 @@ public class StructureInboxDocumentDB implements Serializable {
     private int id;
     @DatabaseField()
     int ReceiverCode;
-      @DatabaseField()
+    @DatabaseField()
     int EntityTypeCode;
-      @DatabaseField()
+    @DatabaseField()
+    String PriorityEntity_Name;
+    @DatabaseField()
+    int PrioritySend_ID;
+    @DatabaseField()
     int EntityCode;
     @DatabaseField()
     int SendCode;
@@ -70,7 +74,6 @@ public class StructureInboxDocumentDB implements Serializable {
     }
 
 
-
     public StructureInboxDocumentDB(StructureInboxDocumentRES structureInboxDocumentRES, Date importDate, Date exportDate, Date receiveDate, Date expireDate, Status status, boolean isPin) {
         HaveDependency = structureInboxDocumentRES.isHaveDependency();
         SecurityLevelCode = structureInboxDocumentRES.getSecurityLevelCode();
@@ -85,6 +88,9 @@ public class StructureInboxDocumentDB implements Serializable {
         SendCode = structureInboxDocumentRES.getSendCode();
         EntityTypeCode = structureInboxDocumentRES.getEntityTypeCode();
         EntityCode = structureInboxDocumentRES.getEntityCode();
+        Title = structureInboxDocumentRES.getTitle();
+        PriorityEntity_Name = structureInboxDocumentRES.getPriorityEntity_Name();
+        PrioritySend_ID = structureInboxDocumentRES.getPrioritySend_ID();
         if (structureInboxDocumentRES.getPrivateHameshContent() != null) {
             this.PrivateHameshContent = structureInboxDocumentRES.getPrivateHameshContent();
         } else {
@@ -298,5 +304,21 @@ public class StructureInboxDocumentDB implements Serializable {
 
     public void setEntityCode(int entityCode) {
         EntityCode = entityCode;
+    }
+
+    public String getPriorityEntity_Name() {
+        return PriorityEntity_Name;
+    }
+
+    public void setPriorityEntity_Name(String priorityEntity_Name) {
+        PriorityEntity_Name = priorityEntity_Name;
+    }
+
+    public int getPrioritySend_ID() {
+        return PrioritySend_ID;
+    }
+
+    public void setPrioritySend_ID(int prioritySend_ID) {
+        PrioritySend_ID = prioritySend_ID;
     }
 }

@@ -25,7 +25,7 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
-import avida.ican.Farzin.View.Interface.ListenerAdapterMessageList;
+import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;

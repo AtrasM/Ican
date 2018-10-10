@@ -61,6 +61,7 @@ public class GetCartableHameshFromServerPresenter {
     }
 
     private void initStructure(String xml, CartableHameshListListener cartableHameshListListener) {
+        xml=xml.replaceAll("xsi:type=\"Hamesh\"","");
         StructureHameshListRES structureHameshListRES = xmlToObject.DeserializationSimpleXml(xml, StructureHameshListRES.class);
         if (structureHameshListRES.getStrErrorMsg() != null) {
             cartableHameshListListener.onFailed("" + structureHameshListRES.getStrErrorMsg());
@@ -78,9 +79,9 @@ public class GetCartableHameshFromServerPresenter {
 
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
-        SoapObject Filter = new SoapObject(NameSpace, "filter");
-        Filter.addProperty("ETC", EntityTypeCode);
-        Filter.addProperty("EC", EntityCode);
+        //SoapObject Filter = new SoapObject(NameSpace, "filter");
+        soapObject.addProperty("ETC", EntityTypeCode);
+        soapObject.addProperty("EC", EntityCode);
 
         return soapObject;
 

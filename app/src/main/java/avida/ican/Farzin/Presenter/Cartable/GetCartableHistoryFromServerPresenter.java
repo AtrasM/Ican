@@ -3,97 +3,85 @@ package avida.ican.Farzin.Presenter.Cartable;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentListRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHistoryListRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
-import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
- * Created by AtrasVida on 2018-09-12 at 11:08
+ * Created by AtrasVida on 2018-10-06 at 11:43 AM
  */
 
 
-public class GetCartableDocumentFromServerPresenter {
+public class GetCartableHistoryFromServerPresenter {
+
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
-    private String EndPoint = "CartableManagment";
-    private String MetodName = "GetCartableDocument";
+    private String EndPoint = "eFormManagment";
+    private String MetodName = "GetHistoryList";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "SendMessageToServerPresenter";
+    private String Tag = "GetCartableHistoryFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-
-    public GetCartableDocumentFromServerPresenter() {
+    public GetCartableHistoryFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void GetCartableDocumentList(int count, CartableDocumentListListener cartableDocumentListListener) {
-
-        String LastDate = getFarzinPrefrences().getCartableDocumentDataSyncDat();
-        GetCartableDocument(getSoapObject(LastDate, count), cartableDocumentListListener);
+    public void GetHistortList(int EntityTypeCode, int EntityCode, CartableHistoryListListener cartableHistoryListListener) {
+        GetData(getSoapObject(EntityTypeCode, EntityCode), cartableHistoryListListener);
     }
 
-    private void GetCartableDocument(SoapObject soapObject, final CartableDocumentListListener cartableDocumentListListener) {
+    private void GetData(SoapObject soapObject, final CartableHistoryListListener cartableHistoryListListener) {
 
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                CheckCartableDocumentListStructure(Xml, cartableDocumentListListener);
-
+                initStructure(Xml, cartableHistoryListListener);
             }
 
             @Override
             public void onFailed() {
-                cartableDocumentListListener.onFailed("");
+                cartableHistoryListListener.onFailed("");
             }
 
             @Override
             public void onCancel() {
-                cartableDocumentListListener.onCancel();
+                cartableHistoryListListener.onCancel();
             }
         });
 
     }
 
-    private void CheckCartableDocumentListStructure(String xml, CartableDocumentListListener cartableDocumentListListener) {
-        StructureCartableDocumentListRES structureCartableDocumentListRES = xmlToObject.DeserializationSimpleXml(xml, StructureCartableDocumentListRES.class);
-        if (structureCartableDocumentListRES.getStrErrorMsg() != null) {
-            cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
+    private void initStructure(String xml, CartableHistoryListListener cartableHistoryListListener) {
+        StructureHistoryListRES structureHistoryListRES = xmlToObject.DeserializationGsonXml(xml, StructureHistoryListRES.class);
+        if (structureHistoryListRES.getStrErrorMsg() != null) {
+            cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
         } else {
-            if (structureCartableDocumentListRES.getGetCartableDocumentResult().size() <= 0) {
-                cartableDocumentListListener.onSuccess(new ArrayList<StructureInboxDocumentRES>());
+            if (structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph().size() <= 0) {
+                cartableHistoryListListener.onSuccess(new ArrayList<StructureGraphRES>(), "");
             } else {
-                ArrayList<StructureInboxDocumentRES> structureInboxDocumentRES = new ArrayList<>(structureCartableDocumentListRES.getGetCartableDocumentResult());
+                ArrayList<StructureGraphRES> structureGraphRES = new ArrayList<>(structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph());
                 // changeXml.CharDecoder(structureMessageList.get())
-                cartableDocumentListListener.onSuccess(structureInboxDocumentRES);
+                cartableHistoryListListener.onSuccess(structureGraphRES, xml);
             }
         }
     }
 
 
-    private SoapObject getSoapObject(String LastDate, int count) {
+    private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
-        SoapObject Filter = new SoapObject(NameSpace, "filter");
-        Filter.addProperty("ETC", -1);
-        Filter.addProperty("ActionCode", -1);
-        if (!LastDate.isEmpty()) {
-            LastDate = CustomFunction.arabicToDecimal(LastDate);
-            Filter.addProperty("StartDateTime", LastDate);
-        }
+        //SoapObject Filter = new SoapObject(NameSpace, "filter");
+        soapObject.addProperty("ETC", EntityTypeCode);
+        soapObject.addProperty("EC", EntityCode);
 
-        Filter.addProperty("CountOfRecord", count);
-        Filter.addProperty("SortType", "ASC");
-        soapObject.addSoapObject(Filter);
         return soapObject;
 
     }

@@ -1,6 +1,8 @@
 package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
 /**
@@ -8,11 +10,12 @@ import org.simpleframework.xml.Root;
  */
 
 @Root(name = "anyType")
+@Namespace( prefix = "type", reference = "Hamesh")
 public class StructureHameshRES {
     @Element()
     int HameshID;
     @Element(required = false)
-    String Title;
+     String Title;
     @Element(required = false)
     String Content;
     @Element
@@ -31,6 +34,9 @@ public class StructureHameshRES {
     boolean IsHidden;
     @Element(required = false)
     StructureHameshImageRES HameshImage;
+
+    int ETC;
+    int EC;
 
     public String getTitle() {
         return Title;
@@ -118,5 +124,22 @@ public class StructureHameshRES {
 
     public void setHameshID(int hameshID) {
         HameshID = hameshID;
+    }
+
+
+    public int getETC() {
+        return ETC;
+    }
+
+    public void setETC(int ETC) {
+        this.ETC = ETC;
+    }
+
+    public int getEC() {
+        return EC;
+    }
+
+    public void setEC(int EC) {
+        this.EC = EC;
     }
 }

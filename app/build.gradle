@@ -101,6 +101,8 @@ dependencies {
 
     //swipelayout
     implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
+    //swipelayout
+    implementation  'com.daimajia.swipelayout:library:1.2.0@aar'
 
     implementation 'com.android.support:multidex:1.0.3'
 

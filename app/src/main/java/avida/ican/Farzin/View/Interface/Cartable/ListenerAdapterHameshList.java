@@ -1,4 +1,4 @@
-package avida.ican.Farzin.View.Interface;
+package avida.ican.Farzin.View.Interface.Cartable;
 
 import avida.ican.Ican.Model.Structure.StructureAttach;
 

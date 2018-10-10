@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -17,9 +19,10 @@ import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.View.Adapter.AdapteCartableDocumentList;
 import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
+import avida.ican.Farzin.View.Dialog.DialogCartableHistoryList;
 import avida.ican.Farzin.View.Enum.CartableActionsEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.Interface.ListenerAdapterCartableDocumentList;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableDocumentList;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.Custom.Animator;
@@ -54,6 +57,10 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     private AdapteCartableDocumentList adapteCartableDocumentList;
     private int actionCode = -1;
     private DialogCartableHameshList dialogCartableHameshList;
+    private DialogCartableHistoryList dialogCartableHistoryList;
+    private final int EnumDialogCartableHistory = 0;
+    private final int EnumDialogCartableHamesh = 1;
+    private int dialogEnum = -1;
 
     @Override
     protected void onResume() {
@@ -157,17 +164,25 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
             @Override
             public void onClick(StructureInboxDocumentDB structureInboxDocumentDB) {
-                dialogCartableHameshList = new DialogCartableHameshList(App.CurentActivity).setData(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode());
-                dialogCartableHameshList.Creat();
+
             }
 
             @Override
             public void onAction(StructureInboxDocumentDB structureInboxDocumentDB, CartableActionsEnum cartableActionsEnum) {
                 switch (cartableActionsEnum) {
                     case ListHamesh: {
-
+                        dialogCartableHameshList = new DialogCartableHameshList(App.CurentActivity).setData(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode());
+                        dialogCartableHameshList.Creat();
+                        dialogEnum = EnumDialogCartableHamesh;
                         break;
                     }
+                    case DocumentFlow: {
+                        dialogCartableHistoryList = new DialogCartableHistoryList(App.CurentActivity).setData(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode());
+                        dialogCartableHistoryList.Creat();
+                        dialogEnum = EnumDialogCartableHistory;
+                        break;
+                    }
+
                     case Hamesh: {
                         DialogCartableHamesh dialogCartableHamesh = new DialogCartableHamesh(App.CurentActivity);
                         dialogCartableHamesh.setData(structureInboxDocumentDB.getSenderName(), structureInboxDocumentDB.getSenderRoleName(), structureInboxDocumentDB.getPrivateHameshContent());
@@ -194,9 +209,50 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         loading.Hide();
     }
 
-
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Back();
+                break;
+            }
+        }
+        return true;
+    }
+
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            Back();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void Back() {
+        switch (dialogEnum) {
+            case EnumDialogCartableHamesh: {
+                dialogCartableHameshList.dismiss();
+                dialogEnum = -1;
+                break;
+            }
+            case EnumDialogCartableHistory: {
+                dialogCartableHistoryList.dismiss();
+                dialogEnum = -1;
+                break;
+            }
+            default: {
+                Finish(App.CurentActivity);
+            }
+
+        }
+
+
+    }
 }

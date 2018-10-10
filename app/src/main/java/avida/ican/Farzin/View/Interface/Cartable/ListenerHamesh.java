@@ -1,4 +1,4 @@
-package avida.ican.Farzin.View.Interface;
+package avida.ican.Farzin.View.Interface.Cartable;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 
@@ -8,4 +8,5 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 
 public interface ListenerHamesh {
     void newData(StructureHameshDB structureHameshDB);
+    void noData();
 }

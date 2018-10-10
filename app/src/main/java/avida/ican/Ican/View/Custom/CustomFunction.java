@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.webkit.MimeTypeMap;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -38,14 +39,17 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
+import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
 
@@ -313,9 +317,9 @@ public class CustomFunction {
             try {
                 date = date.replace("T", " ");
                 date = date.replace("-", "/");
-                int dotPos=date.indexOf(".");
-                if(dotPos>0){
-                    date= date.substring(0,dotPos);
+                int dotPos = date.indexOf(".");
+                if (dotPos > 0) {
+                    date = date.substring(0, dotPos);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -461,4 +465,11 @@ public class CustomFunction {
         Arrays.fill(data, c);
         return new String(data);
     }
+
+    public ArrayAdapter<String> getSpinnerAdapter(ArrayList<String> list) {
+        ArrayAdapter<String> adapter =  new ArrayAdapter<>(App.CurentActivity, R.layout.layout_txt_spinner, list);
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        return adapter;
+    }
+
 }

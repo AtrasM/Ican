@@ -8,7 +8,6 @@
     android:orientation="vertical"
     tools:ignore="ContentDescription,RtlHardcoded">
 
-
     <LinearLayout
         android:id="@+id/ln_main"
         style="@style/custom_item_rcv_style"
@@ -28,7 +27,6 @@
             android:paddingLeft="@dimen/padding"
             android:paddingRight="@dimen/padding">
 
-
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -44,27 +42,8 @@
                     android:orientation="horizontal">
 
                     <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:paddingTop="@dimen/padding">
-
-                        <ImageView
-                            android:layout_width="15dp"
-                            android:layout_height="15dp"
-                            android:layout_gravity="top|center"
-                            android:layout_margin="@dimen/margin_minimum"
-                            android:background="@drawable/ic_hamesh"
-                            android:visibility="visible" />
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
                         android:gravity="center|right"
                         android:orientation="vertical">
 
@@ -74,27 +53,33 @@
                             android:gravity="right"
                             android:orientation="vertical">
 
-
-                            <TextView
-                                android:id="@+id/txt_creator_full_name"
-                                style="@style/custom_Txt_Normal_style"
+                            <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:gravity="center|right"
-                                android:maxLines="1"
-                                android:text="pol pol" />
+                                android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/txt_creator_role_name"
-                                style="@style/custom_Txt_Normal_style"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:gravity="center|right"
-                                android:maxLines="1"
-                                android:padding="0dp"
-                                android:text="[ 123 ]"
-                                android:textColor="@color/colorPrimaryDark"
-                                tools:ignore="NestedWeights" />
+                                <TextView
+                                    android:id="@+id/txt_creator_full_name"
+                                    style="@style/custom_Txt_Normal_style"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center|right"
+                                    android:maxLines="1"
+                                    android:text="pol pol" />
+
+                                <TextView
+                                    android:id="@+id/txt_creator_role_name"
+                                    style="@style/custom_Txt_Normal_style"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:gravity="center|right"
+                                    android:maxLines="1"
+                                    android:padding="0dp"
+                                    android:text="[ 123 ]"
+                                    tools:ignore="NestedWeights" />
+                            </LinearLayout>
+
 
                             <LinearLayout
                                 android:id="@+id/ln_receiver"
@@ -107,10 +92,15 @@
                                     android:layout_height="wrap_content"
                                     android:orientation="horizontal">
 
-                                    <ImageView
-                                        android:layout_width="15dp"
-                                        android:layout_height="15dp"
-                                        app:srcCompat="@drawable/ic_comission_arrow" />
+                                    <TextView
+                                        android:id="@+id/txt_action"
+                                        style="@style/custom_Txt_Normal_style"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center|right"
+                                        android:maxLines="1"
+                                        android:text="pol pol"
+                                        android:textColor="@color/colorPrimaryDark" />
 
                                     <LinearLayout
                                         android:layout_width="match_parent"
@@ -143,7 +133,7 @@
 
 
                                 <TextView
-                                    android:id="@+id/txt_hamesh"
+                                    android:id="@+id/txt_content"
                                     style="@style/custom_Txt_Sub_Title_style"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"

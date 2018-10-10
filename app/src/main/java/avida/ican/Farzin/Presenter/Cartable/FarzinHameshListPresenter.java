@@ -1,20 +1,16 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
-import android.content.Context;
 import android.os.Handler;
-import android.widget.Toast;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.Type;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHameshListListener;
 import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
-import avida.ican.Farzin.View.Interface.ListenerHamesh;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -48,7 +44,7 @@ public class FarzinHameshListPresenter {
             @Override
             public void onSuccess(ArrayList<StructureHameshRES> structureHameshRES) {
                 if (structureHameshRES.size() == 0) {
-                    reGetData();
+                    listenerHamesh.noData();
                 } else {
                     SaveData(structureHameshRES);
                 }
@@ -76,6 +72,7 @@ public class FarzinHameshListPresenter {
 
     public void GetHameshFromServer() {
         getCartableHameshFromServerPresenter.GetHameshList(Etc, Ec, cartableHameshListListener);
+
     }
 
     public List<StructureHameshDB> GetHameshList(int Start, int Count) {

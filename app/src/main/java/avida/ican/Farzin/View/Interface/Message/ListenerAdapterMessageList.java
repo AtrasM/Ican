@@ -1,4 +1,4 @@
-package avida.ican.Farzin.View.Interface;
+package avida.ican.Farzin.View.Interface.Message;
 
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;

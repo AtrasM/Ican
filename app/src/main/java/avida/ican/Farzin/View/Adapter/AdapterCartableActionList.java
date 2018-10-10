@@ -1,9 +1,6 @@
 package avida.ican.Farzin.View.Adapter;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,15 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import java.util.ArrayList;
-import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
-import avida.ican.Farzin.View.Interface.ListenerAdapterCartableAction;
-import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;

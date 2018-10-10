@@ -15,8 +15,11 @@ import java.util.List;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableHistoryBND;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
@@ -36,6 +39,7 @@ public class FarzinCartableQuery {
     private String Tag = "FarzinCartableQuery";
     private CartableDocumentQuerySaveListener cartableDocumentQuerySaveListener;
     private HameshQuerySaveListener hameshQuerySaveListener;
+    private CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener;
     private ChangeXml changeXml;
     private Status status = Status.WAITING;
     private boolean SendFromApp = false;
@@ -43,8 +47,7 @@ public class FarzinCartableQuery {
 
     private Dao<StructureInboxDocumentDB, Integer> cartableDocumentDao = null;
     private Dao<StructureHameshDB, Integer> hameshDao = null;
-    private int ETC = -1;
-    private int EC = -1;
+    private Dao<StructureCartableHistoryDB, Integer> historyDao = null;
 
 
     //_______________________***Dao***______________________________
@@ -58,6 +61,7 @@ public class FarzinCartableQuery {
         try {
             cartableDocumentDao = App.getFarzinDatabaseHelper().getCartableDocumentDao();
             hameshDao = App.getFarzinDatabaseHelper().getHameshDao();
+            historyDao = App.getFarzinDatabaseHelper().getHistoryDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,8 +101,8 @@ public class FarzinCartableQuery {
 
     public void saveHamesh(StructureHameshRES structureHameshRES, int ETC, int EC, final HameshQuerySaveListener hameshQuerySaveListener) {
 
-        this.ETC = ETC;
-        this.EC = EC;
+        structureHameshRES.setETC(ETC);
+        structureHameshRES.setEC(EC);
         if (IsHameshExist(structureHameshRES.getHameshID())) {
             // UpdateMessageView(structureMessageRES, type);
             hameshQuerySaveListener.onExisting();
@@ -106,6 +110,19 @@ public class FarzinCartableQuery {
             this.hameshQuerySaveListener = hameshQuerySaveListener;
             new saveHamesh().execute(structureHameshRES);
         }
+
+    }
+
+    public void saveCartableHistory(String xml, int ETC, int EC, final CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener) {
+        StructureCartableHistoryBND structureCartableHistoryBND = new StructureCartableHistoryBND(xml, ETC, EC);
+        this.cartableHistoryQuerySaveListener = cartableHistoryQuerySaveListener;
+
+        if (IsCartableHistoryExist(ETC, EC)) {
+            updateCartableHistory(structureCartableHistoryBND);
+        } else {
+            new saveHistory().execute(structureCartableHistoryBND);
+        }
+
 
     }
 
@@ -156,11 +173,31 @@ public class FarzinCartableQuery {
 
             creationDate = new Date(CustomFunction.StandardizeTheDateFormat(structureHameshRES[0].getCreationDate()));
             creationShamsiDate = new Date(CustomFunction.StandardizeTheDateFormat(structureHameshRES[0].getCreationShamsiDate()));
-            StructureHameshDB structureHameshDB = new StructureHameshDB(structureHameshRES[0], ETC, EC);
+            StructureHameshDB structureHameshDB = new StructureHameshDB(structureHameshRES[0], structureHameshRES[0].getETC(), structureHameshRES[0].getEC());
             try {
                 hameshDao.create(structureHameshDB);
 
                 hameshQuerySaveListener.onSuccess(structureHameshDB);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                hameshQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+
+            return null;
+        }
+    }
+
+
+    private class saveHistory extends AsyncTask<StructureCartableHistoryBND, Void, Void> {
+
+        @Override
+        protected Void doInBackground(StructureCartableHistoryBND... HistoryBND) {
+            StructureCartableHistoryDB cartableHistoryDB = new StructureCartableHistoryDB(HistoryBND[0].getXml(), HistoryBND[0].getETC(), HistoryBND[0].getEC());
+            try {
+                historyDao.create(cartableHistoryDB);
+                cartableHistoryQuerySaveListener.onSuccess();
             } catch (SQLException e) {
                 e.printStackTrace();
                 hameshQuerySaveListener.onFailed(e.toString());
@@ -196,6 +233,21 @@ public class FarzinCartableQuery {
             e.printStackTrace();
         }
         return structureHameshDBS;
+    }
+    public List<StructureCartableHistoryDB> getCartableHistory(int ETC, int EC, long start, long count) {
+        QueryBuilder<StructureCartableHistoryDB, Integer> queryBuilder = historyDao.queryBuilder();
+        List<StructureCartableHistoryDB> structureCartableHistoryDBS = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+
+            if (count > 0) {
+                queryBuilder.offset(start).limit(count);
+            }
+            structureCartableHistoryDBS = queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureCartableHistoryDBS;
     }
 
     public List<StructureInboxDocumentDB> getCartableDocuments(int actionCode, Status status, long start, long count) {
@@ -272,6 +324,19 @@ public class FarzinCartableQuery {
         return count;
     }
 
+    public void updateCartableHistory(StructureCartableHistoryBND HistoryBND) {
+        try {
+            UpdateBuilder<StructureCartableHistoryDB, Integer> updateBuilder = historyDao.updateBuilder();
+            updateBuilder.where().eq("ETC", HistoryBND.getETC()).and().eq("EC", HistoryBND.getEC());
+            updateBuilder.updateColumnValue("DataXml", HistoryBND.getXml());
+            updateBuilder.update();
+            cartableHistoryQuerySaveListener.onSuccess();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            cartableHistoryQuerySaveListener.onFailed(e.toString());
+        }
+    }
+
     public void pinAction(int actionCode, boolean isPin) {
         try {
             UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
@@ -285,11 +350,11 @@ public class FarzinCartableQuery {
 
     public boolean IsHameshExist(int HameshID) {
         boolean existing = false;
-        QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
+        QueryBuilder<StructureHameshDB, Integer> queryBuilder = hameshDao.queryBuilder();
         try {
             queryBuilder.setWhere(queryBuilder.where().eq("HameshID", HameshID));
             queryBuilder.setCountOf(true);
-            long count = cartableDocumentDao.countOf(queryBuilder.prepare());
+            long count = hameshDao.countOf(queryBuilder.prepare());
             // long count = queryBuilder.countOf();
             if (count > 0) existing = true;
         } catch (SQLException e) {
@@ -305,6 +370,21 @@ public class FarzinCartableQuery {
             queryBuilder.setWhere(queryBuilder.where().eq("ReceiverCode", code));
             queryBuilder.setCountOf(true);
             long count = cartableDocumentDao.countOf(queryBuilder.prepare());
+            // long count = queryBuilder.countOf();
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
+    }
+
+    public boolean IsCartableHistoryExist(int ETC, int EC) {
+        boolean existing = false;
+        QueryBuilder<StructureCartableHistoryDB, Integer> queryBuilder = historyDao.queryBuilder();
+        try {
+            queryBuilder.setWhere(queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC));
+            queryBuilder.setCountOf(true);
+            long count = historyDao.countOf(queryBuilder.prepare());
             // long count = queryBuilder.countOf();
             if (count > 0) existing = true;
         } catch (SQLException e) {

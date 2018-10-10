@@ -12,6 +12,7 @@
     <color name="color_Info">#2196F3</color>
     <color name="color_Info_Dark">#1D88DE</color>
     <color name="color_Warning">#ffc306</color>
+    <color name="color_orange">#ff6a06</color>
     <color name="color_Danger">#E20808</color>
     <color name="color_txt_Title">#000000</color>
     <color name="color_txt_SubTitle">#818791</color>

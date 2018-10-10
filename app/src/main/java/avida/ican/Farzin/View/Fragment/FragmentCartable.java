@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 
@@ -19,12 +20,10 @@ import avida.ican.Farzin.View.Adapter.AdapterCartableActionList;
 import avida.ican.Farzin.View.Adapter.AdapterCartableActionPinList;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
-import avida.ican.Farzin.View.FarzinActivityDetailMessage;
-import avida.ican.Farzin.View.Interface.ListenerAdapterCartableAction;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.MaxHeightLinearLayout;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
@@ -39,8 +38,8 @@ public class FragmentCartable extends BaseFragment {
     RecyclerView rcvAction;
     @BindView(R.id.rcv_pin)
     RecyclerView rcvPin;
-    @BindView(R.id.ln_rcv_pin)
-    MaxHeightLinearLayout lnRcvPin;
+    @BindView(R.id.frm_rcv_pin)
+    FrameLayout frmRcvPin;
 
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
     private AdapterCartableActionList adapterCartableActionList;
@@ -84,7 +83,7 @@ public class FragmentCartable extends BaseFragment {
         structureCartableActions = new FarzinCartableQuery().getCartableAction(false);
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true);
         if (structureCartableActionsPin.size() > 0) {
-            lnRcvPin.setVisibility(View.VISIBLE);
+            frmRcvPin.setVisibility(View.VISIBLE);
         }
         initRcv();
     }
@@ -94,6 +93,8 @@ public class FragmentCartable extends BaseFragment {
         final GridLayoutManagerWithSmoothScroller gridLayoutManagerPin = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         rcvAction.setLayoutManager(gridLayoutManager);
         rcvPin.setLayoutManager(gridLayoutManagerPin);
+        rcvPin.setNestedScrollingEnabled(false);
+        rcvAction.setNestedScrollingEnabled(false);
         initAdapter(structureCartableActions);
     }
 
@@ -107,7 +108,7 @@ public class FragmentCartable extends BaseFragment {
                 structureCartableActions.remove(structureCartableAction);
                 adapterCartableActionPinList.addItem(structureCartableAction);
                 adapterCartableActionList.remove(position);
-                lnRcvPin.setVisibility(View.VISIBLE);
+                frmRcvPin.setVisibility(View.VISIBLE);
 
 
             }
@@ -121,7 +122,7 @@ public class FragmentCartable extends BaseFragment {
                 adapterCartableActionList.addItem(structureCartableAction);
                 adapterCartableActionPinList.remove(position);
                 if (structureCartableActionsPin.size() == 0) {
-                    lnRcvPin.setVisibility(View.GONE);
+                    frmRcvPin.setVisibility(View.GONE);
                 }
             }
 

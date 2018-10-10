@@ -83,4 +83,6 @@
     <string name="title_gardesh_madrak">گردش مدرک</string>
     <string name="title_zanjireh_madrak">زنجیره مدرک</string>
     <string name="referralComission">دستور ارجاع</string>
+    <string name="hint_comission">ارجاع</string>
+    <string name="hint_confirm">تایید</string>
 </resources>

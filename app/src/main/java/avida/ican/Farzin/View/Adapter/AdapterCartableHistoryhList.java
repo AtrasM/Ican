@@ -15,8 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureNodeRES;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
@@ -25,21 +27,19 @@ import butterknife.ButterKnife;
 
 
 /**
- * Created by AtrasVida in 97-09-26 ar 1:10 PM
+ * Created by AtrasVida in 97-10-07 ar 11:11 AM
  */
 
 
-public class AdapterHameshList extends RecyclerView.Adapter<AdapterHameshList.ViewHolder> {
+public class AdapterCartableHistoryhList extends RecyclerView.Adapter<AdapterCartableHistoryhList.ViewHolder> {
 
-    private ArrayList<StructureHameshDB> itemList;
-    private int layout = R.layout.item_hamesh_list;
-    private ListenerAdapterHameshList listenerAdapterHameshList;
+    private ArrayList<StructureNodeRES> itemList;
+    private int layout = R.layout.item_cartable_history_list;
     private ViewBinderHelper binderHelper;
     private boolean isLnMoreVisible = false;
 
-    public AdapterHameshList(ArrayList<StructureHameshDB> itemList, ListenerAdapterHameshList listenerAdapterHameshList) {
+    public AdapterCartableHistoryhList(ArrayList<StructureNodeRES> itemList) {
         this.itemList = new ArrayList<>(itemList);
-        this.listenerAdapterHameshList = listenerAdapterHameshList;
         binderHelper = new ViewBinderHelper();
     }
 
@@ -57,8 +57,10 @@ public class AdapterHameshList extends RecyclerView.Adapter<AdapterHameshList.Vi
         TextView txtTime;
         @BindView(R.id.txt_date)
         TextView txtDate;
-        @BindView(R.id.txt_hamesh)
-        TextView txtHamesh;
+        @BindView(R.id.txt_content)
+        TextView txtContent;
+        @BindView(R.id.txt_action)
+        TextView txtAction;
         @BindView(R.id.ln_receiver)
         LinearLayout lnReceiver;
 
@@ -76,7 +78,7 @@ public class AdapterHameshList extends RecyclerView.Adapter<AdapterHameshList.Vi
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public AdapterHameshList.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterCartableHistoryhList.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         itemLayoutView.setLayoutParams(lp);
@@ -95,24 +97,26 @@ public class AdapterHameshList extends RecyclerView.Adapter<AdapterHameshList.Vi
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
 
 
-        final StructureHameshDB item = itemList.get(position);
-        if (item.isPrivate() || !item.getHameshType().equals("Text")) {
-            viewHolder.lnReceiver.setVisibility(View.GONE);
-        } else {
-            viewHolder.lnReceiver.setVisibility(View.VISIBLE);
-            viewHolder.txtTitle.setText("" + item.getTitle());
-            viewHolder.txtHamesh.setText("" + item.getContent());
-        }
+        final StructureNodeRES item = itemList.get(position);
 
-
-        String[] splitDateTime = item.getCreationShamsiDate().toString().split(" ");
+        String receiveDate = CustomFunction.StandardizeTheDateFormat(item.getReceiveDateGeorgian());
+        receiveDate = CustomFunction.MiladyToJalaly(receiveDate);
+        String[] splitDateTime = receiveDate.split(" ");
         final String date = splitDateTime[0];
         final String time = splitDateTime[1];
         viewHolder.txtDate.setText(date);
         viewHolder.txtTime.setText(time);
-        viewHolder.txtCreatorFullName.setText("" + item.getCreatorName());
-        viewHolder.txtCreatorRoleName.setText(" [ " + item.getCreatorRoleName() + " ] ");
-
+        viewHolder.txtCreatorFullName.setText("" + item.getSenderFirstName() + " " + item.getSenderLastName());
+        viewHolder.txtCreatorRoleName.setText(" [ " + item.getSenderRoleName() + " ] ");
+        viewHolder.txtTitle.setText("" + item.getFirstName() + " " + item.getLastName() + " [ " + item.getRoleName() + " ] ");
+        viewHolder.txtAction.setText("" + item.getReceiveAction());
+        if (item.getPrivateHamesh().getContent() != null) {
+            viewHolder.txtContent.setVisibility(View.VISIBLE);
+            String content = item.getPrivateHamesh().getContent();
+            viewHolder.txtContent.setText(content);
+        } else {
+            viewHolder.txtContent.setVisibility(View.GONE);
+        }
     }
 
     private void ShowToast(final String s) {
@@ -124,58 +128,20 @@ public class AdapterHameshList extends RecyclerView.Adapter<AdapterHameshList.Vi
         });
     }
 
-    public void updateItem(StructureHameshDB structureHameshDB) {
-        for (int i = 0; i < itemList.size(); i++) {
-            if (itemList.get(i).getId() == structureHameshDB.getId()) {
-                itemList.remove(i);
-                notifyItemRemoved(i);
-                itemList.add(i, structureHameshDB);
-                notifyDataSetChanged();
-                break;
-            }
-        }
-    }
-
-    public void updateData(List<StructureHameshDB> structureHameshDBS) {
+    public void updateData(List<StructureNodeRES> structureNodeRES) {
         itemList = new ArrayList<>();
-        itemList.addAll(structureHameshDBS);
+        itemList.addAll(structureNodeRES);
         notifyDataSetChanged();
     }
 
-    public void updateData(int pos, List<StructureHameshDB> structureHameshDBS) {
-        //itemList.clear();
-        if (pos == -1) {
-            int start = itemList.size();
-            itemList.addAll(structureHameshDBS);
-            notifyItemRangeInserted(start, structureHameshDBS.size());
-        } else {
-            itemList.addAll(pos, structureHameshDBS);
-            notifyItemRangeInserted(pos, structureHameshDBS.size());
-        }
-        notifyDataSetChanged();
-    }
-
-    public void updateData(int pos, StructureHameshDB structureHameshDB) {
-        //itemList.clear();
-        if (pos == -1) {
-            int start = itemList.size();
-            itemList.add(structureHameshDB);
-            notifyItemRangeInserted(start, 1);
-        } else {
-            itemList.add(pos, structureHameshDB);
-            notifyItemRangeInserted(pos, 1);
-        }
-
-        notifyDataSetChanged();
-    }
 
     public void itemRangeChanged(int start, int count) {
         notifyItemRangeChanged(start, count);
     }
 
-    public void filter(List<StructureHameshDB> structureHameshDBS) {
+    public void filter(List<StructureNodeRES> structureNodeRES) {
         itemList = new ArrayList<>();
-        itemList.addAll(structureHameshDBS);
+        itemList.addAll(structureNodeRES);
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

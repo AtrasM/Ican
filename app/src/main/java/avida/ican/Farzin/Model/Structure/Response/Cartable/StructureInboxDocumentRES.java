@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
+import com.j256.ormlite.field.DatabaseField;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
@@ -17,7 +19,7 @@ public class StructureInboxDocumentRES {
     int SendCode;
     @Element
     int EntityTypeCode;
-     @Element
+    @Element
     int EntityCode;
     @Element(required = false)
     boolean HaveDependency;
@@ -53,6 +55,10 @@ public class StructureInboxDocumentRES {
     String PrivateHameshContent;
     @Element(required = false)
     String PrivateHameshTitle;
+    @Element(required = false)
+    String PriorityEntity_Name;
+    @Element(required = false)
+    int PrioritySend_ID;
 
     public StructureInboxDocumentRES() {
     }
@@ -223,5 +229,21 @@ public class StructureInboxDocumentRES {
 
     public void setEntityCode(int entityCode) {
         EntityCode = entityCode;
+    }
+
+    public String getPriorityEntity_Name() {
+        return PriorityEntity_Name;
+    }
+
+    public void setPriorityEntity_Name(String priorityEntity_Name) {
+        PriorityEntity_Name = priorityEntity_Name;
+    }
+
+    public int getPrioritySend_ID() {
+        return PrioritySend_ID;
+    }
+
+    public void setPrioritySend_ID(int prioritySend_ID) {
+        PrioritySend_ID = prioritySend_ID;
     }
 }

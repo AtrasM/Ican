@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.StructureCartableAction;
-import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
+import avida.ican.Farzin.Presenter.Cartable.GetCartableHistoryFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -74,8 +74,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         ArrayList<String> strItemsize = new ArrayList<>(Arrays.asList("H 1", " H 2", " H 3", "H 4", "H 5"));
         final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(18, 16, 14, 12, 10));
 
-        ArrayAdapter<String> adapterSize = new ArrayAdapter<>(App.CurentActivity, android.R.layout.simple_spinner_dropdown_item, strItemsize);
-        adapterSize.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(strItemsize);
         spSize.setAdapter(adapterSize);
         spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -101,30 +100,37 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-            /*    getMessageFromServerPresenter = new GetMessageFromServerPresenter();
-                getMessageFromServerPresenter.GetRecieveMessageList(1, new MessageListListener() {
+             /*   GetCartableHistoryFromServerPresenter getCartableHameshFromServerPresenter = new GetCartableHistoryFromServerPresenter();
+                getCartableHameshFromServerPresenter.GetHistortList(1183, 1086, new CartableHistoryListListener() {
                     @Override
-                    public void onSuccess(ArrayList<StructureMessageRES> messageList) {
-                        App.ShowMessage().ShowToast("onSuccess", Toast.LENGTH_SHORT);
+                    public void onSuccess(ArrayList<StructureGraphRES> structureGraphRES) {
+                        Log.i("test", "test");
+                    }
+
+                    @Override
+                    public void onSuccess(ArrayList<StructureGraphRES> structureGraphRES, String xml) {
+
                     }
 
                     @Override
                     public void onFailed(String message) {
-                        App.ShowMessage().ShowToast("onFailed " + message, Toast.LENGTH_SHORT);
+                        Log.i("test", "test");
                     }
 
                     @Override
                     public void onCancel() {
-                        App.ShowMessage().ShowToast("onCancel", Toast.LENGTH_SHORT);
+                        Log.i("test", "test");
                     }
-                });*/
-             //ArrayList<StructureCartableAction> structureCartableActions= new FarzinCartableQuery().getCartableAction();
-                goToActivity(FarzinActivityLogin.class);
-             /*   StructureMessageDB structureMessageDB=new FarzinMessageQuery().GetMessage(2651);
-                structureMessageDB=structureMessageDB;*/
+                });
+*/
+
+               goToActivity(FarzinActivityLogin.class);
 
                 break;
             }
+
+
+
             case R.id.cv_audio_recorder: {
                 ShowAudioRecorde();
                 //App.ShowMessage().ShowToast("BPMS", ToastEnum.TOAST_SHORT_TIME);

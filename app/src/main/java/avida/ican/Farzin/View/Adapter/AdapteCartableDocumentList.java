@@ -10,8 +10,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.SwipeRevealLayout;
 import com.chauthai.swipereveallayout.ViewBinderHelper;
+import com.daimajia.swipe.SwipeLayout;
+import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -20,8 +21,9 @@ import java.util.List;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.View.Enum.CartableActionsEnum;
-import avida.ican.Farzin.View.Interface.ListenerAdapterCartableDocumentList;
+import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableDocumentList;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;
@@ -29,6 +31,7 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import jp.shts.android.library.TriangleLabelView;
 
 
 /**
@@ -36,17 +39,24 @@ import butterknife.ButterKnife;
  */
 
 
-public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCartableDocumentList.ViewHolder> {
+//public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCartableDocumentList.ViewHolder> {
+public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCartableDocumentList.ViewHolder> {
 
+    private static final int NORMAL = 1;
+    private static final int IMMEDIATE = 2;
+    private static final int VERYURGENT = 3;
+    private static final int MOMENTARY = 4;
     private ArrayList<StructureInboxDocumentDB> itemList;
     private int layout = R.layout.item_cartable_document_list;
     private ImageLoader imageLoader;
     private ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList;
     private ViewBinderHelper binderHelper;
     private boolean isLnMoreVisible = false;
+    private Animator animator;
 
     public AdapteCartableDocumentList(ArrayList<StructureInboxDocumentDB> itemList, ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList) {
         imageLoader = App.getImageLoader();
+        animator = new Animator(App.CurentActivity);
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterCartableDocumentList = listenerAdapterCartableDocumentList;
         binderHelper = new ViewBinderHelper();
@@ -59,7 +69,7 @@ public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCarta
         @BindView(R.id.txt_name)
         TextView txtName;
         @BindView(R.id.swipe_layout)
-        SwipeRevealLayout swipeLayout;
+        SwipeLayout swipeLayout;
         @BindView(R.id.txt_role_name)
         TextView txtRoleName;
         @BindView(R.id.txt_date)
@@ -78,14 +88,21 @@ public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCarta
         ImageView imgWaiting;
         @BindView(R.id.ln_hamesh)
         LinearLayout lnHamesh;
-        @BindView(R.id.ln_delete)
-        LinearLayout lnDelete;
+        @BindView(R.id.ln_taeed)
+        LinearLayout lnTaeed;
+        @BindView(R.id.ln_send)
+        LinearLayout lnSend;
         @BindView(R.id.ln_main)
         LinearLayout lnMain;
         @BindView(R.id.ln_more)
         LinearLayout lnMore;
         @BindView(R.id.ln_list_hamesh)
         LinearLayout lnListHamesh;
+        @BindView(R.id.ln_history_list)
+        LinearLayout lnHistoryList;
+        @BindView(R.id.tlv)
+        TriangleLabelView tlv;
+
 
         public ViewHolder(View view) {
             super(view);
@@ -148,6 +165,28 @@ public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCarta
             viewHolder.imgWaiting.setVisibility(View.GONE);
         }
 
+        switch (item.getPrioritySend_ID()) {
+            case NORMAL: {
+                viewHolder.tlv.setVisibility(View.GONE);
+                break;
+            }
+            case IMMEDIATE: {
+                viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_Warning));
+                break;
+            }
+            case VERYURGENT: {
+                viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_orange));
+                break;
+            }
+            case MOMENTARY: {
+                viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_Danger));
+                break;
+            }
+            default: {
+                viewHolder.tlv.setVisibility(View.GONE);
+                break;
+            }
+        }
 
         String Char = item.getSenderName().substring(0, 1);
         viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
@@ -155,47 +194,57 @@ public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCarta
         viewHolder.txtName.setText(item.getSenderName());
         viewHolder.txtRoleName.setText(" [ " + item.getSenderRoleName() + " ] ");
         viewHolder.txtCode.setText("داخلی : " + item.getEntityNumber());
-
         viewHolder.lnHamesh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.Hamesh);
             }
         });
+
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // ShowToast("" + item.getSenderRoleName());
-           listenerAdapterCartableDocumentList.onClick(item);
-
+                // ShowToast("" + item.getSenderRoleName());
+                listenerAdapterCartableDocumentList.onClick(item);
             }
         });
+
         viewHolder.lnMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
                 if (isLnMoreVisible) {
+                    animator.slideInFromDownFast(viewHolder.lnMore);
                     viewHolder.lnMore.setVisibility(View.VISIBLE);
                 } else {
+                    animator.slideOutToDown(viewHolder.lnMore);
                     viewHolder.lnMore.setVisibility(View.GONE);
                 }
                 isLnMoreVisible = !isLnMoreVisible;
                 return false;
             }
         });
+
         viewHolder.lnListHamesh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.ListHamesh);
             }
         });
-        viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
+        viewHolder.lnHistoryList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.DocumentFlow);
+            }
+        });
+
+        viewHolder.lnTaeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
             }
         });
-        binderHelper.bind(viewHolder.swipeLayout, "" + position);
+        //binderHelper.bind(viewHolder.swipeLayout, "" + position);
 
     }
 
@@ -288,5 +337,9 @@ public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCarta
         return itemList.size();
     }
 
+    @Override
+    public int getSwipeLayoutResourceId(int position) {
+        return R.id.swipe_layout;
+    }
 
 }
