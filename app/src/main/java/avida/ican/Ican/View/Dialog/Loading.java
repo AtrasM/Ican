@@ -71,7 +71,7 @@ public class Loading {
             @Override
             public void run() {
                 dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.item_loding))
+                        .setContentHolder(new ViewHolder(R.layout.item_loading))
                         .setGravity(gravity)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)

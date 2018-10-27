@@ -27,13 +27,13 @@ import butterknife.ButterKnife;
  */
 
 
-public class AdapterCartableActionList extends RecyclerView.Adapter<AdapterCartableActionList.ViewHolder> {
+public class AdapterCartableAction extends RecyclerView.Adapter<AdapterCartableAction.ViewHolder> {
 
     private ArrayList<StructureCartableAction> itemList;
     private int layout = R.layout.item_cartable_action_list;
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
 
-    public AdapterCartableActionList(ArrayList<StructureCartableAction> itemList, ListenerAdapterCartableAction listenerAdapterCartableAction) {
+    public AdapterCartableAction(ArrayList<StructureCartableAction> itemList, ListenerAdapterCartableAction listenerAdapterCartableAction) {
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterCartableAction = listenerAdapterCartableAction;
     }
@@ -64,7 +64,7 @@ public class AdapterCartableActionList extends RecyclerView.Adapter<AdapterCarta
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public AdapterCartableActionList.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapterCartableAction.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         itemLayoutView.setLayoutParams(lp);

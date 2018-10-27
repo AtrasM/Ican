@@ -1,4 +1,4 @@
-package avida.ican.Farzin.View.Fragment;
+package avida.ican.Farzin.View.Fragment.Message;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
 
-import avida.ican.Farzin.View.Adapter.AdapterSentMessageList;
+import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
@@ -18,7 +18,7 @@ import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.R;
 import butterknife.BindView;
 
-public class FragmentSentMessageList extends BaseFragment {
+public class FragmentReceiveMessageList extends BaseFragment {
 
 /*    @BindView(R.id.edt_search)
     EditText edtSearch;*/
@@ -31,8 +31,9 @@ public class FragmentSentMessageList extends BaseFragment {
     SwipeRefreshLayout srlNewMessage;
 
     private Activity context;
-    private AdapterSentMessageList adapterSentMessageList;
-    public static String Tag = "FragmentSentMessageList";
+    // private static FragmentReceiveMessageList fragment;
+    private static AdapterReceiveMessage adapterReceiveMessage;
+    public static String Tag = "FragmentReceiveMessageList";
     private ListenerRcv listenerRcv;
     private int[] pastVisiblesItems;
     private int visibleItemCount;
@@ -41,14 +42,23 @@ public class FragmentSentMessageList extends BaseFragment {
     private Animator animator = null;
     private boolean canLoading = true;
 
-    public FragmentSentMessageList newInstance(Activity context, AdapterSentMessageList adapterSentMessageList, ListenerRcv listenerRcv) {
+    public static AdapterReceiveMessage getAdapterReceiveMessage() {
+        return adapterReceiveMessage;
+    }
 
+    public static void setAdapterReceiveMessage(AdapterReceiveMessage adapterReceiveMessage) {
+        FragmentReceiveMessageList.adapterReceiveMessage = adapterReceiveMessage;
+    }
+
+
+    public FragmentReceiveMessageList newInstance(Activity context, AdapterReceiveMessage adapterReceiveMessage, ListenerRcv listenerRcv) {
         this.context = context;
-        this.adapterSentMessageList = adapterSentMessageList;
+        this.adapterReceiveMessage = adapterReceiveMessage;
         this.listenerRcv = listenerRcv;
         animator = new Animator(context);
         return this;
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,12 +109,11 @@ public class FragmentSentMessageList extends BaseFragment {
         });*/
     }
 
-
     private void initRcv() {
         final GridLayoutManagerWithSmoothScroller gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         gridLayoutManager.setReverseLayout(false);
         rcvMain.setLayoutManager(gridLayoutManager);
-        rcvMain.setAdapter(this.adapterSentMessageList);
+        rcvMain.setAdapter(adapterReceiveMessage);
 
 
         rcvMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -133,10 +142,10 @@ public class FragmentSentMessageList extends BaseFragment {
                             listenerRcv.onLoadData();
                         }
                     }
+
                 }
             }
         });
-
     }
 
     public void setCanLoading(boolean canLoading) {
@@ -145,25 +154,23 @@ public class FragmentSentMessageList extends BaseFragment {
 
     @Override
     public int getLayoutResId() {
-        return R.layout.fragment_sent_message_list;
+        return R.layout.fragment_receive_message_list;
     }
-
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
     }
 
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
     }
+
 
 }

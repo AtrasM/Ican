@@ -178,6 +178,11 @@
         <item name="android:padding">@dimen/padding_maximum</item>
     </style>
 
+    <style name="custom_image_button_transparent_style">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_margin">@dimen/margin_minimum</item>
+    </style>
+
     <style name="custom_icon_style">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:scaleType">center</item>

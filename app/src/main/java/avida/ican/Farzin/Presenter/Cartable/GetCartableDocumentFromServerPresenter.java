@@ -67,9 +67,7 @@ public class GetCartableDocumentFromServerPresenter {
 
     private void CheckCartableDocumentListStructure(String xml, CartableDocumentListListener cartableDocumentListListener) {
         StructureCartableDocumentListRES structureCartableDocumentListRES = xmlToObject.DeserializationSimpleXml(xml, StructureCartableDocumentListRES.class);
-        if (structureCartableDocumentListRES.getStrErrorMsg() != null) {
-            cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
-        } else {
+        if (structureCartableDocumentListRES.getStrErrorMsg() == null || structureCartableDocumentListRES.getStrErrorMsg().isEmpty()) {
             if (structureCartableDocumentListRES.getGetCartableDocumentResult().size() <= 0) {
                 cartableDocumentListListener.onSuccess(new ArrayList<StructureInboxDocumentRES>());
             } else {
@@ -77,6 +75,8 @@ public class GetCartableDocumentFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 cartableDocumentListListener.onSuccess(structureInboxDocumentRES);
             }
+        } else {
+            cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
         }
     }
 
@@ -111,6 +111,10 @@ public class GetCartableDocumentFromServerPresenter {
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
+                    }
+                    @Override
+                    public void NetworkAccessDenied() {
+                        dataProcessListener.onFailed();
                     }
                 }).execute();
 

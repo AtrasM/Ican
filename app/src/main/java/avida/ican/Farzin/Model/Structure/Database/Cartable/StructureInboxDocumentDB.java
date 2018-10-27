@@ -2,6 +2,7 @@ package avida.ican.Farzin.Model.Structure.Database.Cartable;
 
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
 import org.simpleframework.xml.Root;
 
@@ -14,7 +15,7 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumen
 /**
  * Created by AtrasVida on 2018-09-16 at 4:40 PM
  */
-
+@DatabaseTable(tableName = "cartable_inbox_document")
 public class StructureInboxDocumentDB implements Serializable {
     final private String FIELD_NAME_ID = "id";
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)

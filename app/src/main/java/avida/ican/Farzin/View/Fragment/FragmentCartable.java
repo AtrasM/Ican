@@ -16,8 +16,8 @@ import java.util.ArrayList;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
-import avida.ican.Farzin.View.Adapter.AdapterCartableActionList;
-import avida.ican.Farzin.View.Adapter.AdapterCartableActionPinList;
+import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
+import avida.ican.Farzin.View.Adapter.AdapterCartableActionPin;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
@@ -42,8 +42,8 @@ public class FragmentCartable extends BaseFragment {
     FrameLayout frmRcvPin;
 
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
-    private AdapterCartableActionList adapterCartableActionList;
-    private AdapterCartableActionPinList adapterCartableActionPinList;
+    private AdapterCartableAction adapterCartableAction;
+    private AdapterCartableActionPin adapterCartableActionPin;
     private static FragmentManager mfragmentManager;
     private String Tag = "FragmentCartable";
     private ArrayList<StructureCartableAction> structureCartableActions = new ArrayList<>();
@@ -106,8 +106,8 @@ public class FragmentCartable extends BaseFragment {
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), true);
                 structureCartableActionsPin.add(structureCartableAction);
                 structureCartableActions.remove(structureCartableAction);
-                adapterCartableActionPinList.addItem(structureCartableAction);
-                adapterCartableActionList.remove(position);
+                adapterCartableActionPin.addItem(structureCartableAction);
+                adapterCartableAction.remove(position);
                 frmRcvPin.setVisibility(View.VISIBLE);
 
 
@@ -119,8 +119,8 @@ public class FragmentCartable extends BaseFragment {
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), false);
                 structureCartableActionsPin.remove(structureCartableAction);
                 structureCartableActions.add(structureCartableAction);
-                adapterCartableActionList.addItem(structureCartableAction);
-                adapterCartableActionPinList.remove(position);
+                adapterCartableAction.addItem(structureCartableAction);
+                adapterCartableActionPin.remove(position);
                 if (structureCartableActionsPin.size() == 0) {
                     frmRcvPin.setVisibility(View.GONE);
                 }
@@ -145,10 +145,10 @@ public class FragmentCartable extends BaseFragment {
                 }
             }
         };
-        adapterCartableActionList = new AdapterCartableActionList(structureCartableActions, listenerAdapterCartableAction);
-        adapterCartableActionPinList = new AdapterCartableActionPinList(structureCartableActionsPin, listenerAdapterCartableAction);
-        rcvAction.setAdapter(adapterCartableActionList);
-        rcvPin.setAdapter(adapterCartableActionPinList);
+        adapterCartableAction = new AdapterCartableAction(structureCartableActions, listenerAdapterCartableAction);
+        adapterCartableActionPin = new AdapterCartableActionPin(structureCartableActionsPin, listenerAdapterCartableAction);
+        rcvAction.setAdapter(adapterCartableAction);
+        rcvPin.setAdapter(adapterCartableActionPin);
 
 
     }

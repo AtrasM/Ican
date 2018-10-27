@@ -7,11 +7,13 @@ import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Interface.ListenerInternet;
 
 
 /**
@@ -40,36 +42,70 @@ public class FarzinMetaDataSync {
             @Override
             public void run() {
                 try {
-                    String strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
+                    final String strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
                     new CustomFunction(App.CurentActivity);
-                    String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
-                    String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
+                    final String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
+                    final String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
-                        if (App.networkStatus == NetworkStatus.WatingForNetwork) {
-                            onDestory();
-                            App.getHandler().postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    RunONschedule(metaDataSyncListener);
-                                }
-                            }, LONGDELAY);
-                        } else {
-                            new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
-                        }
+                        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                            @Override
+                            public void onConnected() {
+                                App.networkStatus = NetworkStatus.Connected;
+                                new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
+                            }
+
+                            @Override
+                            public void disConnected() {
+                                App.networkStatus = NetworkStatus.WatingForNetwork;
+                                onDestory();
+                                App.getHandlerMainThread().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        RunONschedule(metaDataSyncListener);
+                                    }
+                                }, LONGDELAY);
+                            }
+
+                            @Override
+                            public void onFailed() {
+                                App.networkStatus = NetworkStatus.WatingForNetwork;
+                            }
+                        });
 
                     } else {
-                        long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, CurentDateTime, MetaDataLastSyncDate).getElapsedDays();
-                        if (difrence > 11) {
-                            new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
-                        }else{
-
-                            App.CurentActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    metaDataSyncListener.onFinish();
+                        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                            @Override
+                            public void onConnected() {
+                                App.networkStatus = NetworkStatus.Connected;
+                                long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, CurentDateTime, MetaDataLastSyncDate).getElapsedDays();
+                                if (difrence > 11) {
+                                    new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
+                                } else {
+                                    App.getHandlerMainThread().post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            metaDataSyncListener.onFinish();
+                                        }
+                                    });
                                 }
-                            });
-                        }
+                            }
+
+                            @Override
+                            public void disConnected() {
+                                App.getHandlerMainThread().post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                                        metaDataSyncListener.onFinish();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onFailed() {
+                                App.networkStatus = NetworkStatus.WatingForNetwork;
+                            }
+                        });
                     }
 
                 } catch (Exception e) {

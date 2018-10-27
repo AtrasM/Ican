@@ -35,6 +35,7 @@ import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 
 /**
@@ -43,6 +44,7 @@ import avida.ican.R;
 
 public class GetRecieveMessageService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 35;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private MessageListListener messageListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -84,12 +86,32 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    }, FAILED_DELAY);
 
+                } else {
+                    reGetMessage();
+                }
             }
 
             @Override
             public void onCancel() {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    }, FAILED_DELAY);
 
+                } else {
+                    reGetMessage();
+                }
             }
         };
         GetMessage(pageNumber, Count);

@@ -62,9 +62,8 @@ public class GetCartableHistoryFromServerPresenter {
 
     private void initStructure(String xml, CartableHistoryListListener cartableHistoryListListener) {
         StructureHistoryListRES structureHistoryListRES = xmlToObject.DeserializationGsonXml(xml, StructureHistoryListRES.class);
-        if (structureHistoryListRES.getStrErrorMsg() != null) {
-            cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
-        } else {
+        if (structureHistoryListRES.getStrErrorMsg() == null || structureHistoryListRES.getStrErrorMsg().isEmpty()) {
+
             if (structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph().size() <= 0) {
                 cartableHistoryListListener.onSuccess(new ArrayList<StructureGraphRES>(), "");
             } else {
@@ -72,6 +71,9 @@ public class GetCartableHistoryFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 cartableHistoryListListener.onSuccess(structureGraphRES, xml);
             }
+        } else {
+            cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
+
         }
     }
 
@@ -99,6 +101,11 @@ public class GetCartableHistoryFromServerPresenter {
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
+                    }
+
+                    @Override
+                    public void NetworkAccessDenied() {
+                        dataProcessListener.onFailed();
                     }
                 }).execute();
 

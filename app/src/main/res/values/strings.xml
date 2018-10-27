@@ -85,4 +85,9 @@
     <string name="referralComission">دستور ارجاع</string>
     <string name="hint_comission">ارجاع</string>
     <string name="hint_confirm">تایید</string>
+    <string name="title_dar_ertebat">در ارتباط</string>
+    <string name="title_peyvast">پیوست</string>
+    <string name="title_peiro">پیرو</string>
+    <string name="title_atf">عطف</string>
+    <string name="TitleCartableDocumentDetail">مدرک</string>
 </resources>

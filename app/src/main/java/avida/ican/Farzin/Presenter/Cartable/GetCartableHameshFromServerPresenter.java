@@ -63,9 +63,7 @@ public class GetCartableHameshFromServerPresenter {
     private void initStructure(String xml, CartableHameshListListener cartableHameshListListener) {
         xml=xml.replaceAll("xsi:type=\"Hamesh\"","");
         StructureHameshListRES structureHameshListRES = xmlToObject.DeserializationSimpleXml(xml, StructureHameshListRES.class);
-        if (structureHameshListRES.getStrErrorMsg() != null) {
-            cartableHameshListListener.onFailed("" + structureHameshListRES.getStrErrorMsg());
-        } else {
+        if (structureHameshListRES.getStrErrorMsg() == null || structureHameshListRES.getStrErrorMsg().isEmpty()) {
             if (structureHameshListRES.getGetHameshListResult().size() <= 0) {
                 cartableHameshListListener.onSuccess(new ArrayList<StructureHameshRES>());
             } else {
@@ -73,6 +71,8 @@ public class GetCartableHameshFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 cartableHameshListListener.onSuccess(structureHameshRES);
             }
+        } else {
+            cartableHameshListListener.onFailed("" + structureHameshListRES.getStrErrorMsg());
         }
     }
 
@@ -100,6 +100,11 @@ public class GetCartableHameshFromServerPresenter {
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
+                    }
+
+                    @Override
+                    public void NetworkAccessDenied() {
+                        dataProcessListener.onFailed();
                     }
                 }).execute();
 

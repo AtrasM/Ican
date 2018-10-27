@@ -41,6 +41,7 @@ import avida.ican.R;
 
 public class GetCartableDocumentService extends Service {
     private final long DELAY = TimeValue.MinutesInMilli() * 35;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -83,9 +84,14 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected) {
-                    //ShowToast("WatingForNetwork");
-                    onFailed("");
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    }, FAILED_DELAY);
+
                 } else {
                     reGetData(Count);
                 }
@@ -93,9 +99,13 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected) {
-                    //ShowToast("WatingForNetwork");
-                    onFailed("");
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCancel();
+                        }
+                    },FAILED_DELAY);
                 } else {
                     reGetData(Count);
                 }
@@ -157,7 +167,7 @@ public class GetCartableDocumentService extends Service {
             @Override
             public void onFailed(String message) {
                 ShowToast("save message onFailed");
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
                     //ShowToast("WatingForNetwork");
                     onFailed("");
                 } else {
@@ -169,7 +179,7 @@ public class GetCartableDocumentService extends Service {
             @Override
             public void onCancel() {
                 ShowToast("save message onCancel");
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
                     //ShowToast("WatingForNetwork");
                     onCancel();
                 } else {

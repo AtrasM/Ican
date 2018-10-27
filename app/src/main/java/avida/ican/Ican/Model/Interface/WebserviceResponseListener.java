@@ -8,4 +8,6 @@ import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 
 public interface WebserviceResponseListener {
     void WebserviceResponseListener(WebServiceResponse webServiceResponse);
+
+    void NetworkAccessDenied();
 }

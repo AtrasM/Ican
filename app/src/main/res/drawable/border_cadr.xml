@@ -2,8 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <corners android:radius="@dimen/normal_radios" />
    <!-- <solid android:color="@color/LightFillColor"  ></solid>-->
-    <solid android:color="@color/color_border" />
+    <solid android:color="@color/color_bg_cadr" />
     <stroke
         android:width="@dimen/stroke"
-        android:color="@color/color_border" />
+        android:color="@color/color_bg_cadr" />
 </shape>

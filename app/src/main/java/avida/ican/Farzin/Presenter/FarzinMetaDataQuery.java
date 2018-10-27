@@ -281,6 +281,10 @@ public class FarzinMetaDataQuery {
                         public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                             new processData(webServiceResponse, dataProcessListener);
                         }
+                        @Override
+                        public void NetworkAccessDenied() {
+                            dataProcessListener.onFailed();
+                        }
                     }).execute();
 
         }
@@ -299,6 +303,10 @@ public class FarzinMetaDataQuery {
                         @Override
                         public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                             new processData(webServiceResponse, dataProcessListener);
+                        }
+                        @Override
+                        public void NetworkAccessDenied() {
+                            dataProcessListener.onFailed();
                         }
                     }).execute();
 

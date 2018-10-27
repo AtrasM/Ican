@@ -192,6 +192,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         App.CurentActivity.startActivityForResult(intent, 1);
         App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
+    public static void goToActivityForResult(Intent intent,int requestCode) {
+        App.CurentActivity.startActivityForResult(intent, requestCode);
+        App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+    }
 
     public static Activity getActivityFromStackMap(String Tag) {
         if (App.activityStacks.get(Tag).size() > 0) {

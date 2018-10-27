@@ -61,18 +61,9 @@
 
         <include layout="@layout/item_txt_nodata" />
 
-        <LinearLayout
-            android:id="@+id/ln_loading"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:background="@color/dialog_background"
-            android:gravity="center"
-            android:visibility="gone">
 
-            <include layout="@layout/item_loding" />
+            <include layout="@layout/ln_loading" />
 
-        </LinearLayout>
     </FrameLayout>
 
 </LinearLayout>

@@ -37,6 +37,7 @@ public class SendMessageService extends Service {
 
     private final long PERIOD = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private Timer timer;
     private TimerTask timerTask;
     private SendMessageServiceListener sendMessageServiceListener;
@@ -78,9 +79,14 @@ public class SendMessageService extends Service {
                     @Override
                     public void run() {
                         //ShowToast("onFailed -->> " + App.networkStatus + " ****** " + App.netWorkStatusListener);
-                        if (App.networkStatus != NetworkStatus.Connected) {
-                            //ShowToast("WatingForNetwork");
-                            onFailed("", structureMessageQueueDBS);
+                        if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                            App.getHandler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    onFailed("", structureMessageQueueDBS);
+                                }
+                            },FAILED_DELAY);
+
                         } else {
                             if (tryCount == MaxTry) {
                                 new FarzinMessageQuery().UpdateMessageQueueStatus(structureMessageQueueDBS.get(0).getId(), Status.STOPED);

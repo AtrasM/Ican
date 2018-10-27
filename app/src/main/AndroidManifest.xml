@@ -92,6 +92,9 @@
         <activity
             android:name=".Farzin.View.FarzinActivityCartableDocument"
             android:windowSoftInputMode="adjustNothing|stateHidden" />
+        <activity
+            android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
+            android:windowSoftInputMode="adjustNothing|stateHidden" />
         <activity android:name=".Farzin.View.FarzinNotificationClickManager" />
 
 

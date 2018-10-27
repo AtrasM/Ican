@@ -1,8 +1,10 @@
 package avida.ican.Ican.Model;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -26,6 +28,9 @@ import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
+import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Interface.ListenerInternet;
 
 /**
  * Created by AtrasVida on 2018-03-13 at 1:14 PM
@@ -192,24 +197,85 @@ public class WebService {
         }
 
         @Override
-        protected void onPostExecute(WebServiceResponse webServiceResponse) {
+        protected void onPostExecute(final WebServiceResponse webServiceResponse) {
             if (webserviceResponseListener != null) {
                 boolean invalidLogin = false;
                 if (webServiceResponse.isResponse()) {
                     String xml = webServiceResponse.getHttpTransportSE().responseDump;
                     invalidLogin = xml.contains("Invalid Login");
                 }
-                if (invalidLogin && App.CurentActivity != null) {
-                    gotoActivityLogin();
+
+                if (App.networkStatus == NetworkStatus.NoAction) {
+                    CheckInternet(invalidLogin, webServiceResponse);
                 } else {
-                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                    final boolean finalInvalidLogin = invalidLogin;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                                App.networkStatus = NetworkStatus.WatingForNetwork;
+                                webserviceResponseListener.NetworkAccessDenied();
+                            } else {
+                                if (finalInvalidLogin && App.CurentActivity != null) {
+                                    gotoActivityLogin();
+                                } else {
+                                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                                }
+                            }
+                        }
+                    });
+
+
                 }
+
             }
 
 
             super.onPostExecute(webServiceResponse);
         }
 
+    }
+
+    private void CheckInternet(final boolean invalidLogin, final WebServiceResponse webServiceResponse) {
+        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+            @Override
+            public void onConnected() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        App.networkStatus = NetworkStatus.Connected;
+                        if (invalidLogin && App.CurentActivity != null) {
+                            gotoActivityLogin();
+                        } else {
+                            webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                        }
+                    }
+                });
+
+            }
+
+            @Override
+            public void disConnected() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                        webserviceResponseListener.NetworkAccessDenied();
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+        });
+    }
+
+
+    private void runOnUiThread(Runnable r) {
+        App.getHandlerMainThread().post(r);
     }
 
     private void gotoActivityLogin() {

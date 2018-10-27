@@ -39,8 +39,8 @@ import jp.shts.android.library.TriangleLabelView;
  */
 
 
-//public class AdapteCartableDocumentList extends RecyclerView.Adapter<AdapteCartableDocumentList.ViewHolder> {
-public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCartableDocumentList.ViewHolder> {
+//public class AdapteCartableDocument extends RecyclerView.Adapter<AdapteCartableDocument.ViewHolder> {
+public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableDocument.ViewHolder> {
 
     private static final int NORMAL = 1;
     private static final int IMMEDIATE = 2;
@@ -54,7 +54,7 @@ public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCarta
     private boolean isLnMoreVisible = false;
     private Animator animator;
 
-    public AdapteCartableDocumentList(ArrayList<StructureInboxDocumentDB> itemList, ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList) {
+    public AdapteCartableDocument(ArrayList<StructureInboxDocumentDB> itemList, ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList) {
         imageLoader = App.getImageLoader();
         animator = new Animator(App.CurentActivity);
         this.itemList = new ArrayList<>(itemList);
@@ -100,6 +100,8 @@ public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCarta
         LinearLayout lnListHamesh;
         @BindView(R.id.ln_history_list)
         LinearLayout lnHistoryList;
+        @BindView(R.id.ln_zanjire_madrak)
+        LinearLayout lnZanjireMadrak;
         @BindView(R.id.tlv)
         TriangleLabelView tlv;
 
@@ -117,7 +119,7 @@ public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCarta
     // Create new views (invoked by the layout manager)
     @NonNull
     @Override
-    public AdapteCartableDocumentList.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public AdapteCartableDocument.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(layout, null, false);
         RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         itemLayoutView.setLayoutParams(lp);
@@ -236,14 +238,26 @@ public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCarta
                 listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.DocumentFlow);
             }
         });
-
+        viewHolder.lnZanjireMadrak.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.TheChainOfEvidence);
+            }
+        });
         viewHolder.lnTaeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
+                listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.Confirm);
             }
         });
+        viewHolder.lnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listenerAdapterCartableDocumentList.onAction(item, CartableActionsEnum.Comission);
+            }
+        });
+
+
         //binderHelper.bind(viewHolder.swipeLayout, "" + position);
 
     }
@@ -272,6 +286,11 @@ public class AdapteCartableDocumentList extends RecyclerSwipeAdapter<AdapteCarta
     public void updateData(List<StructureInboxDocumentDB> structureInboxDocumentDBS) {
         itemList = new ArrayList<>();
         itemList.addAll(structureInboxDocumentDBS);
+        notifyDataSetChanged();
+    }
+
+    public void deletItem(StructureInboxDocumentDB structureInboxDocumentDB) {
+        itemList.remove(structureInboxDocumentDB);
         notifyDataSetChanged();
     }
 

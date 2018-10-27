@@ -17,9 +17,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 import avida.ican.Farzin.Presenter.Cartable.GetCartableHistoryFromServerPresenter;
+import avida.ican.Farzin.Presenter.Cartable.GetZanjireMadrakFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -100,16 +103,13 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-             /*   GetCartableHistoryFromServerPresenter getCartableHameshFromServerPresenter = new GetCartableHistoryFromServerPresenter();
-                getCartableHameshFromServerPresenter.GetHistortList(1183, 1086, new CartableHistoryListListener() {
+             /*   GetZanjireMadrakFromServerPresenter getZanjireMadrakFromServerPresenter = new GetZanjireMadrakFromServerPresenter();
+                getZanjireMadrakFromServerPresenter.GetZanjireMadrakList(1183, 135, new ZanjireMadrakListener() {
+
+
                     @Override
-                    public void onSuccess(ArrayList<StructureGraphRES> structureGraphRES) {
+                    public void onSuccess(StructureZanjireMadrakRES structureZanjireMadrakRES) {
                         Log.i("test", "test");
-                    }
-
-                    @Override
-                    public void onSuccess(ArrayList<StructureGraphRES> structureGraphRES, String xml) {
-
                     }
 
                     @Override
@@ -121,8 +121,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                     public void onCancel() {
                         Log.i("test", "test");
                     }
-                });
-*/
+                });*/
 
                goToActivity(FarzinActivityLogin.class);
 

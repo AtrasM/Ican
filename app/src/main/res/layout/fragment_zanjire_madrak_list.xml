@@ -1,0 +1,198 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_marginTop="@dimen/margin">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srl_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v4.widget.NestedScrollView
+                android:id="@+id/scrollView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ln_peyvast"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <ImageView
+                                style="@style/custom_ic_right_style"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                app:srcCompat="@drawable/ic_peyvast" />
+
+                            <TextView
+                                style="@style/custom_Txt_Normal_style"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_peyvast"
+                                android:textColor="@color/color_txt_Normal" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rcv_peyvast"
+                            style="@style/custom_item_rcv_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_maximum"
+                            android:background="@drawable/border_cadr"
+                            android:paddingLeft="0dp"
+                            android:paddingStart="0dp"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ln_peiro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <ImageView
+                                style="@style/custom_ic_right_style"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                app:srcCompat="@drawable/ic_peiro" />
+
+                            <TextView
+                                style="@style/custom_Txt_Normal_style"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_peiro"
+                                android:textColor="@color/color_txt_Normal" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rcv_peiro"
+                            style="@style/custom_item_rcv_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_maximum"
+                            android:background="@drawable/border_cadr"
+                            android:paddingLeft="0dp"
+                            android:paddingStart="0dp"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ln_atf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <ImageView
+                                style="@style/custom_ic_right_style"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                app:srcCompat="@drawable/ic_atf" />
+
+                            <TextView
+                                style="@style/custom_Txt_Normal_style"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_atf"
+                                android:textColor="@color/color_txt_Normal" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rcv_atf"
+                            style="@style/custom_item_rcv_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_maximum"
+                            android:background="@drawable/border_cadr"
+                            android:paddingLeft="0dp"
+                            android:paddingStart="0dp"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ln_dar_ertebat"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="gone">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center">
+
+                            <ImageView
+                                style="@style/custom_ic_right_style"
+                                android:layout_width="18dp"
+                                android:layout_height="18dp"
+                                app:srcCompat="@drawable/ic_atf" />
+
+                            <TextView
+                                style="@style/custom_Txt_Normal_style"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/title_dar_ertebat"
+                                android:textColor="@color/color_txt_Normal" />
+                        </LinearLayout>
+
+                        <android.support.v7.widget.RecyclerView
+                            android:id="@+id/rcv_dar_ertebat"
+                            style="@style/custom_item_rcv_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/margin_maximum"
+                            android:background="@drawable/border_cadr"
+                            android:paddingLeft="0dp"
+                            android:paddingStart="0dp"
+                            tools:ignore="RtlSymmetry" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </android.support.v4.widget.NestedScrollView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include layout="@layout/layout_fab_list_move_up" />
+
+        <include layout="@layout/item_txt_nodata" />
+
+
+            <include layout="@layout/ln_loading" />
+
+    </FrameLayout>
+</LinearLayout>

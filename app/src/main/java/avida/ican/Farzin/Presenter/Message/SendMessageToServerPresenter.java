@@ -110,6 +110,10 @@ public class SendMessageToServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+                    @Override
+                    public void NetworkAccessDenied() {
+                        dataProcessListener.onFailed();
+                    }
                 }).execute();
 
     }

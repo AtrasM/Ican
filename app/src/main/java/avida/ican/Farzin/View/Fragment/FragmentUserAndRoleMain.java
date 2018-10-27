@@ -35,11 +35,11 @@ public class FragmentUserAndRoleMain extends BaseFragment {
     public static String Tag = "FragmentUserAndRoleMain";
 
     public FragmentUserAndRoleMain newInstance(Activity context, AdapterUserAndRoleMain adapterUserAndRoleMain, DialogUserAndRole dialogUserAndRole) {
-        FragmentUserAndRoleMain fragment = new FragmentUserAndRoleMain();
+       // FragmentUserAndRoleMain fragment = new FragmentUserAndRoleMain();
         this.context = context;
         this.dialogUserAndRole = dialogUserAndRole;
         this.adapterUserAndRoleMain = adapterUserAndRoleMain;
-        return fragment;
+        return this;
     }
 
     @Override

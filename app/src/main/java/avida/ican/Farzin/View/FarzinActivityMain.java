@@ -24,10 +24,13 @@ import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
-import avida.ican.Farzin.View.Fragment.FragmentMessageList;
+import avida.ican.Farzin.View.Fragment.Message.FragmentMessageList;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
+import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Interface.ListenerInternet;
 import avida.ican.R;
 import butterknife.BindView;
 
@@ -58,18 +61,18 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     @Override
     protected void onResume() {
-
+        CheckNetWork();
         super.onResume();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CheckNetWork();
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
         initFarzinMetaDataSyncClass();
         initFragmentStack();
-
         //bottomNavigation.setSelectedItemId(R.id.navigation_home);
 
 
@@ -269,6 +272,27 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         }
 
     }
+
+
+    private void CheckNetWork() {
+        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+            @Override
+            public void onConnected() {
+                App.networkStatus = NetworkStatus.Connected;
+            }
+
+            @Override
+            public void disConnected() {
+                App.networkStatus = NetworkStatus.WatingForNetwork;
+            }
+
+            @Override
+            public void onFailed() {
+                App.networkStatus = NetworkStatus.WatingForNetwork;
+            }
+        });
+    }
+
 
     @Override
     protected void onDestroy() {

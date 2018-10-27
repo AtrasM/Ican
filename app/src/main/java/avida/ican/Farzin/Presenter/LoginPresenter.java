@@ -5,12 +5,15 @@ import android.util.Log;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.StructureLoginRES;
 import avida.ican.Farzin.View.Interface.LoginViewListener;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Interface.ListenerInternet;
 
 /**
  * Created by AtrasVida on 2018-03-17 at 2:21 PM
@@ -35,15 +38,38 @@ public class LoginPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void AutoAuthentiocation(LoginViewListener loginViewListener) {
+    public void AutoAuthentiocation(final LoginViewListener loginViewListener) {
         this.loginViewListener = loginViewListener;
         if (!farzinPrefrences.getUserName().equals("-1")) {
-            boolean connected = new CheckNetworkAvailability().execuet();
-            if (connected) {
-                CallApi(farzinPrefrences.getBaseUrl(), farzinPrefrences.getServerUrl(), farzinPrefrences.getUserName(), farzinPrefrences.getPassword(), true);
-            } else {
-                loginViewListener.onSuccess();
-            }
+
+            new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                @Override
+                public void onConnected() {
+                    //App.networkStatus = NetworkStatus.Connected;
+                    CallApi(farzinPrefrences.getBaseUrl(), farzinPrefrences.getServerUrl(), farzinPrefrences.getUserName(), farzinPrefrences.getPassword(), true);
+
+                }
+
+                @Override
+                public void disConnected() {
+                    App.CurentActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            App.networkStatus = NetworkStatus.WatingForNetwork;
+                            loginViewListener.onSuccess();
+                        }
+                    });
+
+
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+            });
+
+
         } else {
             loginViewListener.onAccessDenied();
         }
@@ -74,6 +100,11 @@ public class LoginPresenter {
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         processData(webServiceResponse);
+                    }
+
+                    @Override
+                    public void NetworkAccessDenied() {
+                        loginViewListener.onFailed();
                     }
                 }).execute();
 

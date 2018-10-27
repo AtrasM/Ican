@@ -149,7 +149,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginBottom="@dimen/margin"
                                     android:layout_marginTop="@dimen/margin"
-                                    android:background="@drawable/border_hamesh"
+                                    android:background="@drawable/border_cadr"
                                     android:gravity="center|right"
                                     android:text="[ 123 ]asdkhnalkdnhadnlamdnamdnasm,ndamsdnmas,nd,masnd,amsnd,amsnd,masnd,masndmasndm,asnd,masnd,masdasdasd"
                                     android:textColor="@color/color_txt_Normal"

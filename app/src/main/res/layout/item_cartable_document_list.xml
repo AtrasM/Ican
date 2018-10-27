@@ -66,10 +66,9 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:orientation="vertical"
-                    android:weightSum="1"
                     tools:ignore="UseCompoundDrawables,UselessParent">
 
-                    <ImageView
+                <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginBottom="@dimen/margin"
@@ -343,6 +342,8 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/ln_zanjire_madrak"
+
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.3"

@@ -22,9 +22,8 @@ import java.util.Stack;
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Farzin.View.Enum.CurentProject;
-import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
-import avida.ican.Farzin.View.Fragment.FragmentMessageList;
+import avida.ican.Farzin.View.Fragment.Message.FragmentMessageList;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.NetWorkStatusListener;
@@ -48,7 +47,7 @@ public class App extends MultiDexApplication {
     public static boolean canBack = true;
     public static boolean isLoading = false;
     public static NetWorkStatusListener netWorkStatusListener;
-    public static NetworkStatus networkStatus = NetworkStatus.Connected;
+    public static NetworkStatus networkStatus = NetworkStatus.NoAction;
     private static Bus sBus;
     // public static boolean canRecreatFragment = false;
 
@@ -118,6 +117,10 @@ public class App extends MultiDexApplication {
 
     public static Handler getHandler() {
         return handler = new Handler();
+    }
+
+    public static Handler getHandlerMainThread() {
+        return handler = new Handler(App.getAppContext().getMainLooper());
     }
 
     public static CurentProject getCurentProject() {

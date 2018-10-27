@@ -24,10 +24,10 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
 
 
     public FragmentUserAndRoleSelect newInstance(Activity context, AdapterUserAndRoleSelected adapterUserAndRoleSelected) {
-        FragmentUserAndRoleSelect fragment = new FragmentUserAndRoleSelect();
+       // FragmentUserAndRoleSelect fragment = new FragmentUserAndRoleSelect();
         this.context = context;
         this.adapterUserAndRoleSelected = adapterUserAndRoleSelected;
-        return fragment;
+        return this;
     }
 
     @Override

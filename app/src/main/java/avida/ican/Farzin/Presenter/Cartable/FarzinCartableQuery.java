@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 
@@ -14,16 +15,23 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableHistoryBND;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureFileRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
@@ -40,6 +48,8 @@ public class FarzinCartableQuery {
     private CartableDocumentQuerySaveListener cartableDocumentQuerySaveListener;
     private HameshQuerySaveListener hameshQuerySaveListener;
     private CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener;
+    private ZanjireMadrakQuerySaveListener zanjireMadrakQuerySaveListener;
+    private CartableDocumentTaeedQueueQuerySaveListener cartableDocumentTaeedQueueQuerySaveListener;
     private ChangeXml changeXml;
     private Status status = Status.WAITING;
     private boolean SendFromApp = false;
@@ -48,7 +58,8 @@ public class FarzinCartableQuery {
     private Dao<StructureInboxDocumentDB, Integer> cartableDocumentDao = null;
     private Dao<StructureHameshDB, Integer> hameshDao = null;
     private Dao<StructureCartableHistoryDB, Integer> historyDao = null;
-
+    private Dao<StructureZanjireMadrakFileDB, Integer> zanjireMadrakFileDao = null;
+    private Dao<StructureCartableDocumentTaeedQueueDB, Integer> mCartableDocumentTaeedQueueDao = null;
 
     //_______________________***Dao***______________________________
 
@@ -62,6 +73,8 @@ public class FarzinCartableQuery {
             cartableDocumentDao = App.getFarzinDatabaseHelper().getCartableDocumentDao();
             hameshDao = App.getFarzinDatabaseHelper().getHameshDao();
             historyDao = App.getFarzinDatabaseHelper().getHistoryDao();
+            zanjireMadrakFileDao = App.getFarzinDatabaseHelper().getZanjireMadrakDao();
+            mCartableDocumentTaeedQueueDao = App.getFarzinDatabaseHelper().getCartableDocumentTaeedDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -123,6 +136,31 @@ public class FarzinCartableQuery {
             new saveHistory().execute(structureCartableHistoryBND);
         }
 
+
+    }
+
+    public void saveZanjireMadrak(StructureZanjireMadrakRES structureZanjireMadrakRES, int ETC, int EC, final ZanjireMadrakQuerySaveListener zanjireMadrakQuerySaveListener) {
+        structureZanjireMadrakRES.setETC(ETC);
+        structureZanjireMadrakRES.setEC(EC);
+        this.zanjireMadrakQuerySaveListener = zanjireMadrakQuerySaveListener;
+        if (IsZanjireMadrakExist(ETC, EC)) {
+            if (deletZanjireMadrak(ETC, EC)) {
+                new saveZanjireMadrak().execute(structureZanjireMadrakRES);
+            }
+        } else {
+            new saveZanjireMadrak().execute(structureZanjireMadrakRES);
+        }
+
+    }
+
+    public void saveCartableDocumentTaeedQueue(int receiveCode, CartableDocumentTaeedQueueQuerySaveListener cartableDocumentTaeedQueueQuerySaveListener) {
+
+        this.cartableDocumentTaeedQueueQuerySaveListener = cartableDocumentTaeedQueueQuerySaveListener;
+        if (IsCartableDocumentTaeedQueueExist(receiveCode)) {
+            cartableDocumentTaeedQueueQuerySaveListener.onExisting();
+        } else {
+            new saveCartableDocumentTaeed().execute(receiveCode);
+        }
 
     }
 
@@ -190,6 +228,24 @@ public class FarzinCartableQuery {
     }
 
 
+    private class saveCartableDocumentTaeed extends AsyncTask<Integer, Void, Void> {
+        @Override
+        protected Void doInBackground(Integer... receiverCode) {
+            StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new StructureCartableDocumentTaeedQueueDB(receiverCode[0]);
+            try {
+                mCartableDocumentTaeedQueueDao.create(cartableDocumentTaeedQueueDB);
+                cartableDocumentTaeedQueueQuerySaveListener.onSuccess(receiverCode[0]);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                cartableDocumentTaeedQueueQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+
+            return null;
+        }
+    }
+
     private class saveHistory extends AsyncTask<StructureCartableHistoryBND, Void, Void> {
 
         @Override
@@ -201,6 +257,40 @@ public class FarzinCartableQuery {
             } catch (SQLException e) {
                 e.printStackTrace();
                 hameshQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+
+            return null;
+        }
+    }
+
+    private class saveZanjireMadrak extends AsyncTask<StructureZanjireMadrakRES, Void, Void> {
+
+        @Override
+        protected Void doInBackground(StructureZanjireMadrakRES... zanjireMadrakRES) {
+
+            try {
+                for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyvast()) {
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEYVAST, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
+                }
+                for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getAtf()) {
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.ATF, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
+                }
+                for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getDarErtebat()) {
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.DARERTEBAT, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
+                }
+                for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyro()) {
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEIRO, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
+                }
+                zanjireMadrakQuerySaveListener.onSuccess();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                zanjireMadrakQuerySaveListener.onFailed(e.toString());
                 App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
                 return null;
             }
@@ -234,6 +324,7 @@ public class FarzinCartableQuery {
         }
         return structureHameshDBS;
     }
+
     public List<StructureCartableHistoryDB> getCartableHistory(int ETC, int EC, long start, long count) {
         QueryBuilder<StructureCartableHistoryDB, Integer> queryBuilder = historyDao.queryBuilder();
         List<StructureCartableHistoryDB> structureCartableHistoryDBS = new ArrayList<>();
@@ -249,6 +340,31 @@ public class FarzinCartableQuery {
         }
         return structureCartableHistoryDBS;
     }
+
+    public List<StructureZanjireMadrakFileDB> getZanjireMadrak(int ETC, int EC, ZanjireMadrakFileTypeEnum fileTypeEnum) {
+        QueryBuilder<StructureZanjireMadrakFileDB, Integer> queryBuilder = zanjireMadrakFileDao.queryBuilder();
+        List<StructureZanjireMadrakFileDB> structureZanjireMadrakFileDBS = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC).and().eq("fileTypeEnum", fileTypeEnum);
+
+            structureZanjireMadrakFileDBS = queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureZanjireMadrakFileDBS;
+    }
+
+    public StructureCartableDocumentTaeedQueueDB getFirstItemTaeedQueue() {
+        QueryBuilder<StructureCartableDocumentTaeedQueueDB, Integer> queryBuilder = mCartableDocumentTaeedQueueDao.queryBuilder();
+        StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new StructureCartableDocumentTaeedQueueDB();
+        try {
+            cartableDocumentTaeedQueueDB = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return cartableDocumentTaeedQueueDB;
+    }
+
 
     public List<StructureInboxDocumentDB> getCartableDocuments(int actionCode, Status status, long start, long count) {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
@@ -293,6 +409,18 @@ public class FarzinCartableQuery {
         return structureInboxDocumentDB;
     }
 
+    public StructureInboxDocumentDB getCartableDocumentWithReceiveCode(int receiveCode) {
+        QueryBuilder<StructureInboxDocumentDB, Integer> inboxDocumentQB = cartableDocumentDao.queryBuilder();
+        StructureInboxDocumentDB structureInboxDocumentDB = new StructureInboxDocumentDB();
+        try {
+            inboxDocumentQB.where().eq("ReceiverCode", receiveCode);
+            structureInboxDocumentDB = inboxDocumentQB.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureInboxDocumentDB;
+    }
+
     public ArrayList<StructureCartableAction> getCartableAction(boolean isPin) {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
         List<StructureInboxDocumentDB> structureInboxDocumentDB = new ArrayList<>();
@@ -323,6 +451,80 @@ public class FarzinCartableQuery {
         }
         return count;
     }
+
+    public boolean deletCartableDocumentTaeedQueue(int receiveCode) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureCartableDocumentTaeedQueueDB, Integer> deleteBuilder = mCartableDocumentTaeedQueueDao.deleteBuilder();
+            deleteBuilder.where().eq("receiveCode", receiveCode);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public void deletCartableDocumentAllContent(int receiveCode) {
+        StructureInboxDocumentDB item = getCartableDocumentWithReceiveCode(receiveCode);
+        deletCartableDocument(item.getEntityTypeCode(), item.getEntityCode());
+        deletZanjireMadrak(item.getEntityTypeCode(), item.getEntityCode());
+        deletCartableHameshList(item.getEntityTypeCode(), item.getEntityCode());
+        deletCartableHistoryList(item.getEntityTypeCode(), item.getEntityCode());
+    }
+
+    public boolean deletCartableDocument(int ETC, int EC) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureInboxDocumentDB, Integer> deleteBuilder = cartableDocumentDao.deleteBuilder();
+            deleteBuilder.where().eq("EntityTypeCode", ETC).and().eq("EntityCode", EC);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean deletZanjireMadrak(int ETC, int EC) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureZanjireMadrakFileDB, Integer> deleteBuilder = zanjireMadrakFileDao.deleteBuilder();
+            deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean deletCartableHameshList(int ETC, int EC) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureHameshDB, Integer> deleteBuilder = hameshDao.deleteBuilder();
+            deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean deletCartableHistoryList(int ETC, int EC) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureCartableHistoryDB, Integer> deleteBuilder = historyDao.deleteBuilder();
+            deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
 
     public void updateCartableHistory(StructureCartableHistoryBND HistoryBND) {
         try {
@@ -386,6 +588,34 @@ public class FarzinCartableQuery {
             queryBuilder.setCountOf(true);
             long count = historyDao.countOf(queryBuilder.prepare());
             // long count = queryBuilder.countOf();
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
+    }
+
+    public boolean IsZanjireMadrakExist(int ETC, int EC) {
+        boolean existing = false;
+        QueryBuilder<StructureZanjireMadrakFileDB, Integer> queryBuilder = zanjireMadrakFileDao.queryBuilder();
+        try {
+            queryBuilder.setWhere(queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC));
+            queryBuilder.setCountOf(true);
+            long count = zanjireMadrakFileDao.countOf(queryBuilder.prepare());
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
+    }
+
+    private boolean IsCartableDocumentTaeedQueueExist(int receiveCode) {
+        boolean existing = false;
+        QueryBuilder<StructureCartableDocumentTaeedQueueDB, Integer> queryBuilder = mCartableDocumentTaeedQueueDao.queryBuilder();
+        try {
+            queryBuilder.setWhere(queryBuilder.where().eq("receiveCode", receiveCode));
+            queryBuilder.setCountOf(true);
+            long count = mCartableDocumentTaeedQueueDao.countOf(queryBuilder.prepare());
             if (count > 0) existing = true;
         } catch (SQLException e) {
             e.printStackTrace();

@@ -75,9 +75,7 @@ public class GetMessageFromServerPresenter {
 
     private void CheckSentMessageListStructure(String xml, MessageListListener messageListListener) {
         StructureSentMessageListRES structureSentMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureSentMessageListRES.class);
-        if (structureSentMessageListRES.getStrErrorMsg() != null) {
-            messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
-        } else {
+        if (structureSentMessageListRES.getStrErrorMsg() == null || structureSentMessageListRES.getStrErrorMsg().isEmpty()) {
             if (structureSentMessageListRES.getGetSentMessageListResult().size() <= 0) {
                 messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
             } else {
@@ -85,14 +83,14 @@ public class GetMessageFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
+        } else {
+            messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
         }
     }
 
     private void CheckReciverMessageListStructure(String xml, MessageListListener messageListListener) {
         StructureRecieveMessageListRES structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
-        if (structureRecieveMessageListRES.getStrErrorMsg() != null) {
-            messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
-        } else {
+        if (structureRecieveMessageListRES.getStrErrorMsg() == null || structureRecieveMessageListRES.getStrErrorMsg().isEmpty()) {
             if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
                 messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
             } else {
@@ -100,6 +98,8 @@ public class GetMessageFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
+        } else {
+            messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
         }
     }
 
@@ -124,6 +124,10 @@ public class GetMessageFromServerPresenter {
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
+                    }
+                    @Override
+                    public void NetworkAccessDenied() {
+                        dataProcessListener.onFailed();
                     }
                 }).execute();
 

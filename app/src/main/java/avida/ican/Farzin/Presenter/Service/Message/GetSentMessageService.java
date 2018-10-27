@@ -20,6 +20,7 @@ import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 
 /**
  * Created by AtrasVida on 2018-08-08 at 4:00 PM
@@ -27,6 +28,7 @@ import avida.ican.Ican.View.Custom.TimeValue;
 
 public class GetSentMessageService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 35;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private MessageListListener messageListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -65,12 +67,32 @@ public class GetSentMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    }, FAILED_DELAY);
 
+                } else {
+                    reGetMessage();
+                }
             }
 
             @Override
             public void onCancel() {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    }, FAILED_DELAY);
 
+                } else {
+                    reGetMessage();
+                }
             }
         };
         GetMessage(pageNumber, Count);

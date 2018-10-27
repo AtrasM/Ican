@@ -10,7 +10,7 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 /**
  * Created by AtrasVida on 2018-09-26 at 12:15 PM
  */
-
+@DatabaseTable(tableName = "cartable_hamesh")
 public class StructureHameshDB implements Serializable {
     final private String FIELD_NAME_ID = "id";
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)

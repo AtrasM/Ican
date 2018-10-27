@@ -52,7 +52,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
                     onFailed("");
                 } else {
                     reGetData();
@@ -61,7 +61,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
                     onFailed("");
                 } else {
                     reGetData();
@@ -98,11 +98,12 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onExisting() {
+                listenerHamesh.noData();
             }
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
                     //ShowToast("WatingForNetwork");
                     onFailed("");
                 } else {
@@ -113,7 +114,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected) {
+                if (App.networkStatus != NetworkStatus.Connected||App.networkStatus != NetworkStatus.Syncing) {
                     onCancel();
                 } else {
                     reGetData();

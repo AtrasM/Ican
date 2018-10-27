@@ -9,5 +9,5 @@
     android:gravity="center"
     tools:context="avida.ican.Ican.View.ActivitySplash">
 
-    <include layout="@layout/item_loding" />
+    <include layout="@layout/item_loading" />
 </RelativeLayout>

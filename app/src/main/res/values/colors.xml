@@ -36,6 +36,7 @@
     <color name="color_message_list_attach">#EE822F</color>
     <color name="color_fab">#536DFE</color>
     <color name="color_bg_item_rcv">#ffffff</color>
+    <color name="color_bg_cadr">#f3f3f3</color>
     <color name="dialog_background">#80bebebe</color>
 </resources>
 
