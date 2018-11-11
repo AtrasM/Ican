@@ -133,8 +133,8 @@ public class DialogUserAndRole {
                 .setCancelable(false)
                 .setContentBackgroundResource(R.drawable.border_dialog)
                 .create();
-        View viewheder = dialog.getHeaderView();
-        TextView txtHeader = viewheder.findViewById(R.id.txt_dialog_title);
+        View viewhelder = dialog.getHeaderView();
+        TextView txtHeader = viewhelder.findViewById(R.id.txt_dialog_title);
         txtHeader.setText(Title);
         //------------------------------------------------------------------------------------------------
         viewHolder = new DialogUserAndRole.Binding(dialog.getHolderView());
@@ -158,12 +158,7 @@ public class DialogUserAndRole {
             }
         });
 
-        viewheder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-            }
-        });
         dialog.show();
     }
 

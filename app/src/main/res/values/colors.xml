@@ -18,6 +18,7 @@
     <color name="color_txt_SubTitle">#818791</color>
     <color name="color_txt_Normal">#181717</color>
     <color name="color_Icons">#BEBEBE</color>
+    <color name="color_Icons_Document_Action">#a4a4a4</color>
     <color name="color_EditText">#494a4b</color>
     <color name="color_Hint">#B3B3B3</color>
     <color name="color_White">#ffffff</color>

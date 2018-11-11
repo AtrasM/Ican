@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -467,9 +468,33 @@ public class CustomFunction {
     }
 
     public ArrayAdapter<String> getSpinnerAdapter(ArrayList<String> list) {
-        ArrayAdapter<String> adapter =  new ArrayAdapter<>(App.CurentActivity, R.layout.layout_txt_spinner, list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(App.CurentActivity, R.layout.layout_txt_spinner, list);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
         return adapter;
+    }
+
+    public static byte[] ObjectToByteArray(Object object) {
+        // Reference for stream of bytes
+        byte[] stream = null;
+        // ObjectOutputStream is used to convert a Java object into OutputStream
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(baos);
+            oos.writeObject(object);
+            stream = baos.toByteArray();
+        } catch (IOException e) {
+            // Error in serialization
+            e.printStackTrace();
+        }
+        return stream;
+    }
+
+    public static byte[] BitmapToByteArray(Bitmap bmp) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] byteArray = stream.toByteArray();
+        bmp.recycle();
+        return byteArray;
     }
 
 }

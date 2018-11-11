@@ -98,14 +98,12 @@ public class FragmentCartableHameshList extends BaseFragment {
         farzinHameshListPresenter = new FarzinHameshListPresenter(Etc, Ec, new ListenerHamesh() {
             @Override
             public void newData(final StructureHameshDB structureHameshDB) {
-                start = start + 1;
                 App.CurentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
-                        txtNoData.setVisibility(View.GONE);
-                        srlRefresh.setRefreshing(false);
-                        adapterHamesh.updateData(0, structureHameshDB);
+                        List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
+                        adapterHamesh.updateData(structureHameshDBS);
                     }
                 });
             }
@@ -136,6 +134,7 @@ public class FragmentCartableHameshList extends BaseFragment {
             srlRefresh.setRefreshing(false);
         }
         if (App.networkStatus == NetworkStatus.Connected) {
+            lnLoading.setVisibility(View.VISIBLE);
             farzinHameshListPresenter.GetHameshFromServer();
         } else {
             if (structureHameshDBS.size() <= 0) {
@@ -151,6 +150,7 @@ public class FragmentCartableHameshList extends BaseFragment {
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
 
         if (App.networkStatus == NetworkStatus.Connected) {
+            lnLoading.setVisibility(View.VISIBLE);
             farzinHameshListPresenter.GetHameshFromServer();
         } else {
             if (structureHameshDBS.size() <= 0) {

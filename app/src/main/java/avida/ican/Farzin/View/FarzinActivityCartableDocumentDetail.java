@@ -1,25 +1,33 @@
 package avida.ican.Farzin.View;
 
 import android.content.Intent;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.byox.drawview.enums.DrawingCapture;
+import com.byox.drawview.enums.DrawingMode;
+import com.byox.drawview.views.DrawView;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import java.io.File;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
+import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
+import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
-import avida.ican.Farzin.View.Enum.CartableDocumentDetailActionsEnum;
+import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHameshList;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHistoryList;
@@ -28,11 +36,15 @@ import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.Model.Structure.StructureOpticalPen;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Dialog.DialogOpticalPen;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Interface.OpticalPenDialogListener;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -57,6 +69,8 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     TextView txtName;
     @BindView(R.id.img_taeed)
     ImageView imTaeed;
+    @BindView(R.id.img_ghalam_nory)
+    ImageView imgOpticalPen;
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
 
@@ -76,7 +90,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private long FailedDelay = TimeValue.SecondsInMilli() * 3;
     private FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
     private long FAILED_DELAY = TimeValue.SecondsInMilli() * 3;
-
+    DialogOpticalPen dialogOpticalPen;
 
     @Override
     protected void onResume() {
@@ -120,6 +134,30 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         } else {
             txtSubject.setVisibility(View.GONE);
         }
+        imgOpticalPen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialogOpticalPen = new DialogOpticalPen(App.CurentActivity);
+                dialogOpticalPen.setOnListener(new OpticalPenDialogListener() {
+                    @Override
+                    public void onSuccess(StructureOpticalPen structureOpticalPen) {
+                        StructureOpticalPenREQ structureOpticalPenREQ = new StructureOpticalPenREQ(Etc, Ec, structureOpticalPen.getbFile(), structureOpticalPen.getFileExtension(), structureOpticalPen.getTitle(), false);
+                        saveDrawable(structureOpticalPenREQ);
+                        dialogOpticalPen.dismiss();
+                    }
+
+                    @Override
+                    public void onFaild() {
+                        dialogOpticalPen.dismiss();
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        dialogOpticalPen.dismiss();
+                    }
+                }).Show();
+            }
+        });
 
         imTaeed.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,21 +184,10 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
                         @Override
                         public void onFinish() {
-                            if (farzinCartableQuery.deletCartableDocumentTaeedQueue(cartableDocumentDetailBND.getReceiverCode())) {
-                                farzinCartableQuery.deletCartableDocumentAllContent(cartableDocumentDetailBND.getReceiverCode());
-                                lnLoading.setVisibility(View.GONE);
-                                Intent returnIntent = new Intent();
-                                setResult(TAEED.getValue(), returnIntent);
-                                Finish(App.CurentActivity);
-                            } else {
-                                App.getHandler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        onSuccess();
-                                    }
-                                }, FAILED_DELAY);
-
-                            }
+                            lnLoading.setVisibility(View.GONE);
+                            Intent returnIntent = new Intent();
+                            setResult(TAEED.getValue(), returnIntent);
+                            Finish(App.CurentActivity);
 
                         }
                     });
@@ -168,7 +195,41 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 }
             }
         });
+
+
         initViewPagerFragment();
+    }
+
+
+    private void saveDrawable(final StructureOpticalPenREQ structureOpticalPenREQ) {
+        lnLoading.setVisibility(View.VISIBLE);
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            OpticalPenAddToQueue(structureOpticalPenREQ);
+        } else {
+            new OpticalPenPresenter().CallRequest(structureOpticalPenREQ, new OpticalPenListener() {
+                @Override
+                public void onSuccess() {
+                    onFinish();
+                }
+
+                @Override
+                public void onFailed(String message) {
+                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                }
+
+                @Override
+                public void onCancel() {
+                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                }
+
+                @Override
+                public void onFinish() {
+                    lnLoading.setVisibility(View.GONE);
+
+                }
+            });
+
+        }
     }
 
     private void TaeedAddToQueue(final int receiveCode) {
@@ -185,17 +246,17 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
             @Override
             public void onFailed(String message) {
-                tryAddToQueue(receiveCode);
+                tryTaeedAddToQueue(receiveCode);
             }
 
             @Override
             public void onCancel() {
-                tryAddToQueue(receiveCode);
+                tryTaeedAddToQueue(receiveCode);
             }
         });
     }
 
-    private void tryAddToQueue(final int receiveCode) {
+    private void tryTaeedAddToQueue(final int receiveCode) {
         App.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -203,6 +264,41 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
             }
         }, FailedDelay);
     }
+
+    private void OpticalPenAddToQueue(final StructureOpticalPenREQ opticalPenREQ) {
+        new FarzinCartableQuery().saveOpticalPenQueue(opticalPenREQ, new OpticalPenQueueQuerySaveListener() {
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onExisting() {
+                lnLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailed(String message) {
+                tryOpticalPenAddToQueue(opticalPenREQ);
+            }
+
+            @Override
+            public void onCancel() {
+                tryOpticalPenAddToQueue(opticalPenREQ);
+            }
+        });
+    }
+
+    private void tryOpticalPenAddToQueue(final StructureOpticalPenREQ opticalPenREQ) {
+        App.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                OpticalPenAddToQueue(opticalPenREQ);
+            }
+        }, FailedDelay);
+    }
+
 
     private void initViewPagerFragment() {
 

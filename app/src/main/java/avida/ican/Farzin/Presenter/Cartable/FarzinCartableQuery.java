@@ -20,6 +20,7 @@ import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListe
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableHistoryBND;
@@ -27,7 +28,9 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocu
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureOpticalPenQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureFileRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
@@ -50,6 +53,7 @@ public class FarzinCartableQuery {
     private CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener;
     private ZanjireMadrakQuerySaveListener zanjireMadrakQuerySaveListener;
     private CartableDocumentTaeedQueueQuerySaveListener cartableDocumentTaeedQueueQuerySaveListener;
+    private OpticalPenQueueQuerySaveListener opticalPenQueueQuerySaveListener;
     private ChangeXml changeXml;
     private Status status = Status.WAITING;
     private boolean SendFromApp = false;
@@ -60,6 +64,7 @@ public class FarzinCartableQuery {
     private Dao<StructureCartableHistoryDB, Integer> historyDao = null;
     private Dao<StructureZanjireMadrakFileDB, Integer> zanjireMadrakFileDao = null;
     private Dao<StructureCartableDocumentTaeedQueueDB, Integer> mCartableDocumentTaeedQueueDao = null;
+    private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDao = null;
 
     //_______________________***Dao***______________________________
 
@@ -75,6 +80,7 @@ public class FarzinCartableQuery {
             historyDao = App.getFarzinDatabaseHelper().getHistoryDao();
             zanjireMadrakFileDao = App.getFarzinDatabaseHelper().getZanjireMadrakDao();
             mCartableDocumentTaeedQueueDao = App.getFarzinDatabaseHelper().getCartableDocumentTaeedDao();
+            mOpticalPenQueueDao = App.getFarzinDatabaseHelper().getOpticalPenDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -116,14 +122,8 @@ public class FarzinCartableQuery {
 
         structureHameshRES.setETC(ETC);
         structureHameshRES.setEC(EC);
-        if (IsHameshExist(structureHameshRES.getHameshID())) {
-            // UpdateMessageView(structureMessageRES, type);
-            hameshQuerySaveListener.onExisting();
-        } else {
-            this.hameshQuerySaveListener = hameshQuerySaveListener;
-            new saveHamesh().execute(structureHameshRES);
-        }
-
+        this.hameshQuerySaveListener = hameshQuerySaveListener;
+        new saveHamesh().execute(structureHameshRES);
     }
 
     public void saveCartableHistory(String xml, int ETC, int EC, final CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener) {
@@ -161,6 +161,14 @@ public class FarzinCartableQuery {
         } else {
             new saveCartableDocumentTaeed().execute(receiveCode);
         }
+
+    }
+
+    public void saveOpticalPenQueue(StructureOpticalPenREQ opticalPenREQ, OpticalPenQueueQuerySaveListener opticalPenQueueQuerySaveListener) {
+
+        this.opticalPenQueueQuerySaveListener = opticalPenQueueQuerySaveListener;
+        new saveOpticalPenQueue().execute(opticalPenREQ);
+
 
     }
 
@@ -246,6 +254,26 @@ public class FarzinCartableQuery {
         }
     }
 
+    private class saveOpticalPenQueue extends AsyncTask<StructureOpticalPenREQ, Void, Void> {
+
+        @Override
+        protected Void doInBackground(StructureOpticalPenREQ... opticalPenREQS) {
+            StructureOpticalPenQueueDB opticalPenQueueDB = new StructureOpticalPenQueueDB(opticalPenREQS[0].getETC(), opticalPenREQS[0].getEC(), opticalPenREQS[0].getBfile(), opticalPenREQS[0].getStrExtention(), opticalPenREQS[0].getHameshtitle(), opticalPenREQS[0].isHiddenHamesh());
+            try {
+                mOpticalPenQueueDao.create(opticalPenQueueDB);
+                opticalPenQueueQuerySaveListener.onSuccess();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                opticalPenQueueQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+
+            return null;
+        }
+    }
+
+
     private class saveHistory extends AsyncTask<StructureCartableHistoryBND, Void, Void> {
 
         @Override
@@ -318,7 +346,7 @@ public class FarzinCartableQuery {
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
-            structureHameshDBS = queryBuilder.orderBy("CreationDate", false).query();
+            structureHameshDBS = queryBuilder.orderBy("CreationDate", true).query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -363,6 +391,17 @@ public class FarzinCartableQuery {
             e.printStackTrace();
         }
         return cartableDocumentTaeedQueueDB;
+    }
+
+    public StructureOpticalPenQueueDB getFirstItemOpticalPenQueue() {
+        QueryBuilder<StructureOpticalPenQueueDB, Integer> queryBuilder = mOpticalPenQueueDao.queryBuilder();
+        StructureOpticalPenQueueDB structureOpticalPenQueueDB = new StructureOpticalPenQueueDB();
+        try {
+            structureOpticalPenQueueDB = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureOpticalPenQueueDB;
     }
 
 
@@ -452,11 +491,24 @@ public class FarzinCartableQuery {
         return count;
     }
 
-    public boolean deletCartableDocumentTaeedQueue(int receiveCode) {
+    public boolean deletItemCartableDocumentTaeedQueue(int receiveCode) {
         boolean isDelet = false;
         try {
             DeleteBuilder<StructureCartableDocumentTaeedQueueDB, Integer> deleteBuilder = mCartableDocumentTaeedQueueDao.deleteBuilder();
             deleteBuilder.where().eq("receiveCode", receiveCode);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean deletItemOpticalPenQueue(int id) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureOpticalPenQueueDB, Integer> deleteBuilder = mOpticalPenQueueDao.deleteBuilder();
+            deleteBuilder.where().eq("id", id);
             deleteBuilder.delete();
             isDelet = true;
         } catch (SQLException e) {

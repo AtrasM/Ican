@@ -68,7 +68,7 @@
                     android:orientation="vertical"
                     tools:ignore="UseCompoundDrawables,UselessParent">
 
-                <ImageView
+                    <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginBottom="@dimen/margin"
@@ -249,9 +249,10 @@
                     <LinearLayout
                         android:layout_width="70dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center|top"
                         android:gravity="center|left"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:paddingTop="@dimen/padding">
 
                         <TextView
                             android:id="@+id/txt_date"

@@ -46,13 +46,14 @@ public class FarzinHameshListPresenter {
                 if (structureHameshRES.size() == 0) {
                     listenerHamesh.noData();
                 } else {
+                    farzinCartableQuery.deletCartableHameshList(Etc, Ec);
                     SaveData(structureHameshRES);
                 }
             }
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     onFailed("");
                 } else {
                     reGetData();
@@ -61,7 +62,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     onFailed("");
                 } else {
                     reGetData();
@@ -89,10 +90,12 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onSuccess(StructureHameshDB structureHameshDB) {
-                listenerHamesh.newData(structureHameshDB);
+
                 structureHameshsRES.remove(0);
                 if (structureHameshsRES.size() > 0) {
                     SaveData(structureHameshsRES);
+                } else {
+                    listenerHamesh.newData(structureHameshDB);
                 }
             }
 
@@ -103,7 +106,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     //ShowToast("WatingForNetwork");
                     onFailed("");
                 } else {
@@ -114,7 +117,7 @@ public class FarzinHameshListPresenter {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected||App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected || App.networkStatus != NetworkStatus.Syncing) {
                     onCancel();
                 } else {
                     reGetData();

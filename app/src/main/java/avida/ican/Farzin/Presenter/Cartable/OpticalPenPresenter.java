@@ -1,12 +1,16 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.util.Base64;
+
 import org.ksoap2.serialization.SoapObject;
 
-import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
+import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
+import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakListRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
+import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureAddHameshOpticalPenRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureTaeedRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -14,74 +18,72 @@ import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 
 /**
- * Created by AtrasVida on 2018-10-14 at 11:16 AM
+ * Created by AtrasVida on 2018-10-24 at 10:06
  */
 
 
-public class GetZanjireMadrakFromServerPresenter {
-
+public class OpticalPenPresenter {
+    private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "eFormManagment";
-    private String MetodName = "GetFileDependency";
+    private String MetodName = "AddHameshOpticalPen";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "GetZanjireMadrakFromServerPresenter";
+    private String Tag = "OpticalPenPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-    public GetZanjireMadrakFromServerPresenter() {
+    public OpticalPenPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void GetZanjireMadrakList(int EntityTypeCode, int EntityCode, ZanjireMadrakListener zanjireMadrakListener) {
-        CallRequest(getSoapObject(EntityTypeCode, EntityCode), zanjireMadrakListener);
-    }
 
-    private void CallRequest(SoapObject soapObject, final ZanjireMadrakListener zanjireMadrakListener) {
+    public void CallRequest(StructureOpticalPenREQ opticalPenREQ, final OpticalPenListener listener) {
 
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MetodName, EndPoint, getSoapObject(opticalPenREQ), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                initStructure(Xml, zanjireMadrakListener);
+                initStructure(Xml, listener);
             }
 
             @Override
             public void onFailed() {
-                zanjireMadrakListener.onFailed("");
+                listener.onFailed("");
             }
 
             @Override
             public void onCancel() {
-                zanjireMadrakListener.onCancel();
+                listener.onCancel();
             }
         });
 
     }
 
-    private void initStructure(String xml, ZanjireMadrakListener zanjireMadrakListener) {
-        xml=xml.replaceAll("xsi:type=\"FarzinFile\"","");
-        StructureZanjireMadrakListRES structureZanjireMadrakListRES = xmlToObject.DeserializationSimpleXml(xml, StructureZanjireMadrakListRES.class);
-        if (structureZanjireMadrakListRES.getStrErrorMsg() == null || structureZanjireMadrakListRES.getStrErrorMsg().isEmpty()) {
-            if (structureZanjireMadrakListRES.getGetFileDependencyResult() == null) {
-                zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
+    private void initStructure(String xml, OpticalPenListener listener) {
+        StructureAddHameshOpticalPenRES addHameshOpticalPenRES = xmlToObject.DeserializationGsonXml(xml, StructureAddHameshOpticalPenRES.class);
+        if (addHameshOpticalPenRES.getStrErrorMsg() == null || addHameshOpticalPenRES.getStrErrorMsg().isEmpty()) {
+
+            if (addHameshOpticalPenRES.isAddHameshOpticalPenResult()) {
+                listener.onSuccess();
             } else {
-                StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES.getGetFileDependencyResult();
-                // changeXml.CharDecoder(structureMessageList.get())
-                zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+                listener.onFailed("" + addHameshOpticalPenRES.getStrErrorMsg());
             }
+
         } else {
-            zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES.getStrErrorMsg());
+            listener.onFailed("" + addHameshOpticalPenRES.getStrErrorMsg());
         }
     }
 
-
-    private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
+    private SoapObject getSoapObject(StructureOpticalPenREQ opticalPenREQ) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
-        soapObject.addProperty("ETC", EntityTypeCode);
-        soapObject.addProperty("EC", EntityCode);
+        soapObject.addProperty("bfile", opticalPenREQ.getBfile());
+        soapObject.addProperty("strExtention", opticalPenREQ.getStrExtention());
+        soapObject.addProperty("ETC", opticalPenREQ.getETC());
+        soapObject.addProperty("EC", opticalPenREQ.getEC());
+        soapObject.addProperty("hiddenHamesh", false);
+        soapObject.addProperty("Hameshtitle", opticalPenREQ.getHameshtitle());
 
         return soapObject;
-
     }
 
 
@@ -98,6 +100,7 @@ public class GetZanjireMadrakFromServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();
@@ -109,6 +112,7 @@ public class GetZanjireMadrakFromServerPresenter {
 
     private class processData {
         processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {
+
             if (!webServiceResponse.isResponse()) {
                 dataProcessListener.onFailed();
                 return;

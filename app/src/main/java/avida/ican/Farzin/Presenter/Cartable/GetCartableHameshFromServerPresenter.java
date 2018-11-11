@@ -36,10 +36,10 @@ public class GetCartableHameshFromServerPresenter {
     }
 
     public void GetHameshList(int EntityTypeCode, int EntityCode, CartableHameshListListener cartableHameshListListener) {
-        GetData(getSoapObject(EntityTypeCode, EntityCode), cartableHameshListListener);
+        CallRequest(getSoapObject(EntityTypeCode, EntityCode), cartableHameshListListener);
     }
 
-    private void GetData(SoapObject soapObject, final CartableHameshListListener cartableHameshListListener) {
+    private void CallRequest(SoapObject soapObject, final CartableHameshListListener cartableHameshListListener) {
 
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
@@ -61,7 +61,7 @@ public class GetCartableHameshFromServerPresenter {
     }
 
     private void initStructure(String xml, CartableHameshListListener cartableHameshListListener) {
-        xml=xml.replaceAll("xsi:type=\"Hamesh\"","");
+        xml = xml.replaceAll("xsi:type=\"Hamesh\"", "");
         StructureHameshListRES structureHameshListRES = xmlToObject.DeserializationSimpleXml(xml, StructureHameshListRES.class);
         if (structureHameshListRES.getStrErrorMsg() == null || structureHameshListRES.getStrErrorMsg().isEmpty()) {
             if (structureHameshListRES.getGetHameshListResult().size() <= 0) {

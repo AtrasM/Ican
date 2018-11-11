@@ -36,10 +36,10 @@ public class GetCartableHistoryFromServerPresenter {
     }
 
     public void GetHistortList(int EntityTypeCode, int EntityCode, CartableHistoryListListener cartableHistoryListListener) {
-        GetData(getSoapObject(EntityTypeCode, EntityCode), cartableHistoryListListener);
+        CallRequest(getSoapObject(EntityTypeCode, EntityCode), cartableHistoryListListener);
     }
 
-    private void GetData(SoapObject soapObject, final CartableHistoryListListener cartableHistoryListListener) {
+    private void CallRequest(SoapObject soapObject, final CartableHistoryListListener cartableHistoryListListener) {
 
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override

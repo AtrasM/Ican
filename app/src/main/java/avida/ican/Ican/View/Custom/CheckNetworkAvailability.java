@@ -55,7 +55,7 @@ public class CheckNetworkAvailability {
                 try {
                     // ping to googlevto check internet connectivity
                     Socket socket = new Socket();
-                    SocketAddress socketAddress = new InetSocketAddress("8.8.8.8", 80);
+                    SocketAddress socketAddress = new InetSocketAddress("www.google.com", 80);
                     socket.connect(socketAddress, 1500);
                     socket.close();
 

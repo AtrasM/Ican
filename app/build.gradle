@@ -123,4 +123,7 @@ dependencies {
     implementation 'com.github.ittianyu:BottomNavigationViewEx:1.2.4'
 
     implementation 'com.github.shts:TriangleLabelView:1.1.2'
+
+    implementation 'com.byox.drawview:drawview:1.0.3'
+
 }

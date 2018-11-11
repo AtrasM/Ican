@@ -98,6 +98,7 @@
                 android:layout_weight="1"
                 android:fitsSystemWindows="true">
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -116,6 +117,8 @@
                         android:layout_weight="1" />
 
                 </LinearLayout>
+
+
             </FrameLayout>
 
             <LinearLayout
@@ -133,51 +136,7 @@
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        style="@style/custom_image_button_transparent_style"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        app:srcCompat="@drawable/ic_confirm" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        style="@style/custom_image_button_transparent_style"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        app:srcCompat="@drawable/ic_confirm" />
-                </LinearLayout>
-
-                <LinearLayout
-                    style="@style/custom_image_button_transparent_style"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        app:srcCompat="@drawable/ic_confirm" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:layout_margin="@dimen/margin"
                     android:layout_weight="0.2"
                     android:gravity="center"
@@ -186,9 +145,78 @@
                     <ImageView
                         android:id="@+id/img_taeed"
                         style="@style/custom_image_button_transparent_style"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
                         app:srcCompat="@drawable/ic_confirm" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/custom_image_button_transparent_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+
+                    android:layout_margin="@dimen/margin"
+                    android:layout_weight="0.2"
+                    android:gravity="center"
+                    android:padding="@dimen/padding">
+
+                    <ImageView
+                        android:id="@+id/img_taeed_erja"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_taeed_erja" />
+                </LinearLayout>
+
+                <LinearLayout
+                    style="@style/custom_image_button_transparent_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin"
+                    android:layout_weight="0.2"
+                    android:gravity="center"
+                    android:padding="@dimen/padding">
+
+                    <ImageView
+                        android:id="@+id/img_erja"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_erja" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin"
+                    android:layout_weight="0.2"
+                    android:gravity="center"
+                    android:padding="@dimen/padding">
+
+                    <ImageView
+                        android:id="@+id/img_write_hamesh"
+                        style="@style/custom_image_button_transparent_style"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_write_hamesh" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_margin="@dimen/margin"
+                    android:layout_weight="0.2"
+                    android:gravity="center"
+                    android:padding="@dimen/padding">
+
+                    <ImageView
+                        android:id="@+id/img_ghalam_nory"
+                        style="@style/custom_image_button_transparent_style"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        app:srcCompat="@drawable/ic_ghalam_nory" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

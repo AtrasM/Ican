@@ -256,19 +256,8 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
                                 @Override
                                 public void onFinish() {
-                                    if (farzinCartableQuery.deletCartableDocumentTaeedQueue(structureInboxDocumentDB.getReceiverCode())) {
-                                        farzinCartableQuery.deletCartableDocumentAllContent(structureInboxDocumentDB.getReceiverCode());
-                                        adapteCartableDocument.deletItem(structureInboxDocumentDB);
-                                        lnLoading.setVisibility(View.GONE);
-                                    } else {
-                                        App.getHandler().postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                onSuccess();
-                                            }
-                                        }, FAILED_DELAY);
-
-                                    }
+                                    adapteCartableDocument.deletItem(structureInboxDocumentDB);
+                                    lnLoading.setVisibility(View.GONE);
 
                                 }
                             });

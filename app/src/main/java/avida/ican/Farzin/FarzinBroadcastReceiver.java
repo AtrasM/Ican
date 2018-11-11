@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import avida.ican.Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
+import avida.ican.Farzin.Presenter.Service.Cartable.OpticalPenQueueService;
 import avida.ican.Farzin.Presenter.Service.Message.GetRecieveMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.GetSentMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
@@ -34,6 +35,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         context.startService(putIntent(new Intent(context, SendMessageService.class)));
         context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
         context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
+        context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {

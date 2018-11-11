@@ -37,10 +37,10 @@ public class CartableDocumentTaeedPresenter {
     }
 
     public void TaeedDocument(int receiverCode, TaeedListener listener) {
-        GetData(getSoapObject(receiverCode), listener);
+        CallRequest(getSoapObject(receiverCode), listener);
     }
 
-    private void GetData(SoapObject soapObject, final TaeedListener listener) {
+    private void CallRequest(SoapObject soapObject, final TaeedListener listener) {
 
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override

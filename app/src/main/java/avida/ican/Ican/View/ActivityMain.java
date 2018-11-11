@@ -30,15 +30,18 @@ import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.Model.Structure.StructureOpticalPen;
 import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.MediaPicker;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Dialog.DialogOpticalPen;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.AudioRecorderListener;
 import avida.ican.Ican.View.Interface.FilePickerListener;
 import avida.ican.Ican.View.Interface.MediaPickerListener;
+import avida.ican.Ican.View.Interface.OpticalPenDialogListener;
 import avida.ican.R;
 import butterknife.BindView;
 
@@ -122,12 +125,26 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                         Log.i("test", "test");
                     }
                 });*/
+            /*    new DialogOpticalPen(App.CurentActivity).setOnListener(new OpticalPenDialogListener() {
+                    @Override
+                    public void onSuccess(StructureOpticalPen structureOpticalPen) {
+                        structureOpticalPen.getbFile();
+                    }
 
-               goToActivity(FarzinActivityLogin.class);
+                    @Override
+                    public void onFaild() {
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                }).Show();*/
+                 goToActivity(FarzinActivityLogin.class);
 
                 break;
             }
-
 
 
             case R.id.cv_audio_recorder: {

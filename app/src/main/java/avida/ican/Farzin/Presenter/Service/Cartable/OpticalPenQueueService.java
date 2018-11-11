@@ -11,31 +11,32 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
+import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
-import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureOpticalPenQueueDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
+import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Interface.ListenerInternet;
 
 /**
- * Created by AtrasVida on 2018-10-24 at 10:01 PM
+ * Created by AtrasVida on 2018-10-31 at 5:12 PM
  */
 
-public class CartableDocumentTaeedQueueService extends Service {
+public class OpticalPenQueueService extends Service {
 
     private final long PERIOD = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private Timer timer;
     private TimerTask timerTask;
-    private TaeedListener taeedListener;
+    private OpticalPenListener opticalPenListener;
     private Context context;
     private Handler handler = new Handler();
-    private CartableDocumentTaeedPresenter cartableDocumentTaeedPresenter;
+    private OpticalPenPresenter opticalPenPresenter;
     private FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
     private static int tryCount = 0;
     private final static int MaxTry = 3;
@@ -51,29 +52,28 @@ public class CartableDocumentTaeedQueueService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
         ShowToast("Service Start");
-        startTaeedQueueTimer();
+        startOpticalPenQueueTimer();
         return Service.START_STICKY;
     }
 
-    private void TaeedDocument(final int receiveCode) {
-        cartableDocumentTaeedPresenter = new CartableDocumentTaeedPresenter();
-        taeedListener = new TaeedListener() {
+    private void setOpticalPen(final StructureOpticalPenQueueDB structureOpticalPenQueueDB) {
+        opticalPenPresenter = new OpticalPenPresenter();
+        opticalPenListener = new OpticalPenListener() {
 
             @Override
             public void onSuccess() {
-                if (farzinCartableQuery.deletItemCartableDocumentTaeedQueue(receiveCode)) {
-                    farzinCartableQuery.deletCartableDocumentAllContent(receiveCode);
+                if (farzinCartableQuery.deletItemOpticalPenQueue(structureOpticalPenQueueDB.getId())) {
 
-                    StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+                    StructureOpticalPenQueueDB opticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
 
-                    if (cartableDocumentTaeedQueueDB != null) {
-                        if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
-                            TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                    if (opticalPenQueueDB != null) {
+                        if (opticalPenQueueDB.getETC() > 0) {
+                            setOpticalPen(opticalPenQueueDB);
                         } else {
-                            startTaeedQueueTimer();
+                            startOpticalPenQueueTimer();
                         }
                     } else {
-                        startTaeedQueueTimer();
+                        startOpticalPenQueueTimer();
                     }
                 } else {
                     handler.postDelayed(new Runnable() {
@@ -87,33 +87,34 @@ public class CartableDocumentTaeedQueueService extends Service {
 
             @Override
             public void onFailed(String message) {
-                tryAgain(receiveCode);
+                tryAgain(structureOpticalPenQueueDB);
             }
 
             @Override
             public void onCancel() {
-                tryAgain(receiveCode);
+                tryAgain(structureOpticalPenQueueDB);
             }
 
             @Override
             public void onFinish() {
-                startTaeedQueueTimer();
+                startOpticalPenQueueTimer();
             }
 
 
         };
-        cartableDocumentTaeedPresenter.TaeedDocument(receiveCode, taeedListener);
+        StructureOpticalPenREQ structureOpticalPenREQ=new StructureOpticalPenREQ(structureOpticalPenQueueDB.getETC(),structureOpticalPenQueueDB.getEC(),structureOpticalPenQueueDB.getBfile(),structureOpticalPenQueueDB.getStrExtention(),structureOpticalPenQueueDB.getHameshtitle(),structureOpticalPenQueueDB.isHiddenHamesh());
+        opticalPenPresenter.CallRequest(structureOpticalPenREQ, opticalPenListener);
 
     }
 
-    private void tryAgain(final int receiveCode) {
+    private void tryAgain(final StructureOpticalPenQueueDB structureOpticalPenQueueDB) {
         App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
                 new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
                     @Override
                     public void onConnected() {
-                        TaeedDocument(receiveCode);
+                        setOpticalPen(structureOpticalPenQueueDB);
                     }
 
                     @Override
@@ -121,7 +122,7 @@ public class CartableDocumentTaeedQueueService extends Service {
                         App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                taeedListener.onFailed("");
+                                opticalPenListener.onFailed("");
                             }
                         }, FAILED_DELAY);
                     }
@@ -131,7 +132,7 @@ public class CartableDocumentTaeedQueueService extends Service {
                         App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                taeedListener.onFailed("");
+                                opticalPenListener.onFailed("");
                             }
                         }, FAILED_DELAY);
                     }
@@ -158,17 +159,17 @@ public class CartableDocumentTaeedQueueService extends Service {
     }
 
 
-    private void startTaeedQueueTimer() {
+    private void startOpticalPenQueueTimer() {
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
             public void run() {
                 try {
-                    StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+                    StructureOpticalPenQueueDB structureOpticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
 
-                    if (cartableDocumentTaeedQueueDB != null) {
-                        if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
-                            TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                    if (structureOpticalPenQueueDB != null) {
+                        if (structureOpticalPenQueueDB.getETC() > 0) {
+                            setOpticalPen(structureOpticalPenQueueDB);
                         }
                     }
                     timer.cancel();

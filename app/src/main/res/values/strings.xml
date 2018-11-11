@@ -90,4 +90,10 @@
     <string name="title_peiro">پیرو</string>
     <string name="title_atf">عطف</string>
     <string name="TitleCartableDocumentDetail">مدرک</string>
+    <string name="save">ذخیره</string>
+    <string name="send">ارسال</string>
+    <string name="title_optical_pen_edt">مخاطب</string>
+    <string name="optical_pen_send_error">هیچ هامشی برای ارسال وجود ندارد!</string>
+    <string name="title_dialog_optical_pen">قلم نوری</string>
+    <string name="showOpticalPenFile">نمایش هامش قلم نوری</string>
 </resources>

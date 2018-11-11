@@ -97,6 +97,31 @@
                                 tools:ignore="NestedWeights" />
 
                             <LinearLayout
+                                android:id="@+id/ln_file"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/margin_minimum"
+                                android:gravity="center"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="15dp"
+                                    android:layout_height="15dp"
+                                    app:srcCompat="@drawable/ic_attach2" />
+
+                                <TextView
+                                    android:id="@+id/txt_file_name"
+                                    style="@style/custom_Txt_Normal_style"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center|right"
+                                    android:maxLines="1"
+                                    android:text="pol pol" />
+
+
+                            </LinearLayout>
+
+                            <LinearLayout
                                 android:id="@+id/ln_receiver"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -112,32 +137,15 @@
                                         android:layout_height="15dp"
                                         app:srcCompat="@drawable/ic_comission_arrow" />
 
-                                    <LinearLayout
+                                    <TextView
+                                        android:id="@+id/txt_title"
+                                        style="@style/custom_Txt_Normal_style"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
-                                        android:orientation="vertical">
+                                        android:gravity="center|right"
+                                        android:maxLines="1"
+                                        android:text="pol pol" />
 
-
-                                        <TextView
-                                            android:id="@+id/txt_title"
-                                            style="@style/custom_Txt_Normal_style"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:gravity="center|right"
-                                            android:maxLines="1"
-                                            android:text="pol pol" />
-
-                                        <!-- <TextView
-                                             android:id="@+id/txt_receiver_role_name"
-                                             style="@style/custom_Txt_Normal_style"
-                                             android:layout_width="match_parent"
-                                             android:layout_height="wrap_content"
-                                             android:gravity="center|right"
-                                             android:maxLines="1"
-                                             android:padding="0dp"
-                                             android:text="[ 123 ]"
-                                             tools:ignore="NestedWeights" />-->
-                                    </LinearLayout>
 
                                 </LinearLayout>
 
@@ -154,6 +162,7 @@
                                     android:text="[ 123 ]asdkhnalkdnhadnlamdnamdnasm,ndamsdnmas,nd,masnd,amsnd,amsnd,masnd,masndmasndm,asnd,masnd,masdasdasd"
                                     android:textColor="@color/color_txt_Normal"
                                     tools:ignore="NestedWeights" />
+
                             </LinearLayout>
 
 
@@ -169,9 +178,10 @@
             <LinearLayout
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center|top"
                 android:gravity="center|left"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingTop="@dimen/padding">
 
                 <TextView
                     android:id="@+id/txt_date"

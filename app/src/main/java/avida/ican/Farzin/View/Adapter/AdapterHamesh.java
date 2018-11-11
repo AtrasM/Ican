@@ -17,6 +17,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
 import avida.ican.Ican.App;
+import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
@@ -55,12 +56,16 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
         TextView txtCreatorFullName;
         @BindView(R.id.txt_time)
         TextView txtTime;
+        @BindView(R.id.txt_file_name)
+        TextView txtFileName;
         @BindView(R.id.txt_date)
         TextView txtDate;
         @BindView(R.id.txt_hamesh)
         TextView txtHamesh;
         @BindView(R.id.ln_receiver)
         LinearLayout lnReceiver;
+        @BindView(R.id.ln_file)
+        LinearLayout lnFile;
 
 
         public ViewHolder(View view) {
@@ -96,12 +101,20 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
 
 
         final StructureHameshDB item = itemList.get(position);
-        if (item.isPrivate() || !item.getHameshType().equals("Text")) {
+
+        if (item.getHameshType().equals("Image")) {
             viewHolder.lnReceiver.setVisibility(View.GONE);
+            viewHolder.lnFile.setVisibility(View.VISIBLE);
+            viewHolder.txtFileName.setText("" + Resorse.getString(R.string.showOpticalPenFile));
         } else {
-            viewHolder.lnReceiver.setVisibility(View.VISIBLE);
-            viewHolder.txtTitle.setText("" + item.getTitle());
-            viewHolder.txtHamesh.setText("" + item.getContent());
+            viewHolder.lnFile.setVisibility(View.GONE);
+            if (item.isPrivate() || !item.getHameshType().equals("Text")) {
+                viewHolder.lnReceiver.setVisibility(View.GONE);
+            } else {
+                viewHolder.lnReceiver.setVisibility(View.VISIBLE);
+                viewHolder.txtTitle.setText("" + item.getTitle());
+                viewHolder.txtHamesh.setText("" + item.getContent());
+            }
         }
 
 
@@ -113,7 +126,16 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
         viewHolder.txtCreatorFullName.setText("" + item.getCreatorName());
         viewHolder.txtCreatorRoleName.setText(" [ " + item.getCreatorRoleName() + " ] ");
 
-        // TODO: 2018-10-17 make listenerAdapterHameshList.onOpenFile() item click
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (item.getHameshType().equals("Image")) {
+                    StructureAttach structureAttach = new StructureAttach(item.getFileBinary(), item.getFileName(), ".png");
+                    listenerAdapterHameshList.onOpenFile(structureAttach);
+                }
+            }
+        });
     }
 
     private void ShowToast(final String s) {
