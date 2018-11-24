@@ -3,6 +3,7 @@ package avida.ican.Farzin.View.Fragment;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -34,8 +35,13 @@ public class FragmentUserAndRoleMain extends BaseFragment {
 
     public static String Tag = "FragmentUserAndRoleMain";
 
+    @Override
+    public int getLayoutResId() {
+        return R.layout.fragment_user_and_role_main;
+    }
+
     public FragmentUserAndRoleMain newInstance(Activity context, AdapterUserAndRoleMain adapterUserAndRoleMain, DialogUserAndRole dialogUserAndRole) {
-       // FragmentUserAndRoleMain fragment = new FragmentUserAndRoleMain();
+        // FragmentUserAndRoleMain fragment = new FragmentUserAndRoleMain();
         this.context = context;
         this.dialogUserAndRole = dialogUserAndRole;
         this.adapterUserAndRoleMain = adapterUserAndRoleMain;
@@ -43,13 +49,7 @@ public class FragmentUserAndRoleMain extends BaseFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         LinearLayoutManagerWithSmoothScroller linearLayoutManager = new LinearLayoutManagerWithSmoothScroller(context);
         rcvMain.setLayoutManager(linearLayoutManager);
@@ -77,11 +77,6 @@ public class FragmentUserAndRoleMain extends BaseFragment {
 
             }
         });
-    }
-
-    @Override
-    public int getLayoutResId() {
-        return R.layout.fragment_user_and_role_main;
     }
 
 

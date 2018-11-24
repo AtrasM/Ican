@@ -19,10 +19,15 @@ import com.orhanobut.dialogplus.ViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.UserAndRolePresenter;
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleMain;
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleSelected;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Fragment.FragmentUserAndRoleMain;
 import avida.ican.Farzin.View.Fragment.FragmentUserAndRoleSelect;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
@@ -31,7 +36,9 @@ import avida.ican.Farzin.View.Interface.ListenerUserAndRollSearch;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -42,6 +49,8 @@ import butterknife.ButterKnife;
 
 public class DialogUserAndRole {
     private final Activity context;
+    private int Ec = 0;
+    private int Etc = 0;
     private String Title = "";
     private Loading loading;
     private DialogPlus dialog;
@@ -57,6 +66,9 @@ public class DialogUserAndRole {
     private FragmentUserAndRoleMain fragmentUserAndRoleMain;
     private FragmentUserAndRoleSelect fragmentUserAndRoleSelect;
     private FragmentManager mfragmentManager;
+    private UserAndRoleEnum userAndRoleEnum;
+    private FarzinCartableQuery farzinCartableQuery;
+    private ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS = new ArrayList<>();
 
     @SuppressLint("ResourceAsColor")
 
@@ -85,17 +97,30 @@ public class DialogUserAndRole {
 
     }
 
+    public DialogUserAndRole(Activity context, int Etc, int Ec) {
+        this.context = context;
+        this.Etc = Etc;
+        this.Ec = Ec;
+        loading = new Loading(this.context).Creat();
+
+    }
+
     public DialogUserAndRole setTitle(String title) {
         this.Title = title;
         return this;
     }
 
 
-    public DialogUserAndRole init(FragmentManager fragmentManager, List<StructureUserAndRoleDB> structuresMain, List<StructureUserAndRoleDB> structuresSelect, final ListenerUserAndRoll listenerUserAndRoll) {
+    public DialogUserAndRole init(FragmentManager fragmentManager, List<StructureUserAndRoleDB> structuresMain, List<StructureUserAndRoleDB> structuresSelect, UserAndRoleEnum userAndRoleEnum, final ListenerUserAndRoll listenerUserAndRoll) {
+        farzinCartableQuery = new FarzinCartableQuery();
         mtmpItemSelect = new ArrayList<>();
         this.mfragmentManager = fragmentManager;
         this.listenerUserAndRollMain = listenerUserAndRoll;
-
+        this.userAndRoleEnum = userAndRoleEnum;
+        if (Etc > 0) {
+            cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(Etc).GetDocumentActions();
+        }
+        this.userAndRoleEnum = userAndRoleEnum;
         userAndRolePresenter = new UserAndRolePresenter(structuresMain, structuresSelect).onListener(new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
@@ -158,7 +183,6 @@ public class DialogUserAndRole {
             }
         });
 
-
         dialog.show();
     }
 
@@ -170,7 +194,6 @@ public class DialogUserAndRole {
         ViewPagerAdapter adapter = new ViewPagerAdapter(mfragmentManager);
         adapter.addFrag(fragmentUserAndRoleMain, R.string.title_user_and_role_main);
         adapter.addFrag(fragmentUserAndRoleSelect, R.string.title_selects);
-
         viewHolder.viewPager.setAdapter(adapter);
         viewHolder.smartTabLayout.setViewPager(viewHolder.viewPager);
     }
@@ -178,18 +201,16 @@ public class DialogUserAndRole {
     private void initAdapter() {
         adapterUserAndRoleMain = new AdapterUserAndRoleMain(mstructuresMain, new ListenerAdapterUserAndRole() {
             @Override
-            public void onSelect(StructureUserAndRoleDB structureUserAndRoleDB) {
+            public void onSelect(final StructureUserAndRoleDB structureUserAndRoleDB) {
                 mtmpItemSelect.add(structureUserAndRoleDB);
                 adapterUserAndRoleSelected.Select(structureUserAndRoleDB);
+
             }
 
             @Override
             public void unSelect(final StructureUserAndRoleDB structureUserAndRoleDB) {
-
                 //mtmpItemSelect.remove(structureUserAndRoleDB);
                 adapterUserAndRoleSelected.delet(structureUserAndRoleDB);
-
-
             }
 
             @Override
@@ -203,7 +224,13 @@ public class DialogUserAndRole {
             }
         });
 
-        adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, new ListenerAdapterUserAndRole() {
+        if (Etc > 0) {
+            adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, userAndRoleEnum, cartableDocumentActionsDBS);
+            viewHolder.btnOk.setText(Resorse.getString(R.string.title_send));
+        } else {
+            adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, userAndRoleEnum);
+        }
+        adapterUserAndRoleSelected.setListener(new ListenerAdapterUserAndRole() {
             @Override
             public void onSelect(StructureUserAndRoleDB structureUserAndRoleDB) {
 
@@ -239,8 +266,8 @@ public class DialogUserAndRole {
 
     private void initViewPagerFragment() {
 
-        fragmentUserAndRoleMain = new FragmentUserAndRoleMain().newInstance(App.CurentActivity, adapterUserAndRoleMain, this);
-        fragmentUserAndRoleSelect = new FragmentUserAndRoleSelect().newInstance(App.CurentActivity, adapterUserAndRoleSelected);
+        fragmentUserAndRoleMain = new FragmentUserAndRoleMain().newInstance(context, adapterUserAndRoleMain, this);
+        fragmentUserAndRoleSelect = new FragmentUserAndRoleSelect().newInstance(context, adapterUserAndRoleSelected);
     }
 
 

@@ -1,6 +1,7 @@
 package avida.ican.Ican;
 
 import android.app.Activity;
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;

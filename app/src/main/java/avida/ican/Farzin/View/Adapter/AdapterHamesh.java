@@ -112,9 +112,15 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
                 viewHolder.lnReceiver.setVisibility(View.GONE);
             } else {
                 viewHolder.lnReceiver.setVisibility(View.VISIBLE);
-                viewHolder.txtTitle.setText("" + item.getTitle());
+                if (item.getTitle().isEmpty() || item.getTitle().equals("null")) {
+                    viewHolder.txtTitle.setText("-");
+                } else {
+                    viewHolder.txtTitle.setText("" + item.getTitle());
+                }
+
                 viewHolder.txtHamesh.setText("" + item.getContent());
             }
+
         }
 
 

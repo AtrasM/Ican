@@ -32,6 +32,7 @@ import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
@@ -163,7 +164,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void showUserAndRoleDialog() {
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRoleDBS), new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRoleDBS), UserAndRoleEnum.USERANDROLE, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 structuresMain = structureUserAndRolesMain;
@@ -670,4 +671,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
+
+
+
 }

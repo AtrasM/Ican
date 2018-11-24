@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin"
+        android:padding="@dimen/padding"
         android:drawableLeft="@drawable/ic_search"
         android:hint="@string/search_hint"
         tools:ignore="RtlHardcoded" />

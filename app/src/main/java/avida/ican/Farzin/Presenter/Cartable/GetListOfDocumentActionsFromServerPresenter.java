@@ -3,100 +3,80 @@ package avida.ican.Farzin.Presenter.Cartable;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsList;
+import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentListRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentActionRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentActionsRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureTaeedRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
-import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
- * Created by AtrasVida on 2018-09-12 at 11:08
+ * Created by AtrasVida on 2018-11-19 at 2:26 PM
  */
 
 
-public class GetCartableDocumentFromServerPresenter {
+public class GetListOfDocumentActionsFromServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
-    private String EndPoint = "CartableManagment";
-    private String MetodName = "GetCartableDocument";
+    private String EndPoint = "eFormManagment";
+    private String MetodName = "GetListOfActions";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "GetCartableDocumentFromServerPresenter";
+    private String Tag = "GetListOfDocumentActionsFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-
-    public GetCartableDocumentFromServerPresenter() {
+    public GetListOfDocumentActionsFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void GetCartableDocumentList(int count, CartableDocumentListListener cartableDocumentListListener) {
+    public void CallRequest(int ETC, final CartableDocumentActionsList listener) {
 
-        String LastDate = getFarzinPrefrences().getCartableDocumentDataSyncDat();
-        GetCartableDocument(getSoapObject(LastDate, count), cartableDocumentListListener);
-    }
-
-    private void GetCartableDocument(SoapObject soapObject, final CartableDocumentListListener cartableDocumentListListener) {
-
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MetodName, EndPoint, getSoapObject(ETC), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                CheckCartableDocumentListStructure(Xml, cartableDocumentListListener);
+                initStructure(Xml, listener);
             }
 
             @Override
             public void onFailed() {
-                cartableDocumentListListener.onFailed("");
+                listener.onFailed("");
             }
 
             @Override
             public void onCancel() {
-                cartableDocumentListListener.onCancel();
+                listener.onCancel();
             }
         });
-
     }
 
-    private void CheckCartableDocumentListStructure(String xml, CartableDocumentListListener cartableDocumentListListener) {
-        StructureCartableDocumentListRES structureCartableDocumentListRES = xmlToObject.DeserializationSimpleXml(xml, StructureCartableDocumentListRES.class);
-        if (structureCartableDocumentListRES.getStrErrorMsg() == null || structureCartableDocumentListRES.getStrErrorMsg().isEmpty()) {
-            if (structureCartableDocumentListRES.getGetCartableDocumentResult().size() <= 0) {
-                cartableDocumentListListener.onSuccess(new ArrayList<StructureInboxDocumentRES>());
+    private void initStructure(String xml, CartableDocumentActionsList listener) {
+        StructureCartableDocumentActionsRES structureCartableDocumentActionsRES = xmlToObject.DeserializationGsonXml(xml, StructureCartableDocumentActionsRES.class);
+        if (structureCartableDocumentActionsRES.getStrErrorMsg() == null || structureCartableDocumentActionsRES.getStrErrorMsg().isEmpty()) {
+            ArrayList<StructureCartableDocumentActionRES> structureCartableDocumentActionRES = new ArrayList<>(structureCartableDocumentActionsRES.getGetListOfActionsResult().getRows().getAction());
+            if (structureCartableDocumentActionRES.size() > 0) {
+                listener.onSuccess(structureCartableDocumentActionRES);
             } else {
-                ArrayList<StructureInboxDocumentRES> structureInboxDocumentRES = new ArrayList<>(structureCartableDocumentListRES.getGetCartableDocumentResult());
-                // changeXml.CharDecoder(structureMessageList.get())
-                cartableDocumentListListener.onSuccess(structureInboxDocumentRES);
+                listener.onFailed("" + structureCartableDocumentActionsRES.getStrErrorMsg());
             }
+
         } else {
-            cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
+            listener.onFailed("" + structureCartableDocumentActionsRES.getStrErrorMsg());
         }
     }
 
-
-    private SoapObject getSoapObject(String LastDate, int count) {
+    private SoapObject getSoapObject(int ETC) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
-        SoapObject Filter = new SoapObject(NameSpace, "filter");
-        Filter.addProperty("ETC", -1);
-        Filter.addProperty("ActionCode", -1);
-        if (!LastDate.isEmpty()) {
-            LastDate = CustomFunction.arabicToDecimal(LastDate);
-            Filter.addProperty("StartDateTime", LastDate);
-        }
-
-        Filter.addProperty("CountOfRecord", count);
-        Filter.addProperty("SortType", "ASC");
-        soapObject.addSoapObject(Filter);
+        //SoapObject Filter = new SoapObject(NameSpace, "filter");
+        soapObject.addProperty("ETC", ETC);
         return soapObject;
-
     }
-
 
     private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
@@ -106,17 +86,16 @@ public class GetCartableDocumentFromServerPresenter {
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
-
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();
                     }
                 }).execute();
-
     }
 
 
@@ -130,6 +109,7 @@ public class GetCartableDocumentFromServerPresenter {
             try {
                 //Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CharDecoder(Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

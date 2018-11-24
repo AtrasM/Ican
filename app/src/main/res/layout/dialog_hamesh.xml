@@ -41,7 +41,7 @@
                     style="@style/custom_Txt_Title_style"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/referralComission"
+                    android:text="@string/referral_order"
                     android:textColor="@color/color_txt_Normal" />
             </LinearLayout>
 

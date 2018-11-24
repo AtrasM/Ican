@@ -1,5 +1,6 @@
 package avida.ican.Farzin.View.Fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,18 +13,25 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
 import avida.ican.Farzin.View.Adapter.AdapterCartableActionPin;
+import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
+import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
@@ -50,6 +58,7 @@ public class FragmentCartable extends BaseFragment {
     private ArrayList<StructureCartableAction> structureCartableActionsPin = new ArrayList<>();
     private Bundle bundleObject = new Bundle();
     private DialogPin_unPin dialogPin_unPin;
+    private List<StructureUserAndRoleDB> userAndRolesMain=new ArrayList<>();
 
     @Override
     public int getLayoutResId() {
@@ -64,7 +73,6 @@ public class FragmentCartable extends BaseFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
-
     }
 
     public FragmentCartable newInstance(FragmentManager fragmentManager) {
@@ -201,5 +209,6 @@ public class FragmentCartable extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
     }
+
 
 }

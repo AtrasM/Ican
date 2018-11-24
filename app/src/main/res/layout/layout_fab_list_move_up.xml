@@ -11,5 +11,5 @@
     android:layout_margin="@dimen/margin_maximum"
     android:alpha="0.7"
     android:visibility="gone"
-    app:srcCompat="@drawable/ic_arrow_up"
+    app:srcCompat="@drawable/ic_circle_arrow_up"
     tools:ignore="RtlHardcoded" />

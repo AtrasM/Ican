@@ -26,6 +26,7 @@ import avida.ican.Farzin.Presenter.Cartable.GetZanjireMadrakFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
@@ -65,6 +66,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private Context context;
+    private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,7 +143,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
                     }
                 }).Show();*/
-                 goToActivity(FarzinActivityLogin.class);
+                //showUserAndRoleDialog();
+                goToActivity(FarzinActivityLogin.class);
 
                 break;
             }
@@ -164,22 +167,23 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             }
             case R.id.cv_user_and_role: {
 
-                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresSelect), new ListenerUserAndRoll() {
-                    @Override
-                    public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
-                        structuresMain = structureUserAndRolesMain;
-                        structuresSelect = structureUserAndRolesSelect;
+                dialogUserAndRole = new DialogUserAndRole(App.CurentActivity).setTitle(Resorse.getString(R.string.title_contacts)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresMain), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(structuresSelect), UserAndRoleEnum.USERANDROLE,
+                        new ListenerUserAndRoll() {
+                            @Override
+                            public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
+                                structuresMain = structureUserAndRolesMain;
+                                structuresSelect = structureUserAndRolesSelect;
 
-                    }
+                            }
 
-                    @Override
-                    public void onFailed() {
+                            @Override
+                            public void onFailed() {
 
-                    }
+                            }
 
-                    @SuppressLint("StaticFieldLeak")
-                    @Override
-                    public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
+                            @SuppressLint("StaticFieldLeak")
+                            @Override
+                            public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
                       /*  new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... voids) {
@@ -198,10 +202,10 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                             }
                         }.execute();*/
 
-                    }
+                            }
 
 
-                });
+                        });
                 break;
             }
         }
@@ -316,5 +320,29 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
     }*/
 
+    private void showUserAndRoleDialog() {
 
+
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, 645, 300).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+            @Override
+            public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
+                userAndRolesMain = structureUserAndRolesMain;
+                //userAndRoleDBS = structureUserAndRolesSelect;
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
+
+            }
+
+
+        });
+
+    }
 }

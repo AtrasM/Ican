@@ -214,7 +214,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         viewHolder.lnMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (isLnMoreVisible) {
+                if (!isLnMoreVisible) {
                     animator.slideInFromDownFast(viewHolder.lnMore);
                     viewHolder.lnMore.setVisibility(View.VISIBLE);
                 } else {

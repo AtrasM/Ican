@@ -82,7 +82,7 @@
     <string name="title_list_hamesh">لیست هامش</string>
     <string name="title_gardesh_madrak">گردش مدرک</string>
     <string name="title_zanjireh_madrak">زنجیره مدرک</string>
-    <string name="referralComission">دستور ارجاع</string>
+    <string name="referral_order">دستور ارجاع</string>
     <string name="hint_comission">ارجاع</string>
     <string name="hint_confirm">تایید</string>
     <string name="title_dar_ertebat">در ارتباط</string>
@@ -96,4 +96,7 @@
     <string name="optical_pen_send_error">هیچ هامشی برای ارسال وجود ندارد!</string>
     <string name="title_dialog_optical_pen">قلم نوری</string>
     <string name="showOpticalPenFile">نمایش هامش قلم نوری</string>
+    <string name="private_discription">توضیح شخصی</string>
+    <string name="title_send">ارجاع</string>
+    <string name="wrong_to_load_document_actions">شما در حال حاظر قادر به انجام این کار نمی باشید!</string>
 </resources>

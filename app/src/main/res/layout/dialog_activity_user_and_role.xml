@@ -45,5 +45,6 @@
                 android:text="@string/cancel" />
         </LinearLayout>
     </LinearLayout>
+
     <include layout="@layout/ln_loading" />
 </FrameLayout>

@@ -1,5 +1,6 @@
 package avida.ican.Farzin.View;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,22 +17,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
 import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.View.Adapter.AdapteCartableDocument;
 import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Dialog.DialogCartableHistoryList;
+import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Dialog.DialogZanjireMadrak;
 import avida.ican.Farzin.View.Enum.CartableActionsEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableDocumentList;
 import avida.ican.Farzin.View.Interface.ListenerFile;
+import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -39,9 +46,11 @@ import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -110,6 +119,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        App.activity = this;
         Bundle bundleObject = getIntent().getExtras();
         StructureCartableDocumentBND structureCartableDocumentBND = (StructureCartableDocumentBND) bundleObject.getSerializable(PutExtraEnum.BundleCartableDocument.getValue());
         Title = structureCartableDocumentBND.getActionNAme();
@@ -199,14 +209,35 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
             }
 
             @Override
-            public void onClick(StructureInboxDocumentDB item) {
+            public void onClick(final StructureInboxDocumentDB item) {
+
                 if (canDoAnyAction) {
-                    StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(item.getEntityTypeCode(), item.getEntityCode(), item.getReceiverCode(), item.getReceiveDate(), item.getTitle(), item.getSenderName(), item.getSenderRoleName(), item.getEntityNumber());
-                    bundleObject.putSerializable(PutExtraEnum.BundleCartableDocumentDetail.getValue(), cartableDocumentDetailBND);
-                    Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocumentDetail.class);
-                    intent.putExtras(bundleObject);
-                    goToActivityForResult(intent, DOCUMENTDETAILCODE);
-                    curentItem = item;
+                    if (!farzinCartableQuery.IsDocumentActionsExist(item.getEntityTypeCode())) {
+                        lnLoading.setVisibility(View.VISIBLE);
+                        new CartableDocumentActionsPresenter(item.getEntityTypeCode()).GetDocumentActionsFromServer(new GetDocumentActionsFromServerListener() {
+                            @Override
+                            public void onSuccess() {
+                                gotoDocumentDetail(item);
+                            }
+
+                            @Override
+                            public void onFailed(String message) {
+                                lnLoading.setVisibility(View.GONE);
+                                App.ShowMessage().ShowToast(Resorse.getString(R.string.wrong_to_load_document_actions), ToastEnum.TOAST_LONG_TIME);
+
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                lnLoading.setVisibility(View.GONE);
+                                App.ShowMessage().ShowToast(Resorse.getString(R.string.wrong_to_load_document_actions), ToastEnum.TOAST_LONG_TIME);
+
+                            }
+                        });
+                    } else {
+                        gotoDocumentDetail(item);
+                    }
+
                 }
 
             }
@@ -300,6 +331,23 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
         ;
         return listenerAdapterCartableDocumentList;
+    }
+
+    private void gotoDocumentDetail(final StructureInboxDocumentDB item) {
+        App.getHandlerMainThread().post(new Runnable() {
+            @Override
+            public void run() {
+                StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(item.getEntityTypeCode(), item.getEntityCode(), item.getReceiverCode(), item.getReceiveDate(), item.getTitle(), item.getSenderName(), item.getSenderRoleName(), item.getEntityNumber());
+                bundleObject.putSerializable(PutExtraEnum.BundleCartableDocumentDetail.getValue(), cartableDocumentDetailBND);
+                Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocumentDetail.class);
+                intent.putExtras(bundleObject);
+                // goToActivity(intent);
+                goToActivityForResult(intent, DOCUMENTDETAILCODE);
+                curentItem = item;
+                lnLoading.setVisibility(View.GONE);
+            }
+        });
+
     }
 
     private void TaeedAddToQueue(final int receiveCode) {
@@ -418,4 +466,5 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
 
     }
+
 }

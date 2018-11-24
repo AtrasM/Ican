@@ -1,42 +1,46 @@
 package avida.ican.Farzin.View;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.byox.drawview.enums.DrawingCapture;
-import com.byox.drawview.enums.DrawingMode;
-import com.byox.drawview.views.DrawView;
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
 import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
+import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHameshList;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHistoryList;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentZanjireMadrak;
 import avida.ican.Farzin.View.Interface.ListenerFile;
+import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.Structure.StructureOpticalPen;
+import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -55,8 +59,8 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     @Nullable
     @BindView(R.id.smart_tabLayout)
     SmartTabLayout smartTabLayout;
-    @BindView(R.id.view_pager)
-    ViewPager viewPager;
+    @BindView(R.id.mview_pager)
+    ViewPager mViewPager;
     @BindView(R.id.txt_subject)
     TextView txtSubject;
     @BindView(R.id.txt_time)
@@ -69,6 +73,8 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     TextView txtName;
     @BindView(R.id.img_taeed)
     ImageView imTaeed;
+    @BindView(R.id.img_erja)
+    ImageView imgErja;
     @BindView(R.id.img_ghalam_nory)
     ImageView imgOpticalPen;
     @BindView(R.id.ln_loading)
@@ -90,7 +96,9 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private long FailedDelay = TimeValue.SecondsInMilli() * 3;
     private FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
     private long FAILED_DELAY = TimeValue.SecondsInMilli() * 3;
-    DialogOpticalPen dialogOpticalPen;
+    private DialogOpticalPen dialogOpticalPen;
+    private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
+    private DialogUserAndRole dialogUserAndRole;
 
     @Override
     protected void onResume() {
@@ -158,7 +166,12 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 }).Show();
             }
         });
-
+        imgErja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showUserAndRoleDialog();
+            }
+        });
         imTaeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -331,7 +344,33 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         adapter.addFrag(fragmentCartableHameshList, R.string.title_list_hamesh);
         adapter.addFrag(fragmentCartableHistoryList, R.string.title_gardesh_madrak);
         adapter.addFrag(fragmentZanjireMadrak, R.string.title_zanjireh_madrak);
-        viewPager.setAdapter(adapter);
-        smartTabLayout.setViewPager(viewPager);
+        mViewPager.setAdapter(adapter);
+        smartTabLayout.setViewPager(mViewPager);
+    }
+
+
+    private void showUserAndRoleDialog() {
+
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity,Etc,Ec).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+            @Override
+            public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
+                userAndRolesMain = structureUserAndRolesMain;
+                //userAndRoleDBS = structureUserAndRolesSelect;
+            }
+
+            @Override
+            public void onFailed() {
+
+            }
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
+
+            }
+
+
+        });
+
     }
 }

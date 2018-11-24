@@ -62,6 +62,7 @@ public class App extends MultiDexApplication {
     public static HashMap<String, Stack<Fragment>> fragmentStacks;
     public static HashMap<String, Stack<Activity>> activityStacks;
     private static FarzinBroadcastReceiver farzinBroadCastReceiver;
+    public static Activity activity;
 
     @Override
     public void onCreate() {

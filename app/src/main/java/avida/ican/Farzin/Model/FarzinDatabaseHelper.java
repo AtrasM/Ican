@@ -10,6 +10,7 @@ import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
 
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
@@ -42,6 +43,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureZanjireMadrakFileDB, Integer> mZanjireMadrakFileDao = null;
     private Dao<StructureCartableDocumentTaeedQueueDB, Integer> mCartableDocumentTaeedQueueDao = null;
     private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDBDao = null;
+    private Dao<StructureCartableDocumentActionsDB, Integer> mCartableDocumentActionsDao = null;
 
     public FarzinDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -62,6 +64,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureZanjireMadrakFileDB.class);
             TableUtils.createTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class);
             TableUtils.createTable(connectionSource, StructureOpticalPenQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureCartableDocumentActionsDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -82,6 +85,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, StructureZanjireMadrakFileDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class, true);
             TableUtils.dropTable(connectionSource, StructureOpticalPenQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureCartableDocumentActionsDB.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -173,6 +177,12 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         return mOpticalPenQueueDBDao;
     }
+    public Dao<StructureCartableDocumentActionsDB, Integer> getDocumentActionsDao() throws SQLException {
+        if (mCartableDocumentActionsDao == null) {
+            mCartableDocumentActionsDao = getDao(StructureCartableDocumentActionsDB.class);
+        }
+        return mCartableDocumentActionsDao;
+    }
 
     @Override
     public void close() {
@@ -187,6 +197,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         mZanjireMadrakFileDao = null;
         mCartableDocumentTaeedQueueDao = null;
         mOpticalPenQueueDBDao = null;
+        mCartableDocumentActionsDao = null;
         super.close();
     }
 
@@ -243,5 +254,8 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
     public void ClearOpticalPenQueue() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureOpticalPenQueueDB.class);
+    }
+    public void ClearDocumentActions() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentActionsDB.class);
     }
 }

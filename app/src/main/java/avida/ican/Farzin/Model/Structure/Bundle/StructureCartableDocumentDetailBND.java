@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Model.Structure.Bundle;
 
+import android.app.Activity;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -97,4 +99,6 @@ public class StructureCartableDocumentDetailBND implements Serializable {
     public void setReceiverCode(int receiverCode) {
         ReceiverCode = receiverCode;
     }
+
+
 }

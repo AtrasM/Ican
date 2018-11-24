@@ -7,16 +7,27 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.Animator;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.ToastEnum;
@@ -32,17 +43,40 @@ import butterknife.ButterKnife;
 
 public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUserAndRoleSelected.ViewHolder> {
 
+    private ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS = new ArrayList<>();
     private List<StructureUserAndRoleDB> itemList;
     private int layout = R.layout.item_user_and_role_selected;
     private ImageLoader imageLoader;
     private ListenerAdapterUserAndRole listenerAdapterUserAndRole;
     private Activity context;
     private Loading loading;
+    private UserAndRoleEnum userAndRoleEnum;
+    private Animator animator;
+    private ArrayList<String> spList = new ArrayList<>();
 
-    public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
+    public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, UserAndRoleEnum userAndRoleEnum, ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS) {
         imageLoader = App.getImageLoader();
         this.itemList = itemList;
         this.context = context;
+        animator = new Animator(context);
+        this.userAndRoleEnum = userAndRoleEnum;
+        this.cartableDocumentActionsDBS = cartableDocumentActionsDBS;
+        initSpList();
+
+    }
+
+
+    public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, UserAndRoleEnum userAndRoleEnum) {
+        imageLoader = App.getImageLoader();
+        this.itemList = itemList;
+        this.context = context;
+        animator = new Animator(context);
+        this.userAndRoleEnum = userAndRoleEnum;
+
+    }
+
+
+    public void setListener(ListenerAdapterUserAndRole listenerAdapterUserAndRole) {
         this.listenerAdapterUserAndRole = listenerAdapterUserAndRole;
     }
 
@@ -53,9 +87,20 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         TextView txtName;
         @BindView(R.id.txt_role_name)
         TextView txtRoleName;
-
         @BindView(R.id.img_delet)
         ImageView imgDelet;
+        @BindView(R.id.edt_private_discription)
+        EditText edtPrivateDiscription;
+        @BindView(R.id.edt_referral_order)
+        EditText edtReferralOrder;
+        @BindView(R.id.sp_actions)
+        Spinner spActions;
+        @BindView(R.id.ln_more)
+        LinearLayout lnMore;
+        @BindView(R.id.ln_img_more)
+        LinearLayout lnImgMore;
+        @BindView(R.id.img_more)
+        ImageView imgMore;
 
         public ViewHolder(View view) {
             super(view);
@@ -85,8 +130,44 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureUserAndRoleDB item = itemList.get(position);
-        viewHolder.txtName.setText(item.getFirstName()+" "+item.getLastName());
+        viewHolder.txtName.setText(item.getFirstName() + " " + item.getLastName());
         viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
+        if (userAndRoleEnum == UserAndRoleEnum.SEND) {
+
+            ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
+            viewHolder.spActions.setAdapter(adapterSize);
+            viewHolder.spActions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    App.ShowMessage().ShowToast("" + i, ToastEnum.TOAST_SHORT_TIME);
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+            viewHolder.lnImgMore.setVisibility(View.VISIBLE);
+            viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
+        } else {
+            viewHolder.lnImgMore.setVisibility(View.GONE);
+        }
+
+        viewHolder.lnImgMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (viewHolder.lnMore.getVisibility() == View.GONE) {
+                    animator.slideInFromDownFast(viewHolder.lnMore);
+                    viewHolder.lnMore.setVisibility(View.VISIBLE);
+                    viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_up));
+
+                } else {
+                    animator.slideOutToDown(viewHolder.lnMore);
+                    viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
+                    viewHolder.lnMore.setVisibility(View.GONE);
+                }
+            }
+        });
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -125,7 +206,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
             protected Integer doInBackground(Void... voids) {
                 for (int i = 0; i < itemList.size(); i++) {
                     //sleep(10);
-                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID()&&structureUserAndRoleDB.getRole_ID() == itemList.get(i).getRole_ID()) {
+                    if (structureUserAndRoleDB.getUser_ID() == itemList.get(i).getUser_ID() && structureUserAndRoleDB.getRole_ID() == itemList.get(i).getRole_ID()) {
                         return i;
                     }
                 }
@@ -135,7 +216,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
             @Override
             protected void onPostExecute(Integer pos) {
                 if (pos > -1) {
-                    int position =  pos;
+                    int position = pos;
                     itemList.remove(position);
                     notifyItemRemoved(position);
                 }
@@ -145,6 +226,12 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         }.execute();
 
 
+    }
+
+    private void initSpList() {
+        for (int i = 0; i < cartableDocumentActionsDBS.size(); i++) {
+            spList.add(cartableDocumentActionsDBS.get(i).getActionName());
+        }
     }
 
     private void sleep(int i) {
