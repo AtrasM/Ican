@@ -55,6 +55,7 @@
         <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService" />
         <service android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentService" />
         <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService" />
+        <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueService" />
         <service android:name=".Farzin.Presenter.Service.Cartable.OpticalPenQueueService" />
 
         <provider

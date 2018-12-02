@@ -22,17 +22,17 @@ import avida.ican.Ican.Model.XmlToObject;
  */
 
 
-public class CartableDocumentTaeedPresenter {
+public class CartableDocumentTaeedServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "CartableManagment";
     private String MetodName = "Response";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "CartableDocumentTaeedPresenter";
+    private String Tag = "CartableDocumentTaeedServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-    public CartableDocumentTaeedPresenter() {
+    public CartableDocumentTaeedServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
@@ -82,7 +82,6 @@ public class CartableDocumentTaeedPresenter {
         soapObject.addProperty("receiverCode", receiverCode);
         soapObject.addProperty("description", "confirm from android app");
         soapObject.addProperty("responseType", "approve");
-
         return soapObject;
 
     }

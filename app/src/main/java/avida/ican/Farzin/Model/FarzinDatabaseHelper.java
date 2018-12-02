@@ -12,6 +12,7 @@ import java.sql.SQLException;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
@@ -44,6 +45,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureCartableDocumentTaeedQueueDB, Integer> mCartableDocumentTaeedQueueDao = null;
     private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDBDao = null;
     private Dao<StructureCartableDocumentActionsDB, Integer> mCartableDocumentActionsDao = null;
+    private Dao<StructureCartableSendQueueDB, Integer> mCartableSendQueueDao = null;
 
     public FarzinDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -65,6 +67,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class);
             TableUtils.createTable(connectionSource, StructureOpticalPenQueueDB.class);
             TableUtils.createTable(connectionSource, StructureCartableDocumentActionsDB.class);
+            TableUtils.createTable(connectionSource, StructureCartableSendQueueDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -86,6 +89,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class, true);
             TableUtils.dropTable(connectionSource, StructureOpticalPenQueueDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableDocumentActionsDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureCartableSendQueueDB.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -171,17 +175,26 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         }
         return mCartableDocumentTaeedQueueDao;
     }
-   public Dao<StructureOpticalPenQueueDB, Integer> getOpticalPenDao() throws SQLException {
+
+    public Dao<StructureOpticalPenQueueDB, Integer> getOpticalPenDao() throws SQLException {
         if (mOpticalPenQueueDBDao == null) {
             mOpticalPenQueueDBDao = getDao(StructureOpticalPenQueueDB.class);
         }
         return mOpticalPenQueueDBDao;
     }
+
     public Dao<StructureCartableDocumentActionsDB, Integer> getDocumentActionsDao() throws SQLException {
         if (mCartableDocumentActionsDao == null) {
             mCartableDocumentActionsDao = getDao(StructureCartableDocumentActionsDB.class);
         }
         return mCartableDocumentActionsDao;
+    }
+
+    public Dao<StructureCartableSendQueueDB, Integer> getCartableSendQueueDao() throws SQLException {
+        if (mCartableSendQueueDao == null) {
+            mCartableSendQueueDao = getDao(StructureCartableSendQueueDB.class);
+        }
+        return mCartableSendQueueDao;
     }
 
     @Override
@@ -198,6 +211,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         mCartableDocumentTaeedQueueDao = null;
         mOpticalPenQueueDBDao = null;
         mCartableDocumentActionsDao = null;
+        mCartableSendQueueDao = null;
         super.close();
     }
 
@@ -252,10 +266,16 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void ClearCartableDocumentTaeedQueue() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentTaeedQueueDB.class);
     }
+
     public void ClearOpticalPenQueue() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureOpticalPenQueueDB.class);
     }
+
     public void ClearDocumentActions() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentActionsDB.class);
+    }
+
+    public void ClearCartableSendQueue() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCartableSendQueueDB.class);
     }
 }

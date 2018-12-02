@@ -1,6 +1,5 @@
 package avida.ican.Farzin.View;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,22 +22,18 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
-import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.View.Adapter.AdapteCartableDocument;
 import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Dialog.DialogCartableHistoryList;
-import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Dialog.DialogZanjireMadrak;
 import avida.ican.Farzin.View.Enum.CartableActionsEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableDocumentList;
 import avida.ican.Farzin.View.Interface.ListenerFile;
-import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -269,7 +264,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                             TaeedAddToQueue(structureInboxDocumentDB.getReceiverCode());
                         } else {
-                            new CartableDocumentTaeedPresenter().TaeedDocument(structureInboxDocumentDB.getReceiverCode(), new TaeedListener() {
+                            new CartableDocumentTaeedServerPresenter().TaeedDocument(structureInboxDocumentDB.getReceiverCode(), new TaeedListener() {
                                 @Override
                                 public void onSuccess() {
                                     onFinish();

@@ -252,6 +252,18 @@ public class FarzinMetaDataQuery {
         return userAndRoles;
     }
 
+    public StructureUserAndRoleDB getUserInfo(int user_id) {
+
+        QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();
+        StructureUserAndRoleDB userAndRoles = new StructureUserAndRoleDB();
+        try {
+            queryBuilder.where().eq("User_ID", user_id);
+            userAndRoles = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return userAndRoles;
+    }
     public StructureUserAndRoleDB getUserInfo(int user_id, int role_id) {
 
         QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();

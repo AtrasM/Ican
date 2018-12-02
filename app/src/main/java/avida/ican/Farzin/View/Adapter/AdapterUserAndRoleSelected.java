@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,11 +20,11 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
@@ -53,6 +55,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     private UserAndRoleEnum userAndRoleEnum;
     private Animator animator;
     private ArrayList<String> spList = new ArrayList<>();
+    private ArrayList<StructurePersonREQ> structurePersons = new ArrayList<>();
 
     public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, UserAndRoleEnum userAndRoleEnum, ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS) {
         imageLoader = App.getImageLoader();
@@ -61,6 +64,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         animator = new Animator(context);
         this.userAndRoleEnum = userAndRoleEnum;
         this.cartableDocumentActionsDBS = cartableDocumentActionsDBS;
+        structurePersons = new ArrayList<>(itemList.size());
         initSpList();
 
     }
@@ -133,17 +137,54 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         viewHolder.txtName.setText(item.getFirstName() + " " + item.getLastName());
         viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
-
+            structurePersons.get(position).setRoleId(item.getRole_ID());
+            String hameshTitle=""+item.getFirstName() + " " + item.getLastName()+" [ " + item.getRoleName() + " ] ";
+            structurePersons.get(position).setHameshTitle(hameshTitle);
             ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
             viewHolder.spActions.setAdapter(adapterSize);
             viewHolder.spActions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    App.ShowMessage().ShowToast("" + i, ToastEnum.TOAST_SHORT_TIME);
+                    structurePersons.get(position).setAction(cartableDocumentActionsDBS.get(i).getActionCode());
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
+
+            viewHolder.edtPrivateDiscription.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    structurePersons.get(position).setDescription(charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
+
+                }
+            });
+
+            viewHolder.edtReferralOrder.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    structurePersons.get(position).setHameshContent(charSequence.toString());
+                }
+
+                @Override
+                public void afterTextChanged(Editable editable) {
 
                 }
             });
@@ -171,17 +212,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               /* new DialogDelet(context).setOnListener(new ListenerDelet() {
-                    @Override
-                    public void onSuccess() {
 
-                    }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-                }).Show();*/
                 listenerAdapterUserAndRole.unSelect(item);
             }
         });
@@ -189,6 +220,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
     public void Select(StructureUserAndRoleDB structureUserAndRoleDB) {
         itemList.add(structureUserAndRoleDB);
+        structurePersons.add(new StructurePersonREQ());
         notifyItemRangeChanged(itemList.size() - 1, 1);
     }
 
@@ -218,6 +250,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
                 if (pos > -1) {
                     int position = pos;
                     itemList.remove(position);
+                    structurePersons.remove(position);
                     notifyItemRemoved(position);
                 }
                 listenerAdapterUserAndRole.hideLoading();
@@ -232,6 +265,10 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         for (int i = 0; i < cartableDocumentActionsDBS.size(); i++) {
             spList.add(cartableDocumentActionsDBS.get(i).getActionName());
         }
+    }
+
+    public ArrayList<StructurePersonREQ> getStructurePersonList() {
+        return structurePersons;
     }
 
     private void sleep(int i) {

@@ -1,7 +1,6 @@
 package avida.ican.Farzin.View;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,13 +18,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableSendQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
 import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenQueueQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
 import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
-import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedPresenter;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
@@ -40,7 +43,6 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.Structure.StructureOpticalPen;
-import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -176,36 +178,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
             @Override
             public void onClick(View view) {
                 lnLoading.setVisibility(View.VISIBLE);
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
-                } else {
-                    new CartableDocumentTaeedPresenter().TaeedDocument(cartableDocumentDetailBND.getReceiverCode(), new TaeedListener() {
-                        @Override
-                        public void onSuccess() {
-                            onFinish();
-                        }
-
-                        @Override
-                        public void onFailed(String message) {
-                            TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
-                        }
-
-                        @Override
-                        public void onCancel() {
-                            TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            lnLoading.setVisibility(View.GONE);
-                            Intent returnIntent = new Intent();
-                            setResult(TAEED.getValue(), returnIntent);
-                            Finish(App.CurentActivity);
-
-                        }
-                    });
-
-                }
+                Taeed();
             }
         });
 
@@ -213,13 +186,12 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         initViewPagerFragment();
     }
 
-
-    private void saveDrawable(final StructureOpticalPenREQ structureOpticalPenREQ) {
-        lnLoading.setVisibility(View.VISIBLE);
+    //_________________________________*****___Taeed___*****__________________________________
+    private void Taeed() {
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-            OpticalPenAddToQueue(structureOpticalPenREQ);
+            TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
         } else {
-            new OpticalPenPresenter().CallRequest(structureOpticalPenREQ, new OpticalPenListener() {
+            new CartableDocumentTaeedServerPresenter().TaeedDocument(cartableDocumentDetailBND.getReceiverCode(), new TaeedListener() {
                 @Override
                 public void onSuccess() {
                     onFinish();
@@ -227,17 +199,20 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
                 @Override
                 public void onFailed(String message) {
-                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                    TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
                 }
 
                 @Override
                 public void onCancel() {
-                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                    TaeedAddToQueue(cartableDocumentDetailBND.getReceiverCode());
                 }
 
                 @Override
                 public void onFinish() {
                     lnLoading.setVisibility(View.GONE);
+                    Intent returnIntent = new Intent();
+                    setResult(TAEED.getValue(), returnIntent);
+                    Finish(App.CurentActivity);
 
                 }
             });
@@ -276,6 +251,104 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 TaeedAddToQueue(receiveCode);
             }
         }, FailedDelay);
+    }
+    //_________________________________*****___Taeed___*****__________________________________
+
+
+    //_________________________________*****___Send___*****__________________________________
+    private void Send(final StructureAppendREQ structureAppendREQ) {
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            SendAddToQueue(structureAppendREQ);
+        } else {
+            new CartableDocumentAppendToServerPresenter().AppendDocument(structureAppendREQ, new SendListener() {
+                @Override
+                public void onSuccess() {
+                    onFinish();
+                }
+
+                @Override
+                public void onFailed(String message) {
+                    SendAddToQueue(structureAppendREQ);
+                }
+
+                @Override
+                public void onCancel() {
+                    SendAddToQueue(structureAppendREQ);
+                }
+
+                @Override
+                public void onFinish() {
+                    lnLoading.setVisibility(View.GONE);
+                }
+            });
+
+        }
+    }
+
+    private void SendAddToQueue(final StructureAppendREQ structureAppendREQ) {
+        new FarzinCartableQuery().saveCartableSendQueue(structureAppendREQ, new CartableSendQuerySaveListener() {
+
+            @Override
+            public void onSuccess() {
+                lnLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onExisting() {
+                lnLoading.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onFailed(String message) {
+                trySendAddToQueue(structureAppendREQ);
+            }
+
+            @Override
+            public void onCancel() {
+                trySendAddToQueue(structureAppendREQ);
+            }
+        });
+    }
+
+    private void trySendAddToQueue(final StructureAppendREQ structureAppendREQ) {
+        App.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SendAddToQueue(structureAppendREQ);
+            }
+        }, FailedDelay);
+    }
+    //_________________________________*****___Send___*****__________________________________
+
+    private void saveDrawable(final StructureOpticalPenREQ structureOpticalPenREQ) {
+        lnLoading.setVisibility(View.VISIBLE);
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            OpticalPenAddToQueue(structureOpticalPenREQ);
+        } else {
+            new OpticalPenPresenter().CallRequest(structureOpticalPenREQ, new OpticalPenListener() {
+                @Override
+                public void onSuccess() {
+                    onFinish();
+                }
+
+                @Override
+                public void onFailed(String message) {
+                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                }
+
+                @Override
+                public void onCancel() {
+                    OpticalPenAddToQueue(structureOpticalPenREQ);
+                }
+
+                @Override
+                public void onFinish() {
+                    lnLoading.setVisibility(View.GONE);
+
+                }
+            });
+
+        }
     }
 
     private void OpticalPenAddToQueue(final StructureOpticalPenREQ opticalPenREQ) {
@@ -351,11 +424,15 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
     private void showUserAndRoleDialog() {
 
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity,Etc,Ec).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, Etc, Ec).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;
-                //userAndRoleDBS = structureUserAndRolesSelect;
+            }
+
+            @Override
+            public void onSuccess(StructureAppendREQ structureAppendREQ) {
+                Send(structureAppendREQ);
             }
 
             @Override

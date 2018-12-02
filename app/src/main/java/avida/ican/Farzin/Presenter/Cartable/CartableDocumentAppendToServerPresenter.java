@@ -2,13 +2,13 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import org.ksoap2.serialization.SoapObject;
 
-import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
+import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
-import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
-import avida.ican.Farzin.Model.Structure.Request.StructureReceiverREQ;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureTaeedRES;
+import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
+import avida.ican.Farzin.Model.Structure.Request.StructureSenderREQ;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureSendRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -20,25 +20,24 @@ import avida.ican.Ican.Model.XmlToObject;
  */
 
 
-public class CartableDocumentAppendPresenter {
-    private String strSimpleDateFormat = "";
+public class CartableDocumentAppendToServerPresenter {
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "CartableManagment";
     private String MetodName = "Append";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
-    private String Tag = "CartableDocumentAppendPresenter";
+    private String Tag = "CartableDocumentAppendToServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-    public CartableDocumentAppendPresenter() {
+    public CartableDocumentAppendToServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void AppendDocument(StructureAppendREQ structureAppendREQ, TaeedListener listener) {
+    public void AppendDocument(StructureAppendREQ structureAppendREQ, SendListener listener) {
         CallRequest(getSoapObject(structureAppendREQ), listener);
     }
 
-    private void CallRequest(SoapObject soapObject, final TaeedListener listener) {
+    private void CallRequest(SoapObject soapObject, final SendListener listener) {
 
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
@@ -59,41 +58,33 @@ public class CartableDocumentAppendPresenter {
 
     }
 
-    private void initStructure(String xml, TaeedListener listener) {
-        StructureTaeedRES structureTaeedRES = xmlToObject.DeserializationGsonXml(xml, StructureTaeedRES.class);
-        if (structureTaeedRES.getStrErrorMsg() == null || structureTaeedRES.getStrErrorMsg().isEmpty()) {
-
-            if (structureTaeedRES.isResponseResult()) {
+    private void initStructure(String xml, SendListener listener) {
+        StructureSendRES structureSendRES = xmlToObject.DeserializationGsonXml(xml, StructureSendRES.class);
+        if (structureSendRES.getStrErrorMsg() == null || structureSendRES.getStrErrorMsg().isEmpty()) {
+            if (structureSendRES.getAppendResult() > 0) {
                 listener.onSuccess();
             } else {
-                listener.onFailed("" + structureTaeedRES.getStrErrorMsg());
+                listener.onFailed("" + structureSendRES.getStrErrorMsg());
             }
-
         } else {
-            listener.onFailed("" + structureTaeedRES.getStrErrorMsg());
+            listener.onFailed("" + structureSendRES.getStrErrorMsg());
         }
     }
 
     private SoapObject getSoapObject(StructureAppendREQ structureAppendREQ) {
+   /*     String strObj ="{\"EC\":1517,\"ETC\":979,\"structurePersonsREQ\":[{\"PriorityID_Send\":1,\"action\":5,\"description\":\"t_sh 1\",\"hameshContent\":\"d_e 1\",\"hameshTitle\":\"كاربر 25 [ مدير استقرار 25 ] \",\"responseUntilDate\":\"\",\"roleId\":936},{\"PriorityID_Send\":1,\"action\":9,\"description\":\"t_sh 2\",\"hameshContent\":\"d_e 2\",\"hameshTitle\":\"حميـــدرضا بلورچيان [ مدير توسعه فرزين ] \",\"responseUntilDate\":\"\",\"roleId\":425}],\"structureSenderREQ\":{\"description\":\"\",\"isLocked\":false,\"roleId\":425,\"sendParentCode\":-1,\"viewInOutbox\":1}}";
+        structureAppendREQ=new CustomFunction().ConvertStringToObject(strObj,StructureAppendREQ.class);*/
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         soapObject.addProperty("EntityTypeCode", structureAppendREQ.getETC());
         soapObject.addProperty("EntityCode", structureAppendREQ.getEC());
-
-        //*******____________________________  AttachList  ____________________________********
-        SoapObject flowStructure = new SoapObject(NameSpace, "flowStructure");
-        SoapObject Document = new SoapObject(NameSpace, "Document");
-        SoapObject Workflow = new SoapObject(NameSpace, "Workflow");
-        SoapObject Receivers = new SoapObject(NameSpace, "Receivers");
-        Workflow.addProperty("Sender", structureAppendREQ.getStructureSenderREQ());
-
+        String DocumentTag = "<Document><Workflow><Sender roleId=\"" + structureAppendREQ.getStructureSenderREQ().getRoleId() + "\" sendParentCode=\"-1\" description=\"\" isLocked=\"0\" viewInOutbox=\"1\" /><Receivers>";
         for (int i = 0; i < structureAppendREQ.getStructurePersonsREQ().size(); i++) {
-            Receivers.addProperty("Person", structureAppendREQ.getStructurePersonsREQ());
+            StructurePersonREQ structurePersonREQ = structureAppendREQ.getStructurePersonsREQ().get(i);
+            DocumentTag = DocumentTag + "<Person roleId=\"" + structurePersonREQ.getRoleId() + "\" action=\"" + structurePersonREQ.getAction() + "\" description=\"" + structurePersonREQ.getDescription() + "\" hameshTitle=\"" + structurePersonREQ.getHameshTitle() + "\" hameshContent=\"" + structurePersonREQ.getHameshContent() + "\"/>";
+
         }
-        Workflow.addProperty("Sender", structureAppendREQ.getStructureSenderREQ());
-        Workflow.addSoapObject(Receivers);
-        Document.addSoapObject(Workflow);
-        flowStructure.addSoapObject(Document);
-        soapObject.addSoapObject(flowStructure);
+        DocumentTag = DocumentTag + "</Receivers></Workflow></Document>";
+        soapObject.addProperty("flowStructure", DocumentTag);
         return soapObject;
     }
 
@@ -105,8 +96,9 @@ public class CartableDocumentAppendPresenter {
         new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
+                .addMapping(NameSpace, "Sender", new StructureSenderREQ().getClass())
+                .addMapping(NameSpace, "Person", new StructurePersonREQ().getClass())
                 .setOnListener(new WebserviceResponseListener() {
-
                     @Override
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);

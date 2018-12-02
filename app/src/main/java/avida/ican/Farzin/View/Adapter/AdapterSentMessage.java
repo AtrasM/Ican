@@ -141,12 +141,20 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             viewHolder.imgWaiting.setVisibility(View.GONE);
         }
         if (structureReceiverDBS.size() == 1) {
-            StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDBS.get(0).getUser_id(), structureReceiverDBS.get(0).getRole_id());
+            StructureUserAndRoleDB structureUserAndRoleDB;
+            if (structureReceiverDBS.get(0).getRole_id() <= 0) {
+                structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDBS.get(0).getUser_id());
+
+            } else {
+                structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDBS.get(0).getUser_id(), structureReceiverDBS.get(0).getRole_id());
+
+            }
             Name = "" + structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
 
             if (item.getStatus() == Status.WAITING) {
                 viewHolder.imgStatus.setVisibility(View.GONE);
             } else {
+
                 if (structureReceiverDBS.get(0).Is_read()) {
                     viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_d_tick));
                 } else {

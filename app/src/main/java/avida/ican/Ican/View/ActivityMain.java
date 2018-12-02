@@ -17,10 +17,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.GetCartableHistoryFromServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.GetZanjireMadrakFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
@@ -144,11 +149,10 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                     }
                 }).Show();*/
                 //showUserAndRoleDialog();
-                goToActivity(FarzinActivityLogin.class);
-
+                //goToActivity(FarzinActivityLogin.class);
+                CartableSend();
                 break;
             }
-
 
             case R.id.cv_audio_recorder: {
                 ShowAudioRecorde();
@@ -173,6 +177,11 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                                 structuresMain = structureUserAndRolesMain;
                                 structuresSelect = structureUserAndRolesSelect;
+
+                            }
+
+                            @Override
+                            public void onSuccess(StructureAppendREQ structureAppendREQ) {
 
                             }
 
@@ -331,6 +340,11 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             }
 
             @Override
+            public void onSuccess(StructureAppendREQ structureAppendREQ) {
+
+            }
+
+            @Override
             public void onFailed() {
 
             }
@@ -345,4 +359,33 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         });
 
     }
+
+
+    private void CartableSend() {
+        CartableDocumentAppendToServerPresenter cartableDocumentAppendToServerPresenter = new CartableDocumentAppendToServerPresenter();
+        SendListener sendListener = new SendListener() {
+
+            @Override
+            public void onSuccess() {
+            }
+
+            @Override
+            public void onFailed(String message) {
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+            @Override
+            public void onFinish() {
+            }
+
+
+        };
+
+        cartableDocumentAppendToServerPresenter.AppendDocument(new StructureAppendREQ(), sendListener);
+
+    }
+
 }

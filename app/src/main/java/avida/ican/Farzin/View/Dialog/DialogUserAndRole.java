@@ -19,9 +19,12 @@ import com.orhanobut.dialogplus.ViewHolder;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
+import avida.ican.Farzin.Model.Structure.Request.StructureSenderREQ;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.UserAndRolePresenter;
@@ -38,7 +41,6 @@ import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
-import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,6 +70,7 @@ public class DialogUserAndRole {
     private FragmentManager mfragmentManager;
     private UserAndRoleEnum userAndRoleEnum;
     private FarzinCartableQuery farzinCartableQuery;
+    private FarzinPrefrences farzinPrefrences;
     private ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS = new ArrayList<>();
 
     @SuppressLint("ResourceAsColor")
@@ -113,11 +116,12 @@ public class DialogUserAndRole {
 
     public DialogUserAndRole init(FragmentManager fragmentManager, List<StructureUserAndRoleDB> structuresMain, List<StructureUserAndRoleDB> structuresSelect, UserAndRoleEnum userAndRoleEnum, final ListenerUserAndRoll listenerUserAndRoll) {
         farzinCartableQuery = new FarzinCartableQuery();
+        farzinPrefrences = new FarzinPrefrences().init();
         mtmpItemSelect = new ArrayList<>();
         this.mfragmentManager = fragmentManager;
         this.listenerUserAndRollMain = listenerUserAndRoll;
         this.userAndRoleEnum = userAndRoleEnum;
-        if (Etc > 0) {
+        if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
             cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(Etc).GetDocumentActions();
         }
         this.userAndRoleEnum = userAndRoleEnum;
@@ -128,6 +132,11 @@ public class DialogUserAndRole {
                 mstructuresSelect = structureUserAndRolesSelect;
                 BaseActivity.closeKeboard();
                 initView();
+            }
+
+            @Override
+            public void onSuccess(StructureAppendREQ structureAppendREQ) {
+
             }
 
             @Override
@@ -171,8 +180,22 @@ public class DialogUserAndRole {
         viewHolder.btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
-                finish();
+                if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
+                    ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
+                    if (structurePersonsREQ.size() == 0) {
+                        // TODO: 2018-11-26 do action when array is empety
+                    } else {
+                        StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID());
+                        StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
+                        listenerUserAndRollMain.onSuccess(structureAppendREQ);
+                        finish();
+                    }
+                } else {
+                    listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
+                    finish();
+                }
+
+
             }
         });
         viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
@@ -224,7 +247,7 @@ public class DialogUserAndRole {
             }
         });
 
-        if (Etc > 0) {
+        if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
             adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, userAndRoleEnum, cartableDocumentActionsDBS);
             viewHolder.btnOk.setText(Resorse.getString(R.string.title_send));
         } else {

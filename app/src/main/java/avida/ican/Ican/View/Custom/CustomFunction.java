@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.io.BufferedOutputStream;
@@ -487,6 +488,30 @@ public class CustomFunction {
             e.printStackTrace();
         }
         return stream;
+    }
+
+
+    public <T> String ConvertObjectToString(Object mObj) {
+        Gson gson = new Gson();
+        try {
+            return gson.toJson(mObj);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
+    public <T> T ConvertStringToObject(String data, Class<T> mObj) {
+        Gson gson = new Gson();
+        try {
+            return (T) gson.fromJson(data, mObj);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return (T) mObj;
+        }
     }
 
     public static byte[] BitmapToByteArray(Bitmap bmp) {

@@ -212,7 +212,7 @@ public class WebService {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                            if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                                 App.networkStatus = NetworkStatus.WatingForNetwork;
                                 webserviceResponseListener.NetworkAccessDenied();
                             } else {
@@ -327,7 +327,6 @@ public class WebService {
         envelope.setOutputSoapObject(soapObject);
         if (MappingName != null && MappingName.size() > 0) {
             for (int i = 0; i < MappingName.size(); i++) {
-
                 envelope.addMapping(MappingNameSpace, MappingName.get(i), MappingClass.get(i));
             }
         }
@@ -339,6 +338,11 @@ public class WebService {
             headerArrayList = new ArrayList();
             final HeaderProperty headerPropertyObj = new HeaderProperty("cookie", SESSION_ID);
             headerArrayList.add(headerPropertyObj);
+        }
+        try {
+            androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList));
         return WebServiceResponse(envelope, androidHttpTransport, webServiceResponse.getHeaderList());

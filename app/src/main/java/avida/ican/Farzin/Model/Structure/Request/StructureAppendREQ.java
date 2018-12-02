@@ -6,11 +6,11 @@ import java.util.ArrayList;
  * Created by AtrasVida on 2018-11-18 at 3:05 PM
  */
 
-public class StructureAppendREQ {
-    int ETC;
-    int EC;
-    StructureSenderREQ structureSenderREQ = new StructureSenderREQ();
-    ArrayList<StructurePersonREQ> structurePersonsREQ = new ArrayList<>();
+public class StructureAppendREQ  {
+  private   int ETC;
+    private int EC;
+    private StructureSenderREQ structureSenderREQ = new StructureSenderREQ();
+    private  ArrayList<StructurePersonREQ> structurePersonsREQ = new ArrayList<>();
 
     public StructureAppendREQ() {
     }

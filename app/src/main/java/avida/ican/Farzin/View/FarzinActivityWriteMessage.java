@@ -27,6 +27,7 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
@@ -170,6 +171,11 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 structuresMain = structureUserAndRolesMain;
                 userAndRoleDBS = structureUserAndRolesSelect;
                 ShowSelectionItem(userAndRoleDBS);
+            }
+
+            @Override
+            public void onSuccess(StructureAppendREQ structureAppendREQ) {
+
             }
 
             @Override

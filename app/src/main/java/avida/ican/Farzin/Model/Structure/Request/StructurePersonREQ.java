@@ -9,7 +9,7 @@ import java.util.Hashtable;
  * Created by AtrasVida in 2018-11-18 at 12:28 AM
  */
 
-public class StructurePersonREQ implements KvmSerializable {
+public class StructurePersonREQ  {
     private int roleId;
     private int action;
     private String description;
@@ -20,122 +20,79 @@ public class StructurePersonREQ implements KvmSerializable {
 
 
     public StructurePersonREQ() {
-    }
-
-    public StructurePersonREQ(int roleId, int action, String description, String hameshContent) {
-        this.roleId = roleId;
-        this.action = action;
-        this.description = description;
-        this.hameshContent = hameshContent;
+        this.description = "";
+        this.hameshContent = "";
         this.hameshTitle = "";
         this.responseUntilDate = "";
         this.PriorityID_Send = 1;
     }
 
-    public Object getProperty(int arg0) {
-        switch (arg0) {
-            case 0:
-                return roleId;
-            case 1:
-                return action;
-            case 2:
-                return description;
-            case 3:
-                return hameshTitle;
-            case 4:
-                return hameshContent;
-            case 5:
-                return responseUntilDate;
-            case 6:
-                return PriorityID_Send;
-
-        }
-        return null;
+    public StructurePersonREQ(int roleId, int action, String description, String hameshContent,String hameshTitle) {
+        this.roleId = roleId;
+        this.action = action;
+        this.description = description;
+        this.hameshContent = hameshContent;
+        this.hameshTitle = hameshTitle;
+        this.responseUntilDate = "";
+        this.PriorityID_Send = 1;
     }
 
-    public int getPropertyCount() {
-        return 4;
+    public int getRoleId() {
+        return roleId;
     }
 
-    public void getPropertyInfo(int index, Hashtable arg1, PropertyInfo propertyInfo) {
-        switch (index) {
-            case 0: {
-                propertyInfo.name = "roleId";
-                propertyInfo.type = PropertyInfo.INTEGER_CLASS;
-                break;
-            }
-            case 1: {
-                propertyInfo.name = "action";
-                propertyInfo.type = PropertyInfo.INTEGER_CLASS;
-                break;
-            }
-            case 2: {
-                propertyInfo.name = "description";
-                propertyInfo.type = PropertyInfo.STRING_CLASS;
-                break;
-            }
-            case 3: {
-                propertyInfo.name = "hameshTitle";
-                propertyInfo.type = PropertyInfo.STRING_CLASS;
-                break;
-            }
-            case 4: {
-                propertyInfo.name = "hameshContent";
-                propertyInfo.type = PropertyInfo.STRING_CLASS;
-                break;
-            }
-
-            case 5: {
-                propertyInfo.name = "responseUntilDate";
-                propertyInfo.type = PropertyInfo.STRING_CLASS;
-                break;
-            }
-            case 6: {
-                propertyInfo.name = "PriorityID_Send";
-                propertyInfo.type = PropertyInfo.INTEGER_CLASS;
-                break;
-            }
-
-            default:
-                break;
-        }
+    public void setRoleId(int roleId) {
+        this.roleId = roleId;
     }
 
-    public void setProperty(int index, Object value) {
-        switch (index) {
-            case 0: {
-                this.roleId = Integer.parseInt(value.toString());
-                break;
-            }
-            case 1: {
-                this.action = Integer.parseInt(value.toString());
-                break;
-            }
-            case 2: {
-                this.description = value.toString();
-                break;
-            }
-            case 3: {
-                this.hameshTitle = value.toString();
-                break;
-            }
-            case 4: {
-                this.hameshContent = value.toString();
-                break;
-            }
-            case 5: {
-                this.responseUntilDate = value.toString();
-                break;
-            }
-            case 6: {
-                this.PriorityID_Send = Integer.parseInt(value.toString());
-                break;
-            }
-
-            default:
-                break;
-        }
+    public int getAction() {
+        return action;
     }
+
+    public void setAction(int action) {
+        this.action = action;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getHameshTitle() {
+        return hameshTitle;
+    }
+
+    public void setHameshTitle(String hameshTitle) {
+        this.hameshTitle = hameshTitle;
+    }
+
+    public String getHameshContent() {
+        return hameshContent;
+    }
+
+    public void setHameshContent(String hameshContent) {
+        this.hameshContent = hameshContent;
+    }
+
+    public String getResponseUntilDate() {
+        return responseUntilDate;
+    }
+
+    public void setResponseUntilDate(String responseUntilDate) {
+        this.responseUntilDate = responseUntilDate;
+    }
+
+    public int getPriorityID_Send() {
+        return PriorityID_Send;
+    }
+
+    public void setPriorityID_Send(int priorityID_Send) {
+        PriorityID_Send = priorityID_Send;
+    }
+
 }
 
 

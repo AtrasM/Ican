@@ -11,31 +11,33 @@ import android.widget.Toast;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
+import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
-import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedServerPresenter;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Interface.ListenerInternet;
 
 /**
- * Created by AtrasVida on 2018-10-24 at 10:01 PM
+ * Created by AtrasVida on 2018-11-28 at 12:41 PM
  */
 
-public class CartableDocumentTaeedQueueService extends Service {
+public class CartableDocumentAppendQueueService extends Service {
 
     private final long PERIOD = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private Timer timer;
     private TimerTask timerTask;
-    private TaeedListener taeedListener;
+    private SendListener sendListener;
     private Context context;
     private Handler handler = new Handler();
-    private CartableDocumentTaeedServerPresenter cartableDocumentTaeedServerPresenter;
+    private CartableDocumentAppendToServerPresenter cartableDocumentAppendToServerPresenter;
     private FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
     private static int tryCount = 0;
     private final static int MaxTry = 3;
@@ -55,20 +57,19 @@ public class CartableDocumentTaeedQueueService extends Service {
         return Service.START_STICKY;
     }
 
-    private void TaeedDocument(final int receiveCode) {
-        cartableDocumentTaeedServerPresenter = new CartableDocumentTaeedServerPresenter();
-        taeedListener = new TaeedListener() {
+    private void CartableSend(final StructureCartableSendQueueDB structureCartableSendQueueDB) {
+        cartableDocumentAppendToServerPresenter = new CartableDocumentAppendToServerPresenter();
+        sendListener = new SendListener() {
 
             @Override
             public void onSuccess() {
-                if (farzinCartableQuery.deletItemCartableDocumentTaeedQueue(receiveCode)) {
-                    farzinCartableQuery.deletCartableDocumentAllContent(receiveCode);
+                if (farzinCartableQuery.deletCartableSendQueue(structureCartableSendQueueDB.getId())) {
 
-                    StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+                    StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
 
-                    if (cartableDocumentTaeedQueueDB != null) {
-                        if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
-                            TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                    if (structureCartableSendQueueDB != null) {
+                        if (structureCartableSendQueueDB.getETC() > 0) {
+                            CartableSend(structureCartableSendQueueDB);
                         } else {
                             startTaeedQueueTimer();
                         }
@@ -87,12 +88,12 @@ public class CartableDocumentTaeedQueueService extends Service {
 
             @Override
             public void onFailed(String message) {
-                tryAgain(receiveCode);
+                tryAgain(structureCartableSendQueueDB);
             }
 
             @Override
             public void onCancel() {
-                tryAgain(receiveCode);
+                tryAgain(structureCartableSendQueueDB);
             }
 
             @Override
@@ -102,18 +103,20 @@ public class CartableDocumentTaeedQueueService extends Service {
 
 
         };
-        cartableDocumentTaeedServerPresenter.TaeedDocument(receiveCode, taeedListener);
+
+        StructureAppendREQ structureAppendREQ = new CustomFunction().ConvertStringToObject(structureCartableSendQueueDB.getStrStructureAppendREQ(), StructureAppendREQ.class);
+        cartableDocumentAppendToServerPresenter.AppendDocument(structureAppendREQ, sendListener);
 
     }
 
-    private void tryAgain(final int receiveCode) {
+    private void tryAgain(final StructureCartableSendQueueDB structureCartableSendQueueDB) {
         App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
                 new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
                     @Override
                     public void onConnected() {
-                        TaeedDocument(receiveCode);
+                        CartableSend(structureCartableSendQueueDB);
                     }
 
                     @Override
@@ -121,7 +124,7 @@ public class CartableDocumentTaeedQueueService extends Service {
                         App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                taeedListener.onFailed("");
+                                sendListener.onFailed("");
                             }
                         }, FAILED_DELAY);
                     }
@@ -131,7 +134,7 @@ public class CartableDocumentTaeedQueueService extends Service {
                         App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                taeedListener.onFailed("");
+                                sendListener.onFailed("");
                             }
                         }, FAILED_DELAY);
                     }
@@ -164,11 +167,11 @@ public class CartableDocumentTaeedQueueService extends Service {
             @Override
             public void run() {
                 try {
-                    StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+                    StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
 
-                    if (cartableDocumentTaeedQueueDB != null) {
-                        if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
-                            TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                    if (structureCartableSendQueueDB != null) {
+                        if (structureCartableSendQueueDB.getETC() > 0) {
+                            CartableSend(structureCartableSendQueueDB);
                         }
                     }
                     timer.cancel();
