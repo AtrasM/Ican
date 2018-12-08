@@ -5,16 +5,11 @@ import android.os.Handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsList;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsListListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsQuerySaveListener;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableHameshListListener;
 import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
-import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentActionRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -26,7 +21,7 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 public class CartableDocumentActionsPresenter {
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final int Etc;
-    private CartableDocumentActionsList cartableDocumentActionsList;
+    private CartableDocumentActionsListListener cartableDocumentActionsListListener;
     private Handler handler = new Handler();
     private GetListOfDocumentActionsFromServerPresenter getListOfDocumentActionsFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
@@ -40,7 +35,7 @@ public class CartableDocumentActionsPresenter {
     private void initCartableHameshListListener() {
         getListOfDocumentActionsFromServerPresenter = new GetListOfDocumentActionsFromServerPresenter();
         farzinCartableQuery = new FarzinCartableQuery();
-        cartableDocumentActionsList = new CartableDocumentActionsList() {
+        cartableDocumentActionsListListener = new CartableDocumentActionsListListener() {
 
             @Override
             public void onSuccess(ArrayList<StructureCartableDocumentActionRES> cartableDocumentActionsRES) {
@@ -75,7 +70,7 @@ public class CartableDocumentActionsPresenter {
 
     public void GetDocumentActionsFromServer(GetDocumentActionsFromServerListener documentActionsFromServerListener) {
         this.documentActionsFromServerListener = documentActionsFromServerListener;
-        getListOfDocumentActionsFromServerPresenter.CallRequest(Etc, cartableDocumentActionsList);
+        getListOfDocumentActionsFromServerPresenter.CallRequest(Etc, cartableDocumentActionsListListener);
 
     }
 

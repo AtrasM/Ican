@@ -11,6 +11,7 @@ import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
@@ -46,6 +47,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDBDao = null;
     private Dao<StructureCartableDocumentActionsDB, Integer> mCartableDocumentActionsDao = null;
     private Dao<StructureCartableSendQueueDB, Integer> mCartableSendQueueDao = null;
+    private Dao<StructureCartableDocumentContentDB, Integer> mDocumentContentDao = null;
 
     public FarzinDatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -68,6 +70,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureOpticalPenQueueDB.class);
             TableUtils.createTable(connectionSource, StructureCartableDocumentActionsDB.class);
             TableUtils.createTable(connectionSource, StructureCartableSendQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureCartableDocumentContentDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -90,6 +93,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, StructureOpticalPenQueueDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableDocumentActionsDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableSendQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureCartableDocumentContentDB.class, true);
             onCreate(db, connectionSource);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -97,7 +101,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
 
-    public Dao<StructureUserAndRoleDB, Integer> getGetUserAndRoleListDao() throws SQLException {
+    public Dao<StructureUserAndRoleDB, Integer> getUserAndRoleListDao() throws SQLException {
         if (mGetUserAndRoleListDao == null) {
             mGetUserAndRoleListDao = getDao(StructureUserAndRoleDB.class);
         }
@@ -121,7 +125,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mMessageDao;
     }
 
-    public Dao<StructureMessageFileDB, Integer> getGetMessageFileDao() throws SQLException {
+    public Dao<StructureMessageFileDB, Integer> getMessageFileDao() throws SQLException {
         if (mMessageFileDao == null) {
             mMessageFileDao = getDao(StructureMessageFileDB.class);
         }
@@ -129,7 +133,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mMessageFileDao;
     }
 
-    public Dao<StructureReceiverDB, Integer> getGetReceiverDao() throws SQLException {
+    public Dao<StructureReceiverDB, Integer> getReceiverDao() throws SQLException {
         if (mReceiverDao == null) {
             mReceiverDao = getDao(StructureReceiverDB.class);
         }
@@ -137,7 +141,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mReceiverDao;
     }
 
-    public Dao<StructureMessageQueueDB, Integer> getGetMessageQueueDao() throws SQLException {
+    public Dao<StructureMessageQueueDB, Integer> getMessageQueueDao() throws SQLException {
         if (mMessageQueueDao == null) {
             mMessageQueueDao = getDao(StructureMessageQueueDB.class);
         }
@@ -197,6 +201,14 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mCartableSendQueueDao;
     }
 
+    public Dao<StructureCartableDocumentContentDB, Integer> getDocumentContentDao() throws SQLException {
+        if (mDocumentContentDao == null) {
+            mDocumentContentDao = getDao(StructureCartableDocumentContentDB.class);
+        }
+
+        return mDocumentContentDao;
+    }
+
     @Override
     public void close() {
         mGetUserAndRoleListDao = null;
@@ -212,6 +224,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         mOpticalPenQueueDBDao = null;
         mCartableDocumentActionsDao = null;
         mCartableSendQueueDao = null;
+        mDocumentContentDao = null;
         super.close();
     }
 
@@ -277,5 +290,9 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     public void ClearCartableSendQueue() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableSendQueueDB.class);
+    }
+
+    public void ClearDocumentContent() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentContentDB.class);
     }
 }

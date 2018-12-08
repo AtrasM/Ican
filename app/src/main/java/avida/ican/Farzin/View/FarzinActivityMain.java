@@ -223,6 +223,15 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                     .add(R.id.frm_main, fragment)
                     .commit();
         } else {
+            if (tag == TAB_DASHBOARD) {
+                FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tag).lastElement();
+                fragmentHome.ReGetData();
+                fragment = fragmentHome;
+            } else if (tag == TAB_CARTABLE) {
+                FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tag).lastElement();
+                fragmentCartable.ReGetData();
+                fragment = fragmentCartable;
+            }
             getSupportFragmentManager()
                     .beginTransaction()
                     .hide(CurentFragment)

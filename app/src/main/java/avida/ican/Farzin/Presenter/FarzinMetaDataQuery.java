@@ -66,7 +66,7 @@ public class FarzinMetaDataQuery {
 
     private void initDao() {
         try {
-            userAndRoleListDao = App.getFarzinDatabaseHelper().getGetUserAndRoleListDao();
+            userAndRoleListDao = App.getFarzinDatabaseHelper().getUserAndRoleListDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }

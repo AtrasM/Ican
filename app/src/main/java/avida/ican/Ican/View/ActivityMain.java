@@ -11,6 +11,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
 
+import com.github.barteksc.pdfviewer.PDFView;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,8 +38,10 @@ import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.Structure.StructureOpticalPen;
 import avida.ican.Ican.View.Custom.AudioRecorder;
+import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.MediaPicker;
@@ -54,6 +58,8 @@ import butterknife.BindView;
 public class ActivityMain extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.cv_farzin)
     CardView cvFarzin;
+    @BindView(R.id.pdf_viewer)
+    PDFView pdfViewer;
     @BindView(R.id.cv_audio_recorder)
     CardView cvAudioRecorder;
     @BindView(R.id.cv_file_picker)
@@ -72,6 +78,12 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private Context context;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
+    private File file;
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_main;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,54 +115,21 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
     }
 
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_main;
-    }
 
     @Override
     public void onClick(View view) {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-             /*   GetZanjireMadrakFromServerPresenter getZanjireMadrakFromServerPresenter = new GetZanjireMadrakFromServerPresenter();
-                getZanjireMadrakFromServerPresenter.GetZanjireMadrakList(1183, 135, new ZanjireMadrakListener() {
 
-
-                    @Override
-                    public void onSuccess(StructureZanjireMadrakRES structureZanjireMadrakRES) {
-                        Log.i("test", "test");
-                    }
-
-                    @Override
-                    public void onFailed(String message) {
-                        Log.i("test", "test");
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        Log.i("test", "test");
-                    }
-                });*/
-            /*    new DialogOpticalPen(App.CurentActivity).setOnListener(new OpticalPenDialogListener() {
-                    @Override
-                    public void onSuccess(StructureOpticalPen structureOpticalPen) {
-                        structureOpticalPen.getbFile();
-                    }
-
-                    @Override
-                    public void onFaild() {
-
-                    }
-
-                    @Override
-                    public void onCancel() {
-
-                    }
-                }).Show();*/
                 //showUserAndRoleDialog();
-                //goToActivity(FarzinActivityLogin.class);
-                CartableSend();
+                goToActivity(FarzinActivityLogin.class);
+                //CartableSend();
+               /* String strFile = "";
+                byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
+                StructureAttach structureAttach = new StructureAttach(strFile, "xx", ".pdf");
+                checkFile(structureAttach);
+                pdfViewer.fromBytes(FileAsbytes).enableSwipe(true).load();*/
                 break;
             }
 
@@ -218,6 +197,11 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    private void checkFile(StructureAttach structureAttach) {
+        byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
+        file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
     }
 
     private void ShowAudioRecorde() {

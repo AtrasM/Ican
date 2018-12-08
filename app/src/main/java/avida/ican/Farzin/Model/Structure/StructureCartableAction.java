@@ -10,7 +10,7 @@ public class StructureCartableAction {
     private long Count;
     private boolean Pin;
 
-    public StructureCartableAction(int actionCode, String actionName, long count,boolean isPin) {
+    public StructureCartableAction(int actionCode, String actionName, long count, boolean isPin) {
         ActionCode = actionCode;
         ActionName = actionName;
         Count = count;
@@ -18,6 +18,8 @@ public class StructureCartableAction {
     }
 
     public StructureCartableAction() {
+        Count = 0;
+        Pin = false;
     }
 
     public int getActionCode() {

@@ -108,6 +108,10 @@ public class CustomFunction {
         imageView.setImageDrawable(drawable);
     }
 
+  public void ChangeBackgroundTintColor(View view, int color) {
+      ViewCompat.setBackgroundTintList(view,ContextCompat.getColorStateList(activity,color));
+  }
+
 
     public void Call(String phoneNumber) {
         //posted_by = "111-333-222-4";

@@ -34,6 +34,7 @@ import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
+import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableDocumentContent;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHameshList;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHistoryList;
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentZanjireMadrak;
@@ -75,14 +76,14 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     TextView txtName;
     @BindView(R.id.img_taeed)
     ImageView imTaeed;
+    @BindView(R.id.img_taeed_erja)
+    ImageView imgTaeedErja;
     @BindView(R.id.img_erja)
     ImageView imgErja;
     @BindView(R.id.img_ghalam_nory)
     ImageView imgOpticalPen;
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
-
-
     @BindString(R.string.TitleCartableDocumentDetail)
     String Title;
 
@@ -91,6 +92,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private FragmentCartableHameshList fragmentCartableHameshList;
     private FragmentZanjireMadrak fragmentZanjireMadrak;
     private FragmentCartableHistoryList fragmentCartableHistoryList;
+    private FragmentCartableDocumentContent fragmentCartableDocumentContent;
     private int Etc;
     private int Ec;
     private FragmentManager mfragmentManager;
@@ -171,7 +173,13 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         imgErja.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showUserAndRoleDialog();
+                showUserAndRoleDialog(false);
+            }
+        });
+        imgTaeedErja.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showUserAndRoleDialog(true);
             }
         });
         imTaeed.setOnClickListener(new View.OnClickListener() {
@@ -256,9 +264,13 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
 
     //_________________________________*****___Send___*****__________________________________
-    private void Send(final StructureAppendREQ structureAppendREQ) {
+    private void Send(final StructureAppendREQ structureAppendREQ, final boolean TaeedAndSend) {
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             SendAddToQueue(structureAppendREQ);
+            if (TaeedAndSend) {
+                Taeed();
+            }
+
         } else {
             new CartableDocumentAppendToServerPresenter().AppendDocument(structureAppendREQ, new SendListener() {
                 @Override
@@ -279,6 +291,9 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 @Override
                 public void onFinish() {
                     lnLoading.setVisibility(View.GONE);
+                    if (TaeedAndSend) {
+                        Taeed();
+                    }
                 }
             });
 
@@ -389,6 +404,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private void initViewPagerFragment() {
 
         fragmentCartableHistoryList = new FragmentCartableHistoryList().newInstance(App.CurentActivity, Etc, Ec);
+        fragmentCartableDocumentContent = new FragmentCartableDocumentContent().newInstance(App.CurentActivity, Etc, Ec);
         fragmentZanjireMadrak = new FragmentZanjireMadrak().newInstance(App.CurentActivity, Etc, Ec, new ListenerFile() {
             @Override
             public void onOpenFile(StructureAttach structureAttach) {
@@ -414,6 +430,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         assert smartTabLayout != null;
         smartTabLayout.setCustomTabView(R.layout.layout_txt_tab, R.id.txt_title_tab);
         ViewPagerAdapter adapter = new ViewPagerAdapter(mfragmentManager);
+        adapter.addFrag(fragmentCartableDocumentContent, R.string.title_document_content);
         adapter.addFrag(fragmentCartableHameshList, R.string.title_list_hamesh);
         adapter.addFrag(fragmentCartableHistoryList, R.string.title_gardesh_madrak);
         adapter.addFrag(fragmentZanjireMadrak, R.string.title_zanjireh_madrak);
@@ -422,7 +439,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     }
 
 
-    private void showUserAndRoleDialog() {
+    private void showUserAndRoleDialog(final boolean TaeedAndSend) {
 
         dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, Etc, Ec).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
@@ -432,7 +449,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
             @Override
             public void onSuccess(StructureAppendREQ structureAppendREQ) {
-                Send(structureAppendREQ);
+                Send(structureAppendREQ, TaeedAndSend);
             }
 
             @Override

@@ -71,9 +71,9 @@ public class FarzinMessageQuery {
     private void initDao() {
         try {
             messageDao = App.getFarzinDatabaseHelper().getMessageDao();
-            messageFileDao = App.getFarzinDatabaseHelper().getGetMessageFileDao();
-            receiverDao = App.getFarzinDatabaseHelper().getGetReceiverDao();
-            messageQueueDao = App.getFarzinDatabaseHelper().getGetMessageQueueDao();
+            messageFileDao = App.getFarzinDatabaseHelper().getMessageFileDao();
+            receiverDao = App.getFarzinDatabaseHelper().getReceiverDao();
+            messageQueueDao = App.getFarzinDatabaseHelper().getMessageQueueDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }

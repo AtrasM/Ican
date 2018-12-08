@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
@@ -58,7 +59,7 @@ public class FragmentCartable extends BaseFragment {
     private ArrayList<StructureCartableAction> structureCartableActionsPin = new ArrayList<>();
     private Bundle bundleObject = new Bundle();
     private DialogPin_unPin dialogPin_unPin;
-    private List<StructureUserAndRoleDB> userAndRolesMain=new ArrayList<>();
+    private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
 
     @Override
     public int getLayoutResId() {
@@ -88,12 +89,22 @@ public class FragmentCartable extends BaseFragment {
     }
 
     private void initData() {
-        structureCartableActions = new FarzinCartableQuery().getCartableAction(false);
-        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true);
+        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, null);
+        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
         }
         initRcv();
+    }
+
+    public void ReGetData() {
+        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, null);
+        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
+        if (structureCartableActionsPin.size() > 0) {
+            frmRcvPin.setVisibility(View.VISIBLE);
+        }
+        adapterCartableAction.addAll(structureCartableActions);
+        adapterCartableActionPin.addAll(structureCartableActionsPin);
     }
 
     private void initRcv() {

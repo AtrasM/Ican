@@ -35,8 +35,8 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         context.startService(putIntent(new Intent(context, GetCartableDocumentService.class)));
         context.startService(putIntent(new Intent(context, SendMessageService.class)));
         context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
-        context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
         context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
+        context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
         context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
         handler.postDelayed(new Runnable() {
             @Override

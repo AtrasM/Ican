@@ -86,6 +86,8 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         ImageView imgProfile;
         @BindView(R.id.img_waiting)
         ImageView imgWaiting;
+        @BindView(R.id.img_seen)
+        ImageView imgSeen;
         @BindView(R.id.ln_hamesh)
         LinearLayout lnHamesh;
         @BindView(R.id.ln_taeed)
@@ -166,7 +168,18 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         } else {
             viewHolder.imgWaiting.setVisibility(View.GONE);
         }
+        if (item.getStatus() == Status.UnRead || item.getStatus() == Status.IsNew) {
+            viewHolder.imgSeen.setVisibility(View.VISIBLE);
+            viewHolder.txtName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
+            viewHolder.txtRoleName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
+            viewHolder.txtCode.setTextColor(Resorse.getColor(R.color.colorPrimaryDark));
 
+        } else {
+            viewHolder.imgSeen.setVisibility(View.GONE);
+            viewHolder.txtName.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
+            viewHolder.txtRoleName.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
+            viewHolder.txtCode.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
+        }
         switch (item.getPrioritySend_ID()) {
             case NORMAL: {
                 viewHolder.tlv.setVisibility(View.GONE);

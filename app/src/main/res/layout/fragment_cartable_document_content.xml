@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.github.barteksc.pdfviewer.PDFView
+            android:id="@+id/pdf_viewer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <include layout="@layout/item_txt_nodata"/>
+
+
+            <include layout="@layout/ln_loading" />
+
+    </FrameLayout>
+
+</LinearLayout>

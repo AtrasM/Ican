@@ -99,4 +99,7 @@
     <string name="private_discription">توضیح شخصی</string>
     <string name="title_send">ارجاع</string>
     <string name="wrong_to_load_document_actions">شما در حال حاظر قادر به انجام این کار نمی باشید!</string>
+    <string name="title_document_content">مدرک</string>
+    <string name="title_all_cartable_document">کل مدارک کارتابل</string>
+    <string name="title_all_unread_message">پیام های خوانده نشده</string>
 </resources>

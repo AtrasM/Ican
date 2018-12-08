@@ -39,6 +39,7 @@ import avida.ican.Farzin.View.Interface.ListenerUserAndRollSearch;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.R;
@@ -182,14 +183,11 @@ public class DialogUserAndRole {
             public void onClick(View view) {
                 if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
                     ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
-                    if (structurePersonsREQ.size() == 0) {
-                        // TODO: 2018-11-26 do action when array is empety
-                    } else {
                         StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID());
                         StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
                         listenerUserAndRollMain.onSuccess(structureAppendREQ);
                         finish();
-                    }
+
                 } else {
                     listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
                     finish();
@@ -227,7 +225,7 @@ public class DialogUserAndRole {
             public void onSelect(final StructureUserAndRoleDB structureUserAndRoleDB) {
                 mtmpItemSelect.add(structureUserAndRoleDB);
                 adapterUserAndRoleSelected.Select(structureUserAndRoleDB);
-
+                ManagmentBtnOkEnable();
             }
 
             @Override
@@ -244,6 +242,7 @@ public class DialogUserAndRole {
             @Override
             public void hideLoading() {
                 HideLoading();
+                ManagmentBtnOkEnable();
             }
         });
 
@@ -263,6 +262,7 @@ public class DialogUserAndRole {
             public void unSelect(StructureUserAndRoleDB structureUserAndRoleDB) {
                 adapterUserAndRoleMain.unSelect(structureUserAndRoleDB);
                 adapterUserAndRoleSelected.delet(structureUserAndRoleDB);
+
             }
 
             @Override
@@ -273,10 +273,22 @@ public class DialogUserAndRole {
             @Override
             public void hideLoading() {
                 HideLoading();
+                ManagmentBtnOkEnable();
             }
         });
-
+        ManagmentBtnOkEnable();
         initViewPagerFragment();
+    }
+
+    private void ManagmentBtnOkEnable() {
+        CustomFunction customFunction = new CustomFunction(context);
+        if (mstructuresSelect.size() > 0) {
+            viewHolder.btnOk.setEnabled(true);
+            customFunction.ChangeBackgroundTintColor(viewHolder.btnOk, R.color.color_Info);
+        } else {
+            viewHolder.btnOk.setEnabled(false);
+            customFunction.ChangeBackgroundTintColor(viewHolder.btnOk, R.color.color_disable);
+        }
     }
 
     private void HideLoading() {

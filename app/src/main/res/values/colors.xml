@@ -28,12 +28,12 @@
     <color name="color_Divider">@color/color_border</color>
     <color name="color_bg_rcv">#F1F5F7</color>
     <color name="color_border">#DBDBDB</color>
+    <color name="color_disable">#d4d4d4</color>
     <color name="color_bg_tab">#FFFFFF</color>
     <color name="color_tab_txt_selected">#2196F3</color>
     <color name="color_tab_txt_unselected">#83C4F8</color>
     <color name="color_tab_indicator_line">#2196F3</color>
     <color name="shadow">#66000000</color>
-
     <color name="color_message_list_attach">#EE822F</color>
     <color name="color_fab">#536DFE</color>
     <color name="color_bg_item_rcv">#ffffff</color>

@@ -2,11 +2,13 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+import android.support.annotation.Nullable;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsQuerySaveListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryQuerySaveListener;
@@ -26,8 +29,10 @@ import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentContentBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableHistoryBND;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
@@ -46,7 +51,6 @@ import avida.ican.Farzin.Model.Structure.StructureCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 
 
@@ -64,6 +68,7 @@ public class FarzinCartableQuery {
     private CartableDocumentTaeedQueueQuerySaveListener cartableDocumentTaeedQueueQuerySaveListener;
     private OpticalPenQueueQuerySaveListener opticalPenQueueQuerySaveListener;
     private CartableSendQuerySaveListener cartableSendQuerySaveListener;
+    private CartableDocumentContentQuerySaveListener documentContentQuerySaveListener;
     private ChangeXml changeXml;
     private Status status = Status.WAITING;
     private boolean SendFromApp = false;
@@ -77,6 +82,7 @@ public class FarzinCartableQuery {
     private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDao = null;
     private Dao<StructureCartableDocumentActionsDB, Integer> mCartableDocumentActionsDao = null;
     private Dao<StructureCartableSendQueueDB, Integer> mCartableSendQueueDao = null;
+    private Dao<StructureCartableDocumentContentDB, Integer> mDocumentContentDao = null;
 
 
     //_______________________***Dao***______________________________
@@ -96,6 +102,7 @@ public class FarzinCartableQuery {
             mOpticalPenQueueDao = App.getFarzinDatabaseHelper().getOpticalPenDao();
             mCartableDocumentActionsDao = App.getFarzinDatabaseHelper().getDocumentActionsDao();
             mCartableSendQueueDao = App.getFarzinDatabaseHelper().getCartableSendQueueDao();
+            mDocumentContentDao = App.getFarzinDatabaseHelper().getDocumentContentDao();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -145,6 +152,16 @@ public class FarzinCartableQuery {
         structureHameshRES.setEC(EC);
         this.hameshQuerySaveListener = hameshQuerySaveListener;
         new saveHamesh().execute(structureHameshRES);
+    }
+
+    public void saveCartableDocumentContent(StructureCartableDocumentContentBND cartableDocumentContentBND, final CartableDocumentContentQuerySaveListener documentContentQuerySaveListener) {
+        this.documentContentQuerySaveListener = documentContentQuerySaveListener;
+        if (IsDocumentContentExist(cartableDocumentContentBND.getETC(), cartableDocumentContentBND.getEC())) {
+            documentContentQuerySaveListener.onExisting();
+        } else {
+            new saveCartableDocumentContent().execute(cartableDocumentContentBND);
+        }
+
     }
 
     public void saveCartableHistory(String xml, int ETC, int EC, final CartableHistoryQuerySaveListener cartableHistoryQuerySaveListener) {
@@ -282,6 +299,26 @@ public class FarzinCartableQuery {
             } catch (SQLException e) {
                 e.printStackTrace();
                 hameshQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+
+            return null;
+        }
+    }
+
+
+    private class saveCartableDocumentContent extends AsyncTask<StructureCartableDocumentContentBND, Void, Void> {
+
+        @Override
+        protected Void doInBackground(StructureCartableDocumentContentBND... cartableDocumentContentBND) {
+            StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB("file", cartableDocumentContentBND[0].getFileBinary(), ".pdf", cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC());
+            try {
+                mDocumentContentDao.create(structureCartableDocumentContentDB);
+                documentContentQuerySaveListener.onSuccess(getDocumentContent(cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                documentContentQuerySaveListener.onFailed(e.toString());
                 App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
                 return null;
             }
@@ -449,6 +486,18 @@ public class FarzinCartableQuery {
         return structureHameshsDB;
     }
 
+    public StructureCartableDocumentContentDB getDocumentContent(int ETC, int EC) {
+        StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB();
+        QueryBuilder<StructureCartableDocumentContentDB, Integer> queryBuilder = mDocumentContentDao.queryBuilder();
+        try {
+            queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+            structureCartableDocumentContentDB = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureCartableDocumentContentDB;
+    }
+
     public List<StructureCartableDocumentActionsDB> getDocumentActions(int ETC) {
         QueryBuilder<StructureCartableDocumentActionsDB, Integer> queryBuilder = mCartableDocumentActionsDao.queryBuilder();
         List<StructureCartableDocumentActionsDB> documentActionsDB = new ArrayList<>();
@@ -531,18 +580,6 @@ public class FarzinCartableQuery {
         return structureInboxDocumentsDB;
     }
 
-    public long getCartableDocumentCounts(int actionCode, Status status) {
-        QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
-        long count = 0;
-        try {
-            queryBuilder.setWhere(queryBuilder.where().eq("actionCode", actionCode).and().eq("status", status));
-            queryBuilder.setCountOf(true);
-            count = cartableDocumentDao.countOf(queryBuilder.prepare());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return count;
-    }
 
     public StructureInboxDocumentDB getCartableDocument(int id) {
         QueryBuilder<StructureInboxDocumentDB, Integer> inboxDocumentQB = cartableDocumentDao.queryBuilder();
@@ -557,7 +594,6 @@ public class FarzinCartableQuery {
     }
 
 
-
     public StructureCartableSendQueueDB getFirstItemCartableSendQueue() {
         QueryBuilder<StructureCartableSendQueueDB, Integer> queryBuilder = mCartableSendQueueDao.queryBuilder();
         StructureCartableSendQueueDB structureCartableSendQueueDB = new StructureCartableSendQueueDB();
@@ -568,6 +604,7 @@ public class FarzinCartableQuery {
         }
         return structureCartableSendQueueDB;
     }
+
     public StructureCartableSendQueueDB getCartableSendQueue(int Etc, int EC) {
         QueryBuilder<StructureCartableSendQueueDB, Integer> queryBuilder = mCartableSendQueueDao.queryBuilder();
         StructureCartableSendQueueDB structureCartableSendQueueDB = new StructureCartableSendQueueDB();
@@ -592,7 +629,7 @@ public class FarzinCartableQuery {
         return structureInboxDocumentDB;
     }
 
-    public ArrayList<StructureCartableAction> getCartableAction(boolean isPin) {
+    public ArrayList<StructureCartableAction> getCartableAction(boolean isPin, @Nullable Status status) {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
         List<StructureInboxDocumentDB> structureInboxDocumentDB = new ArrayList<>();
         ArrayList<StructureCartableAction> cartableActions = new ArrayList<>();
@@ -600,8 +637,11 @@ public class FarzinCartableQuery {
             queryBuilder.where().eq("Pin", isPin);
             structureInboxDocumentDB = queryBuilder.groupBy("ActionCode").query();
             for (StructureInboxDocumentDB inboxDocumentDB : structureInboxDocumentDB) {
-                StructureCartableAction structureCartableAction = new StructureCartableAction(inboxDocumentDB.getActionCode(), inboxDocumentDB.getActionName(), getCartableActionCount(inboxDocumentDB.getActionCode()), inboxDocumentDB.isPin());
-                cartableActions.add(structureCartableAction);
+                StructureCartableAction structureCartableAction = new StructureCartableAction(inboxDocumentDB.getActionCode(), inboxDocumentDB.getActionName(), getCartableDocumentCount(inboxDocumentDB.getActionCode(), status), inboxDocumentDB.isPin());
+                if (structureCartableAction.getCount() > 0) {
+                    cartableActions.add(structureCartableAction);
+                }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -610,11 +650,38 @@ public class FarzinCartableQuery {
         return cartableActions;
     }
 
-    public long getCartableActionCount(int ActionCode) {
+    public long getCartableDocumentCount(int ActionCode, @Nullable Status status) {
+        QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
+        Where<StructureInboxDocumentDB, Integer> where = queryBuilder.where();
+
+        long count = 0;
+        try {
+            //where.eq("ActionCode", ActionCode);
+            if (status != null) {
+                if (status == Status.UnRead || status == Status.IsNew) {
+                    where.and(where.eq("ActionCode", ActionCode), where.or(where.eq("status", Status.UnRead), where.eq("status", Status.IsNew)));
+
+                    //where.and().eq("status",  Status.IsNew);
+                    //where.eq("status", Status.UnRead).or().eq("status", Status.IsNew);
+                } else {
+                    where.eq("ActionCode", ActionCode).and().eq("status", status);
+                }
+            } else {
+                where.eq("ActionCode", ActionCode);
+            }
+            queryBuilder.setWhere(where);
+            queryBuilder.setCountOf(true);
+            count = cartableDocumentDao.countOf(queryBuilder.prepare());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    public long getCartableDocumentCount() {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
         long count = 0;
         try {
-            queryBuilder.setWhere(queryBuilder.where().eq("ActionCode", ActionCode));
             queryBuilder.setCountOf(true);
             count = cartableDocumentDao.countOf(queryBuilder.prepare());
         } catch (SQLException e) {
@@ -747,6 +814,17 @@ public class FarzinCartableQuery {
         }
     }
 
+    public void updateCartableDocumentStatus(int id, Status status) {
+        try {
+            UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
+            updateBuilder.where().eq("id", id);
+            updateBuilder.updateColumnValue("status", status);
+            updateBuilder.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public boolean IsHameshExist(int HameshID) {
         boolean existing = false;
         QueryBuilder<StructureHameshDB, Integer> queryBuilder = hameshDao.queryBuilder();
@@ -754,6 +832,21 @@ public class FarzinCartableQuery {
             queryBuilder.setWhere(queryBuilder.where().eq("HameshID", HameshID));
             queryBuilder.setCountOf(true);
             long count = hameshDao.countOf(queryBuilder.prepare());
+            // long count = queryBuilder.countOf();
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
+    }
+
+    public boolean IsDocumentContentExist(int Etc, int Ec) {
+        boolean existing = false;
+        QueryBuilder<StructureCartableDocumentContentDB, Integer> queryBuilder = mDocumentContentDao.queryBuilder();
+        try {
+            queryBuilder.setWhere(queryBuilder.where().eq("ETC", Etc).and().eq("EC", Ec));
+            queryBuilder.setCountOf(true);
+            long count = mDocumentContentDao.countOf(queryBuilder.prepare());
             // long count = queryBuilder.countOf();
             if (count > 0) existing = true;
         } catch (SQLException e) {
