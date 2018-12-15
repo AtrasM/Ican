@@ -83,8 +83,7 @@
         <item name="android:gravity">center</item>
     </style>
 
-    //______________________***********Floating MenuButtons
-    Style**************______________________________
+    //______________________***********Floating MenuButtons Style**************______________________________
 
     <style name="MenuLabelsStyle">
         <item name="android:background">@drawable/fab_label_background</item>
@@ -137,7 +136,10 @@
 
     <style name="custom_fill_edittext_style" parent="custom_normal_edittext_style">
         <item name="android:background">@drawable/background_fiil_edittext</item>
-        <item name="android:gravity">center|right</item>
+    </style>
+    <style name="custom_login_edittext_style" parent="custom_normal_edittext_style">
+        <item name="android:background">@drawable/border_login_edt</item>
+        <item name="android:padding">@dimen/padding</item>
     </style>
 
     <style name="custom_right_button_style" parent="custom_Txt_Normal_style">
@@ -186,6 +188,9 @@
     <style name="custom_icon_style">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:scaleType">center</item>
+    </style>
+    <style name="custom_selected_style">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
     </style>
 
     <style name="custom_divider_style">

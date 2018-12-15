@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -7,14 +8,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.github.barteksc.pdfviewer.PDFView
-            android:id="@+id/pdf_viewer"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <include layout="@layout/item_txt_nodata"/>
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_maximum">
+
+            <com.github.barteksc.pdfviewer.PDFView
+                android:id="@+id/pdf_viewer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="@dimen/margin_maximum"
+                android:background="@color/color_background"
+                android:paddingBottom="@dimen/padding_maximum" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_pdf_page_number"
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:textStyle="bold" />
 
 
-            <include layout="@layout/ln_loading" />
+        <include layout="@layout/item_txt_nodata" />
+
+
+        <include layout="@layout/ln_loading" />
 
     </FrameLayout>
 

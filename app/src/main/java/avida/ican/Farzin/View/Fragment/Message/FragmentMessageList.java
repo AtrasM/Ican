@@ -31,7 +31,9 @@ import avida.ican.Farzin.View.Interface.ListenerRcv;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
@@ -127,13 +129,8 @@ public class FragmentMessageList extends BaseFragment {
 
                 final Loading loading = new Loading(App.CurentActivity).Creat();
                 loading.Show();
-                App.getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.Hide();
-                        App.ShowMessage().ShowToast("delet", ToastEnum.TOAST_SHORT_TIME);
-                    }
-                }, 2000);
+                loading.Hide();
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.delete_action), SnackBarEnum.SNACKBAR_SHORT_TIME);
             }
 
             @Override
@@ -152,13 +149,8 @@ public class FragmentMessageList extends BaseFragment {
             public void onDelet(StructureMessageDB structureMessageDB) {
                 final Loading loading = new Loading(App.CurentActivity).Creat();
                 loading.Show();
-                App.getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        loading.Hide();
-                        App.ShowMessage().ShowToast("delet", ToastEnum.TOAST_SHORT_TIME);
-                    }
-                }, 2000);
+                loading.Hide();
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.delete_action), SnackBarEnum.SNACKBAR_SHORT_TIME);
             }
 
             @Override
@@ -173,8 +165,8 @@ public class FragmentMessageList extends BaseFragment {
     }
 
     private void goToMessageDetail(StructureDetailMessageBND structureDetailMessageBND) {
-        FarzinActivityDetailMessage.structureDetailMessageBND=structureDetailMessageBND;
-       // bundleObject.putSerializable(PutExtraEnum.BundleMessage.getValue(), structureDetailMessageBND);
+        FarzinActivityDetailMessage.structureDetailMessageBND = structureDetailMessageBND;
+        // bundleObject.putSerializable(PutExtraEnum.BundleMessage.getValue(), structureDetailMessageBND);
         intent = new Intent(App.CurentActivity, FarzinActivityDetailMessage.class);
         //intent.putExtras(bundleObject);
         goToActivity(intent);
@@ -317,12 +309,7 @@ public class FragmentMessageList extends BaseFragment {
                 fragmentSentMessageList.setCanLoading(false);
             }
         }
-        App.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loading.Hide();
-            }
-        }, 1000);
+        loading.Hide();
     }
 
     private void clearFragment() {

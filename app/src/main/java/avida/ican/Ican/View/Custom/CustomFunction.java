@@ -107,10 +107,16 @@ public class CustomFunction {
         drawable.setColorFilter(ContextCompat.getColor(activity, color), PorterDuff.Mode.SRC_ATOP);
         imageView.setImageDrawable(drawable);
     }
+    public Drawable ChengeDrawableColor( int mDrawable, int color) {
+        Drawable drawable = ContextCompat.getDrawable(activity, mDrawable);
+        assert drawable != null;
+        drawable.setColorFilter(ContextCompat.getColor(activity, color), PorterDuff.Mode.SRC_ATOP);
+        return drawable;
+    }
 
-  public void ChangeBackgroundTintColor(View view, int color) {
-      ViewCompat.setBackgroundTintList(view,ContextCompat.getColorStateList(activity,color));
-  }
+    public void ChangeBackgroundTintColor(View view, int color) {
+        ViewCompat.setBackgroundTintList(view, ContextCompat.getColorStateList(activity, color));
+    }
 
 
     public void Call(String phoneNumber) {
@@ -179,37 +185,35 @@ public class CustomFunction {
 
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
-        type = type.substring(0, type.indexOf("/"));
         ExtensionEnum extensionEnum = ExtensionEnum.NONE;
+        if (type != null) {
+            type = type.substring(0, type.indexOf("/"));
+            switch (type) {
+                case "image": {
+                    extensionEnum = ExtensionEnum.IMAGE;
+                    break;
+                }
+                case "video": {
+                    extensionEnum = ExtensionEnum.VIDEO;
+                    break;
+                }
+                case "audio": {
+                    extensionEnum = ExtensionEnum.AUDIO;
+                    break;
+                }
+                case "text": {
+                    extensionEnum = ExtensionEnum.TEXT;
+                    break;
+                }
+                default: {
+                    extensionEnum = ExtensionEnum.NONE;
+                    break;
+                }
+            }
 
-        switch (type) {
-            case "image": {
-                extensionEnum = ExtensionEnum.IMAGE;
-                break;
-            }
-            case "video": {
-                extensionEnum = ExtensionEnum.VIDEO;
-                break;
-            }
-            case "audio": {
-                extensionEnum = ExtensionEnum.AUDIO;
-                break;
-            }
-            case "text": {
-                extensionEnum = ExtensionEnum.TEXT;
-                break;
-            }
         }
 
- /*       if (ImageExtensionList.contains(fileExtension)) {
-            extensionEnum = ExtensionEnum.IMAGE;
-        } else if (VideosExtensionList.contains(fileExtension)) {
-            extensionEnum = ExtensionEnum.VIDEO;
-        } else if (AudiosExtensionList.contains(fileExtension)) {
-            extensionEnum = ExtensionEnum.AUDIO;
-        } else if (TextsExtensionList.contains(fileExtension)) {
-            extensionEnum = ExtensionEnum.TEXT;
-        }*/
+
         return extensionEnum;
     }
 

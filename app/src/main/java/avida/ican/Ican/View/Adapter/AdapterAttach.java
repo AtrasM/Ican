@@ -18,9 +18,11 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogDelet;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
 import avida.ican.Ican.View.Interface.ListenerAttach;
@@ -92,10 +94,13 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureAttach item = itemList.get(position);
-
-
         if (!item.getFileExtension().isEmpty()) {
-            viewHolder.txtName.setText(item.getName() + item.getFileExtension());
+            if (item.getName().contains(item.getFileExtension())) {
+                viewHolder.txtName.setText(item.getName());
+            } else {
+                viewHolder.txtName.setText(item.getName() + item.getFileExtension());
+            }
+
             ExtensionEnum extensionEnum = new CustomFunction(App.CurentActivity).getExtensionCategory(item.getFileExtension());
             switch (extensionEnum) {
                 case IMAGE: {
@@ -109,6 +114,11 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                 case VIDEO: {
                     item.setIcon(R.drawable.ic_video);
                     break;
+                }
+                case NONE: {
+                    itemList.remove(position);
+                    new Message().ShowSnackBar(Resorse.getString(R.string.error_invalid_file), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    return;
                 }
                 default: {
                     item.setIcon(R.drawable.ic_attach_file);

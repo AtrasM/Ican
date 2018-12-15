@@ -22,13 +22,25 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
 
         String Extra = getIntent().getStringExtra(PutExtraEnum.Notification.getValue());
         if (Extra.equals(PutExtraEnum.MultyMessage.getValue())) {
-            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());// TODO: 2018-09-24
+            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
             FarzinActivityMain activityMain;
             if (App.activityStacks != null) {
 
                 if (activity != null) {
                     activityMain = (FarzinActivityMain) activity;
-                    activityMain.openMessageList();
+                    activityMain.selectMessageFragment();
+                }
+            } else {
+                goToActivity(FarzinActivityMain.class);
+            }
+
+        } else if (Extra.equals(PutExtraEnum.MultyCartableDocument.getValue())) {
+            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+            FarzinActivityMain activityMain;
+            if (App.activityStacks != null) {
+                if (activity != null) {
+                    activityMain = (FarzinActivityMain) activity;
+                    activityMain.selectCartableDocumentFragment();
                 }
             } else {
                 goToActivity(FarzinActivityMain.class);

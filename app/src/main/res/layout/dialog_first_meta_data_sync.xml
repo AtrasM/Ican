@@ -2,42 +2,56 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="1500dp"
     android:layout_gravity="center"
+    android:background="@color/color_White"
     android:gravity="center"
-    android:background="@color/color_background"
     android:orientation="vertical">
 
- <TextView
-     style="@style/custom_Txt_Title_style"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:textColor="@color/color_Black"
-     android:text="@string/title_first_meta_data_sync" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="@dimen/margin"
+        android:background="@color/color_White"
+        android:gravity="center"
+        android:orientation="vertical">
 
- <TextView
-     style="@style/custom_Txt_Normal_style"
-     android:layout_width="wrap_content"
-     android:layout_height="wrap_content"
-     android:textColor="@color/color_Black"
-     android:text="@string/subtitle_first_meta_data_sync" />
 
- <LinearLayout
-     android:layout_width="match_parent"
-     android:layout_height="wrap_content"
-     android:layout_gravity="center"
-     android:gravity="center"
-     android:orientation="horizontal">
+        <TextView
+            style="@style/custom_Txt_Title_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/title_base_data_sync"
+            android:textColor="@color/color_Black" />
 
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:textColor="@color/color_Info"
-      android:textSize="@dimen/txt_Normal_Size"
-      android:text="@string/Syncing2"
-      android:layout_marginLeft="@dimen/margin_minimum"
-      tools:ignore="RtlHardcoded" />
+        <TextView
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/subtitle_first_meta_data_sync"
+            android:textColor="@color/color_Black" />
 
-  <include layout="@layout/item_sync_loding" />
- </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_minimum"
+                android:text="@string/Syncing2"
+                android:textColor="@color/color_Info"
+                android:textSize="@dimen/txt_Normal_Size"
+                tools:ignore="RtlHardcoded" />
+
+            <include layout="@layout/item_sync_loding" />
+        </LinearLayout>
+    </LinearLayout>
+
 </LinearLayout>

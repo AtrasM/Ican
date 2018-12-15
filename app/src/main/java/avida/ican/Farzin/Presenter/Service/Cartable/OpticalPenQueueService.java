@@ -20,7 +20,7 @@ import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.TimeValue;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
  * Created by AtrasVida on 2018-10-31 at 5:12 PM
@@ -111,7 +111,7 @@ public class OpticalPenQueueService extends Service {
         App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
-                new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                     @Override
                     public void onConnected() {
                         setOpticalPen(structureOpticalPenQueueDB);
@@ -145,7 +145,9 @@ public class OpticalPenQueueService extends Service {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                if (App.isTestMod) {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -189,7 +191,9 @@ public class OpticalPenQueueService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
         //timer.cancel();
         super.onDestroy();
     }

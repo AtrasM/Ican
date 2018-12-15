@@ -53,6 +53,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
     private ViewBinderHelper binderHelper;
     private boolean isLnMoreVisible = false;
     private Animator animator;
+    private boolean isLongClick;
 
     public AdapteCartableDocument(ArrayList<StructureInboxDocumentDB> itemList, ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList) {
         imageLoader = App.getImageLoader();
@@ -168,17 +169,17 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         } else {
             viewHolder.imgWaiting.setVisibility(View.GONE);
         }
-        if (item.getStatus() == Status.UnRead || item.getStatus() == Status.IsNew) {
-            viewHolder.imgSeen.setVisibility(View.VISIBLE);
-            viewHolder.txtName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
-            viewHolder.txtRoleName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
-            viewHolder.txtCode.setTextColor(Resorse.getColor(R.color.colorPrimaryDark));
-
-        } else {
+        if (item.isRead()) {
             viewHolder.imgSeen.setVisibility(View.GONE);
             viewHolder.txtName.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
             viewHolder.txtRoleName.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
             viewHolder.txtCode.setTextColor(Resorse.getColor(R.color.color_txt_SubTitle));
+
+        } else {
+            viewHolder.imgSeen.setVisibility(View.VISIBLE);
+            viewHolder.txtName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
+            viewHolder.txtRoleName.setTextColor(Resorse.getColor(R.color.color_txt_Normal));
+            viewHolder.txtCode.setTextColor(Resorse.getColor(R.color.colorPrimaryDark));
         }
         switch (item.getPrioritySend_ID()) {
             case NORMAL: {
@@ -203,8 +204,13 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
             }
         }
 
-        String Char = item.getSenderName().substring(0, 1);
-        viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
+        if (!item.getSenderLastName().isEmpty() && item.getSenderLastName().length() >= 1) {
+            String Char = item.getSenderLastName().substring(0, 1);
+            viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
+        } else {
+            String Char = item.getSenderFirstName().substring(0, 1);
+            viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
+        }
 
         viewHolder.txtName.setText(item.getSenderName());
         viewHolder.txtRoleName.setText(" [ " + item.getSenderRoleName() + " ] ");
@@ -220,7 +226,12 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
             @Override
             public void onClick(View v) {
                 // ShowToast("" + item.getSenderRoleName());
-                listenerAdapterCartableDocumentList.onClick(item);
+                if (isLongClick) {
+                    isLongClick = false;
+                } else {
+                    listenerAdapterCartableDocumentList.onClick(item);
+                }
+
             }
         });
 
@@ -235,6 +246,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
                     viewHolder.lnMore.setVisibility(View.GONE);
                 }
                 isLnMoreVisible = !isLnMoreVisible;
+                isLongClick = true;
                 return false;
             }
         });

@@ -11,6 +11,7 @@ public enum PutExtraEnum {
     BundleCartableDocument("BundleCartableDocument"),
     BundleCartableDocumentDetail("BundleCartableDocumentDetail"),
     MultyMessage("MultyMessage"),
+    MultyCartableDocument("MultyCartableDocument"),
     Notification("Notification"),
     ISFwdReplyMessage("ISFwdReplyMessage");
 

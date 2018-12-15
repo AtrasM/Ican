@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Stack;
 
+import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.View.ActivityMain;
 import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.ChangeAligneViewLayoutToRtl;
@@ -40,10 +41,11 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public abstract class BaseActivity extends AppCompatActivity {
     public static DialogPlus dialog = null;
-    public static DialogPlus dialogMataDataSync = null;
+    public static DialogFirstMetaDataSync dialogMataDataSync = null;
     public static AudioRecorder audioRecorder;
     public static FilePicker filePicker;
     public static MediaPicker mediaPicker;
+
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -199,9 +201,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
     public static Activity getActivityFromStackMap(String Tag) {
-        if (App.activityStacks.get(Tag).size() > 0) {
-            return App.activityStacks.get(Tag).lastElement();
+        if(App.activityStacks!=null){
+            if (App.activityStacks.get(Tag).size() > 0) {
+                return App.activityStacks.get(Tag).lastElement();
+            }
         }
+
         return null;
     }
 

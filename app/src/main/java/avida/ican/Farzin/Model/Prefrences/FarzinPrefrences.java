@@ -34,6 +34,13 @@ public class FarzinPrefrences {
         putRoleID(RoleID);
     }
 
+    public void putIsRemember(boolean isRemember) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "isRemember", isRemember).apply();
+    }
+
+    public boolean isRemember() {
+        return sharedPreferencesValue.getBoolean(TAG + "isRemember", false);
+    }
 
     public void putServerUrl(String serverUrl) {
         sharedPreferencesValue.edit().putString(TAG + "ServerUrl", serverUrl).apply();
@@ -108,7 +115,7 @@ public class FarzinPrefrences {
     }
 
     public void putCartableDocumentDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDat", DateTime).apply();
+        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDate", DateTime).apply();
     }
 
     public void putMessageViewSyncDate(String DateTime) {
@@ -119,12 +126,19 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
     }
 
-    public String getCartableDocumentDataSyncDat() {
-        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDat", "");
+    public String getCartableDocumentDataSyncDate() {
+        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", "");
     }
 
     public String getMessageViewLastSyncDate() {
         return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
+    }
+
+    public void putDataForFirstTimeSync(boolean isDataForFirstTimeSync) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();
+    }
+    public boolean isDataForFirstTimeSync() {
+        return sharedPreferencesValue.getBoolean(TAG + "isDataForFirstTimeSync", false);
     }
 
 

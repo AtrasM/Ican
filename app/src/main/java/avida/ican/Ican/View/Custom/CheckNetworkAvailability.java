@@ -6,20 +6,21 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 
+import avida.ican.Farzin.Presenter.CheckServerAviablePresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Enum.NetWorkState;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
  * Created by AtrasVida on 2018-03-27 at 12:24 PM
  */
 
 public class CheckNetworkAvailability {
+
     public boolean execuet() {
         NetWorkState status = readNetworkStatus();
         return (status == NetWorkState.WIFI || status == NetWorkState.MOBILE);
@@ -48,7 +49,30 @@ public class CheckNetworkAvailability {
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void isInternetAvailable(final ListenerInternet listenerInternet) {
+    public void isServerAvailable(final ListenerNetwork listenerNetwork) {
+        CheckServerAviablePresenter checkServerAviablePresenter = new CheckServerAviablePresenter();
+
+        checkServerAviablePresenter.CallRequest(new ListenerNetwork() {
+            @Override
+            public void onConnected() {
+                listenerNetwork.onConnected();
+            }
+
+            @Override
+            public void disConnected() {
+                listenerNetwork.disConnected();
+            }
+
+            @Override
+            public void onFailed() {
+                listenerNetwork.onFailed();
+            }
+        });
+
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public void isInternetAvailable(final ListenerNetwork listenerNetwork) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
@@ -59,11 +83,11 @@ public class CheckNetworkAvailability {
                     socket.connect(socketAddress, 1500);
                     socket.close();
 
-                    listenerInternet.onConnected();
+                    listenerNetwork.onConnected();
                 } catch (Exception e) {
                     // internet not working
 
-                    listenerInternet.disConnected();
+                    listenerNetwork.disConnected();
                 }
                 return null;
             }

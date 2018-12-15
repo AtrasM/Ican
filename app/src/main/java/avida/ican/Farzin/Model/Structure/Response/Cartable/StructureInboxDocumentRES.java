@@ -36,6 +36,10 @@ public class StructureInboxDocumentRES {
     @Element(required = false)
     String SenderName;
     @Element(required = false)
+    String SenderFirstName;
+    @Element(required = false)
+    String SenderLastName;
+    @Element(required = false)
     String SenderRoleName;
     @Element(required = false)
     String EntityNumber;
@@ -59,6 +63,10 @@ public class StructureInboxDocumentRES {
     String PriorityEntity_Name;
     @Element(required = false)
     int PrioritySend_ID;
+    @Element(required = false)
+    boolean IsRead;
+    @Element(required = false)
+    String LastChangeViewStatesDate;
 
     public StructureInboxDocumentRES() {
     }
@@ -245,5 +253,37 @@ public class StructureInboxDocumentRES {
 
     public void setPrioritySend_ID(int prioritySend_ID) {
         PrioritySend_ID = prioritySend_ID;
+    }
+
+    public boolean isRead() {
+        return IsRead;
+    }
+
+    public void setRead(boolean read) {
+        IsRead = read;
+    }
+
+    public String getLastChangeViewStatesDate() {
+        return LastChangeViewStatesDate;
+    }
+
+    public void setLastChangeViewStatesDate(String lastChangeViewStatesDate) {
+        LastChangeViewStatesDate = lastChangeViewStatesDate;
+    }
+
+    public String getSenderFirstName() {
+        return SenderFirstName;
+    }
+
+    public void setSenderFirstName(String senderFirstName) {
+        SenderFirstName = senderFirstName;
+    }
+
+    public String getSenderLastName() {
+        return SenderLastName;
+    }
+
+    public void setSenderLastName(String senderLastName) {
+        SenderLastName = senderLastName;
     }
 }

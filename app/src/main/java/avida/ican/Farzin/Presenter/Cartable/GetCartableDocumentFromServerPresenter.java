@@ -3,7 +3,6 @@ package avida.ican.Farzin.Presenter.Cartable;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
@@ -39,7 +38,7 @@ public class GetCartableDocumentFromServerPresenter {
 
     public void GetCartableDocumentList(int count, CartableDocumentListListener cartableDocumentListListener) {
 
-        String LastDate = getFarzinPrefrences().getCartableDocumentDataSyncDat();
+        String LastDate = getFarzinPrefrences().getCartableDocumentDataSyncDate();
         GetCartableDocument(getSoapObject(LastDate, count), cartableDocumentListListener);
     }
 
@@ -111,6 +110,7 @@ public class GetCartableDocumentFromServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();

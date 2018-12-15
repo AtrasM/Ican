@@ -4,20 +4,59 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/color_White"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
+    android:visibility="visible"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="avida.ican.Farzin.View.FarzinActivityLogin">
 
-    <include layout="@layout/farzin_custome_toolbar" />
+    <!--
+        <include layout="@layout/farzin_custome_toolbar" />
+    -->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_gravity="center|top">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <ImageView
+            android:id="@+id/img_profile"
+            style="@style/custom_ic_right_style"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center|bottom"
+            android:layout_margin="0dp"
+            app:srcCompat="@drawable/ic_person" />
+    </FrameLayout>
 
     <LinearLayout
-        android:id="@+id/ln_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="42dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_maximum"
+            android:scaleType="fitCenter"
+            android:src="@drawable/img_logo2" />
+
+        <TextView
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_farzin_login"
+            android:textColor="@color/color_txt_SubTitle" />
 
         <ScrollView
             android:layout_width="match_parent"
@@ -28,66 +67,72 @@
                 android:id="@+id/email_login_form"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_login_view"
+                android:layout_marginRight="@dimen/margin_login_view"
                 android:orientation="vertical">
 
-                <android.support.design.widget.TextInputLayout
+                <AutoCompleteTextView
+                    android:id="@+id/edt_user_name"
+                    style="@style/custom_login_edittext_style"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp"
+                    android:drawablePadding="@dimen/padding"
+                    android:drawableRight="@drawable/ic_user"
+                    android:gravity="center"
+                    android:hint="@string/prompt_user_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPersonName"
+                    android:maxLines="1"
+                    android:text="900b" />
 
-                    <AutoCompleteTextView
-                        android:id="@+id/edt_user_name"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_user_name"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPersonName"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:text="900b" />
-
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
+                <EditText
+                    android:id="@+id/edt_paasword"
+                    style="@style/custom_login_edittext_style"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp"
+                    android:layout_marginTop="@dimen/margin"
+                    android:drawablePadding="@dimen/padding"
+                    android:drawableRight="@drawable/ic_lock"
+                    android:gravity="center"
+                    android:hint="@string/prompt_password"
+                    android:imeOptions="actionNext"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:text="11111" />
 
-                    <EditText
-                        android:id="@+id/edt_paasword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_password"
-                        android:imeOptions="actionNext"
-                        android:inputType="textPassword"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:text="11111" />
 
-                </android.support.design.widget.TextInputLayout>
-
-                <android.support.design.widget.TextInputLayout
+                <EditText
+                    android:id="@+id/edt_server_url"
+                    style="@style/custom_login_edittext_style"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="40dp"
+                    android:layout_marginTop="@dimen/margin"
+                    android:drawablePadding="@dimen/padding"
+                    android:drawableRight="@drawable/ic_ip"
+                    android:gravity="center"
+                    android:hint="@string/prompt_server_url"
+                    android:imeActionLabel="@string/action_sign_in_short"
+                    android:imeOptions="actionDone"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:text="192.168.3.227" />
 
-                    <EditText
-                        android:id="@+id/edt_server_url"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/prompt_server_url"
-                        android:imeActionLabel="@string/action_sign_in_short"
-                        android:imeOptions="actionDone"
-                        android:inputType="textUri"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:text="192.168.3.233" />
-
-                </android.support.design.widget.TextInputLayout>
+                <CheckBox
+                    android:id="@+id/chk_remember"
+                    style="@style/custom_Txt_Sub_Title_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="right"
+                    android:layout_marginTop="@dimen/margin"
+                    android:button="@null"
+                    android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+                    android:text="@string/title_remember_me" />
 
                 <Button
                     android:id="@+id/btn_sign_in"
-                    style="?android:textAppearanceSmall"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="@dimen/margin"
                     android:background="@color/color_Info"
                     android:text="@string/action_sign_in"
                     android:textColor="@color/color_White"

@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 
 import org.apache.commons.codec.Charsets;
 
@@ -32,6 +34,7 @@ import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 import butterknife.BindView;
@@ -45,7 +48,8 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     TextView txtNoData;
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
-
+    @BindView(R.id.txt_pdf_page_number)
+    TextView txtPdfPageNumber;
     private Activity context;
     private int Etc;
     private int Ec;
@@ -142,8 +146,26 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     }
 
     private void initPdfViewer(String strFile) {
-      /*  byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
-        pdfViewer.fromBytes(FileAsbytes);*/
+        byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
+        pdfViewer.fromBytes(FileAsbytes)
+                .enableSwipe(true)
+                .swipeHorizontal(false)
+                .enableDoubletap(true)
+                .spacing(6)
+                .onPageScroll(new OnPageScrollListener() {
+                    @Override
+                    public void onPageScrolled(int page, float positionOffset) {
+
+                    }
+                })
+                .onPageChange(new OnPageChangeListener() {
+                    @Override
+                    public void onPageChanged(int page, int pageCount) {
+                        String desc = Resorse.getString(R.string.page) + " " + (page + 1) + " " + Resorse.getString(R.string.of) + " " + pageCount;
+                        txtPdfPageNumber.setText(desc);
+                    }
+                })
+                .load();
     }
 
     @Override

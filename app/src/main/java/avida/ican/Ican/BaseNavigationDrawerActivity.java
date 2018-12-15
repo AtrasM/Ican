@@ -1,6 +1,8 @@
 package avida.ican.Ican;
 
 import android.content.Intent;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -12,11 +14,16 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Created by AtrasVida on 2018-04-09 at 10:14 AM
@@ -43,6 +50,9 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     View headerLayout;
 
     private String title = "";
+    private String navHeadeViewtitle;
+    private CircleImageView imgHeaderNav;
+    private TextView txtHeaderNav;
 
     public void setTollbarTitle(String title) {
         this.title = title;
@@ -67,9 +77,27 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         setUpNavigationItemSelectedListener(menuRes);
        /*  navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.color_BG_Light)));*/
         headerLayout = navigationView.getHeaderView(0);
+        initNavHeadeView();
+
         nav_Menu = navigationView.getMenu();
+
+        //change NavigationIcon color
+        toolbar.getNavigationIcon().setColorFilter(Resorse.getColor(R.color.color_White), PorterDuff.Mode.SRC_ATOP);
+        //toolbar.setNavigationIcon(Resorse.getDrawable(R.drawable.ic_menu));
+
         //***********************toolbar*****************************
 
+    }
+
+    private void initNavHeadeView() {
+        imgHeaderNav = (CircleImageView) headerLayout.findViewById(R.id.img_header);
+        txtHeaderNav = (TextView) headerLayout.findViewById(R.id.txt_header);
+        txtHeaderNav.setText("نام کاربری");
+    }
+
+    public void setNavHeadeViewTitle(String title) {
+        this.navHeadeViewtitle = title;
+        txtHeaderNav.setText(title);
     }
 
 
@@ -114,8 +142,8 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
             }
             case R.id.nav_log_out: {
                 //App.canBack = true;
-                Intent intent=new Intent(App.CurentActivity,FarzinActivityLogin.class);
-                intent.putExtra("LogOut",true);
+                Intent intent = new Intent(App.CurentActivity, FarzinActivityLogin.class);
+                intent.putExtra("LogOut", true);
                 goToActivity(intent);
 
                 Finish(App.CurentActivity);
@@ -153,11 +181,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home: {
-                if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                    Finish(App.CurentActivity);
-                } else {
-                    drawer.closeDrawer(GravityCompat.START);
-                }
+                FinishNavigationActivity();
                 break;
             }
         }
@@ -167,14 +191,19 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (!drawer.isDrawerOpen(GravityCompat.START)) {
-                Finish(App.CurentActivity);
-            } else {
-                drawer.closeDrawer(GravityCompat.START);
-            }
+            FinishNavigationActivity();
             return true;
         }
 
         return super.onKeyDown(keyCode, event);
+    }
+
+
+    public void FinishNavigationActivity() {
+        if (!drawer.isDrawerOpen(GravityCompat.START)) {
+            Finish(App.CurentActivity);
+        } else {
+            drawer.closeDrawer(GravityCompat.START);
+        }
     }
 }

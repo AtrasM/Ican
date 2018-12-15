@@ -5,13 +5,26 @@ package avida.ican.Farzin.Model.Enum;
  */
 
 public enum MetaDataNameEnum {
-    SyncUserAndRoleList(0);
+    SyncUserAndRole("SyncUserAndRole"),
+    SyncCartableDocument("SyncCartableDocument"),
+    SyncSendMessage("SyncSendMessage"),
+    SyncReceiveMessage("SyncReceiveMessage");
+    private String strValue;
     private int intValue;
 
-       MetaDataNameEnum(int value) {
+
+    MetaDataNameEnum(int value) {
         intValue = value;
     }
-    public int getValue() {
+    MetaDataNameEnum(String value) {
+        strValue = value;
+    }
+
+
+    public int getIntValue() {
         return intValue;
+    }
+    public String getStringValue() {
+        return strValue;
     }
 }

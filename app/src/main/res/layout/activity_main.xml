@@ -10,88 +10,14 @@
     tools:ignore="HardcodedText">
 
 
-    <com.daimajia.swipe.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/swip_layout"
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        app:clickToClose="true"
-        app:drag_edge="left|right"
-        app:show_mode="pull_out">
-
-        <LinearLayout
-            android:layout_width="160dp"
-            android:layout_height="match_parent"
-            android:background="#660a0d1a"
-            android:tag="Bottom1"
-            android:weightSum="1">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@color/color_txt_Normal"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="left2"
-                android:textColor="#992a2a" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="#C7C7CC"
-                android:gravity="center"
-                android:text="left1" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/bottom_wrapper"
-            android:layout_width="160dp"
-            android:layout_height="match_parent"
-            android:background="#66ddff00"
-            android:tag="Bottom1"
-            android:weightSum="1">
-
-            <TextView
-                android:id="@+id/archive"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="@color/color_txt_Normal"
-                android:clickable="true"
-                android:gravity="center"
-                android:text="right2"
-                android:textColor="#fff" />
-
-            <TextView
-                android:id="@+id/delete"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:background="#C7C7CC"
-                android:gravity="center"
-                android:text="right1" />
-        </LinearLayout>
-
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/color_White"
-            android:padding="10dp"
-            android:tag="Hover"
-            android:text="要有最樸素的生活和最遙遠的夢想，即使明天天寒地凍，山高水遠，路遠馬亡。" />
-
-    </com.daimajia.swipe.SwipeLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_margin="@dimen/margin_maximum"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <Spinner
             android:id="@+id/sp_size"
@@ -178,6 +104,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_margin="@dimen/margin_minimum"
+            android:visibility="gone"
             app:cardBackgroundColor="@color/colorPrimary"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="59dp">
@@ -194,11 +121,22 @@
 
         </android.support.v7.widget.CardView>
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_pdf_page_number"
+        style="@style/custom_Txt_Normal_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdf_viewer"
-        android:background="@color/color_Divider"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="false"
+        android:background="@color/color_background"
+        android:visibility="visible" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -213,6 +151,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_margin="@dimen/margin_minimum"
+            android:visibility="gone"
             app:cardBackgroundColor="@color/colorPrimary"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="59dp">

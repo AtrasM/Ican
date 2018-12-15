@@ -1,11 +1,13 @@
 package avida.ican.Farzin.View.Fragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
@@ -28,15 +30,18 @@ import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
 import avida.ican.Farzin.View.Adapter.AdapterCartableActionPin;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
+import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
 import butterknife.BindView;
 
+import static avida.ican.Ican.BaseActivity.getActivityFromStackMap;
 import static avida.ican.Ican.BaseActivity.goToActivity;
 
 public class FragmentHome extends BaseFragment {
@@ -44,20 +49,26 @@ public class FragmentHome extends BaseFragment {
     TextView txtAllCartableDocumentCount;
     @BindView(R.id.txt_all_unread_message_count)
     TextView txtAllUnreadMessageCount;
+    @BindView(R.id.txt_no_data)
+    TextView txtNoData;
     @BindView(R.id.ln_all_cartable_document)
-    LinearLayout lnAllCartableDocumentCount;
+    LinearLayout lnAllCartableDocument;
     @BindView(R.id.ln_all_unread_message)
     LinearLayout lnAllUnreadMessage;
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
     @BindView(R.id.ln_main)
     LinearLayout lnMain;
+    @BindView(R.id.ln_rcv)
+    LinearLayout lnRcv;
     @BindView(R.id.rcv_action)
     RecyclerView rcvAction;
     @BindView(R.id.rcv_pin)
     RecyclerView rcvPin;
     @BindView(R.id.frm_rcv_pin)
     FrameLayout frmRcvPin;
+    @BindView(R.id.srl_refresh)
+    SwipeRefreshLayout srlRefresh;
 
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
     private AdapterCartableAction adapterCartableAction;
@@ -71,6 +82,7 @@ public class FragmentHome extends BaseFragment {
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
     private long cartableDocumentCount = 0;
     private long unreadMessageCount = 0;
+    private FarzinActivityMain activityMain;
 
     @Override
     public int getLayoutResId() {
@@ -84,11 +96,16 @@ public class FragmentHome extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+        if (activity != null) {
+            activityMain = (FarzinActivityMain) activity;
+        }
         setRetainInstance(true);
     }
 
     public FragmentHome newInstance(FragmentManager fragmentManager) {
         mfragmentManager = fragmentManager;
+
         return this;
     }
 
@@ -97,6 +114,29 @@ public class FragmentHome extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lnLoading.setVisibility(View.VISIBLE);
+        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+               ReGetData();
+            }
+        });
+
+        lnAllCartableDocument.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (activityMain != null && cartableDocumentCount > 0) {
+                    activityMain.selectCartableDocumentFragment();
+                }
+            }
+        });
+        lnAllUnreadMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (activityMain != null && unreadMessageCount > 0) {
+                    activityMain.selectMessageFragment();
+                }
+            }
+        });
         initData();
     }
 
@@ -119,10 +159,30 @@ public class FragmentHome extends BaseFragment {
         initBaseData();
         adapterCartableAction.addAll(structureCartableActions);
         adapterCartableActionPin.addAll(structureCartableActionsPin);
+        srlRefresh.setRefreshing(false);
+    }
+
+    private void   checkData() {
+        if (cartableDocumentCount <= 0) {
+            txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
+            txtNoData.setVisibility(View.VISIBLE);
+            lnRcv.setVisibility(View.GONE);
+        } else {
+            if (structureCartableActions.size() > 0 || structureCartableActionsPin.size() > 0) {
+                lnRcv.setVisibility(View.VISIBLE);
+                txtNoData.setVisibility(View.GONE);
+            } else {
+                lnRcv.setVisibility(View.GONE);
+                txtNoData.setText(Resorse.getString(R.string.no_cartable_unread_data));
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+
+        }
     }
 
     private void initBaseData() {
         cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
+        checkData();
         int UserId = getFarzinPrefrences().getUserID();
         unreadMessageCount = new FarzinMessageQuery().GetMessageCount(UserId, Type.RECEIVED, Status.UnRead);
         txtAllCartableDocumentCount.setText("" + cartableDocumentCount);
@@ -147,11 +207,12 @@ public class FragmentHome extends BaseFragment {
             public void onPin(final int position, StructureCartableAction structureCartableAction) {
                 structureCartableAction.setPin(true);
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), true);
-                structureCartableActionsPin.add(structureCartableAction);
+                ReGetData();
+                /*structureCartableActionsPin.add(structureCartableAction);
                 structureCartableActions.remove(structureCartableAction);
                 adapterCartableActionPin.addItem(structureCartableAction);
                 adapterCartableAction.remove(position);
-                frmRcvPin.setVisibility(View.VISIBLE);
+                frmRcvPin.setVisibility(View.VISIBLE);*/
 
 
             }
@@ -160,13 +221,14 @@ public class FragmentHome extends BaseFragment {
             public void unPin(int position, StructureCartableAction structureCartableAction) {
                 structureCartableAction.setPin(false);
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), false);
-                structureCartableActionsPin.remove(structureCartableAction);
+           /*     structureCartableActionsPin.remove(structureCartableAction);
                 structureCartableActions.add(structureCartableAction);
                 adapterCartableAction.addItem(structureCartableAction);
                 adapterCartableActionPin.remove(position);
                 if (structureCartableActionsPin.size() == 0) {
                     frmRcvPin.setVisibility(View.GONE);
-                }
+                }*/
+                ReGetData();
             }
 
             @Override

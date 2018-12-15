@@ -12,6 +12,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/color_White"
         android:fadeScrollbars="false"
         android:scrollbars="horizontal">
 
@@ -39,11 +40,21 @@
                 android:contentDescription="@null"
                 app:srcCompat="@drawable/italic" />
 
-            <Spinner
-                android:id="@+id/sp_size"
-                style="@style/custom_spinner_style"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_margin="@dimen/margin_minimum"
+                android:background="@drawable/border_ic_editore">
+
+                <Spinner
+                    android:id="@+id/sp_size"
+                    style="@style/custom_spinner_style"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center|left" />
+            </LinearLayout>
+
 
             <ImageButton
                 android:id="@+id/action_strikethrough"

@@ -11,7 +11,7 @@
     <com.chauthai.swipereveallayout.SwipeRevealLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_height="75dp"
         app:dragEdge="left"
         app:mode="same_level">
 
@@ -113,7 +113,7 @@
 
                         <LinearLayout
                             android:layout_width="0dp"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:gravity="center|right"
                             android:orientation="vertical">
@@ -122,13 +122,13 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:gravity="right"
-                                android:orientation="horizontal">
+                                android:orientation="vertical">
 
 
                                 <TextView
                                     android:id="@+id/txt_name"
                                     style="@style/custom_Txt_Normal_style"
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:gravity="center|right"
                                     android:text="pol pol" />
@@ -136,11 +136,11 @@
                                 <TextView
                                     android:id="@+id/txt_role_name"
                                     style="@style/custom_Txt_Normal_style"
-                                    android:layout_width="0dp"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1"
                                     android:gravity="center|right"
                                     android:maxLines="1"
+                                    android:ellipsize="end"
                                     android:padding="0dp"
                                     android:text="[ 123 ]"
                                     android:textColor="@color/colorPrimaryDark"
@@ -151,7 +151,7 @@
 
                             <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:orientation="horizontal">
 
                                 <TextView
@@ -159,9 +159,11 @@
                                     style="@style/custom_Txt_Normal_style"
                                     android:layout_width="0dp"
                                     android:layout_weight="1"
+                                    android:ellipsize="end"
                                     android:layout_height="wrap_content"
                                     android:layout_marginRight="@dimen/margin_minimum"
                                     android:gravity="center|right"
+                                    android:maxLines="1"
                                     android:padding="0dp"
                                     android:text="@string/tmpl_text"
                                     android:textColor="@color/color_txt_SubTitle" />

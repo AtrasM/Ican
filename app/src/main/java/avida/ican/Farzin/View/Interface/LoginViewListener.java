@@ -9,5 +9,5 @@ public interface LoginViewListener {
 
     void onAccessDenied();
 
-    void onFailed();
+    void onFailed(String error);
 }

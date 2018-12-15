@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
@@ -19,8 +21,13 @@ import java.util.Stack;
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
+import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
 import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
+import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
@@ -30,7 +37,7 @@ import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Enum.NetworkStatus;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindView;
 
@@ -40,7 +47,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @BindView(R.id.bottom_navigation)
     BottomNavigationViewEx bottomNavigation;
     private static BottomNavigationViewEx staticbottomNavigation;
-
 
     private String Title = "فرزین";
     private boolean menuShow = false;
@@ -53,6 +59,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private static final String TAB_Message = "tab_message_list";
     private String mCurrentTab = "";
     private Fragment CurentFragment = null;
+    private FarzinPrefrences farzinPrefrences;
 
     @Override
     protected int getLayoutResource() {
@@ -69,12 +76,12 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CheckNetWork();
+        farzinPrefrences = getFarzinPrefrences();
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
         initFarzinMetaDataSyncClass();
         initFragmentStack();
         //bottomNavigation.setSelectedItemId(R.id.navigation_home);
-
 
     }
 
@@ -110,10 +117,16 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void initFarzinMetaDataSyncClass() {
+
         farzinMetaDataSync = new FarzinMetaDataSync().RunONschedule(new MetaDataSyncListener() {
             @Override
             public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
-
+                if (BaseActivity.dialogMataDataSync != null) {
+                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(metaDataNameEnum);
+                }
+                if (!isMyServiceRunning(GetCartableDocumentService.class)) {
+                    initBroadcastReceiver();
+                }
             }
 
             @Override
@@ -128,16 +141,40 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             @Override
             public void onFinish() {
-                if (BaseActivity.dialogMataDataSync != null) {
 
-                    BaseActivity.dialogMataDataSync.dismiss();
+                if (BaseActivity.dialogMataDataSync != null) {
+                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncUserAndRole);
                 }
-                if (!isMyServiceRunning(SendMessageService.class)) {
+                if (!isMyServiceRunning(GetCartableDocumentService.class)) {
                     initBroadcastReceiver();
                 }
+                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
+                structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID(), farzinPrefrences.getRoleID());
+                String title = structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
+                setNavHeadeViewTitle(title);
             }
         });
+        if (!farzinPrefrences.isDataForFirstTimeSync()) {
+            BaseActivity.dialogMataDataSync = new DialogFirstMetaDataSync(App.CurentActivity, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
+                @Override
+                public void onFinish() {
+                    if (staticbottomNavigation != null) {
+                        staticbottomNavigation.setCurrentItem(1);
+                    }
+                }
 
+                @Override
+                public void onFailed() {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+            BaseActivity.dialogMataDataSync.Creat();
+        }
 
     }
 
@@ -154,13 +191,13 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             }
             case R.id.navigation_message: {
                 Title = "سیستم پیام";
-                selectedTab(Title, R.menu.main_drawer2, TAB_Message);
+                selectedTab(Title, R.menu.main_drawer, TAB_Message);
 
                 break;
             }
             case R.id.navigation_cartable: {
                 Title = "کارتابل";
-                selectedTab(Title, R.menu.main_drawer2, TAB_CARTABLE);
+                selectedTab(Title, R.menu.main_drawer, TAB_CARTABLE);
 
                 break;
             }
@@ -177,7 +214,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
          /*   if (drawer > 0) {
                 changeDrawerMenu(drawer);
             }*/
-            setTollbarTitle(title);
+
       /*
        *    First time this tab is selected. So add first fragment of that tab.
        *    Dont need animation, so that argument is false.
@@ -212,6 +249,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
        */
             pushFragments(tabId, App.fragmentStacks.get(tabId).lastElement(), false);
         }
+        setTollbarTitle(title);
     }
 
     public void pushFragments(String tag, Fragment fragment, boolean shouldAdd) {
@@ -275,16 +313,22 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         return false;
     }
 
-    public void openMessageList() {
+    public void selectMessageFragment() {
         if (staticbottomNavigation != null) {
             staticbottomNavigation.setCurrentItem(2);
         }
 
     }
 
+    public void selectCartableDocumentFragment() {
+        if (staticbottomNavigation != null) {
+            staticbottomNavigation.setCurrentItem(0);
+        }
+
+    }
 
     private void CheckNetWork() {
-        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+        new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
             @Override
             public void onConnected() {
                 App.networkStatus = NetworkStatus.Connected;
@@ -302,12 +346,10 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         });
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (broadcastReceiver != null) {
-
             unregisterReceiver(broadcastReceiver);
         }
         farzinMetaDataSync.onDestory();
@@ -317,11 +359,42 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     public void onBackPressed() {
         if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
             // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
-            finish();
+            if (mCurrentTab == TAB_DASHBOARD) {
+                FinishNavigationActivity();
+            } else {
+                if (staticbottomNavigation != null) {
+                    staticbottomNavigation.setCurrentItem(1);
+                }
+            }
+
             return;
         }
 
     /* Goto previous fragment in navigation stack of this tab */
         popFragments();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
+                // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
+                if (mCurrentTab == TAB_DASHBOARD) {
+                    FinishNavigationActivity();
+                } else {
+                    if (staticbottomNavigation != null) {
+                        staticbottomNavigation.setCurrentItem(1);
+                    }
+                }
+
+            }
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private FarzinPrefrences getFarzinPrefrences() {
+        return new FarzinPrefrences().init();
     }
 }

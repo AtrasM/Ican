@@ -193,7 +193,9 @@ public class SendMessageService extends Service {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                if (App.isTestMod) {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -242,7 +244,9 @@ public class SendMessageService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
         //timer.cancel();
         super.onDestroy();
     }

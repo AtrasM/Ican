@@ -9,9 +9,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
+import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
+import com.github.barteksc.pdfviewer.scroll.ScrollHandle;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -62,6 +66,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     PDFView pdfViewer;
     @BindView(R.id.cv_audio_recorder)
     CardView cvAudioRecorder;
+    @BindView(R.id.txt_pdf_page_number)
+    TextView txt_pdf_page_number;
     @BindView(R.id.cv_file_picker)
     CardView cvFilePicker;
     @BindView(R.id.cv_media_picker)
@@ -123,13 +129,9 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             case R.id.cv_farzin: {
 
                 //showUserAndRoleDialog();
-                goToActivity(FarzinActivityLogin.class);
+                //goToActivity(FarzinActivityLogin.class);
                 //CartableSend();
-               /* String strFile = "";
-                byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
-                StructureAttach structureAttach = new StructureAttach(strFile, "xx", ".pdf");
-                checkFile(structureAttach);
-                pdfViewer.fromBytes(FileAsbytes).enableSwipe(true).load();*/
+
                 break;
             }
 

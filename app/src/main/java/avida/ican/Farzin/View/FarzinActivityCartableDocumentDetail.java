@@ -51,6 +51,8 @@ import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogOpticalPen;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.OpticalPenDialogListener;
 import avida.ican.R;
 import butterknife.BindString;
@@ -155,6 +157,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                     public void onSuccess(StructureOpticalPen structureOpticalPen) {
                         StructureOpticalPenREQ structureOpticalPenREQ = new StructureOpticalPenREQ(Etc, Ec, structureOpticalPen.getbFile(), structureOpticalPen.getFileExtension(), structureOpticalPen.getTitle(), false);
                         saveDrawable(structureOpticalPenREQ);
+                        fragmentCartableHameshList.reGetData();
                         dialogOpticalPen.dismiss();
                     }
 
@@ -218,6 +221,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 @Override
                 public void onFinish() {
                     lnLoading.setVisibility(View.GONE);
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.document_taeed_successfull), ToastEnum.TOAST_LONG_TIME);
                     Intent returnIntent = new Intent();
                     setResult(TAEED.getValue(), returnIntent);
                     Finish(App.CurentActivity);
@@ -233,11 +237,15 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
             @Override
             public void onSuccess(int receiveCode) {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
             public void onExisting() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
@@ -291,6 +299,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 @Override
                 public void onFinish() {
                     lnLoading.setVisibility(View.GONE);
+                    App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_send_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
                     if (TaeedAndSend) {
                         Taeed();
                     }
@@ -306,11 +315,15 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
             @Override
             public void onSuccess() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
             public void onExisting() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
@@ -371,12 +384,16 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
             @Override
             public void onSuccess() {
+                lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
 
             }
 
             @Override
             public void onExisting() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override

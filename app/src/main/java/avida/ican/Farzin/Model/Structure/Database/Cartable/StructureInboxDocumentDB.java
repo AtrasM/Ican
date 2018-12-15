@@ -49,6 +49,28 @@ public class StructureInboxDocumentDB implements Serializable {
     @DatabaseField()
     String SenderName;
     @DatabaseField()
+    String SenderFirstName;
+    @DatabaseField()
+    String SenderLastName;
+
+    public String getSenderFirstName() {
+        return SenderFirstName;
+    }
+
+    public void setSenderFirstName(String senderFirstName) {
+        SenderFirstName = senderFirstName;
+    }
+
+    public String getSenderLastName() {
+        return SenderLastName;
+    }
+
+    public void setSenderLastName(String senderLastName) {
+        SenderLastName = senderLastName;
+    }
+
+    @DatabaseField()
+
     String SenderRoleName;
     @DatabaseField()
     String EntityNumber;
@@ -68,6 +90,10 @@ public class StructureInboxDocumentDB implements Serializable {
     String PrivateHameshTitle;
     @DatabaseField()
     boolean Pin;
+    @DatabaseField()
+    boolean IsRead;
+    @DatabaseField()
+    Date LastChangeViewStatesDate;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
 
@@ -75,7 +101,7 @@ public class StructureInboxDocumentDB implements Serializable {
     }
 
 
-    public StructureInboxDocumentDB(StructureInboxDocumentRES structureInboxDocumentRES, Date importDate, Date exportDate, Date receiveDate, Date expireDate, Status status, boolean isPin) {
+    public StructureInboxDocumentDB(StructureInboxDocumentRES structureInboxDocumentRES, Date importDate, Date exportDate, Date receiveDate, Date expireDate, Date LastChangeViewStatesDate, Status status, boolean isPin) {
         HaveDependency = structureInboxDocumentRES.isHaveDependency();
         SecurityLevelCode = structureInboxDocumentRES.getSecurityLevelCode();
         SecurityLevelName = structureInboxDocumentRES.getSecurityLevelName();
@@ -83,6 +109,8 @@ public class StructureInboxDocumentDB implements Serializable {
         ActionCode = structureInboxDocumentRES.getActionCode();
         ActionName = structureInboxDocumentRES.getActionName();
         SenderName = structureInboxDocumentRES.getSenderName();
+        SenderFirstName = structureInboxDocumentRES.getSenderFirstName();
+        SenderLastName = structureInboxDocumentRES.getSenderLastName();
         SenderRoleName = structureInboxDocumentRES.getSenderRoleName();
         EntityNumber = structureInboxDocumentRES.getEntityNumber();
         ReceiverCode = structureInboxDocumentRES.getReceiverCode();
@@ -92,6 +120,7 @@ public class StructureInboxDocumentDB implements Serializable {
         Title = structureInboxDocumentRES.getTitle();
         PriorityEntity_Name = structureInboxDocumentRES.getPriorityEntity_Name();
         PrioritySend_ID = structureInboxDocumentRES.getPrioritySend_ID();
+        IsRead = structureInboxDocumentRES.isRead();
         if (structureInboxDocumentRES.getPrivateHameshContent() != null) {
             this.PrivateHameshContent = structureInboxDocumentRES.getPrivateHameshContent();
         } else {
@@ -106,6 +135,7 @@ public class StructureInboxDocumentDB implements Serializable {
         ExportDate = exportDate;
         ReceiveDate = receiveDate;
         ExpireDate = expireDate;
+        this.LastChangeViewStatesDate = LastChangeViewStatesDate;
         UserDescription = structureInboxDocumentRES.getUserDescription();
         this.status = status;
         this.Pin = isPin;
@@ -321,5 +351,21 @@ public class StructureInboxDocumentDB implements Serializable {
 
     public void setPrioritySend_ID(int prioritySend_ID) {
         PrioritySend_ID = prioritySend_ID;
+    }
+
+    public boolean isRead() {
+        return IsRead;
+    }
+
+    public void setRead(boolean read) {
+        IsRead = read;
+    }
+
+    public Date getLastChangeViewStatesDate() {
+        return LastChangeViewStatesDate;
+    }
+
+    public void setLastChangeViewStatesDate(Date lastChangeViewStatesDate) {
+        LastChangeViewStatesDate = lastChangeViewStatesDate;
     }
 }

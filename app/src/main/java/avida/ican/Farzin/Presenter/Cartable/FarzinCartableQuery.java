@@ -3,6 +3,7 @@ package avida.ican.Farzin.Presenter.Cartable;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
@@ -224,13 +225,15 @@ public class FarzinCartableQuery {
             Date exportDate = null;
             Date receiveDate = null;
             Date expireDate = null;
+            Date LastChangeViewStatesDate = null;
 
             importDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getImportDate()));
             exportDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getExportDate()));
             receiveDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getReceiveDate()));
             expireDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getExpireDate()));
-            getFarzinPrefrences().putCartableDocumentDataSyncDate(structureInboxDocumentRES[0].getReceiveDate());
-            final StructureInboxDocumentDB structureInboxDocumentDB = new StructureInboxDocumentDB(structureInboxDocumentRES[0], importDate, exportDate, receiveDate, expireDate, status, false);
+            LastChangeViewStatesDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getLastChangeViewStatesDate()));
+            getFarzinPrefrences().putCartableDocumentDataSyncDate(structureInboxDocumentRES[0].getReceiveDate().toString());
+            final StructureInboxDocumentDB structureInboxDocumentDB = new StructureInboxDocumentDB(structureInboxDocumentRES[0], importDate, exportDate, receiveDate, expireDate, LastChangeViewStatesDate, status, false);
             try {
                 cartableDocumentDao.create(structureInboxDocumentDB);
 
@@ -659,12 +662,10 @@ public class FarzinCartableQuery {
             //where.eq("ActionCode", ActionCode);
             if (status != null) {
                 if (status == Status.UnRead || status == Status.IsNew) {
-                    where.and(where.eq("ActionCode", ActionCode), where.or(where.eq("status", Status.UnRead), where.eq("status", Status.IsNew)));
-
-                    //where.and().eq("status",  Status.IsNew);
-                    //where.eq("status", Status.UnRead).or().eq("status", Status.IsNew);
+                    //  where.and(where.eq("ActionCode", ActionCode), where.or(where.eq("IsRead", Status.UnRead), where.eq("status", Status.IsNew)));
+                    where.eq("ActionCode", ActionCode).and().eq("IsRead", false);
                 } else {
-                    where.eq("ActionCode", ActionCode).and().eq("status", status);
+                    where.eq("ActionCode", ActionCode).and().eq("IsRead", true);
                 }
             } else {
                 where.eq("ActionCode", ActionCode);
@@ -819,12 +820,25 @@ public class FarzinCartableQuery {
             UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
             updateBuilder.where().eq("id", id);
             updateBuilder.updateColumnValue("status", status);
+            if (status == Status.READ) {
+                updateBuilder.updateColumnValue("IsRead", true);
+            }
             updateBuilder.update();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
+    public void UpdateAllNewCartableDocumentStatusToUnreadStatus() {
+        try {
+            UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
+            updateBuilder.where().eq("status", Status.IsNew);
+            updateBuilder.updateColumnValue("status", Status.UnRead);
+            updateBuilder.update();
+            Log.i("Notify", "CartableDocument Status change to UnRead");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public boolean IsHameshExist(int HameshID) {
         boolean existing = false;
         QueryBuilder<StructureHameshDB, Integer> queryBuilder = hameshDao.queryBuilder();

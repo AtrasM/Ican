@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinMessageNotificationReceiver;
+import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
@@ -25,11 +26,10 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumen
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.GetCartableDocumentFromServerPresenter;
-import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.FarzinActivityWriteMessage;
 import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -51,8 +51,7 @@ public class GetCartableDocumentService extends Service {
     private int Count = 1;
     private final int MaxCount = 50;
     private final int MinCount = 1;
-    private long MessageSize = 0;
-    private int notifyID = 1;
+    private int notifyID = 2;
     private Intent NotificationIntent;
     private static int existCont = 0;
     private static int dataSize = 0;
@@ -73,12 +72,16 @@ public class GetCartableDocumentService extends Service {
             @Override
             public void onSuccess(ArrayList<StructureInboxDocumentRES> inboxCartableDocumentList) {
                 existCont = 0;
-                dataSize = 0;
+                dataSize = inboxCartableDocumentList.size();
                 if (inboxCartableDocumentList.size() == 0) {
+                    if(BaseActivity.dialogMataDataSync!=null){
+                        BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
+                    }
+
                     reGetData(MaxCount);
                 } else {
                     SaveData(inboxCartableDocumentList);
-                    dataSize = inboxCartableDocumentList.size();
+
                 }
             }
 
@@ -151,6 +154,9 @@ public class GetCartableDocumentService extends Service {
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
+                        if(BaseActivity.dialogMataDataSync!=null){
+                            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
+                        }
                         reGetData(MinCount);
                     } else {
                         GetCartableDocument(Count);
@@ -193,15 +199,15 @@ public class GetCartableDocumentService extends Service {
 
     private void CallMulltiMessageNotification() {
         ShowToast("new CartableDocument");
-        // TODO: 2018-09-25
+        long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
         String title = Resorse.getString(context, R.string.Cartable);
-        String message = MessageSize + " " + Resorse.getString(context, R.string.NewMessageContent);
-        callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiMessageIntent()));
+        String message = cartableDocumentCount + " " + Resorse.getString(context, R.string.NewCartableDocument);
+        callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiCartableDocumentIntent()));
     }
 
 
     private void reGetData(int count) {
-        ShowToast("re Get Message");
+        ShowToast("re Get cartable document");
         Count = count;
        /* String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.D                  ateTime_yyyy_MM_dd_hh_mm_ss.getValue());
         getFarzinPrefrences().putCartableDocumentDataSyncDate(CurentDateTime);*/
@@ -218,7 +224,9 @@ public class GetCartableDocumentService extends Service {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                if (App.isTestMod) {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -239,14 +247,16 @@ public class GetCartableDocumentService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
         //timer.cancel();
         super.onDestroy();
     }
 
     void callNotification(final String title, final String message, final PendingIntent pendingIntent) {
         try {
-            notifyID = 1;
+            notifyID = 2;
             String CHANNEL_ID = "Ican_Notification_CHID";// The id of the channel.
             CharSequence name = "Ican_Farzin";// The user-visible name of the channel.
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -286,9 +296,8 @@ public class GetCartableDocumentService extends Service {
 
             // Issue the notification.
             mNotificationManager.notify(notifyID, notification);
-            if (App.fragmentMessageList != null && !App.fragmentMessageList.isHidden()) {
-                new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
-                ShowToast("fragment message list is show");
+            if (App.fragmentCartable != null && !App.fragmentCartable.isHidden()) {
+                new FarzinCartableQuery().UpdateAllNewCartableDocumentStatusToUnreadStatus();
             }
 
         } catch (Exception e) {
@@ -306,15 +315,11 @@ public class GetCartableDocumentService extends Service {
         return pendingIntentCancell;
     }
 
-    private Intent GetSimpleMessageIntent(int MessageID) {
-        NotificationIntent = new Intent(context, FarzinActivityWriteMessage.class);
-        NotificationIntent.putExtra(PutExtraEnum.ID.name(), -1);
-        return NotificationIntent;
-    }
 
-    private Intent GetMultiMessageIntent() {
+
+    private Intent GetMultiCartableDocumentIntent() {
         NotificationIntent = new Intent(context, FarzinNotificationClickManager.class);
-        NotificationIntent.putExtra(PutExtraEnum.Notification.getValue(), PutExtraEnum.MultyMessage.getValue());
+        NotificationIntent.putExtra(PutExtraEnum.Notification.getValue(), PutExtraEnum.MultyCartableDocument.getValue());
         NotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return NotificationIntent;
     }

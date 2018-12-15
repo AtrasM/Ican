@@ -21,7 +21,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
  * Created by AtrasVida on 2018-11-28 at 12:41 PM
@@ -53,7 +53,7 @@ public class CartableDocumentAppendQueueService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
         ShowToast("Service Start");
-        startTaeedQueueTimer();
+        startSendQueueTimer();
         return Service.START_STICKY;
     }
 
@@ -71,10 +71,10 @@ public class CartableDocumentAppendQueueService extends Service {
                         if (structureCartableSendQueueDB.getETC() > 0) {
                             CartableSend(structureCartableSendQueueDB);
                         } else {
-                            startTaeedQueueTimer();
+                            startSendQueueTimer();
                         }
                     } else {
-                        startTaeedQueueTimer();
+                        startSendQueueTimer();
                     }
                 } else {
                     handler.postDelayed(new Runnable() {
@@ -98,7 +98,7 @@ public class CartableDocumentAppendQueueService extends Service {
 
             @Override
             public void onFinish() {
-                startTaeedQueueTimer();
+                startSendQueueTimer();
             }
 
 
@@ -113,7 +113,7 @@ public class CartableDocumentAppendQueueService extends Service {
         App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
-                new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                     @Override
                     public void onConnected() {
                         CartableSend(structureCartableSendQueueDB);
@@ -147,7 +147,9 @@ public class CartableDocumentAppendQueueService extends Service {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                if (App.isTestMod) {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -161,7 +163,7 @@ public class CartableDocumentAppendQueueService extends Service {
     }
 
 
-    private void startTaeedQueueTimer() {
+    private void startSendQueueTimer() {
         timer = new Timer();
         timerTask = new TimerTask() {
             @Override
@@ -191,7 +193,9 @@ public class CartableDocumentAppendQueueService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
         //timer.cancel();
         super.onDestroy();
     }

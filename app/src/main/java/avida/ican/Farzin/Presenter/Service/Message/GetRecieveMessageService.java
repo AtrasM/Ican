@@ -16,6 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinMessageNotificationReceiver;
+import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
@@ -33,6 +34,7 @@ import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityWriteMessage;
 import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -78,6 +80,9 @@ public class GetRecieveMessageService extends Service {
             @Override
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                 if (messageList.size() == 0) {
+                    if (BaseActivity.dialogMataDataSync != null) {
+                        BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
+                    }
                     reGetMessage();
                 } else {
                     SaveMessage(messageList);
@@ -86,7 +91,7 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     App.getHandler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -101,7 +106,7 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     App.getHandler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -164,6 +169,9 @@ public class GetRecieveMessageService extends Service {
             @Override
             public void onExisting() {
                 ShowToast("Duplicate message");
+                if(BaseActivity.dialogMataDataSync!=null){
+                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
+                }
                 CallMulltiMessageNotification();
                 reGetMessage();
 
@@ -212,7 +220,9 @@ public class GetRecieveMessageService extends Service {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                if (App.isTestMod) {
+                    Toast.makeText(context, s, Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -233,7 +243,9 @@ public class GetRecieveMessageService extends Service {
 
     @Override
     public void onDestroy() {
-        Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
         //timer.cancel();
         super.onDestroy();
     }

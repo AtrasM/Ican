@@ -127,7 +127,7 @@ public class FragmentCartableHameshList extends BaseFragment {
     }
 
 
-    private void reGetData() {
+    public void reGetData() {
         start = 0;
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
         if (structureHameshDBS.size() > 0) {

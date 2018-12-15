@@ -138,7 +138,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             structurePersons.get(position).setRoleId(item.getRole_ID());
-            String hameshTitle=""+item.getFirstName() + " " + item.getLastName()+" [ " + item.getRoleName() + " ] ";
+            String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + " [ " + item.getRoleName() + " ] ";
             structurePersons.get(position).setHameshTitle(hameshTitle);
             ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
             viewHolder.spActions.setAdapter(adapterSize);
@@ -194,21 +194,24 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
             viewHolder.lnImgMore.setVisibility(View.GONE);
         }
 
-        viewHolder.lnImgMore.setOnClickListener(new View.OnClickListener() {
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (viewHolder.lnMore.getVisibility() == View.GONE) {
-                    animator.slideInFromDownFast(viewHolder.lnMore);
-                    viewHolder.lnMore.setVisibility(View.VISIBLE);
-                    viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_up));
+                if (viewHolder.imgMore.getVisibility() == View.VISIBLE) {
+                    if (viewHolder.lnMore.getVisibility() == View.GONE) {
+                        animator.slideInFromDownFast(viewHolder.lnMore);
+                        viewHolder.lnMore.setVisibility(View.VISIBLE);
+                        viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_up));
 
-                } else {
-                    animator.slideOutToDown(viewHolder.lnMore);
-                    viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
-                    viewHolder.lnMore.setVisibility(View.GONE);
+                    } else {
+                        animator.slideOutToDown(viewHolder.lnMore);
+                        viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
+                        viewHolder.lnMore.setVisibility(View.GONE);
+                    }
                 }
             }
         });
+
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

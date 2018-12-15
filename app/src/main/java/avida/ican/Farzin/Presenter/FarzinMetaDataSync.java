@@ -13,7 +13,7 @@ import avida.ican.Ican.View.Custom.DifferenceBetweenTwoDates;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 
 /**
@@ -47,7 +47,7 @@ public class FarzinMetaDataSync {
                     final String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
                     final String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
-                        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                        new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                             @Override
                             public void onConnected() {
                                 App.networkStatus = NetworkStatus.Connected;
@@ -73,7 +73,7 @@ public class FarzinMetaDataSync {
                         });
 
                     } else {
-                        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+                        new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                             @Override
                             public void onConnected() {
                                 App.networkStatus = NetworkStatus.Connected;

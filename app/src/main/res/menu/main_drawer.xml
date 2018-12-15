@@ -2,23 +2,38 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <item
-        android:id="@+id/nav_about"
-        android:icon="@mipmap/ic_launcher"
-        android:title="درباره ما / مشاهده وبسایت"
-        tools:ignore="HardcodedText"/>
+    <group android:id="@+id/group_1">
+        <item
+            android:id="@+id/nav_setting"
+            android:icon="@drawable/ic_setting"
+            android:title="@string/title_setting"
+            tools:ignore="HardcodedText" />
+
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="@string/title_contact_us"
+            tools:ignore="HardcodedText" />
+    </group>
+    <group android:id="@+id/group_2">
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_about_us"
+            android:title="@string/title_about_us"
+            tools:ignore="HardcodedText" />
 
         <item
             android:id="@+id/nav_contact_us"
+            android:icon="@drawable/ic_contact_us"
+            android:title="@string/title_contact_us"
+            tools:ignore="HardcodedText" />
+    </group>
 
-            android:icon="@mipmap/ic_launcher"
-            android:title="تماس با ما"
-            tools:ignore="HardcodedText"/>
     <item
         android:id="@+id/nav_log_out"
-        android:icon="@mipmap/ic_launcher"
-        android:title="خروج از حساب کاربری"
-        tools:ignore="HardcodedText"/>
+        android:icon="@drawable/ic_exit"
+        android:title="@string/log_out"
+        tools:ignore="HardcodedText" />
 
 
 </menu>

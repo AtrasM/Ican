@@ -7,10 +7,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,8 +50,14 @@ public class FragmentCartable extends BaseFragment {
     RecyclerView rcvAction;
     @BindView(R.id.rcv_pin)
     RecyclerView rcvPin;
+    @BindView(R.id.txt_no_data)
+    TextView txtNoData;
+    @BindView(R.id.ln_main)
+    LinearLayout lnMain;
     @BindView(R.id.frm_rcv_pin)
     FrameLayout frmRcvPin;
+    @BindView(R.id.srl_refresh)
+    SwipeRefreshLayout srlRefresh;
 
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
     private AdapterCartableAction adapterCartableAction;
@@ -85,6 +94,12 @@ public class FragmentCartable extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ReGetData();
+            }
+        });
         initData();
     }
 
@@ -105,8 +120,16 @@ public class FragmentCartable extends BaseFragment {
         }
         adapterCartableAction.addAll(structureCartableActions);
         adapterCartableActionPin.addAll(structureCartableActionsPin);
+        srlRefresh.setRefreshing(false);
     }
-
+    private void   checkData() {
+        long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
+        if (cartableDocumentCount <= 0) {
+            txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
+            txtNoData.setVisibility(View.VISIBLE);
+            lnMain.setVisibility(View.GONE);
+        }
+    }
     private void initRcv() {
         final GridLayoutManagerWithSmoothScroller gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         final GridLayoutManagerWithSmoothScroller gridLayoutManagerPin = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);

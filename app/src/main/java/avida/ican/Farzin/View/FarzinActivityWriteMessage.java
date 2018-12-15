@@ -170,6 +170,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 structuresMain = structureUserAndRolesMain;
                 userAndRoleDBS = structureUserAndRolesSelect;
+
                 ShowSelectionItem(userAndRoleDBS);
             }
 
@@ -229,6 +230,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private void ShowSelectionItem(final List<StructureUserAndRoleDB> structuresSelect) {
         exTxtContacts.setText("");
         final String[] selectedName = {""};
+        loading.Show();
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
@@ -238,7 +240,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    selectedName[0] = selectedName[0] + structuresSelect.get(i).getFirstName() + " , ";
+                    selectedName[0] = selectedName[0] + structuresSelect.get(i).getFirstName() + " " + structuresSelect.get(i).getLastName() + " [ " + structuresSelect.get(i).getRoleName() + " ] " + " , ";
                 }
                 if (selectedName[0].length() > 0)
                     selectedName[0] = selectedName[0].substring(0, selectedName[0].length() - 3);
@@ -248,6 +250,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             protected void onPostExecute(String s) {
                 exTxtContacts.setText(s);
+                loading.Hide();
                 super.onPostExecute(s);
             }
         }.execute();
@@ -257,12 +260,15 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         //reMsg.setEditorHeight(200);
         reMsg.setAlignRight();
         reMsg.setEditorFontSize(textSize);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+   /*     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             reMsg.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-        }
+        }*/
         reMsg.setEditorFontColor(Color.BLACK);
         reMsg.setPadding(defPading, defPading, defPading, defPading);
+        reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
+        reMsg.focusEditor();
         reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
+        reMsg.setAlignRight();
         reMsg.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
             public void onTextChange(String text) {
@@ -272,7 +278,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
 
         ArrayList<String> msize = new ArrayList<>();
-        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(18, 16, 14, 12, 10));
+        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(24, 22, 20, 18, 16));
         msize.add("H 1");
         msize.add("H 2");
         msize.add("H 3");
@@ -284,7 +290,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         spSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                App.ShowMessage().ShowToast("" + i, ToastEnum.TOAST_SHORT_TIME);
+                reMsg.setEditorFontSize(Hsize.get(i));
             }
 
             @Override
@@ -371,6 +377,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 reMsg.setNumbers();
             }
         });
+
     }
 
 
@@ -602,16 +609,16 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
             @Override
             public void onSuccess(final StructureMessageDB structureMessageDB) {
-                showSnackStatus(Resorse.getString(R.string.message_sent_successfully));
                 if (App.fragmentMessageList != null) {
-                    App.CurentActivity.runOnUiThread(new Runnable() {
+                    App.getHandlerMainThread().post(new Runnable() {
                         @Override
                         public void run() {
+                            loading.Hide();
                             App.fragmentMessageList.AddSendNewMessage(structureMessageDB);
-                            // UpdateAllNewMessageStatusToUnreadStatus();
+                            App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
                         }
                     });
-
 
                 }
 
@@ -625,12 +632,11 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             public void onFailed(final String message) {
                 showSnackStatus(message);
-
             }
 
             @Override
             public void onCancel() {
-                showSnackStatus("onCancel");
+                showSnackStatus(Resorse.getString(R.string.rule_cancel));
 
             }
         });
@@ -639,7 +645,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void showSnackStatus(final String message) {
-        App.CurentActivity.runOnUiThread(new Runnable() {
+        App.getHandlerMainThread().post(new Runnable() {
             @Override
             public void run() {
                 loading.Hide();
@@ -651,6 +657,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
     private boolean isValid() {
         boolean isValid = true;
+        loading.Show();
         if (edtSubject.getText().toString().isEmpty()) {
             isValid = false;
             edtSubject.setError(Resorse.getString(R.string.error_empty_filed));
@@ -670,14 +677,13 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_editor_filed), SnackBarEnum.SNACKBAR_LONG_TIME);*/
             }
         }
-
+        loading.Hide();
         return isValid;
     }
 
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
-
 
 
 }

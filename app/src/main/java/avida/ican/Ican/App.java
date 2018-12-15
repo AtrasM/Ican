@@ -46,6 +46,7 @@ public class App extends MultiDexApplication {
     public static boolean dialogIsShow = false;
     public static boolean canBack = true;
     public static boolean isLoading = false;
+    public static boolean isTestMod= false;
     public static NetWorkStatusListener netWorkStatusListener;
     public static NetworkStatus networkStatus = NetworkStatus.NoAction;
     private static Bus sBus;

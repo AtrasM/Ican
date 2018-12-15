@@ -356,17 +356,7 @@ public class FarzinMessageQuery {
         }
     }
 
-    public void UpdateNewReceiveMessageStatusToUnreadStatus() {
-        try {
-            UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
-            updateBuilder.where().eq("status", Status.IsNew);
-            updateBuilder.updateColumnValue("status", Status.UnRead);
-            updateBuilder.update();
-            Log.i("Notif", "Message Status change to UnRead");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+
 
 
     public void UpdateMessageID(int CurentID, int NewID) {

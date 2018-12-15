@@ -80,7 +80,7 @@ public class CartableDocumentAppendToServerPresenter {
         String DocumentTag = "<Document><Workflow><Sender roleId=\"" + structureAppendREQ.getStructureSenderREQ().getRoleId() + "\" sendParentCode=\"-1\" description=\"\" isLocked=\"0\" viewInOutbox=\"1\" /><Receivers>";
         for (int i = 0; i < structureAppendREQ.getStructurePersonsREQ().size(); i++) {
             StructurePersonREQ structurePersonREQ = structureAppendREQ.getStructurePersonsREQ().get(i);
-            DocumentTag = DocumentTag + "<Person roleId=\"" + structurePersonREQ.getRoleId() + "\" action=\"" + structurePersonREQ.getAction() + "\" description=\"" + structurePersonREQ.getDescription() + "\" hameshTitle=\"" + structurePersonREQ.getHameshTitle() + "\" hameshContent=\"" + structurePersonREQ.getHameshContent() + "\"/>";
+            DocumentTag = DocumentTag + "<Person RoleID=\"" + structurePersonREQ.getRoleId() + "\" action=\"" + structurePersonREQ.getAction() + "\" description=\"" + structurePersonREQ.getDescription() + "\" hameshTitle=\"" + structurePersonREQ.getHameshTitle() + "\" hameshContent=\"" + structurePersonREQ.getHameshContent() + "\"/>";
 
         }
         DocumentTag = DocumentTag + "</Receivers></Workflow></Document>";

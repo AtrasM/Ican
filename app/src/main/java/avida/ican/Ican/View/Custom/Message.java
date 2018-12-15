@@ -24,11 +24,14 @@ public class Message {
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (customTime == ToastEnum.TOAST_LONG_TIME) {
-                    Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_LONG).show();
-                } else if (customTime == ToastEnum.TOAST_SHORT_TIME) {
-                    Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_SHORT).show();
-                }
+               // if (App.isTestMod) {
+                    if (customTime == ToastEnum.TOAST_LONG_TIME) {
+                        Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_LONG).show();
+                    } else if (customTime == ToastEnum.TOAST_SHORT_TIME) {
+                        Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_SHORT).show();
+                    }
+               // }
+
             }
         });
 
@@ -38,7 +41,9 @@ public class Message {
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(App.getAppContext(), msg, customTime).show();
+                if (App.isTestMod) {
+                    Toast.makeText(App.getAppContext(), msg, customTime).show();
+                }
             }
         });
 

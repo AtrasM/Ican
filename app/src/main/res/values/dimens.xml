@@ -8,14 +8,18 @@
     <dimen name="txt_Normal_Size">12sp</dimen>
     <dimen name="txt_editor_Size">16px</dimen>
     <dimen name="margin_maximum">12dp</dimen>
+    <dimen name="margin_login_view">30dp</dimen>
     <dimen name="margin_minimum">2dp</dimen>
     <dimen name="margin">6dp</dimen>
     <dimen name="padding_maximum">12dp</dimen>
     <dimen name="padding_minimum">2dp</dimen>
     <dimen name="padding">6dp</dimen>
     <dimen name="normal_radios">8dp</dimen>
+    <dimen name="minimum_radios">2dp</dimen>
+    <dimen name="maximum_radios">12dp</dimen>
     <dimen name="stroke">1dp</dimen>
     <dimen name="elevation">2dp</dimen>
+    <dimen name="margin_dialog_meta_data">30dp</dimen>
 
     <item name="divider_alpha" format="float" type="dimen">0.4</item>
 </resources>

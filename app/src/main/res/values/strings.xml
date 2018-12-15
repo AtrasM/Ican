@@ -32,7 +32,7 @@
     <string name="navigation_drawer_close">بستن منوی کشویی</string>
     <string name="hint_subject_massage">موضوع</string>
     <string name="hint_content_massage">متن پیام</string>
-    <string name="title_first_meta_data_sync">برنامه احتیاج به بروز رسانی داده های مهم دارد.</string>
+    <string name="title_base_data_sync">برنامه احتیاج به، به روز رسانی داده های اولیه دارد.</string>
     <string name="subtitle_first_meta_data_sync">لطفا شکیبا باشید.</string>
     <string name="error_adapter_item_count">خطای Null در اطلاعات</string>
     <string name="IMAGE_PROVIDER">avida.ican.fileprovider</string>
@@ -70,10 +70,13 @@
     <string name="newMessageFrom">پیام جدید از</string>
     <string name="newMessage">پیام جدید</string>
     <string name="NewMessageContent">پیام جدید</string>
+    <string name="NewCartableDocument">مدرک جدید</string>
     <string name="set_message">پیام های ارسالی</string>
     <string name="receive_message">پیام های دریافتی</string>
     <string name="Group_Message">پیام گروهی</string>
     <string name="no_data">موردی وجود ندارد!</string>
+    <string name="no_cartable_data">کارتابل شما خالی می باشد!</string>
+    <string name="no_cartable_unread_data">کارتابل خوانده نشده ای وجود ندارد!</string>
     <string name="TitleDetailMessage">جزییات پیام</string>
     <string name="Pin">افزودن به میانبر ها</string>
     <string name="unPin">حذف از میانبر ها</string>
@@ -99,7 +102,26 @@
     <string name="private_discription">توضیح شخصی</string>
     <string name="title_send">ارجاع</string>
     <string name="wrong_to_load_document_actions">شما در حال حاظر قادر به انجام این کار نمی باشید!</string>
-    <string name="title_document_content">مدرک</string>
+    <string name="title_document_content">مشاهده ی نامه</string>
     <string name="title_all_cartable_document">کل مدارک کارتابل</string>
     <string name="title_all_unread_message">پیام های خوانده نشده</string>
+    <string name="splash_view_title">گروه مهندسی آی کن</string>
+    <string name="ican_url">www.ican.ir</string>
+    <string name="title_remember_me">مرا به خاطر بسپار</string>
+    <string name="page">صفحه ی</string>
+    <string name="of">از</string>
+    <string name="title_contact_us">تماس با ما</string>
+    <string name="title_about_us">درباره ما</string>
+    <string name="log_out">خروج از حساب کاربری</string>
+    <string name="title_setting">تنظیمات</string>
+    <string name="delete_action">حذف با موفقیت انجام شد</string>
+    <string name="server_acces_denied">سرور در دسترس نمی باشد!</string>
+    <string name="document_send_successfull">دستور ارجاع با موفقیت انجام شد.</string>
+    <string name="document_taeed_successfull">دستور تایید با موفقیت انجام شد.</string>
+    <string name="the_command_was_placed_in_the_queue">دستور مورد نظر در صف ارسال قرار گرفت!</string>
+    <string name="title_farzin_login">سازمان الکترونیک فرزین آی کن</string>
+    <string name="rule_cancel">دستور لغو شد!</string>
+    <string name="error_invalid_file">فایل انتخاب  شده معتبر نمی باشد.</string>
+
+
 </resources>

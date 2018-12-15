@@ -55,6 +55,7 @@ import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindString;
@@ -104,7 +105,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     private int DOCUMENTDETAILCODE = 001;
     private StructureInboxDocumentDB curentItem = new StructureInboxDocumentDB();
     private DialogUserAndRole dialogUserAndRole;
-    private List<StructureUserAndRoleDB> userAndRolesMain;
+    private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
 
     @Override
     protected void onResume() {
@@ -275,7 +276,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                         break;
                     }
                     case Comission: {
-                        lnLoading.setVisibility(View.VISIBLE);
+
                         showUserAndRoleDialog(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode());
                         break;
                     }
@@ -315,11 +316,12 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
 
     private void showUserAndRoleDialog(int ETC, int EC) {
-
+        lnLoading.setVisibility(View.VISIBLE);
         dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, ETC, EC).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;
+                lnLoading.setVisibility(View.GONE);
             }
 
             @Override
@@ -329,13 +331,13 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
             @Override
             public void onFailed() {
-
+                lnLoading.setVisibility(View.GONE);
             }
 
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onCancel(final List<StructureUserAndRoleDB> tmpItemSelect) {
-
+                lnLoading.setVisibility(View.GONE);
             }
 
 
@@ -369,6 +371,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                 @Override
                 public void onFinish() {
                     lnLoading.setVisibility(View.GONE);
+                    App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_send_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
 
                 }
             });
@@ -382,11 +385,14 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
             @Override
             public void onSuccess() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
             public void onExisting() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
             }
 
             @Override
@@ -429,6 +435,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         });
         farzinCartableQuery.updateCartableDocumentStatus(item.getId(), Status.READ);
         item.setStatus(Status.READ);
+        item.setRead(true);
         adapteCartableDocument.updateItem(item);
     }
 
@@ -457,6 +464,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                 @Override
                 public void onFinish() {
                     adapteCartableDocument.deletItem(structureInboxDocumentDB);
+                    App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_taeed_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
                     lnLoading.setVisibility(View.GONE);
 
                 }
@@ -470,11 +478,15 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
             @Override
             public void onSuccess(int receiveCode) {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override
             public void onExisting() {
                 lnLoading.setVisibility(View.GONE);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
             }
 
             @Override

@@ -1,10 +1,8 @@
 package avida.ican.Ican.Model;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
@@ -30,7 +28,7 @@ import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Enum.NetworkStatus;
-import avida.ican.Ican.View.Interface.ListenerInternet;
+import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
  * Created by AtrasVida on 2018-03-13 at 1:14 PM
@@ -59,6 +57,7 @@ public class WebService {
     private int TimeOut = 4000;
     private String Tag = "WebService";
     private boolean IsPasswordEncript;
+    private boolean isNetworkCheking;
 
     public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl, String endPoint) {
         this.NAME_SPACE = NameSpace;
@@ -94,6 +93,16 @@ public class WebService {
 
     public WebService setBaseUrl(String BaseUrl) {
         this.BASE_URL = BaseUrl;
+        return this;
+    }
+
+    public WebService setNetworkCheking(boolean isNetworkCheking) {
+        this.isNetworkCheking = isNetworkCheking;
+        return this;
+    }
+
+    public WebService setTimeOut(int timeOut) {
+        this.TimeOut = timeOut;
         return this;
     }
 
@@ -182,9 +191,6 @@ public class WebService {
                 e.printStackTrace();
             } catch (SocketTimeoutException e) {
                 Log.i(Tag, "SocketTimeoutException  = " + e.toString());
-               /* if(App.CurentActivity!=null){
-                    new NoServerAccess().ShowDialog();
-                }*/
                 e.printStackTrace();
             } catch (IOException e) {
                 Log.i(Tag, "IOException = " + e.toString());
@@ -198,36 +204,52 @@ public class WebService {
 
         @Override
         protected void onPostExecute(final WebServiceResponse webServiceResponse) {
-            if (webserviceResponseListener != null) {
-                boolean invalidLogin = false;
-                if (webServiceResponse.isResponse()) {
-                    String xml = webServiceResponse.getHttpTransportSE().responseDump;
-                    invalidLogin = xml.contains("Invalid Login");
-                }
-
-                if (App.networkStatus == NetworkStatus.NoAction) {
-                    CheckInternet(invalidLogin, webServiceResponse);
+            if (webServiceResponse.getHttpTransportSE() == null) {
+                if (isNetworkCheking) {
+                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
                 } else {
-                    final boolean finalInvalidLogin = invalidLogin;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                                App.networkStatus = NetworkStatus.WatingForNetwork;
-                                webserviceResponseListener.NetworkAccessDenied();
-                            } else {
-                                if (finalInvalidLogin && App.CurentActivity != null) {
-                                    gotoActivityLogin();
-                                } else {
-                                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
-                                }
-                            }
-                        }
-                    });
-
-
+                    CheckNetwork(false, webServiceResponse);
                 }
 
+            } else {
+                if (webserviceResponseListener != null) {
+                    boolean invalidLogin = false;
+                    if (webServiceResponse.isResponse()) {
+                        String xml = webServiceResponse.getHttpTransportSE().responseDump;
+                        invalidLogin = xml.contains("Invalid Login");
+                    }
+
+                    if (isNetworkCheking) {
+                        webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                    } else {
+                        if (App.networkStatus == NetworkStatus.NoAction) {
+                            CheckNetwork(invalidLogin, webServiceResponse);
+                        } else {
+                            final boolean finalInvalidLogin = invalidLogin;
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                                        if (App.netWorkStatusListener != null) {
+                                            App.netWorkStatusListener.WatingForNetwork();
+                                        }
+                                        webserviceResponseListener.NetworkAccessDenied();
+                                    } else {
+                                        if (finalInvalidLogin && App.CurentActivity != null) {
+                                            gotoActivityLogin();
+                                        } else {
+                                            webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                                        }
+                                    }
+                                }
+                            });
+
+
+                        }
+                    }
+
+                }
             }
 
 
@@ -236,14 +258,17 @@ public class WebService {
 
     }
 
-    private void CheckInternet(final boolean invalidLogin, final WebServiceResponse webServiceResponse) {
-        new CheckNetworkAvailability().isInternetAvailable(new ListenerInternet() {
+    private void CheckNetwork(final boolean invalidLogin, final WebServiceResponse webServiceResponse) {
+        new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
             @Override
             public void onConnected() {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         App.networkStatus = NetworkStatus.Connected;
+                        if (App.netWorkStatusListener != null) {
+                            App.netWorkStatusListener.Connected();
+                        }
                         if (invalidLogin && App.CurentActivity != null) {
                             gotoActivityLogin();
                         } else {
@@ -260,6 +285,9 @@ public class WebService {
                     @Override
                     public void run() {
                         App.networkStatus = NetworkStatus.WatingForNetwork;
+                        if (App.netWorkStatusListener != null) {
+                            App.netWorkStatusListener.WatingForNetwork();
+                        }
                         webserviceResponseListener.NetworkAccessDenied();
                     }
                 });

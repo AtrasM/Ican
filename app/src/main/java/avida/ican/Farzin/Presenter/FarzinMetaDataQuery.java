@@ -29,16 +29,17 @@ import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.R;
 
-import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRoleList;
+import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRole;
 
 /**
  * Created by AtrasVida on 2018-04-24 at 9:59 AM
  */
 
 public class FarzinMetaDataQuery {
-    private final DialogFirstMetaDataSync dialogFirstMetaDataSync;
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "";
@@ -59,7 +60,6 @@ public class FarzinMetaDataQuery {
         this.context = context;
         farzinPrefrences = getFarzinPrefrences();
         strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
-        dialogFirstMetaDataSync = new DialogFirstMetaDataSync(App.CurentActivity);
         initDao();
 
     }
@@ -80,22 +80,21 @@ public class FarzinMetaDataQuery {
                 App.netWorkStatusListener.Syncing();
             }
         });
-        dialogFirstMetaDataSync.Creat();
         SyncUserAndRoleList();
         mainMetaDataSyncListener = new MetaDataSyncListener() {
             @Override
             public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getValue() + 1);
+                SyncTable(metaDataNameEnum.getIntValue() + 1);
             }
 
             @Override
             public void onFailed(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getValue());
+                SyncTable(metaDataNameEnum.getIntValue());
             }
 
             @Override
             public void onCancel(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getValue());
+                SyncTable(metaDataNameEnum.getIntValue());
             }
 
             @Override
@@ -125,8 +124,6 @@ public class FarzinMetaDataQuery {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //BaseActivity.dialogMataDataSync.dismiss();
-                App.canBack = true;
             }
 
 
@@ -135,7 +132,7 @@ public class FarzinMetaDataQuery {
     }
 
     private void SyncTable(int i) {
-        if (i == SyncUserAndRoleList.getValue()) {
+        if (i == SyncUserAndRole.getIntValue()) {
             SyncUserAndRoleList();
         } else {
             mainMetaDataSyncListener.onFinish();
@@ -161,14 +158,14 @@ public class FarzinMetaDataQuery {
 
             @Override
             public void onFailed() {
-                mainMetaDataSyncListener.onFailed(SyncUserAndRoleList);
-                App.ShowMessage().ShowToast("خطا", ToastEnum.TOAST_LONG_TIME);
+                mainMetaDataSyncListener.onFailed(SyncUserAndRole);
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
             }
 
             @Override
             public void onCancel() {
-                mainMetaDataSyncListener.onCancel(SyncUserAndRoleList);
-                App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
+                mainMetaDataSyncListener.onCancel(SyncUserAndRole);
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.rule_cancel), ToastEnum.TOAST_LONG_TIME);
             }
         });
     }
@@ -212,14 +209,14 @@ public class FarzinMetaDataQuery {
                     userAndRoleListDao.create(structureUserAndRoleDB);
                 } catch (SQLException e) {
                     e.printStackTrace();
-                    mainMetaDataSyncListener.onFailed(SyncUserAndRoleList);
+                    mainMetaDataSyncListener.onFailed(SyncUserAndRole);
                     App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها" + " i= " + i, ToastEnum.TOAST_LONG_TIME);
                     return null;
                 }
 
             }
-            mainMetaDataSyncListener.onSuccess(SyncUserAndRoleList);
-            App.ShowMessage().ShowToast("داده ها با موفقیت ذخیر شدن.", ToastEnum.TOAST_LONG_TIME);
+            mainMetaDataSyncListener.onSuccess(SyncUserAndRole);
+            //App.ShowMessage().ShowToast("داده ها با موفقیت ذخیر شدن.", ToastEnum.TOAST_LONG_TIME);
             return null;
         }
     }
