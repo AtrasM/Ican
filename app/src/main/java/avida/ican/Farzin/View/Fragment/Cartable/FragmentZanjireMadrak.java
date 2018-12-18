@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
 import avida.ican.Farzin.Presenter.Cartable.FarzinZanjireMadrakPresenter;
 import avida.ican.Farzin.View.Adapter.AdapteZanjireMadrak;
@@ -102,7 +103,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
         srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getData();
+                reGetData();
             }
         });
         initRcv();
@@ -208,12 +209,28 @@ public class FragmentZanjireMadrak extends BaseFragment {
 
     private void getData() {
 
-        ProcessData();
+
         if (App.networkStatus == NetworkStatus.Connected) {
             lnLoading.setVisibility(View.VISIBLE);
             farzinZanjireMadrakPresenter.GetZanjireMadrakFromServer();
         } else {
-            lnLoading.setVisibility(View.GONE);
+            ProcessData();
+            if (counter <= 0) {
+                lnLoading.setVisibility(View.GONE);
+                srlRefresh.setRefreshing(false);
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+        }
+
+    }
+
+    private void reGetData() {
+
+        if (App.networkStatus == NetworkStatus.Connected) {
+            lnLoading.setVisibility(View.VISIBLE);
+            farzinZanjireMadrakPresenter.GetZanjireMadrakFromServer();
+        } else {
+            ProcessData();
             if (counter <= 0) {
                 lnLoading.setVisibility(View.GONE);
                 srlRefresh.setRefreshing(false);

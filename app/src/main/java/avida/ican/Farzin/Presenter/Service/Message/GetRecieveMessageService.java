@@ -144,7 +144,7 @@ public class GetRecieveMessageService extends Service {
                     final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
                     structureMessagesDB.add(structureMessageDB);
                     if (App.CurentActivity != null) {
-                        App.CurentActivity.runOnUiThread(new Runnable() {
+                        App.getHandlerMainThread().post(new Runnable() {
                             @Override
                             public void run() {
                                 App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
@@ -153,7 +153,6 @@ public class GetRecieveMessageService extends Service {
                         });
 
                     }
-
                 }
                 messageList.remove(0);
                 if (messageList.size() == 0) {
@@ -169,10 +168,9 @@ public class GetRecieveMessageService extends Service {
             @Override
             public void onExisting() {
                 ShowToast("Duplicate message");
-                if(BaseActivity.dialogMataDataSync!=null){
+                if (BaseActivity.dialogMataDataSync != null) {
                     BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
                 }
-                CallMulltiMessageNotification();
                 reGetMessage();
 
             }

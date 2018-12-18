@@ -115,9 +115,20 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                     item.setIcon(R.drawable.ic_video);
                     break;
                 }
+                case APPLICATION: {
+                    item.setIcon(R.drawable.ic_attach_file);
+                    break;
+                }
                 case NONE: {
-                    itemList.remove(position);
-                    new Message().ShowSnackBar(Resorse.getString(R.string.error_invalid_file), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            itemList.remove(position);
+                            notifyItemRemoved(position);
+                            new Message().ShowSnackBar(Resorse.getString(R.string.error_invalid_file), SnackBarEnum.SNACKBAR_LONG_TIME);
+                        }
+                    }, 200);
                     return;
                 }
                 default: {

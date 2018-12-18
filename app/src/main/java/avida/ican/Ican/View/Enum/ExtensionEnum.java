@@ -9,5 +9,8 @@ public enum ExtensionEnum {
     VIDEO,
     AUDIO,
     TEXT,
+    APPLICATION,
+    FILE,
+    UNNOWN,
     NONE,
 }

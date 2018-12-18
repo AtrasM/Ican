@@ -38,6 +38,8 @@
     <color name="color_fab">#536DFE</color>
     <color name="color_bg_item_rcv">#ffffff</color>
     <color name="color_bg_cadr">#f3f3f3</color>
+    <color name="color_back_taeed_sweep_view">#5fcf5f</color>
+    <color name="color_back_send_sweep_view">#5fcf5f</color>
     <color name="dialog_background">#80bebebe</color>
 </resources>
 

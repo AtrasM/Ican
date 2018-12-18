@@ -28,6 +28,7 @@ import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
@@ -36,6 +37,8 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static avida.ican.Ican.BaseActivity.closeKeboard;
 
 
 /**
@@ -197,6 +200,8 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                closeKeboard();
                 if (viewHolder.imgMore.getVisibility() == View.VISIBLE) {
                     if (viewHolder.lnMore.getVisibility() == View.GONE) {
                         animator.slideInFromDownFast(viewHolder.lnMore);

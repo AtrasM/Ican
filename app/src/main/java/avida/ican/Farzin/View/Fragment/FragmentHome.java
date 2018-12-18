@@ -117,7 +117,7 @@ public class FragmentHome extends BaseFragment {
         srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-               ReGetData();
+                ReGetData();
             }
         });
 
@@ -145,6 +145,8 @@ public class FragmentHome extends BaseFragment {
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
+        } else {
+            frmRcvPin.setVisibility(View.GONE);
         }
         initBaseData();
         initRcv();
@@ -155,6 +157,8 @@ public class FragmentHome extends BaseFragment {
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
+        } else {
+            frmRcvPin.setVisibility(View.GONE);
         }
         initBaseData();
         adapterCartableAction.addAll(structureCartableActions);
@@ -162,7 +166,7 @@ public class FragmentHome extends BaseFragment {
         srlRefresh.setRefreshing(false);
     }
 
-    private void   checkData() {
+    private void checkData() {
         if (cartableDocumentCount <= 0) {
             txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
             txtNoData.setVisibility(View.VISIBLE);

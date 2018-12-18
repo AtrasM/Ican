@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -66,6 +67,8 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
         LinearLayout lnReceiver;
         @BindView(R.id.ln_file)
         LinearLayout lnFile;
+        @BindView(R.id.img_receiver)
+        ImageView imgReceiver;
 
 
         public ViewHolder(View view) {
@@ -109,17 +112,20 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
         } else {
             viewHolder.lnFile.setVisibility(View.GONE);
             if (item.isPrivate() || !item.getHameshType().equals("Text")) {
-                viewHolder.lnReceiver.setVisibility(View.GONE);
+                viewHolder.imgReceiver.setVisibility(View.GONE);
+            }
+            viewHolder.lnReceiver.setVisibility(View.VISIBLE);
+            if (item.getTitle() == null || item.getTitle().isEmpty() || item.getTitle().equals("null")) {
+                viewHolder.txtTitle.setVisibility(View.GONE);
             } else {
-                viewHolder.lnReceiver.setVisibility(View.VISIBLE);
-                if (item.getTitle()==null || item.getTitle().isEmpty() || item.getTitle().equals("null")) {
-                    viewHolder.txtTitle.setText("-");
-                } else {
-                    viewHolder.txtTitle.setText("" + item.getTitle());
-                }
-
+                viewHolder.txtTitle.setText("" + item.getTitle());
+            }
+            if (item.getContent() == null || item.getContent().isEmpty() || item.getContent().equals("null")) {
+                viewHolder.txtHamesh.setVisibility(View.GONE);
+            } else {
                 viewHolder.txtHamesh.setText("" + item.getContent());
             }
+
 
         }
 

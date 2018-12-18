@@ -128,12 +128,18 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     public static void closeKeboard() {
-        try {
-            InputMethodManager inputManager = (InputMethodManager) App.CurentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputManager.hideSoftInputFromWindow(App.CurentActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        App.getHandlerMainThread().post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    InputMethodManager inputManager = (InputMethodManager) App.CurentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    inputManager.hideSoftInputFromWindow(App.CurentActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
 
     }
 
@@ -195,13 +201,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         App.CurentActivity.startActivityForResult(intent, 1);
         App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
-    public static void goToActivityForResult(Intent intent,int requestCode) {
+
+    public static void goToActivityForResult(Intent intent, int requestCode) {
         App.CurentActivity.startActivityForResult(intent, requestCode);
         App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 
     public static Activity getActivityFromStackMap(String Tag) {
-        if(App.activityStacks!=null){
+        if (App.activityStacks != null) {
             if (App.activityStacks.get(Tag).size() > 0) {
                 return App.activityStacks.get(Tag).lastElement();
             }

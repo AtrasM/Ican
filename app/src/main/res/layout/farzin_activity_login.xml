@@ -31,8 +31,8 @@
         <ImageView
             android:id="@+id/img_profile"
             style="@style/custom_ic_right_style"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center|bottom"
             android:layout_margin="0dp"
             app:srcCompat="@drawable/ic_person" />
@@ -41,6 +41,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_maximum"
         android:orientation="vertical">
 
         <ImageView
@@ -78,7 +79,7 @@
                     android:layout_height="40dp"
                     android:drawablePadding="@dimen/padding"
                     android:drawableRight="@drawable/ic_user"
-                    android:gravity="center"
+                    android:gravity="center|right"
                     android:hint="@string/prompt_user_name"
                     android:imeOptions="actionNext"
                     android:inputType="textPersonName"
@@ -93,7 +94,7 @@
                     android:layout_marginTop="@dimen/margin"
                     android:drawablePadding="@dimen/padding"
                     android:drawableRight="@drawable/ic_lock"
-                    android:gravity="center"
+                    android:gravity="center|right"
                     android:hint="@string/prompt_password"
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
@@ -109,7 +110,7 @@
                     android:layout_marginTop="@dimen/margin"
                     android:drawablePadding="@dimen/padding"
                     android:drawableRight="@drawable/ic_ip"
-                    android:gravity="center"
+                    android:gravity="center|right"
                     android:hint="@string/prompt_server_url"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionDone"

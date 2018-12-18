@@ -21,6 +21,8 @@ import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.R;
 import butterknife.BindView;
 
+import static avida.ican.Ican.BaseActivity.closeKeboard;
+
 public class FragmentUserAndRoleMain extends BaseFragment {
 
     @BindView(R.id.edt_search)
@@ -54,6 +56,13 @@ public class FragmentUserAndRoleMain extends BaseFragment {
         LinearLayoutManagerWithSmoothScroller linearLayoutManager = new LinearLayoutManagerWithSmoothScroller(context);
         rcvMain.setLayoutManager(linearLayoutManager);
         rcvMain.setAdapter(this.adapterUserAndRoleMain);
+        rcvMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeKeboard();
+            }
+        });
+
 
         edtSearch.setFilters(new InputFilter[]{new CustomFunction().ignoreFirstWhiteSpace()});
         edtSearch.addTextChangedListener(new TextWatcher() {

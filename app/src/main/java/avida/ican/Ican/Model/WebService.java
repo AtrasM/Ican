@@ -210,16 +210,19 @@ public class WebService {
                 } else {
                     CheckNetwork(false, webServiceResponse);
                 }
-
-            } else {
+             } else {
                 if (webserviceResponseListener != null) {
                     boolean invalidLogin = false;
                     if (webServiceResponse.isResponse()) {
                         String xml = webServiceResponse.getHttpTransportSE().responseDump;
-                        invalidLogin = xml.contains("Invalid Login");
+                        if (xml != null) {
+                            invalidLogin = xml.contains("Invalid Login");
+                        }
+
                     }
 
                     if (isNetworkCheking) {
+                        isNetworkCheking=false;
                         webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
                     } else {
                         if (App.networkStatus == NetworkStatus.NoAction) {
@@ -368,11 +371,11 @@ public class WebService {
             headerArrayList.add(headerPropertyObj);
         }
         try {
-            androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList);
+            webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList));
+
         return WebServiceResponse(envelope, androidHttpTransport, webServiceResponse.getHeaderList());
     }
 

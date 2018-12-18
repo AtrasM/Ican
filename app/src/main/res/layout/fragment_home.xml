@@ -125,7 +125,8 @@
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/margin">
 
                 <android.support.v4.widget.NestedScrollView
                     android:id="@+id/scrollView"
@@ -143,6 +144,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:layout_marginBottom="@dimen/margin"
                             android:layout_marginTop="@dimen/margin"
                             android:visibility="gone">
 
@@ -167,12 +169,10 @@
 
                         </FrameLayout>
 
-
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rcv_action"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginTop="@dimen/margin"
                             android:background="@color/color_White" />
                     </LinearLayout>
                 </android.support.v4.widget.NestedScrollView>

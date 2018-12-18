@@ -14,6 +14,8 @@ import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.R;
 import butterknife.BindView;
 
+import static avida.ican.Ican.BaseActivity.closeKeboard;
+
 public class FragmentUserAndRoleSelect extends BaseFragment {
 
     @BindView(R.id.rcv_selected)
@@ -29,6 +31,11 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
         this.adapterUserAndRoleSelected = adapterUserAndRoleSelected;
         return this;
     }
+    @Override
+    public int getLayoutResId() {
+        return R.layout.fragment_user_and_role_selected;
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,11 +49,13 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
         LinearLayoutManagerWithSmoothScroller linearLayoutManager = new LinearLayoutManagerWithSmoothScroller(context);
         rcvSelected.setLayoutManager(linearLayoutManager);
         rcvSelected.setAdapter(this.adapterUserAndRoleSelected);
-    }
 
-    @Override
-    public int getLayoutResId() {
-        return R.layout.fragment_user_and_role_selected;
+        rcvSelected.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeKeboard();
+            }
+        });
     }
 
 

@@ -39,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -107,7 +108,8 @@ public class CustomFunction {
         drawable.setColorFilter(ContextCompat.getColor(activity, color), PorterDuff.Mode.SRC_ATOP);
         imageView.setImageDrawable(drawable);
     }
-    public Drawable ChengeDrawableColor( int mDrawable, int color) {
+
+    public Drawable ChengeDrawableColor(int mDrawable, int color) {
         Drawable drawable = ContextCompat.getDrawable(activity, mDrawable);
         assert drawable != null;
         drawable.setColorFilter(ContextCompat.getColor(activity, color), PorterDuff.Mode.SRC_ATOP);
@@ -186,7 +188,9 @@ public class CustomFunction {
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
         ExtensionEnum extensionEnum = ExtensionEnum.NONE;
-        if (type != null) {
+        if (type == null) {
+            extensionEnum = ExtensionEnum.NONE;
+        } else {
             type = type.substring(0, type.indexOf("/"));
             switch (type) {
                 case "image": {
@@ -205,8 +209,12 @@ public class CustomFunction {
                     extensionEnum = ExtensionEnum.TEXT;
                     break;
                 }
+                case "application": {
+                    extensionEnum = ExtensionEnum.APPLICATION;
+                    break;
+                }
                 default: {
-                    extensionEnum = ExtensionEnum.NONE;
+                    extensionEnum = ExtensionEnum.UNNOWN;
                     break;
                 }
             }
@@ -251,7 +259,12 @@ public class CustomFunction {
             String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
             try {
                 File dir = new File(App.DEFAULTPATH);
-                file = new File(dir, fileName + fileExtension);
+                if (fileName.contains(fileExtension)) {
+                    file = new File(dir, fileName);
+                } else {
+                    file = new File(dir, fileName + fileExtension);
+                }
+
                 if (!file.exists()) {
                     file.getParentFile().mkdirs();
                     file.createNewFile();
@@ -287,6 +300,10 @@ public class CustomFunction {
         return file;
     }
 
+    public String setSeparatorWithCommasToNumber(int number) {
+        DecimalFormat formatter = new DecimalFormat("#,###,###");
+        return formatter.format(number);
+    }
 
     public int getScreenOrientation() {
         return activity.getResources().getConfiguration().orientation;

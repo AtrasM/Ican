@@ -65,7 +65,7 @@ public class CheckNetworkAvailability {
 
             @Override
             public void onFailed() {
-                listenerNetwork.onFailed();
+                listenerNetwork.disConnected();
             }
         });
 

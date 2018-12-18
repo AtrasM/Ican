@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -31,6 +32,7 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
@@ -145,11 +147,8 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     }
 
     private void initRcvAndAdapter() {
-        for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
-            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_binary(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
-            structureAttaches.add(structureAttach);
-        }
-        LinearLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new LinearLayoutManagerWithSmoothScroller(App.CurentActivity);
+
+        GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
         adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
             @Override
@@ -160,6 +159,11 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
             }
         });
         rcvAttach.setAdapter(adapterAttach);
+        for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
+            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_binary(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
+            structureAttaches.add(structureAttach);
+        }
+        adapterAttach.addAll(structureAttaches);
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

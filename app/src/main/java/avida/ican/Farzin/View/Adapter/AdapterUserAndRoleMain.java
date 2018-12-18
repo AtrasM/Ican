@@ -20,12 +20,15 @@ import java.util.List;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static avida.ican.Ican.BaseActivity.closeKeboard;
 
 
 /**
@@ -111,6 +114,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View v) {
+               closeKeboard();
                 item.setSelected(!item.isSelected());
                 CheckItemSelected(item, viewHolder, false);
             }

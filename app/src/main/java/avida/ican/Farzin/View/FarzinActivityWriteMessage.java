@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +44,7 @@ import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
+import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.MediaPicker;
 import avida.ican.Ican.View.Custom.Resorse;
@@ -213,7 +215,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void initAdapter() {
-        LinearLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new LinearLayoutManagerWithSmoothScroller(App.CurentActivity);
+        GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         RcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
         adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, true, new ListenerAdapterAttach() {
             @Override

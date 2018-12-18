@@ -12,6 +12,7 @@ import avida.ican.Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueS
 import avida.ican.Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
 import avida.ican.Farzin.Presenter.Service.Cartable.OpticalPenQueueService;
+import avida.ican.Farzin.Presenter.Service.Message.CheckServerAviableService;
 import avida.ican.Farzin.Presenter.Service.Message.GetRecieveMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.GetSentMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
@@ -31,7 +32,8 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent mintent) {
         App.setServiceContext(context);
         intents.clear();
-        context.startService(new Intent(context, NetWorkCheckingService.class));
+        //context.startService(new Intent(context, NetWorkCheckingService.class));
+        context.startService(new Intent(context, CheckServerAviableService.class));
         context.startService(putIntent(new Intent(context, GetCartableDocumentService.class)));
         context.startService(putIntent(new Intent(context, SendMessageService.class)));
         context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));

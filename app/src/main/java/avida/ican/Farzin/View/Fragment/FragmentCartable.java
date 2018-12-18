@@ -108,6 +108,8 @@ public class FragmentCartable extends BaseFragment {
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
+        } else {
+            frmRcvPin.setVisibility(View.GONE);
         }
         initRcv();
     }
@@ -117,12 +119,15 @@ public class FragmentCartable extends BaseFragment {
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
+        } else {
+            frmRcvPin.setVisibility(View.GONE);
         }
         adapterCartableAction.addAll(structureCartableActions);
         adapterCartableActionPin.addAll(structureCartableActionsPin);
         srlRefresh.setRefreshing(false);
     }
-    private void   checkData() {
+
+    private void checkData() {
         long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
         if (cartableDocumentCount <= 0) {
             txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
@@ -130,6 +135,7 @@ public class FragmentCartable extends BaseFragment {
             lnMain.setVisibility(View.GONE);
         }
     }
+
     private void initRcv() {
         final GridLayoutManagerWithSmoothScroller gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         final GridLayoutManagerWithSmoothScroller gridLayoutManagerPin = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
@@ -146,12 +152,12 @@ public class FragmentCartable extends BaseFragment {
             public void onPin(final int position, StructureCartableAction structureCartableAction) {
                 structureCartableAction.setPin(true);
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), true);
-                structureCartableActionsPin.add(structureCartableAction);
+               /* structureCartableActionsPin.add(structureCartableAction);
                 structureCartableActions.remove(structureCartableAction);
                 adapterCartableActionPin.addItem(structureCartableAction);
                 adapterCartableAction.remove(position);
-                frmRcvPin.setVisibility(View.VISIBLE);
-
+                frmRcvPin.setVisibility(View.VISIBLE);*/
+                ReGetData();
 
             }
 
@@ -159,13 +165,14 @@ public class FragmentCartable extends BaseFragment {
             public void unPin(int position, StructureCartableAction structureCartableAction) {
                 structureCartableAction.setPin(false);
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), false);
-                structureCartableActionsPin.remove(structureCartableAction);
+            /*    structureCartableActionsPin.remove(structureCartableAction);
                 structureCartableActions.add(structureCartableAction);
                 adapterCartableAction.addItem(structureCartableAction);
                 adapterCartableActionPin.remove(position);
                 if (structureCartableActionsPin.size() == 0) {
                     frmRcvPin.setVisibility(View.GONE);
-                }
+                }*/
+                ReGetData();
             }
 
             @Override

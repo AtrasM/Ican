@@ -39,6 +39,7 @@ import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
+import butterknife.BindString;
 import butterknife.BindView;
 
 public class FarzinActivityMain extends BaseNavigationDrawerActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -47,8 +48,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @BindView(R.id.bottom_navigation)
     BottomNavigationViewEx bottomNavigation;
     private static BottomNavigationViewEx staticbottomNavigation;
-
-    private String Title = "فرزین";
+    @BindString(R.string.title_farzin_login)
+    String Title;
     private boolean menuShow = false;
     private FarzinMetaDataSync farzinMetaDataSync;
     private FarzinBroadcastReceiver broadcastReceiver;
