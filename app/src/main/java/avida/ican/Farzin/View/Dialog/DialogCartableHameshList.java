@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -51,6 +52,8 @@ public class DialogCartableHameshList {
         SmartTabLayout smartTabLayout;
         @BindView(R.id.view_pager)
         ViewPager viewPager;
+        @BindView(R.id.btn_close)
+        Button btnClose;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -70,20 +73,26 @@ public class DialogCartableHameshList {
     public void Creat(FragmentManager fragmentManager) {
         this.mfragmentManager = fragmentManager;
         BaseActivity.closeKeboard();
+        App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 dialog = DialogPlus.newDialog(context)
                         .setContentHolder(new ViewHolder(R.layout.dialog_cartable_hamesh_list))
                         .setGravity(Gravity.CENTER)
+                        .setCancelable(false)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(true)
-                        //.setContentBackgroundResource(android.R.color.transparent)
+                        .setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
                 dialog.show();
                 viewHolder = new DialogCartableHameshList.Binding(dialog.getHolderView());
                 initViewPagerFragment();
-
+                viewHolder.btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dismiss();
+                    }
+                });
 
             }
 

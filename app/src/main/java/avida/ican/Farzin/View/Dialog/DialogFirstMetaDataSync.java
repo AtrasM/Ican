@@ -15,6 +15,7 @@ import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 
 /**
@@ -61,6 +62,10 @@ public class DialogFirstMetaDataSync {
         if (metaDataSyncListener != null) {
             metaDataSyncListener.onFinish();
         }
+        App.networkStatus = NetworkStatus.Connected;
+        if (App.netWorkStatusListener != null) {
+            App.netWorkStatusListener.Connected();
+        }
         BaseActivity.dialogMataDataSync = null;
         App.canBack = true;
         BaseActivity.dialog.dismiss();
@@ -86,6 +91,11 @@ public class DialogFirstMetaDataSync {
                 BaseActivity.dialog.show();
             }
         });
+
+        App.networkStatus = NetworkStatus.Syncing;
+        if (App.netWorkStatusListener != null) {
+            App.netWorkStatusListener.Syncing();
+        }
     }
 
 }

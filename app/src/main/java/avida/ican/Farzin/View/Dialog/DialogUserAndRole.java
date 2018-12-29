@@ -2,6 +2,7 @@ package avida.ican.Farzin.View.Dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -42,6 +44,7 @@ import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
+import avida.ican.Ican.View.Interface.ListenerValidate;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -52,11 +55,12 @@ import butterknife.ButterKnife;
 
 public class DialogUserAndRole {
     private final Activity context;
+    private int sendCode;
     private int Ec = 0;
     private int Etc = 0;
     private String Title = "";
     private Loading loading;
-    private DialogPlus dialog;
+    private DialogPlus dialogUserAndRole;
     private List<StructureUserAndRoleDB> mstructuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> mstructuresSelect = new ArrayList<>();
     private List<StructureUserAndRoleDB> mstructuresSearch = new ArrayList<>();
@@ -89,6 +93,8 @@ public class DialogUserAndRole {
         Button btnCancel;
         @BindView(R.id.ln_loading)
         LinearLayout lnLoading;
+        @BindView(R.id.ln_dialog_user_and_role)
+        LinearLayout lnDialogUserAndRole;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -101,12 +107,12 @@ public class DialogUserAndRole {
 
     }
 
-    public DialogUserAndRole(Activity context, int Etc, int Ec) {
+    public DialogUserAndRole(Activity context, int Etc, int Ec, int SendCode) {
         this.context = context;
         this.Etc = Etc;
         this.Ec = Ec;
+        this.sendCode = SendCode;
         loading = new Loading(this.context).Creat();
-
     }
 
     public DialogUserAndRole setTitle(String title) {
@@ -124,6 +130,8 @@ public class DialogUserAndRole {
         this.userAndRoleEnum = userAndRoleEnum;
         if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
             cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(Etc).GetDocumentActions();
+            StructureCartableDocumentActionsDB structureCartableDocumentActionsDB = new StructureCartableDocumentActionsDB(-1, -1, "انتخاب", -1, "");
+            cartableDocumentActionsDBS.add(0, structureCartableDocumentActionsDB);
         }
         this.userAndRoleEnum = userAndRoleEnum;
         userAndRolePresenter = new UserAndRolePresenter(structuresMain, structuresSelect).onListener(new ListenerUserAndRoll() {
@@ -160,7 +168,7 @@ public class DialogUserAndRole {
 
     private void initView() {
         App.canBack = false;
-        dialog = DialogPlus.newDialog(context)
+        dialogUserAndRole = DialogPlus.newDialog(context)
                 .setHeader(R.layout.item_dialog_header)
                 .setContentHolder(new ViewHolder(R.layout.dialog_activity_user_and_role))
                 .setGravity(Gravity.CENTER)
@@ -168,12 +176,12 @@ public class DialogUserAndRole {
                 .setCancelable(false)
                 .setContentBackgroundResource(R.drawable.border_dialog)
                 .create();
-        View viewhelder = dialog.getHeaderView();
+        View viewhelder = dialogUserAndRole.getHeaderView();
         TextView txtHeader = viewhelder.findViewById(R.id.txt_dialog_title);
         txtHeader.setText(Title);
         //------------------------------------------------------------------------------------------------
-        viewHolder = new DialogUserAndRole.Binding(dialog.getHolderView());
-        BaseActivity.dialog = dialog;
+        viewHolder = new DialogUserAndRole.Binding(dialogUserAndRole.getHolderView());
+        BaseActivity.dialog = dialogUserAndRole;
         //------------------------------------------------------------------------------------------------
 
         initTab();
@@ -182,11 +190,22 @@ public class DialogUserAndRole {
             @Override
             public void onClick(View view) {
                 if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
-                    ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
-                        StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID());
-                        StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
-                        listenerUserAndRollMain.onSuccess(structureAppendREQ);
-                        finish();
+                    final ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
+                    ValidationPerson(structurePersonsREQ, new ListenerValidate() {
+                        @Override
+                        public void onValid() {
+                            StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID(), sendCode);
+                            StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
+                            listenerUserAndRollMain.onSuccess(structureAppendREQ);
+                            finish();
+                        }
+
+                        @Override
+                        public void unValid() {
+
+                        }
+                    });
+
 
                 } else {
                     listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
@@ -203,8 +222,48 @@ public class DialogUserAndRole {
                 finish();
             }
         });
+        viewHolder.lnDialogUserAndRole.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                BaseActivity.closeKeboard();
+            }
+        });
 
-        dialog.show();
+        dialogUserAndRole.show();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void ValidationPerson(final ArrayList<StructurePersonREQ> structurePersonsREQ, final ListenerValidate listenerValidate) {
+        final boolean[] isValid = {false};
+        new AsyncTask<Void, Void, Boolean>() {
+
+
+            public String message = "";
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                for (StructurePersonREQ structurePerson : structurePersonsREQ) {
+                    if (structurePerson.getAction() == -1) {
+                        message = Resorse.getString(R.string.error_erja_action_code_validate_p1) + " " + structurePerson.getFullName() + " " + Resorse.getString(R.string.error_erja_action_code_validate_p2);
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+
+                if (aBoolean) {
+                    listenerValidate.onValid();
+                } else {
+                    App.ShowMessage().ShowToast(message, Toast.LENGTH_LONG);
+                    listenerValidate.unValid();
+                }
+                super.onPostExecute(aBoolean);
+
+            }
+        }.execute();
     }
 
 
@@ -217,6 +276,22 @@ public class DialogUserAndRole {
         adapter.addFrag(fragmentUserAndRoleSelect, R.string.title_selects);
         viewHolder.viewPager.setAdapter(adapter);
         viewHolder.smartTabLayout.setViewPager(viewHolder.viewPager);
+        viewHolder.smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                BaseActivity.closeKeboard();
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                BaseActivity.closeKeboard();
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                BaseActivity.closeKeboard();
+            }
+        });
     }
 
     private void initAdapter() {
@@ -311,8 +386,9 @@ public class DialogUserAndRole {
             userAndRolePresenter.Search(Query, new ListenerUserAndRollSearch() {
                 @Override
                 public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesSearch) {
-                    mstructuresSearch = structureUserAndRolesSearch;
-                    adapterUserAndRoleMain.filter(mstructuresSearch);
+                    mstructuresSearch.clear();
+                    mstructuresSearch = new ArrayList<>(structureUserAndRolesSearch);
+                    adapterUserAndRoleMain.filter(structureUserAndRolesSearch);
                 }
 
                 @Override
@@ -342,6 +418,6 @@ public class DialogUserAndRole {
     private void finish() {
         App.canBack = true;
         clearFragment();
-        if (dialog != null) dialog.dismiss();
+        if (dialogUserAndRole != null) dialogUserAndRole.dismiss();
     }
 }

@@ -59,12 +59,13 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
     // inner class to hold a reference to each item of RecyclerView
     public class ViewHolder extends RecyclerView.ViewHolder {
+        /*  @BindView(R.id.swipe_layout)
+                SwipeRevealLayout swipeLayout;
+                @BindView(R.id.ln_delete)
+                LinearLayout lnDelete;*/
 
         @BindView(R.id.txt_name)
         TextView txtName;
-
-        @BindView(R.id.swipe_layout)
-        SwipeRevealLayout swipeLayout;
         @BindView(R.id.txt_role_name)
         TextView txtRoleName;
         @BindView(R.id.txt_date)
@@ -81,8 +82,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
         ImageView imgStatus;
         @BindView(R.id.img_waiting)
         ImageView imgWaiting;
-        @BindView(R.id.ln_delete)
-        LinearLayout lnDelete;
+
         @BindView(R.id.ln_main)
         LinearLayout lnMain;
 
@@ -141,6 +141,8 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             viewHolder.imgWaiting.setVisibility(View.GONE);
         }
         if (structureReceiverDBS.size() == 1) {
+            viewHolder.txtRoleName.setVisibility(View.VISIBLE);
+            viewHolder.imgStatus.setVisibility(View.VISIBLE);
             StructureUserAndRoleDB structureUserAndRoleDB;
             if (structureReceiverDBS.get(0).getRole_id() <= 0) {
                 structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDBS.get(0).getUser_id());
@@ -174,9 +176,10 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             viewHolder.txtRoleName.setText(" [ " + structureUserAndRoleDB.getRoleName() + " ] ");
 
         } else {
-            viewHolder.imgProfile.setBackground(Resorse.getDrawable(R.drawable.ic_group));
+            viewHolder.imgProfile.setImageDrawable(Resorse.getDrawable(R.drawable.ic_group));
             viewHolder.txtName.setText(Resorse.getString(R.string.Group_Message));
             viewHolder.txtRoleName.setText("");
+            viewHolder.txtRoleName.setVisibility(View.GONE);
             viewHolder.imgStatus.setVisibility(View.GONE);
         }
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
@@ -189,7 +192,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
             }
         });
-        viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
+      /*  viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (item.getStatus() != Status.WAITING && item.getStatus() != Status.STOPED) {
@@ -198,7 +201,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
             }
         });
-        binderHelper.bind(viewHolder.swipeLayout, "" + position);
+        binderHelper.bind(viewHolder.swipeLayout, "" + position);*/
 
     }
 

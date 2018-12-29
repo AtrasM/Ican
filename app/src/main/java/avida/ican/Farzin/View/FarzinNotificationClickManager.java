@@ -19,7 +19,7 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        App.CurentActivity = this;
         String Extra = getIntent().getStringExtra(PutExtraEnum.Notification.getValue());
         if (Extra.equals(PutExtraEnum.MultyMessage.getValue())) {
             Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());

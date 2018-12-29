@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import avida.ican.Farzin.FarzinCartableNotificationReceiver;
 import avida.ican.Farzin.FarzinMessageNotificationReceiver;
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
@@ -26,10 +27,13 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumen
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.GetCartableDocumentFromServerPresenter;
+import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -40,21 +44,23 @@ import avida.ican.R;
  */
 
 public class GetCartableDocumentService extends Service {
-    private final long DELAY = TimeValue.MinutesInMilli() * 35;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;
     private Handler handler = new Handler();
     private GetCartableDocumentFromServerPresenter getCartableDocumentFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
     private Status status = Status.IsNew;
-    private int Count = 1;
+    private int Count = 10;
     private final int MaxCount = 50;
-    private final int MinCount = 1;
-    private int notifyID = 2;
+    private final int MinCount = 10;
+    private int notifyID = NotificationChanelEnum.Cartable.getValue();
     private Intent NotificationIntent;
     private static int existCont = 0;
     private static int dataSize = 0;
+    private static int newCount = 0;
 
     @Override
     public void onCreate() {
@@ -74,7 +80,7 @@ public class GetCartableDocumentService extends Service {
                 existCont = 0;
                 dataSize = inboxCartableDocumentList.size();
                 if (inboxCartableDocumentList.size() == 0) {
-                    if(BaseActivity.dialogMataDataSync!=null){
+                    if (BaseActivity.dialogMataDataSync != null) {
                         BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
                     }
 
@@ -87,7 +93,7 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     App.getHandler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -102,13 +108,13 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     App.getHandler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onCancel();
                         }
-                    },FAILED_DELAY);
+                    }, FAILED_DELAY);
                 } else {
                     reGetData(Count);
                 }
@@ -120,17 +126,39 @@ public class GetCartableDocumentService extends Service {
     }
 
     private void GetCartableDocument(int count) {
-        getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+        } else {
+            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getCartableLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
+            if (compareTimeEnum == CompareTimeEnum.isAfter) {
+                getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+            } else {
+                reGetData(Count);
+            }
+        }
+
     }
 
     private void SaveData(final ArrayList<StructureInboxDocumentRES> inboxCartableDocumentList) {
 
         final StructureInboxDocumentRES structureInboxDocumentRES = inboxCartableDocumentList.get(0);
+
+        if (structureInboxDocumentRES.isRead()) {
+            status = Status.READ;
+        } else {
+           /* if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+                status = Status.IsNew;
+            } else {
+                status = Status.UnRead;
+            }*/
+            status = Status.UnRead;
+        }
+
         farzinCartableQuery.saveCartableDocument(structureInboxDocumentRES, Type.RECEIVED, status, new CartableDocumentQuerySaveListener() {
 
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
-
+                newCount = newCount++;
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
@@ -154,7 +182,7 @@ public class GetCartableDocumentService extends Service {
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
-                        if(BaseActivity.dialogMataDataSync!=null){
+                        if (BaseActivity.dialogMataDataSync != null) {
                             BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
                         }
                         reGetData(MinCount);
@@ -171,11 +199,15 @@ public class GetCartableDocumentService extends Service {
             }
 
             @Override
-            public void onFailed(String message) {
-                ShowToast("save message onFailed");
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    //ShowToast("WatingForNetwork");
-                    onFailed("");
+            public void onFailed(final String message) {
+                ShowToast("save document onFailed");
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed(message);
+                        }
+                    }, FAILED_DELAY);
                 } else {
                     reGetData(Count);
                 }
@@ -184,10 +216,14 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onCancel() {
-                ShowToast("save message onCancel");
-                if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    //ShowToast("WatingForNetwork");
-                    onCancel();
+                ShowToast("save document onCancel");
+                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCancel();
+                        }
+                    }, FAILED_DELAY);
                 } else {
                     reGetData(Count);
                 }
@@ -196,29 +232,42 @@ public class GetCartableDocumentService extends Service {
 
     }
 
-
-    private void CallMulltiMessageNotification() {
-        ShowToast("new CartableDocument");
-        long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
-        String title = Resorse.getString(context, R.string.Cartable);
-        String message = cartableDocumentCount + " " + Resorse.getString(context, R.string.NewCartableDocument);
-        callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiCartableDocumentIntent()));
-    }
-
-
     private void reGetData(int count) {
         ShowToast("re Get cartable document");
         Count = count;
-       /* String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.D                  ateTime_yyyy_MM_dd_hh_mm_ss.getValue());
-        getFarzinPrefrences().putCartableDocumentDataSyncDate(CurentDateTime);*/
+        long delay = 1;
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            delay = DELAY;
+        } else {
+            delay = LOWDELAY;
+        }
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetCartableDocument(Count);
             }
-        }, DELAY);
+        }, delay);
+
+
     }
 
+    private void CallMulltiMessageNotification() {
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            return;
+        } /*else {
+            if (App.networkStatus != null) {
+                if (App.networkStatus == NetworkStatus.Syncing) {
+                    return;
+                }
+            }
+        }*/
+        ShowToast("new CartableDocument");
+        // long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
+        String title = Resorse.getString(context, R.string.Cartable);
+        String message = newCount + " " + Resorse.getString(context, R.string.NewCartableDocument);
+        callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiCartableDocumentIntent()));
+    }
 
     private void ShowToast(final String s) {
         handler.post(new Runnable() {
@@ -240,36 +289,18 @@ public class GetCartableDocumentService extends Service {
     }
 
 
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    @Override
-    public void onDestroy() {
-        if (App.isTestMod) {
-            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
-        }
-        //timer.cancel();
-        super.onDestroy();
-    }
-
     void callNotification(final String title, final String message, final PendingIntent pendingIntent) {
         try {
-            notifyID = 2;
             String CHANNEL_ID = "Ican_Notification_CHID";// The id of the channel.
             CharSequence name = "Ican_Farzin";// The user-visible name of the channel.
             int importance = NotificationManager.IMPORTANCE_HIGH;
-
-
-            //CustomFunction.DismissNotification(context, notifyID);
 
 
             Notification notification =
                     new NotificationCompat.Builder(context)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(getDeleteIntent())
-                            .setSmallIcon(R.drawable.ic_notification)
+                            .setSmallIcon(R.drawable.ic_notification_inbox)
                             .setContentTitle(title)
                             .setContentText(message)
                             .setAutoCancel(true)
@@ -296,9 +327,9 @@ public class GetCartableDocumentService extends Service {
 
             // Issue the notification.
             mNotificationManager.notify(notifyID, notification);
-            if (App.fragmentCartable != null && !App.fragmentCartable.isHidden()) {
+          /*  if (App.fragmentCartable != null && !App.fragmentCartable.isHidden()) {
                 new FarzinCartableQuery().UpdateAllNewCartableDocumentStatusToUnreadStatus();
-            }
+            }*/
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -309,13 +340,11 @@ public class GetCartableDocumentService extends Service {
 
     public PendingIntent getDeleteIntent() {
 
-        Intent intentCancell = new Intent(context, FarzinMessageNotificationReceiver.class);
+        Intent intentCancell = new Intent(context, FarzinCartableNotificationReceiver.class);
         intentCancell.putExtra(PutExtraEnum.ID.name(), notifyID);
         PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intentCancell, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntentCancell;
     }
-
-
 
     private Intent GetMultiCartableDocumentIntent() {
         NotificationIntent = new Intent(context, FarzinNotificationClickManager.class);
@@ -335,12 +364,28 @@ public class GetCartableDocumentService extends Service {
         return pendingIntent;
     }
 
+    private FarzinPrefrences getFarzinPrefrences() {
+        return new FarzinPrefrences().init();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        if (App.isTestMod) {
+            Toast.makeText(this, "Service Destroyed", Toast.LENGTH_SHORT).show();
+        }
+        //timer.cancel();
+        super.onDestroy();
+    }
+
     @Override
     public boolean stopService(Intent name) {
         return super.stopService(name);
     }
 
-    private FarzinPrefrences getFarzinPrefrences() {
-        return new FarzinPrefrences().init();
-    }
+
 }

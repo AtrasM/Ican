@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -45,6 +46,8 @@ public class DialogCartableHistoryList {
         SmartTabLayout smartTabLayout;
         @BindView(R.id.view_pager)
         ViewPager viewPager;
+        @BindView(R.id.btn_close)
+        Button btnClose;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -60,21 +63,27 @@ public class DialogCartableHistoryList {
     public void Creat(FragmentManager fragmentManager) {
         this.mfragmentManager = fragmentManager;
         BaseActivity.closeKeboard();
+        App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 dialog = DialogPlus.newDialog(context)
                         .setContentHolder(new ViewHolder(R.layout.dialog_cartable_history_list))
                         .setGravity(Gravity.CENTER)
+                        .setCancelable(false)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(true)
-                        //.setContentBackgroundResource(android.R.color.transparent)
+                        .setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
                 dialog.show();
                 viewHolder = new DialogCartableHistoryList.Binding(dialog.getHolderView());
 
                 initViewPagerFragment();
-
+                viewHolder.btnClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dismiss();
+                    }
+                });
             }
 
         });

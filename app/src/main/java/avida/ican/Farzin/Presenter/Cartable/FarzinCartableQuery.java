@@ -356,6 +356,7 @@ public class FarzinCartableQuery {
             StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new StructureCartableDocumentTaeedQueueDB(receiverCode[0]);
             try {
                 mCartableDocumentTaeedQueueDao.create(cartableDocumentTaeedQueueDB);
+                UpdateInboxDocumentTaeed(receiverCode[0], true);
                 cartableDocumentTaeedQueueQuerySaveListener.onSuccess(receiverCode[0]);
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -569,7 +570,7 @@ public class FarzinCartableQuery {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
         List<StructureInboxDocumentDB> structureInboxDocumentsDB = new ArrayList<>();
         try {
-            queryBuilder.where().eq("ActionCode", actionCode);
+            queryBuilder.where().eq("ActionCode", actionCode).and().eq("isTaeed", false);
             if (status != null) {
                 queryBuilder.where().eq("status", status);
             }
@@ -637,7 +638,7 @@ public class FarzinCartableQuery {
         List<StructureInboxDocumentDB> structureInboxDocumentDB = new ArrayList<>();
         ArrayList<StructureCartableAction> cartableActions = new ArrayList<>();
         try {
-            queryBuilder.where().eq("Pin", isPin);
+            queryBuilder.where().eq("Pin", isPin).and().eq("isTaeed", false);
             structureInboxDocumentDB = queryBuilder.groupBy("ActionCode").query();
             for (StructureInboxDocumentDB inboxDocumentDB : structureInboxDocumentDB) {
                 StructureCartableAction structureCartableAction = new StructureCartableAction(inboxDocumentDB.getActionCode(), inboxDocumentDB.getActionName(), getCartableDocumentCount(inboxDocumentDB.getActionCode(), status), inboxDocumentDB.isPin());
@@ -663,12 +664,12 @@ public class FarzinCartableQuery {
             if (status != null) {
                 if (status == Status.UnRead || status == Status.IsNew) {
                     //  where.and(where.eq("ActionCode", ActionCode), where.or(where.eq("IsRead", Status.UnRead), where.eq("status", Status.IsNew)));
-                    where.eq("ActionCode", ActionCode).and().eq("IsRead", false);
+                    where.eq("ActionCode", ActionCode).and().eq("IsRead", false).and().eq("isTaeed", false);
                 } else {
-                    where.eq("ActionCode", ActionCode).and().eq("IsRead", true);
+                    where.eq("ActionCode", ActionCode).and().eq("IsRead", true).and().eq("isTaeed", false);
                 }
             } else {
-                where.eq("ActionCode", ActionCode);
+                where.eq("ActionCode", ActionCode).and().eq("isTaeed", false);
             }
             queryBuilder.setWhere(where);
             queryBuilder.setCountOf(true);
@@ -684,6 +685,7 @@ public class FarzinCartableQuery {
         long count = 0;
         try {
             queryBuilder.setCountOf(true);
+            queryBuilder.where().eq("isTaeed", false);
             count = cartableDocumentDao.countOf(queryBuilder.prepare());
         } catch (SQLException e) {
             e.printStackTrace();
@@ -815,6 +817,17 @@ public class FarzinCartableQuery {
         }
     }
 
+    public void UpdateInboxDocumentTaeed(int receiverCode, boolean taeed) {
+        try {
+            UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
+            updateBuilder.where().eq("ReceiverCode", receiverCode);
+            updateBuilder.updateColumnValue("isTaeed", taeed);
+            updateBuilder.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void updateCartableDocumentStatus(int id, Status status) {
         try {
             UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
@@ -828,6 +841,7 @@ public class FarzinCartableQuery {
             e.printStackTrace();
         }
     }
+
     public void UpdateAllNewCartableDocumentStatusToUnreadStatus() {
         try {
             UpdateBuilder<StructureInboxDocumentDB, Integer> updateBuilder = cartableDocumentDao.updateBuilder();
@@ -839,6 +853,7 @@ public class FarzinCartableQuery {
             e.printStackTrace();
         }
     }
+
     public boolean IsHameshExist(int HameshID) {
         boolean existing = false;
         QueryBuilder<StructureHameshDB, Integer> queryBuilder = hameshDao.queryBuilder();

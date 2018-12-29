@@ -184,7 +184,7 @@ public class FarzinActivityLogin extends BaseActivity {
 
             @Override
             public void onFailed(String error) {
-                App.ShowMessage().ShowToast(error, ToastEnum.TOAST_LONG_TIME);
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.error_access_denied), ToastEnum.TOAST_LONG_TIME);
                 loading.Hide();
             }
 

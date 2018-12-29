@@ -27,6 +27,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 
@@ -54,7 +55,7 @@ public class WebService {
     private List headerList;
     private ArrayList headerArrayList = null;
     private WebserviceResponseListener webserviceResponseListener;
-    private int TimeOut = 4000;
+    private int TimeOut =(int) TimeValue.SecondsInMilli()*20;
     private String Tag = "WebService";
     private boolean IsPasswordEncript;
     private boolean isNetworkCheking;

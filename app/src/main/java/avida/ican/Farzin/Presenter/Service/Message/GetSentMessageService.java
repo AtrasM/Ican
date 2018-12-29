@@ -21,6 +21,9 @@ import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
+import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 
@@ -29,7 +32,8 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
  */
 
 public class GetSentMessageService extends Service {
-    private final long DELAY = TimeValue.SecondsInMilli() * 35;
+    private final long DELAY = TimeValue.MinutesInMilli();
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private MessageListListener messageListListener;
     private Context context;
@@ -54,7 +58,6 @@ public class GetSentMessageService extends Service {
         context = this;
         Count = MaxCount;
         pageNumber = 1;
-// TODO: 2018-08-08 get status fild from server and set to status Message for save it
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
         farzinMessageQuery = new FarzinMessageQuery();
         messageListListener = new MessageListListener() {
@@ -106,13 +109,32 @@ public class GetSentMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
-    }
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+        } else {
+            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getMessageSentLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
+            if (compareTimeEnum == CompareTimeEnum.isAfter) {
+                getFarzinPrefrences().putMessageSentLastCheckDate(System.currentTimeMillis());
+                getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+            } else {
+                reGetMessage();
+            }
+        }
 
+    }
 
     private void SaveMessage(final ArrayList<StructureMessageRES> messageList) {
         final StructureMessageRES structureMessageRES = messageList.get(0);
-
+        if (structureMessageRES.isRead()) {
+            status = Status.READ;
+        } else {
+         /*   if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+                status = Status.IsNew;
+            } else {
+                status = Status.UnRead;
+            }*/
+            status = Status.UnRead;
+        }
         farzinMessageQuery.SaveMessage(structureMessageRES, Type.SENDED, status, new MessageQuerySaveListener() {
 
             @Override
@@ -173,12 +195,19 @@ public class GetSentMessageService extends Service {
         ShowToast("re Get Message");
         pageNumber = 1;
         Count = MinCount;
+        long delay = 1;
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            delay = DELAY;
+        } else {
+            delay = LOWDELAY;
+        }
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetMessage(pageNumber, Count);
             }
-        }, DELAY);
+        }, delay);
     }
 
 

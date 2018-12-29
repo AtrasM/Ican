@@ -225,6 +225,9 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else if (requestCode == RequestCode.MediaPickerRequestCode.getValue()) {
             mediaPicker.onActivityResult(requestCode, resultCode, data);
         }
+        else if (requestCode == RequestCode.MediaPickerRequestCode.getValue()) {
+            mediaPicker.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override

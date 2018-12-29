@@ -173,10 +173,27 @@
         <item name="android:layout_marginBottom">@dimen/margin</item>
     </style>
 
+    <style name="custom_close_button_style" parent="custom_Txt_Normal_style">
+        <item name="android:textColor">@color/color_txt_Normal</item>
+        <item name="android:background">@drawable/border_btn_close</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:textSize">@dimen/txt_Title_Size</item>
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_marginBottom">@dimen/margin</item>
+    </style>
+
     <style name="custom_image_button_style">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_margin">@dimen/margin_minimum</item>
         <item name="android:background">@drawable/border_ic_editore</item>
+        <item name="android:padding">@dimen/padding_maximum</item>
+    </style>
+    <style name="custom_image_close_style">
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_margin">@dimen/margin_minimum</item>
+        <item name="android:background">@drawable/border_cadr</item>
         <item name="android:padding">@dimen/padding_maximum</item>
     </style>
 
@@ -222,4 +239,13 @@
         <item name="android:gravity">center</item>
     </style>
 
+
+    <style name="Theme.Transparent" parent="Theme.AppCompat">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
 </resources>

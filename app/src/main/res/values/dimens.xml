@@ -17,7 +17,9 @@
     <dimen name="normal_radios">8dp</dimen>
     <dimen name="minimum_radios">2dp</dimen>
     <dimen name="maximum_radios">12dp</dimen>
-    <dimen name="stroke">1dp</dimen>
+    <dimen name="stroke_minimum">1dp</dimen>
+    <dimen name="stroke">2dp</dimen>
+    <dimen name="stroke_maximum">3dp</dimen>
     <dimen name="elevation">2dp</dimen>
     <dimen name="margin_dialog_meta_data">30dp</dimen>
 

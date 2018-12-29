@@ -96,6 +96,6 @@
         style="@style/custom_cancel_button_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cancel" />
+        android:text="@string/close" />
 
 </LinearLayout>

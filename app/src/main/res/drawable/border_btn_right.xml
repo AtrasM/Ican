@@ -3,5 +3,5 @@
     <corners  android:topRightRadius="@dimen/normal_radios"  android:bottomRightRadius="@dimen/normal_radios"/>
    <!-- <solid android:color="@color/LightFillColor"  ></solid>-->
     <solid android:color="@color/color_Info" />
-    <stroke android:width="@dimen/stroke" android:color="@color/color_border"/>
+    <stroke android:width="@dimen/stroke_minimum" android:color="@color/color_border"/>
 </shape>

@@ -34,7 +34,6 @@ import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
-import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 
@@ -49,7 +48,11 @@ public class FragmentMessageList extends BaseFragment {
     private FragmentSentMessageList fragmentSentMessageList;
     private FragmentReceiveMessageList fragmentReceiveMessageList;
     private static FragmentManager mfragmentManager;
+    private boolean isFilter = false;
 
+    public FloatingActionButton getFabNewMsg() {
+        return fabNewMsg;
+    }
 
     @Nullable
     @BindView(R.id.smart_tabLayout)
@@ -212,17 +215,16 @@ public class FragmentMessageList extends BaseFragment {
     }
 
     public void UpdateSendMessageStatus(StructureMessageDB SendMessages) {
-        adapterSentMessage.updateItem(SendMessages);
+        adapterSentMessage.updateData(0, SendMessages);
     }
 
-    private void ReGetReceiveMessage(final SwipeRefreshLayout swipeRefreshLayout) {
+    public void reGetReceiveMessage(Status status, final SwipeRefreshLayout swipeRefreshLayout) {
         List<StructureMessageDB> ReceiveMessages = new ArrayList<>();
         ReceiveMessageStart = 0;
-        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, null, ReceiveMessageStart, Count);
+        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
         mstructuresReceiveMessages = new ArrayList<>(ReceiveMessages);
         ReceiveMessageStart = ReceiveMessageStart + ReceiveMessages.size();
         adapterReceiveMessage.updateData(mstructuresReceiveMessages);
-
         App.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -232,7 +234,18 @@ public class FragmentMessageList extends BaseFragment {
         }, 1000);
     }
 
-    private void ReGetSendMessage(final SwipeRefreshLayout swipeRefreshLayout) {
+    public void reGetReceiveMessage(Status status, boolean isFilter) {
+        this.isFilter = isFilter;
+        List<StructureMessageDB> ReceiveMessages = new ArrayList<>();
+        ReceiveMessageStart = 0;
+        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
+        mstructuresReceiveMessages = new ArrayList<>(ReceiveMessages);
+        ReceiveMessageStart = ReceiveMessageStart + ReceiveMessages.size();
+        adapterReceiveMessage.updateData(mstructuresReceiveMessages);
+
+    }
+
+    private void reGetSendMessage(final SwipeRefreshLayout swipeRefreshLayout) {
         List<StructureMessageDB> SentMessages = new ArrayList<>();
         SentMessageStart = 0;
         SentMessages = new FarzinMessageQuery().GetSendMessages(UserId, null, SentMessageStart, Count);
@@ -263,7 +276,12 @@ public class FragmentMessageList extends BaseFragment {
 
             @Override
             public void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
-                ReGetReceiveMessage(swipeRefreshLayout);
+                if (isFilter) {
+                    reGetReceiveMessage(Status.UnRead, swipeRefreshLayout);
+                } else {
+                    reGetReceiveMessage(null, swipeRefreshLayout);
+                }
+
             }
         });
         fragmentSentMessageList = new FragmentSentMessageList().newInstance(App.CurentActivity, adapterSentMessage, new ListenerRcv() {
@@ -274,7 +292,7 @@ public class FragmentMessageList extends BaseFragment {
 
             @Override
             public void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
-                ReGetSendMessage(swipeRefreshLayout);
+                reGetSendMessage(swipeRefreshLayout);
             }
         });
 

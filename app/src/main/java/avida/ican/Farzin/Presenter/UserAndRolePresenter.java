@@ -24,7 +24,6 @@ import avida.ican.R;
 public class UserAndRolePresenter {
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
-    private List<StructureUserAndRoleDB> structuresSearch = new ArrayList<>();
     private ListenerUserAndRoll listenerUserAndRollDialog;
     private ListenerUserAndRollSearch listenerUserAndRollSearch;
 
@@ -92,12 +91,14 @@ public class UserAndRolePresenter {
 
     public void Search(String Query, ListenerUserAndRollSearch listenerUserAndRollSearch) {
         this.listenerUserAndRollSearch = listenerUserAndRollSearch;
-        Searching(Query);
+            Searching(Query);
+
+
     }
 
     @SuppressLint("StaticFieldLeak")
     private void Searching(String query) {
-        structuresSearch = new ArrayList<>();
+        final List<StructureUserAndRoleDB> structuresSearch = new ArrayList<>();
         query = CustomFunction.convertArabicCharToPersianChar(query);
         final String finalQuery = query;
         new AsyncTask<Void, Void, Void>() {
@@ -113,5 +114,4 @@ public class UserAndRolePresenter {
             }
         }.execute();
     }
-
 }

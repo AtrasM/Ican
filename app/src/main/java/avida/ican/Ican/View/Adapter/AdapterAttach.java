@@ -12,21 +12,18 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Structure.StructureAttach;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Dialog.DialogDelet;
+import avida.ican.Ican.View.Dialog.DialogQuestion;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
-import avida.ican.Ican.View.Interface.ListenerAttach;
-import avida.ican.Ican.View.Interface.ListenerDelet;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -151,7 +148,7 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
         viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                new DialogDelet(context).setOnListener(new ListenerDelet() {
+                new DialogQuestion(context).setOnListener(new ListenerQuestion() {
                     @Override
                     public void onSuccess() {
                         delet(item);

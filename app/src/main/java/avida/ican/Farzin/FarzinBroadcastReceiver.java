@@ -12,12 +12,12 @@ import avida.ican.Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueS
 import avida.ican.Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
 import avida.ican.Farzin.Presenter.Service.Cartable.OpticalPenQueueService;
-import avida.ican.Farzin.Presenter.Service.Message.CheckServerAviableService;
+import avida.ican.Farzin.Presenter.Service.CheckServerAviableService;
 import avida.ican.Farzin.Presenter.Service.Message.GetRecieveMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.GetSentMessageService;
 import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
 import avida.ican.Ican.App;
-import avida.ican.Ican.View.Custom.NetWorkCheckingService;
+import avida.ican.Ican.View.Custom.TimeValue;
 
 /**
  * Created by AtrasVida on 2018-06-25 at 4:28 PM
@@ -45,7 +45,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
             public void run() {
                 context.startService(putIntent(new Intent(context, GetSentMessageService.class)));
             }
-        }, 1000);
+        }, TimeValue.SecondsInMilli());
     }
 
     private Intent putIntent(Intent intent) {

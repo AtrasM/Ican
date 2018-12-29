@@ -3,7 +3,6 @@ package avida.ican.Farzin.View;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -45,7 +44,6 @@ import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.MediaPicker;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogAttach;
@@ -267,10 +265,11 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         }*/
         reMsg.setEditorFontColor(Color.BLACK);
         reMsg.setPadding(defPading, defPading, defPading, defPading);
-        reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
         reMsg.focusEditor();
-        reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
+        //reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
+        reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
         reMsg.setAlignRight();
+        reMsg.setOutdent();
         reMsg.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
             public void onTextChange(String text) {
@@ -280,12 +279,16 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
 
         ArrayList<String> msize = new ArrayList<>();
-        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(24, 22, 20, 18, 16));
-        msize.add("H 1");
-        msize.add("H 2");
-        msize.add("H 3");
-        msize.add("H 4");
-        msize.add("H 5");
+        final ArrayList<Integer> Hsize = new ArrayList<>(Arrays.asList(14, 16, 18, 20, 22, 24, 26, 28, 30));
+        msize.add("14pt");
+        msize.add("16pt");
+        msize.add("18pt");
+        msize.add("20pt");
+        msize.add("22pt");
+        msize.add("24pt");
+        msize.add("26pt");
+        msize.add("28pt");
+        msize.add("30pt");
 
         ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(msize);
         spSize.setAdapter(adapterSize);
@@ -542,7 +545,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {
                 for (int i = 0; i < base64Files.size(); i++) {
-                    String fileExtension = CustomFunction.getFileExtention(names.get(i));
+                    String fileExtension = CustomFunction.FileExtension(names.get(i));
                     StructureAttach structureAttach = new StructureAttach(base64Files.get(i), names.get(i), fileExtension, resID);
                     structureAttaches.add(structureAttach);
                     try {
@@ -612,16 +615,15 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             public void onSuccess(final StructureMessageDB structureMessageDB) {
                 if (App.fragmentMessageList != null) {
-                    App.getHandlerMainThread().post(new Runnable() {
+                    App.CurentActivity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             loading.Hide();
                             App.fragmentMessageList.AddSendNewMessage(structureMessageDB);
-                            App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
-
+                            App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
+                            Finish(App.CurentActivity);
                         }
                     });
-
                 }
 
             }

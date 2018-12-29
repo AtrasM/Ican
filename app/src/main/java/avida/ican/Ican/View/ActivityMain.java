@@ -318,7 +318,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private void showUserAndRoleDialog() {
 
 
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, 645, 300).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, 645, 300,-1).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;

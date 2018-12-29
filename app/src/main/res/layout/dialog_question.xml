@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:layout_margin="@dimen/margin_minimum"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/color_White"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txt_title_dialog_question"
+            style="@style/custom_Txt_Title_style"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:textColor="@color/color_txt_Normal"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:layout_margin="@dimen/margin"
+            android:gravity="center"
+            android:text="@string/delet_question" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding">
+
+            <Button
+                android:id="@+id/btn_dialog_question_ok"
+                style="@style/custom_right_button_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/success" />
+
+            <Button
+                android:id="@+id/btn_dialog_question_cancel"
+                style="@style/custom_left_button_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/margin_minimum"
+                android:layout_weight="0.5"
+                android:text="@string/close" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

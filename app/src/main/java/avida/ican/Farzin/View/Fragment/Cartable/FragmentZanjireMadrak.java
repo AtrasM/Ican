@@ -134,8 +134,10 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     public void run() {
                         if (counter == 0) {
                             txtNoData.setVisibility(View.VISIBLE);
+                        }else{
+                            txtNoData.setVisibility(View.GONE);
                         }
-                        lnLoading.setVisibility(View.GONE);
+
                     }
                 });
 
@@ -147,6 +149,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         if (adapteAtf.getDataSize() <= 0 && adapteDarErtebatBa.getDataSize() <= 0 && adaptePeiro.getDataSize() <= 0 && adaptePeyvast.getDataSize() <= 0) {
                             txtNoData.setVisibility(View.VISIBLE);
                         }
@@ -162,7 +165,13 @@ public class FragmentZanjireMadrak extends BaseFragment {
 
     private void ProcessData() {
         counter = 0;
-        lnLoading.setVisibility(View.VISIBLE);
+        App.CurentActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                lnLoading.setVisibility(View.VISIBLE);
+            }
+        });
+
         structureAtf = farzinZanjireMadrakPresenter.GetZanjireMadrakList(ZanjireMadrakFileTypeEnum.ATF);
         structureDarErtebat = farzinZanjireMadrakPresenter.GetZanjireMadrakList(ZanjireMadrakFileTypeEnum.DARERTEBAT);
         structurePeiro = farzinZanjireMadrakPresenter.GetZanjireMadrakList(ZanjireMadrakFileTypeEnum.PEIRO);
@@ -216,8 +225,6 @@ public class FragmentZanjireMadrak extends BaseFragment {
         } else {
             ProcessData();
             if (counter <= 0) {
-                lnLoading.setVisibility(View.GONE);
-                srlRefresh.setRefreshing(false);
                 txtNoData.setVisibility(View.VISIBLE);
             }
         }
@@ -227,14 +234,13 @@ public class FragmentZanjireMadrak extends BaseFragment {
     private void reGetData() {
 
         if (App.networkStatus == NetworkStatus.Connected) {
-            lnLoading.setVisibility(View.VISIBLE);
             farzinZanjireMadrakPresenter.GetZanjireMadrakFromServer();
         } else {
             ProcessData();
             if (counter <= 0) {
-                lnLoading.setVisibility(View.GONE);
-                srlRefresh.setRefreshing(false);
                 txtNoData.setVisibility(View.VISIBLE);
+            }else{
+                txtNoData.setVisibility(View.GONE);
             }
         }
 

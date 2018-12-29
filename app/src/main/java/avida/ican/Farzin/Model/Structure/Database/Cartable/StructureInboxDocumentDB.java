@@ -21,81 +21,68 @@ public class StructureInboxDocumentDB implements Serializable {
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
     @DatabaseField()
-    int ReceiverCode;
+    private int ReceiverCode;
     @DatabaseField()
-    int EntityTypeCode;
+    private int EntityTypeCode;
     @DatabaseField()
-    String PriorityEntity_Name;
+    private String PriorityEntity_Name;
     @DatabaseField()
-    int PrioritySend_ID;
+    private  int PrioritySend_ID;
     @DatabaseField()
-    int EntityCode;
+    private int EntityCode;
     @DatabaseField()
-    int SendCode;
+    private int SendCode;
     @DatabaseField()
-    String Title;
+    private String Title;
     @DatabaseField()
-    boolean HaveDependency;
+    private  boolean HaveDependency;
     @DatabaseField()
-    int SecurityLevelCode;
+    private int SecurityLevelCode;
     @DatabaseField()
-    String SecurityLevelName;
+    private String SecurityLevelName;
     @DatabaseField()
-    String EntityTypeName;
+    private String EntityTypeName;
     @DatabaseField()
-    int ActionCode;
+    private  int ActionCode;
     @DatabaseField()
-    String ActionName;
+    private  String ActionName;
     @DatabaseField()
-    String SenderName;
+    private  String SenderName;
     @DatabaseField()
-    String SenderFirstName;
+    private String SenderFirstName;
     @DatabaseField()
-    String SenderLastName;
-
-    public String getSenderFirstName() {
-        return SenderFirstName;
-    }
-
-    public void setSenderFirstName(String senderFirstName) {
-        SenderFirstName = senderFirstName;
-    }
-
-    public String getSenderLastName() {
-        return SenderLastName;
-    }
-
-    public void setSenderLastName(String senderLastName) {
-        SenderLastName = senderLastName;
-    }
-
+    private  String SenderLastName;
     @DatabaseField()
-
-    String SenderRoleName;
+    private String SenderRoleName;
     @DatabaseField()
-    String EntityNumber;
+    private String EntityNumber;
     @DatabaseField()
-    Date ImportDate;
+    private Date ImportDate;
     @DatabaseField()
-    Date ExportDate;
+    private  Date ExportDate;
     @DatabaseField()
-    Date ReceiveDate;
+    private Date ReceiveDate;
     @DatabaseField()
-    Date ExpireDate;
+    private Date ExpireDate;
     @DatabaseField()
-    String UserDescription;
+    private String UserDescription;
     @DatabaseField()
-    String PrivateHameshContent;
+    private String PrivateHameshContent;
     @DatabaseField()
-    String PrivateHameshTitle;
+    private  String PrivateHameshTitle;
     @DatabaseField()
-    boolean Pin;
+    private  boolean Pin;
     @DatabaseField()
-    boolean IsRead;
+    private boolean IsRead;
     @DatabaseField()
-    Date LastChangeViewStatesDate;
+    private Date LastChangeViewStatesDate;
+    @DatabaseField()
+    private  boolean isTaeed;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
+
+    //temp filed for control adapter item view
+    private boolean isLnMoreVisible;
 
     public StructureInboxDocumentDB() {
     }
@@ -139,6 +126,7 @@ public class StructureInboxDocumentDB implements Serializable {
         UserDescription = structureInboxDocumentRES.getUserDescription();
         this.status = status;
         this.Pin = isPin;
+        isTaeed = false;
     }
 
     public String getFIELD_NAME_ID() {
@@ -367,5 +355,37 @@ public class StructureInboxDocumentDB implements Serializable {
 
     public void setLastChangeViewStatesDate(Date lastChangeViewStatesDate) {
         LastChangeViewStatesDate = lastChangeViewStatesDate;
+    }
+
+    public boolean isTaeed() {
+        return isTaeed;
+    }
+
+    public void setTaeed(boolean taeed) {
+        isTaeed = taeed;
+    }
+
+    public String getSenderFirstName() {
+        return SenderFirstName;
+    }
+
+    public void setSenderFirstName(String senderFirstName) {
+        SenderFirstName = senderFirstName;
+    }
+
+    public String getSenderLastName() {
+        return SenderLastName;
+    }
+
+    public void setSenderLastName(String senderLastName) {
+        SenderLastName = senderLastName;
+    }
+
+    public boolean isLnMoreVisible() {
+        return isLnMoreVisible;
+    }
+
+    public void setLnMoreVisible(boolean lnMoreVisible) {
+        isLnMoreVisible = lnMoreVisible;
     }
 }

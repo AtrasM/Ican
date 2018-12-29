@@ -76,7 +76,7 @@ public class DialogPin_unPin {
                         .setGravity(Gravity.BOTTOM)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)
-                        .setContentBackgroundResource(R.drawable.border_dialog)
+                        //.setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
                 viewHolder = new Binding(dialog.getHolderView());
                 viewHolder.btnPin.setOnClickListener(new View.OnClickListener() {

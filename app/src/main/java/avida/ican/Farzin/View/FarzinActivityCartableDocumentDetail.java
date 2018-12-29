@@ -50,9 +50,11 @@ import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogOpticalPen;
+import avida.ican.Ican.View.Dialog.DialogQuestion;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.Ican.View.Interface.OpticalPenDialogListener;
 import avida.ican.R;
 import butterknife.BindString;
@@ -77,7 +79,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     @BindView(R.id.txt_name)
     TextView txtName;
     @BindView(R.id.img_taeed)
-    ImageView imTaeed;
+    ImageView imgTaeed;
     @BindView(R.id.img_taeed_erja)
     ImageView imgTaeedErja;
     @BindView(R.id.img_erja)
@@ -105,6 +107,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private DialogOpticalPen dialogOpticalPen;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
     private DialogUserAndRole dialogUserAndRole;
+    private int sendCode = -1;
 
     @Override
     protected void onResume() {
@@ -136,6 +139,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private void initView() {
         Etc = cartableDocumentDetailBND.getETC();
         Ec = cartableDocumentDetailBND.getEC();
+        sendCode = cartableDocumentDetailBND.getEC();
         txtName.setText(cartableDocumentDetailBND.getSenderName());
         txtRoleName.setText("[ " + cartableDocumentDetailBND.getSenderRoleName() + " ]");
         String[] splitDateTime = CustomFunction.MiladyToJalaly(cartableDocumentDetailBND.getReceiveDate().toString()).split(" ");
@@ -185,11 +189,24 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
                 showUserAndRoleDialog(true);
             }
         });
-        imTaeed.setOnClickListener(new View.OnClickListener() {
+        new CustomFunction(App.CurentActivity).ChengeDrawableColorAndSetToImageView(imgTaeed, R.drawable.ic_confirm, R.color.color_document_detail_actions);
+        imgTaeed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                lnLoading.setVisibility(View.VISIBLE);
-                Taeed();
+                new DialogQuestion(App.CurentActivity).setTitle(Resorse.getString(R.string.title_question)).setOnListener(new ListenerQuestion() {
+                    @Override
+                    public void onSuccess() {
+                        lnLoading.setVisibility(View.VISIBLE);
+                        Taeed();
+                    }
+
+                    @Override
+                    public void onCancel() {
+
+                    }
+                }).Show();
+
+
             }
         });
 
@@ -220,6 +237,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
                 @Override
                 public void onFinish() {
+                    farzinCartableQuery.deletCartableDocumentAllContent(cartableDocumentDetailBND.getReceiverCode());
                     lnLoading.setVisibility(View.GONE);
                     App.ShowMessage().ShowToast(Resorse.getString(R.string.document_taeed_successfull), ToastEnum.TOAST_LONG_TIME);
                     Intent returnIntent = new Intent();
@@ -236,16 +254,31 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         new FarzinCartableQuery().saveCartableDocumentTaeedQueue(receiveCode, new CartableDocumentTaeedQueueQuerySaveListener() {
             @Override
             public void onSuccess(int receiveCode) {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
+                        Intent returnIntent = new Intent();
+                        setResult(TAEED.getValue(), returnIntent);
+                        Finish(App.CurentActivity);
+                    }
+                });
 
             }
 
             @Override
             public void onExisting() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
-
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
+                        Intent returnIntent = new Intent();
+                        setResult(TAEED.getValue(), returnIntent);
+                        Finish(App.CurentActivity);
+                    }
+                });
             }
 
             @Override
@@ -314,16 +347,26 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
             @Override
             public void onSuccess() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+                });
+
 
             }
 
             @Override
             public void onExisting() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
-
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+                });
             }
 
             @Override
@@ -346,6 +389,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
             }
         }, FailedDelay);
     }
+
     //_________________________________*****___Send___*****__________________________________
 
     private void saveDrawable(final StructureOpticalPenREQ structureOpticalPenREQ) {
@@ -371,6 +415,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
                 @Override
                 public void onFinish() {
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.send_opticalpen_successfull), ToastEnum.TOAST_LONG_TIME);
                     lnLoading.setVisibility(View.GONE);
 
                 }
@@ -384,16 +429,25 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
             @Override
             public void onSuccess() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+                });
 
             }
 
             @Override
             public void onExisting() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
-
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+                });
             }
 
             @Override
@@ -458,7 +512,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
     private void showUserAndRoleDialog(final boolean TaeedAndSend) {
 
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, Etc, Ec).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, Etc, Ec, sendCode).setTitle(Resorse.getString(R.string.title_send)).init(mfragmentManager, (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;

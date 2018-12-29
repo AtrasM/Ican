@@ -5,13 +5,14 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
-import avida.ican.Ican.View.Interface.ListenerDelet;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -20,37 +21,45 @@ import butterknife.ButterKnife;
  * Created by AtrasVida on 2018-05-26 at 4:11 PM
  */
 
-public class DialogDelet {
+public class DialogQuestion {
     private final Activity context;
     private Binding viewHolder;
-    private DialogPlus dialog;
-    private ListenerDelet listenerDelet;
+    private DialogPlus dialogQuestion;
+    private ListenerQuestion listenerQuestion;
+    private String Title = "";
 
     public class Binding {
 
-        @BindView(R.id.btn_ok)
-        Button mbtnOk;
-        @BindView(R.id.btn_cancel)
-        Button mbtnCancel;
+        @BindView(R.id.btn_dialog_question_ok)
+        Button btnDialogQuestionOk;
+        @BindView(R.id.txt_title_dialog_question)
+        TextView txtTitleDialogQuestion;
+        @BindView(R.id.btn_dialog_question_cancel)
+        Button btnDialogQuestionCancel;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
         }
     }
 
-    public DialogDelet(Activity context) {
+    public DialogQuestion(Activity context) {
         this.context = context;
     }
 
 
-    public DialogDelet setOnListener(ListenerDelet listenerDelet) {
-        this.listenerDelet = listenerDelet;
+    public DialogQuestion setOnListener(ListenerQuestion listenerQuestion) {
+        this.listenerQuestion = listenerQuestion;
+        return this;
+    }
+
+    public DialogQuestion setTitle(String Title) {
+        this.Title = Title;
         return this;
     }
 
 
     public void dismiss() {
-        dialog.dismiss();
+        dialogQuestion.dismiss();
         App.canBack = true;
     }
 
@@ -62,30 +71,32 @@ public class DialogDelet {
             @Override
             public void run() {
 
-                dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_delet))
+                dialogQuestion = DialogPlus.newDialog(context)
+                        .setContentHolder(new ViewHolder(R.layout.dialog_question))
                         .setGravity(Gravity.CENTER)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)
                         .setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
-                viewHolder = new Binding(dialog.getHolderView());
-                viewHolder.mbtnOk.setOnClickListener(new View.OnClickListener() {
+                viewHolder = new Binding(dialogQuestion.getHolderView());
+
+                viewHolder.txtTitleDialogQuestion.setText(Title);
+                viewHolder.btnDialogQuestionOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (listenerDelet != null) listenerDelet.onSuccess();
+                        if (listenerQuestion != null) listenerQuestion.onSuccess();
                         dismiss();
 
                     }
                 });
-                viewHolder.mbtnCancel.setOnClickListener(new View.OnClickListener() {
+                viewHolder.btnDialogQuestionCancel.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (listenerDelet != null) listenerDelet.onCancel();
+                        if (listenerQuestion != null) listenerQuestion.onCancel();
                         dismiss();
                     }
                 });
-                dialog.show();
+                dialogQuestion.show();
 
             }
 

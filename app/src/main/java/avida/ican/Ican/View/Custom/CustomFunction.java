@@ -39,6 +39,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -46,15 +48,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
+import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.View.ActivityImageViewer;
+import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
+import avida.ican.Ican.View.Dialog.DialogImageViewer;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
+
+import static avida.ican.Ican.BaseActivity.goToActivity;
 
 
 /**
@@ -109,6 +118,17 @@ public class CustomFunction {
         imageView.setImageDrawable(drawable);
     }
 
+    public URI UrlToUri(String url) {
+        URI uri = null;
+        try {
+            new URI(url.replace(" ", "%20"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+
+        }
+        return uri;
+    }
+
     public Drawable ChengeDrawableColor(int mDrawable, int color) {
         Drawable drawable = ContextCompat.getDrawable(activity, mDrawable);
         assert drawable != null;
@@ -135,7 +155,7 @@ public class CustomFunction {
 
 
     /**
-     * this function change arabic or persian number Format to Engligh Format
+     * this function change arabic or persian ic_number Format to Engligh Format
      * Example : Change ۱۲۳ to 123
      * private static final String arabic = "\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9";
      */
@@ -250,52 +270,55 @@ public class CustomFunction {
     }
 
     public File OpenFile(byte[] fileAsBytes, String fileName, String fileExtension) {
-        fileExtension = fileExtension.replace("waw", "wav");
-        boolean b = new CheckPermission().writeExternalStorage(1, activity);
+
         File file = null;
-        if (b) {
-            //String type = getIntentType(getExtensionCategory(fileExtension));
-            MimeTypeMap mime = MimeTypeMap.getSingleton();
-            String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
-            try {
-                File dir = new File(App.DEFAULTPATH);
-                if (fileName.contains(fileExtension)) {
-                    file = new File(dir, fileName);
-                } else {
-                    file = new File(dir, fileName + fileExtension);
-                }
+        if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
+            ActivityImageViewer.byteArray = fileAsBytes;
+            goToActivity(ActivityImageViewer.class);
+            //new DialogImageViewer(App.CurentActivity).Creat().show(fileAsBytes);
+            return file;
+        } else {
+            fileExtension = fileExtension.replace("waw", "wav");
+            boolean b = new CheckPermission().writeExternalStorage(1, activity);
 
-                if (!file.exists()) {
-                    file.getParentFile().mkdirs();
-                    file.createNewFile();
-                }
+            if (b) {
+                MimeTypeMap mime = MimeTypeMap.getSingleton();
+                String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
 
-                BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                bos.write(fileAsBytes);
-                bos.flush();
-                bos.close();
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
-                    intent.setDataAndType(contentUri, type);
-                } else {
-                    intent.setDataAndType(Uri.fromFile(file), type);
-                }
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                activity.startActivity(intent);
-
-           /*     App.getHandler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        boolean b1 = file.delete();
+                try {
+                    File dir = new File(App.DEFAULTPATH);
+                    if (fileName.contains(fileExtension)) {
+                        file = new File(dir, fileName);
+                    } else {
+                        file = new File(dir, fileName + fileExtension);
                     }
-                }, 10000);*/
-            } catch (
-                    IOException e) {
-                e.printStackTrace();
+
+                    if (!file.exists()) {
+                        file.getParentFile().mkdirs();
+                        file.createNewFile();
+                    }
+
+                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                    bos.write(fileAsBytes);
+                    bos.flush();
+                    bos.close();
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
+                        intent.setDataAndType(contentUri, type);
+                    } else {
+                        intent.setDataAndType(Uri.fromFile(file), type);
+                    }
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    activity.startActivity(intent);
+                } catch (
+                        IOException e) {
+                    e.printStackTrace();
+                }
             }
+
         }
         return file;
     }
@@ -332,6 +355,35 @@ public class CustomFunction {
         return date;
     }
 
+    public static CompareTimeEnum compareTimeInMiliWithCurentSystemTime(long timeInMili, long deficultTimeInMili) {
+        long curentTime = System.currentTimeMillis();
+
+        CompareTimeEnum compareTimeEnum;
+        if (timeInMili + deficultTimeInMili >= curentTime) {
+            compareTimeEnum = CompareTimeEnum.isAfter;
+        } else if (timeInMili + deficultTimeInMili < curentTime) {
+            compareTimeEnum = CompareTimeEnum.isBefore;
+        } else {
+            compareTimeEnum = CompareTimeEnum.isEqual;
+        }
+        return compareTimeEnum;
+    }
+
+    public static CompareDateTimeEnum compareDates(String DateTime1, String DateTime2) {
+        long a = System.currentTimeMillis();
+        Date d1 = new Date(DateTime1);
+        Date d2 = new Date(DateTime2);
+        CompareDateTimeEnum compareDateTimeEnum;
+        if (d2.after(d1)) {
+            compareDateTimeEnum = CompareDateTimeEnum.isAfter;
+        } else if (d2.before(d1)) {
+            compareDateTimeEnum = CompareDateTimeEnum.isBefore;
+        } else {
+            compareDateTimeEnum = CompareDateTimeEnum.isEqual;
+        }
+        return compareDateTimeEnum;
+    }
+
     public static Date getCurentDateTime() {
         Calendar c = Calendar.getInstance();
         return c.getTime();
@@ -358,6 +410,7 @@ public class CustomFunction {
 
         return date;
     }
+
 
     public static String MiladyToJalaly(String DateTime) {
         String JalalyDate = "";
@@ -406,6 +459,20 @@ public class CustomFunction {
             dpSize = outMetrics.heightPixels / density;
         }
         return Math.round(dpSize / MOD);
+    }
+
+    public int getWidthOrHeightColums(boolean isWhidth) {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+        float density = activity.getResources().getDisplayMetrics().density;
+        float dpSize;
+        if (isWhidth) {
+            dpSize = outMetrics.widthPixels / density;
+        } else {
+            dpSize = outMetrics.heightPixels / density;
+        }
+        return Math.round(dpSize);
     }
 
     /**
@@ -460,7 +527,7 @@ public class CustomFunction {
         return filePath.substring(filePath.lastIndexOf("/") + 1);
     }
 
-    public static String getFileExtention(String fileName) {
+    public static String FileExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf("."));
     }
 
@@ -474,12 +541,23 @@ public class CustomFunction {
         return test != null;
     }
 
-    public static void DismissNotification(Context context, int ID) {
+    public static void DismissNotification(Context context, NotificationChanelEnum chanelEnum) {
         Log.i("Notif", "DismissNotification");
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         try {
-            mNotificationManager.cancel(ID);
-            new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
+            mNotificationManager.cancel(chanelEnum.getValue());
+            switch (chanelEnum) {
+                case Message: {
+                    new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
+                    break;
+                }
+                case Cartable: {
+                    new FarzinCartableQuery().UpdateAllNewCartableDocumentStatusToUnreadStatus();
+                    break;
+                }
+            }
+
+
             Log.i("Notif", "UpdateAllNewMessageStatusToUnreadStatus");
         } catch (Exception e) {
             Log.i("Notif", "error update status");

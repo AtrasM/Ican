@@ -21,12 +21,12 @@
         android:layout_height="wrap_content"
         android:background="@drawable/border"
         android:text="@string/unPin" />
+
     <Button
         android:id="@+id/btn_cancel"
         style="@style/custom_cancel_button_style"
-        android:layout_margin="0dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/cancel" />
+        android:text="@string/close" />
 
 </LinearLayout>

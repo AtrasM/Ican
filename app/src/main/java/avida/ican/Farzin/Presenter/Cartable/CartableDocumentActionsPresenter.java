@@ -51,7 +51,12 @@ public class CartableDocumentActionsPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    onFailed("");
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }
@@ -60,7 +65,12 @@ public class CartableDocumentActionsPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    onFailed("");
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCancel();
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }

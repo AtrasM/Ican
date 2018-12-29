@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
+    android:width="18dp"
+    android:height="18dp"
     android:viewportWidth="32"
     android:viewportHeight="32">
 
     <path
-        android:fillColor="#000000"
+        android:fillColor="@color/color_editore_icon"
         android:pathData="M 4.5 6.5 L 27 6.5 Q 28.5 6.5 28.5 8 L 28.5 8 Q 28.5 9.5 27 9.5 L 4.5 9.5 Q 3 9.5 3 8 L 3 8 Q 3 6.5 4.5 6.5 Z" />
     <path
-        android:fillColor="#000000"
+        android:fillColor="@color/color_editore_icon"
         android:pathData="M 4.5 17.5 L 27 17.5 Q 28.5 17.5 28.5 19 L 28.5 19 Q 28.5 20.5 27 20.5 L 4.5 20.5 Q 3 20.5 3 19 L 3 19 Q 3 17.5 4.5 17.5 Z" />
     <path
-        android:fillColor="#000000"
+        android:fillColor="@color/color_editore_icon"
         android:pathData="M 15 12 L 27 12 Q 28.5 12 28.5 13.5 L 28.5 13.5 Q 28.5 15 27 15 L 15 15 Q 13.5 15 13.5 13.5 L 13.5 13.5 Q 13.5 12 15 12 Z" />
     <path
-        android:fillColor="#000000"
+        android:fillColor="@color/color_editore_icon"
         android:pathData="M 15 23 L 27 23 Q 28.5 23 28.5 24.5 L 28.5 24.5 Q 28.5 26 27 26 L 15 26 Q 13.5 26 13.5 24.5 L 13.5 24.5 Q 13.5 23 15 23 Z" />
 </vector>

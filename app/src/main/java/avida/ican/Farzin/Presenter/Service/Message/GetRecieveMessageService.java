@@ -30,11 +30,14 @@ import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
+import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityWriteMessage;
 import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -45,8 +48,9 @@ import avida.ican.R;
  */
 
 public class GetRecieveMessageService extends Service {
-    private final long DELAY = TimeValue.SecondsInMilli() * 35;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private MessageListListener messageListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -54,12 +58,12 @@ public class GetRecieveMessageService extends Service {
     private FarzinMessageQuery farzinMessageQuery;
     private int pageNumber = 1;
     private Status status = Status.IsNew;
-    private int Count = 1;
+    private int Count = 2;
     private final int MaxCount = 10;
-    private final int MinCount = 1;
-    private long MessageSize = 0;
-    private int notifyID = 1;
+    private final int MinCount = 2;
+    private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
+    private static int newCount =0;
 
 
     @Override
@@ -125,12 +129,36 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+        if(!getFarzinPrefrences().isDataForFirstTimeSync()){
+            getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+        }else {
+            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getMessageRecieveLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
+            if (compareTimeEnum == CompareTimeEnum.isAfter) {
+                getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
+                getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+            }else{
+                reGetMessage();
+            }
+        }
+
     }
 
 
     private void SaveMessage(final ArrayList<StructureMessageRES> messageList) {
+
         final StructureMessageRES structureMessageRES = messageList.get(0);
+
+        if (structureMessageRES.isRead()) {
+            status = Status.READ;
+        } else {
+         /*   if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+                status = Status.IsNew;
+            } else {
+                status = Status.UnRead;
+            }*/
+            status = Status.UnRead;
+        }
+
         ArrayList<StructureReceiverRES> receiversRES = new ArrayList<>();
         StructureUserAndRoleDB UserAndRoleDB = new FarzinMetaDataQuery(context).getUserInfo(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID());
         StructureReceiverRES receiverRES = new StructureReceiverRES(UserAndRoleDB.getRole_ID(), UserAndRoleDB.getUser_ID(), UserAndRoleDB.getLastName(), false, "");
@@ -140,6 +168,7 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onSuccess(StructureMessageDB structureMessageDB) {
+                newCount = newCount++;
                 if (App.fragmentMessageList != null) {
                     final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
                     structureMessagesDB.add(structureMessageDB);
@@ -147,7 +176,10 @@ public class GetRecieveMessageService extends Service {
                         App.getHandlerMainThread().post(new Runnable() {
                             @Override
                             public void run() {
-                                App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
+                                if(App.fragmentMessageList!=null){
+                                    App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
+                                }
+
                                 // UpdateAllNewMessageStatusToUnreadStatus();
                             }
                         });
@@ -190,14 +222,23 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void CallMulltiMessageNotification() {
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            return;
+        }/* else {
+            if (App.networkStatus != null) {
+                if (App.networkStatus == NetworkStatus.Syncing) {
+                    return;
+                }
+            }
+        }*/
         int UserId = getFarzinPrefrences().getUserID();
-        MessageSize = new FarzinMessageQuery().GetMessageCount(UserId, Type.RECEIVED, Status.IsNew);
-        if (MessageSize > 0) {
+       // MessageSize = new FarzinMessageQuery().GetMessageCount(UserId, Type.RECEIVED, Status.IsNew);
+        if (newCount > 0) {
             String title = Resorse.getString(context, R.string.newMessage);
-            String message = MessageSize + " " + Resorse.getString(context, R.string.NewMessageContent);
+            String message = newCount + " " + Resorse.getString(context, R.string.NewMessageContent);
             callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiMessageIntent()));
         }
-
+        newCount =0;
     }
 
 
@@ -205,12 +246,20 @@ public class GetRecieveMessageService extends Service {
         ShowToast("re Get Message");
         pageNumber = 1;
         Count = MinCount;
+        long delay = 1;
+        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            delay = DELAY;
+        } else {
+            delay = LOWDELAY;
+        }
+        getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetMessage(pageNumber, Count);
             }
-        }, DELAY);
+        }, delay);
     }
 
 
@@ -250,7 +299,6 @@ public class GetRecieveMessageService extends Service {
 
     void callNotification(final String title, final String message, final PendingIntent pendingIntent) {
         try {
-            notifyID = 1;
             String CHANNEL_ID = "Ican_Notification_CHID";// The id of the channel.
             CharSequence name = "Ican_Farzin";// The user-visible name of the channel.
             int importance = NotificationManager.IMPORTANCE_HIGH;
@@ -263,7 +311,7 @@ public class GetRecieveMessageService extends Service {
                     new NotificationCompat.Builder(context)
                             .setContentIntent(pendingIntent)
                             .setDeleteIntent(getDeleteIntent())
-                            .setSmallIcon(R.drawable.ic_notification)
+                            .setSmallIcon(R.drawable.ic_notification_message)
                             .setContentTitle(title)
                             .setContentText(message)
                             .setAutoCancel(true)
@@ -290,10 +338,10 @@ public class GetRecieveMessageService extends Service {
 
             // Issue the notification.
             mNotificationManager.notify(notifyID, notification);
-            if (App.fragmentMessageList != null && !App.fragmentMessageList.isHidden()) {
+           /* if (App.fragmentMessageList != null && !App.fragmentMessageList.isHidden()) {
                 new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
                 ShowToast("fragment message list is show");
-            }
+            }*/
 
         } catch (Exception e) {
             e.printStackTrace();

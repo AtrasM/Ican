@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
@@ -18,8 +18,7 @@ public class FarzinMessageNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i("Notif","FarzinMessageNotificationReceiver");
-        CustomFunction.DismissNotification(context,intent.getIntExtra(PutExtraEnum.ID.name(), -1));
-
+        CustomFunction.DismissNotification(context,NotificationChanelEnum.Message);
     }
 }
 

@@ -20,10 +20,12 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentRefreshListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
@@ -34,8 +36,11 @@ import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
+import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
@@ -83,6 +88,7 @@ public class FragmentHome extends BaseFragment {
     private long cartableDocumentCount = 0;
     private long unreadMessageCount = 0;
     private FarzinActivityMain activityMain;
+    private FarzinCartableDocumentListPresenter farzinCartableDocumentListPresenter;
 
     @Override
     public int getLayoutResId() {
@@ -117,7 +123,7 @@ public class FragmentHome extends BaseFragment {
         srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ReGetData();
+                reGetDataFromServer();
             }
         });
 
@@ -133,11 +139,53 @@ public class FragmentHome extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if (activityMain != null && unreadMessageCount > 0) {
-                    activityMain.selectMessageFragment();
+                    activityMain.selectMessageFragment(true);
                 }
             }
         });
+        initCartableDocumentListPresenter();
         initData();
+    }
+
+
+    private void initCartableDocumentListPresenter() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentRefreshListener() {
+            @Override
+            public void newData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void noData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+        });
     }
 
     private void initData() {
@@ -152,7 +200,17 @@ public class FragmentHome extends BaseFragment {
         initRcv();
     }
 
-    public void ReGetData() {
+    public void reGetDataFromServer() {
+        CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getCartableLastCheckDate(), (TimeValue.SecondsInMilli() * 10));
+        if (compareTimeEnum == CompareTimeEnum.isAfter) {
+            farzinCartableDocumentListPresenter.GetFromServer();
+        } else {
+            reGetDataFromLocal();
+        }
+
+    }
+
+    public void reGetDataFromLocal() {
         structureCartableActions = new FarzinCartableQuery().getCartableAction(false, Status.UnRead);
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead);
         if (structureCartableActionsPin.size() > 0) {
@@ -211,7 +269,7 @@ public class FragmentHome extends BaseFragment {
             public void onPin(final int position, StructureCartableAction structureCartableAction) {
                 structureCartableAction.setPin(true);
                 new FarzinCartableQuery().pinAction(structureCartableAction.getActionCode(), true);
-                ReGetData();
+                reGetDataFromLocal();
                 /*structureCartableActionsPin.add(structureCartableAction);
                 structureCartableActions.remove(structureCartableAction);
                 adapterCartableActionPin.addItem(structureCartableAction);
@@ -232,7 +290,7 @@ public class FragmentHome extends BaseFragment {
                 if (structureCartableActionsPin.size() == 0) {
                     frmRcvPin.setVisibility(View.GONE);
                 }*/
-                ReGetData();
+                reGetDataFromLocal();
             }
 
             @Override

@@ -76,13 +76,11 @@ public class GetCartableHameshFromServerPresenter {
         }
     }
 
-
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("ETC", EntityTypeCode);
         soapObject.addProperty("EC", EntityCode);
-
         return soapObject;
 
     }

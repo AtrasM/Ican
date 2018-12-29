@@ -4,6 +4,6 @@
     <!-- <solid android:color="@color/LightFillColor"  ></solid>-->
     <solid android:color="@color/color_White" />
     <stroke
-        android:width="@dimen/stroke"
+        android:width="@dimen/stroke_minimum"
         android:color="@color/color_border" />
 </shape>

@@ -7,7 +7,8 @@ package avida.ican.Ican.View.Enum;
 public enum RequestCode {
     AudioRecordRequestCode(0),
     FilePickerRequestCode(112),
-    MediaPickerRequestCode(222);
+    MediaPickerRequestCode(222),
+    WRITEEXTERNALSTORAGE(1);
     private int intValue;
 
         RequestCode(int value) {

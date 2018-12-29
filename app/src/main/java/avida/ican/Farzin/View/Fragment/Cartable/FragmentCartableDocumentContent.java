@@ -78,6 +78,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        txtNoData.setText(Resorse.getString(R.string.error_cartable_document_content));
         initPresenter();
     }
 
@@ -146,6 +147,10 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     }
 
     private void initPdfViewer(String strFile) {
+        if (strFile == null) {
+            txtNoData.setVisibility(View.VISIBLE);
+            return;
+        }
         byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
         pdfViewer.fromBytes(FileAsbytes)
                 .enableSwipe(true)

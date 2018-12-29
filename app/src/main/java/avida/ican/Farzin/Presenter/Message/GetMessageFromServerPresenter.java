@@ -30,6 +30,7 @@ public class GetMessageFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetMessageFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
+    private boolean RecieveMessage;
 
 
     public GetMessageFromServerPresenter() {
@@ -39,15 +40,17 @@ public class GetMessageFromServerPresenter {
     public void GetRecieveMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetRecieveMessageList";
         GetMessage(page, count, true, messageListListener);
+        this.RecieveMessage=true;
+
     }
 
     public void GetSentMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetSentMessageList";
         GetMessage(page, count, false, messageListListener);
+        this.RecieveMessage=false;
     }
 
     private void GetMessage(int page, int count, final boolean RecieveMessage, final MessageListListener messageListListener) {
-
         CallApi(MetodName, EndPoint, getSoapObject(page, count), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
@@ -98,6 +101,12 @@ public class GetMessageFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
+            if(RecieveMessage){
+                getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
+            }else{
+                getFarzinPrefrences().putMessageSentLastCheckDate(System.currentTimeMillis());
+            }
+
         } else {
             messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
         }

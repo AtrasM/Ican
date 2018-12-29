@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentRefreshListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableSendQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
@@ -25,13 +27,17 @@ import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedServerPresenter;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
+import avida.ican.Farzin.Presenter.Cartable.GetCartableDocumentFromServerPresenter;
 import avida.ican.Farzin.View.Adapter.AdapteCartableDocument;
 import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
@@ -53,10 +59,12 @@ import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Dialog.DialogQuestion;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -102,10 +110,12 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     private long FailedDelay = TimeValue.SecondsInMilli() * 3;
     private boolean canDoAnyAction = true;
     private FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
+    private CartableDocumentListListener cartableDocumentListListener;
     private int DOCUMENTDETAILCODE = 001;
     private StructureInboxDocumentDB curentItem = new StructureInboxDocumentDB();
     private DialogUserAndRole dialogUserAndRole;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
+    private FarzinCartableDocumentListPresenter farzinCartableDocumentListPresenter;
 
     @Override
     protected void onResume() {
@@ -134,8 +144,8 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         initTollBar(Title);
         actionCode = structureCartableDocumentBND.getActionCode();
         animator = new Animator(App.CurentActivity);
+        initCartableDocumentListPresenter();
         initData(actionCode);
-
 
         rcvMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -175,15 +185,68 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         });
     }
 
+    private void initCartableDocumentListPresenter() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentRefreshListener() {
+            @Override
+            public void newData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                        canLoading = true;
+                        structureInboxDocumentDB.clear();
+                        structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+                        adapteCartableDocument.updateData(structureInboxDocumentDB);
+                    }
+                });
+            }
+
+            @Override
+            public void noData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                        canLoading = true;
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
+                        canLoading = true;
+                    }
+                });
+            }
+        });
+    }
+
+
     private void reGetData() {
         start = 0;
         canLoading = false;
         structureInboxDocumentDB.clear();
-        structureInboxDocumentDB = new FarzinCartableQuery().getCartableDocuments(actionCode, null, start, COUNT);
+        structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
         start = structureInboxDocumentDB.size();
+        if (!srlRefresh.isRefreshing()) {
+            lnLoading.setVisibility(View.VISIBLE);
+        }
+        if (App.networkStatus == NetworkStatus.Connected) {
+            farzinCartableDocumentListPresenter.GetFromServer();
+        } else {
+            canLoading = true;
+            srlRefresh.setRefreshing(false);
+            lnLoading.setVisibility(View.GONE);
+        }
         adapteCartableDocument.updateData(structureInboxDocumentDB);
-        srlRefresh.setRefreshing(false);
-        canLoading = true;
+
     }
 
     private void initData(int actionCode) {
@@ -271,13 +334,24 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                         break;
                     }
                     case Confirm: {
-                        lnLoading.setVisibility(View.VISIBLE);
-                        Taeed(structureInboxDocumentDB);
+                        new DialogQuestion(App.CurentActivity).setTitle(Resorse.getString(R.string.title_question)).setOnListener(new ListenerQuestion() {
+                            @Override
+                            public void onSuccess() {
+                                lnLoading.setVisibility(View.VISIBLE);
+                                Taeed(structureInboxDocumentDB);
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        }).Show();
+
                         break;
                     }
                     case Comission: {
 
-                        showUserAndRoleDialog(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode());
+                        showUserAndRoleDialog(structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode(), structureInboxDocumentDB.getSendCode());
                         break;
                     }
                     case TheChainOfEvidence: {
@@ -315,9 +389,9 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     }
 
 
-    private void showUserAndRoleDialog(int ETC, int EC) {
+    private void showUserAndRoleDialog(int ETC, int EC, int sendCode) {
         lnLoading.setVisibility(View.VISIBLE);
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, ETC, EC).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, ETC, EC, sendCode).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;
@@ -441,11 +515,10 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
     //_________________________________*****___Taeed___*****__________________________________
     private void Taeed(final StructureInboxDocumentDB structureInboxDocumentDB) {
-        final int receiverCode = structureInboxDocumentDB.getReceiverCode();
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-            TaeedAddToQueue(receiverCode);
+            TaeedAddToQueue(structureInboxDocumentDB);
         } else {
-            new CartableDocumentTaeedServerPresenter().TaeedDocument(receiverCode, new TaeedListener() {
+            new CartableDocumentTaeedServerPresenter().TaeedDocument(structureInboxDocumentDB.getReceiverCode(), new TaeedListener() {
                 @Override
                 public void onSuccess() {
                     onFinish();
@@ -453,16 +526,17 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
                 @Override
                 public void onFailed(String message) {
-                    TaeedAddToQueue(receiverCode);
+                    TaeedAddToQueue(structureInboxDocumentDB);
                 }
 
                 @Override
                 public void onCancel() {
-                    TaeedAddToQueue(receiverCode);
+                    TaeedAddToQueue(structureInboxDocumentDB);
                 }
 
                 @Override
                 public void onFinish() {
+                    farzinCartableQuery.deletCartableDocumentAllContent(structureInboxDocumentDB.getReceiverCode());
                     adapteCartableDocument.deletItem(structureInboxDocumentDB);
                     App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_taeed_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
                     lnLoading.setVisibility(View.GONE);
@@ -473,39 +547,53 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         }
     }
 
-    private void TaeedAddToQueue(final int receiveCode) {
-        new FarzinCartableQuery().saveCartableDocumentTaeedQueue(receiveCode, new CartableDocumentTaeedQueueQuerySaveListener() {
+    private void TaeedAddToQueue(final StructureInboxDocumentDB structureInboxDocumentDB) {
+        new FarzinCartableQuery().saveCartableDocumentTaeedQueue(structureInboxDocumentDB.getReceiverCode(), new CartableDocumentTaeedQueueQuerySaveListener() {
             @Override
             public void onSuccess(int receiveCode) {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapteCartableDocument.deletItem(structureInboxDocumentDB);
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    }
+                });
 
             }
 
             @Override
             public void onExisting() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapteCartableDocument.deletItem(structureInboxDocumentDB);
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    }
+                });
 
             }
 
             @Override
             public void onFailed(String message) {
-                tryTaeedAddToQueue(receiveCode);
+                tryTaeedAddToQueue(structureInboxDocumentDB);
             }
 
             @Override
             public void onCancel() {
-                tryTaeedAddToQueue(receiveCode);
+                tryTaeedAddToQueue(structureInboxDocumentDB);
             }
         });
     }
 
-    private void tryTaeedAddToQueue(final int receiveCode) {
+    private void tryTaeedAddToQueue(final StructureInboxDocumentDB structureInboxDocumentDB) {
         App.getHandler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                TaeedAddToQueue(receiveCode);
+                TaeedAddToQueue(structureInboxDocumentDB);
             }
         }, FailedDelay);
     }

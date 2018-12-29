@@ -35,6 +35,7 @@ public class ActivitySplash extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         avLoadingIndicatorView.setIndicatorColor(Resorse.getColor(R.color.color_White));
         avLoadingIndicatorView.setVisibility(View.VISIBLE);
         isRemember = farzinPrefrences.isRemember();

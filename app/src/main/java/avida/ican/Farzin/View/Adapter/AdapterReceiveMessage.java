@@ -63,12 +63,14 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
     // inner class to hold a reference to each item of RecyclerView
     public class ViewHolder extends RecyclerView.ViewHolder {
 
+
+        /*   @BindView(R.id.swipe_layout)
+        SwipeRevealLayout swipeLayout;
+        @BindView(R.id.ln_delete)
+        LinearLayout lnDelete;*/
+
         @BindView(R.id.txt_name)
         TextView txtName;
-
-        @BindView(R.id.swipe_layout)
-        SwipeRevealLayout swipeLayout;
-
         @BindView(R.id.txt_role_name)
         TextView txtRoleName;
         @BindView(R.id.txt_date)
@@ -83,8 +85,6 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
         ImageView imgProfile;
         @BindView(R.id.img_seen)
         ImageView imgSeen;
-        @BindView(R.id.ln_delete)
-        LinearLayout lnDelete;
         @BindView(R.id.ln_main)
         LinearLayout lnMain;
 
@@ -127,9 +127,9 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
         viewHolder.txtName.setText(Name);
 
         if (!structureUserAndRoleDB.getLastName().isEmpty() && structureUserAndRoleDB.getLastName().length() >= 1) {
-           String Char = structureUserAndRoleDB.getLastName().substring(0, 1);
+            String Char = structureUserAndRoleDB.getLastName().substring(0, 1);
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
-        }else{
+        } else {
             String Char = structureUserAndRoleDB.getFirstName().substring(0, 1);
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
         }
@@ -148,6 +148,8 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
             } else {
                 viewHolder.imgAttach.setVisibility(View.GONE);
             }
+        }else{
+            viewHolder.imgAttach.setVisibility(View.GONE);
         }
         if (item.getStatus() == Status.READ) {
             viewHolder.imgSeen.setVisibility(View.INVISIBLE);
@@ -163,13 +165,13 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
                 listenerAdapterMessageList.onItemClick(structureDetailMessageBND);
             }
         });
-        viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
+ /*       viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 listenerAdapterMessageList.onDelet(item);
             }
         });
-        binderHelper.bind(viewHolder.swipeLayout, "" + position);
+        binderHelper.bind(viewHolder.swipeLayout, "" + position);*/
 
     }
 

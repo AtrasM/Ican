@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 public class DialogOpticalPen {
     private final Activity context;
     private Binding viewHolder;
-    private DialogPlus dialog;
+    private DialogPlus dialogOpticalPen;
     private OpticalPenDialogListener opticalPenDialogListener;
     private View selectView;
     private View selectColorView;
@@ -57,12 +57,14 @@ public class DialogOpticalPen {
         ImageView imgPen;
         @BindView(R.id.ln_color_danger)
         LinearLayout lnColorDanger;
+        @BindView(R.id.ln_main_optical_pen)
+        LinearLayout lnMainOpticalPen;
         @BindView(R.id.ln_color_black)
         LinearLayout lnColorBlack;
-        @BindView(R.id.btn_cancel)
-        Button btnCancel;
-        @BindView(R.id.btn_send)
-        Button btnSend;
+        @BindView(R.id.btn_dialog_optical_pen_cancel)
+        Button btnDialogPpticalPenCancel;
+        @BindView(R.id.btn_dialog_optical_pen_send)
+        Button btnDialogPpticalPenSend;
         @BindView(R.id.edt_title)
         EditText edtTitle;
 
@@ -83,7 +85,7 @@ public class DialogOpticalPen {
 
 
     public void dismiss() {
-        dialog.dismiss();
+        dialogOpticalPen.dismiss();
         App.canBack = true;
     }
 
@@ -95,7 +97,7 @@ public class DialogOpticalPen {
             @Override
             public void run() {
 
-                dialog = DialogPlus.newDialog(context)
+                dialogOpticalPen = DialogPlus.newDialog(context)
                         .setContentHolder(new ViewHolder(R.layout.dialog_optical_pen))
                         .setGravity(Gravity.CENTER)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -103,13 +105,24 @@ public class DialogOpticalPen {
                         .setHeader(R.layout.item_dialog_header)
                         .setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
-                viewHolder = new Binding(dialog.getHolderView());
-                View viewhelder = dialog.getHeaderView();
+                viewHolder = new Binding(dialogOpticalPen.getHolderView());
+                View viewhelder = dialogOpticalPen.getHeaderView();
                 TextView txtHeader = viewhelder.findViewById(R.id.txt_dialog_title);
                 txtHeader.setText(Resorse.getString(R.string.title_dialog_optical_pen));
                 initDrawingView();
-                dialog.show();
-
+                dialogOpticalPen.show();
+                viewHolder.lnMainOpticalPen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        BaseActivity.closeKeboard();
+                    }
+                });
+                viewHolder.mDrawView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        BaseActivity.closeKeboard();
+                    }
+                });
             }
 
         });
@@ -169,16 +182,18 @@ public class DialogOpticalPen {
             }
         });
 
-        viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
+        viewHolder.btnDialogPpticalPenCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                BaseActivity.closeKeboard();
                 opticalPenDialogListener.onCancel();
                 dismiss();
             }
         });
-        viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {
+        viewHolder.btnDialogPpticalPenSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                BaseActivity.closeKeboard();
                 String Title = "" + viewHolder.edtTitle.getText();
                 byte[] bytes = getDrawingAsByteArray();
                 if (bytes != null) {

@@ -111,18 +111,22 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
             viewHolder.txtFileName.setText("" + Resorse.getString(R.string.showOpticalPenFile));
         } else {
             viewHolder.lnFile.setVisibility(View.GONE);
+            viewHolder.lnReceiver.setVisibility(View.VISIBLE);
             if (item.isPrivate() || !item.getHameshType().equals("Text")) {
                 viewHolder.imgReceiver.setVisibility(View.GONE);
+            } else {
+                viewHolder.imgReceiver.setVisibility(View.VISIBLE);
             }
-            viewHolder.lnReceiver.setVisibility(View.VISIBLE);
             if (item.getTitle() == null || item.getTitle().isEmpty() || item.getTitle().equals("null")) {
                 viewHolder.txtTitle.setVisibility(View.GONE);
             } else {
+                viewHolder.txtTitle.setVisibility(View.VISIBLE);
                 viewHolder.txtTitle.setText("" + item.getTitle());
             }
             if (item.getContent() == null || item.getContent().isEmpty() || item.getContent().equals("null")) {
                 viewHolder.txtHamesh.setVisibility(View.GONE);
             } else {
+                viewHolder.txtHamesh.setVisibility(View.VISIBLE);
                 viewHolder.txtHamesh.setText("" + item.getContent());
             }
 
@@ -143,7 +147,13 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
             @Override
             public void onClick(View view) {
                 if (item.getHameshType().equals("Image")) {
-                    StructureAttach structureAttach = new StructureAttach(item.getFileBinary(), item.getFileName(), ".png");
+                    String extention = "";
+                    if (item.getFileExtension() != null && !item.getFileExtension().isEmpty() && !item.getFileExtension().equals("null")) {
+                        extention = item.getFileExtension();
+                    } else {
+                        extention = ".png";
+                    }
+                    StructureAttach structureAttach = new StructureAttach(item.getFileBinary(), item.getFileName(), extention);
                     listenerAdapterHameshList.onOpenFile(structureAttach);
                 }
             }

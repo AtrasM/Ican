@@ -55,7 +55,12 @@ public class CartableDocumentContentPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    onFailed("");
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }
@@ -64,7 +69,12 @@ public class CartableDocumentContentPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    onFailed("");
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCancel();
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }
@@ -104,8 +114,12 @@ public class CartableDocumentContentPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    //ShowToast("WatingForNetwork");
-                    onFailed("");
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onFailed("");
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }
@@ -115,7 +129,12 @@ public class CartableDocumentContentPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected || App.networkStatus != NetworkStatus.Syncing) {
-                    onCancel();
+                    App.getHandler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            onCancel();
+                        }
+                    },300);
                 } else {
                     reGetData();
                 }

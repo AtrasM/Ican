@@ -16,13 +16,13 @@
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/padding">
+        android:padding="@dimen/padding">
 
         <ImageView
             android:id="@+id/img_attach_icon"
             style="@style/custom_ic_right_style"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             app:srcCompat="@drawable/ic_attach2" />
 
         <TextView
@@ -30,10 +30,11 @@
             style="@style/custom_Txt_Normal_style"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="@dimen/margin"
             android:layout_weight="1"
             android:gravity="center|right"
             android:text="نام"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
             tools:ignore="RtlHardcoded" />
 
     </LinearLayout>

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -42,8 +43,8 @@ public class DialogCartableHamesh {
         TextView txtRoleName;
         @BindView(R.id.txt_hamesh)
         TextView txtHamesh;
-        @BindView(R.id.img_close)
-        ImageView imgClose;
+        @BindView(R.id.btn_close)
+        Button btnClose;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -69,7 +70,7 @@ public class DialogCartableHamesh {
                         .setGravity(Gravity.CENTER)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)
-                        //.setContentBackgroundResource(android.R.color.transparent)
+                        .setContentBackgroundResource(R.drawable.border_dialog)
                         .create();
                 dialog.show();
                 viewHolder = new DialogCartableHamesh.Binding(dialog.getHolderView());
@@ -82,7 +83,7 @@ public class DialogCartableHamesh {
     }
 
     private void initView() {
-        viewHolder.imgClose.setOnClickListener(new View.OnClickListener() {
+        viewHolder.btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 dismiss();

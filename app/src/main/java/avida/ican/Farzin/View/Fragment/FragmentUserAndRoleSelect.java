@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleSelected;
 import avida.ican.Ican.App;
@@ -20,6 +21,8 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
 
     @BindView(R.id.rcv_selected)
     RecyclerView rcvSelected;
+    @BindView(R.id.ln_user_and_role_select)
+    LinearLayout lnUserAndRoleSelect;
     private Activity context;
     private static AdapterUserAndRoleSelected adapterUserAndRoleSelected;
     public static String Tag = "FragmentUserAndRoleSelect";
@@ -51,6 +54,12 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
         rcvSelected.setAdapter(this.adapterUserAndRoleSelected);
 
         rcvSelected.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                closeKeboard();
+            }
+        });
+        lnUserAndRoleSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 closeKeboard();

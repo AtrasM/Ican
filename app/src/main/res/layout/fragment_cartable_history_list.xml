@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/srl_refresh"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -26,21 +27,23 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:padding="@dimen/padding">
+                    android:padding="@dimen/padding"
+                    android:visibility="gone">
 
                     <TextView
                         style="@style/custom_Txt_Title_style"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="گردش :"
                         android:padding="0dp"
+                        android:text="گردش :"
+                        android:gravity="center|left"
                         android:textColor="@color/color_txt_Normal" />
 
                     <Spinner
                         android:id="@+id/sp_history_number"
                         style="@style/custom_spinner_style"
-                        android:layout_width="100dp"
+                        android:layout_width="90dp"
+                        android:gravity="center|right"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
 
@@ -55,15 +58,14 @@
                     tools:ignore="RtlSymmetry" />
             </LinearLayout>
 
+            <include layout="@layout/item_txt_nodata" />
 
             <include layout="@layout/layout_fab_list_move_up" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-        <include layout="@layout/item_txt_nodata" />
-
 
             <include layout="@layout/ln_loading" />
 
-    </FrameLayout>
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

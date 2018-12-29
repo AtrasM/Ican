@@ -41,9 +41,7 @@ public class Message {
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (App.isTestMod) {
                     Toast.makeText(App.getAppContext(), msg, customTime).show();
-                }
             }
         });
 

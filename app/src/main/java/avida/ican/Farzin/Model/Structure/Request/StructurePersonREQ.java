@@ -16,6 +16,7 @@ public class StructurePersonREQ  {
     private String hameshTitle;
     private String hameshContent;
     private String responseUntilDate;
+    private String fullName;
     private int PriorityID_Send;
 
 
@@ -23,7 +24,10 @@ public class StructurePersonREQ  {
         this.description = "";
         this.hameshContent = "";
         this.hameshTitle = "";
+        this.action = -1;
+        this.roleId = -1;
         this.responseUntilDate = "";
+        this.fullName = "";
         this.PriorityID_Send = 1;
     }
 
@@ -93,6 +97,13 @@ public class StructurePersonREQ  {
         PriorityID_Send = priorityID_Send;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 }
 
 

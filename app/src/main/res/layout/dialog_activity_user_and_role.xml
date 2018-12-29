@@ -2,9 +2,11 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/margin"
     android:fitsSystemWindows="true">
 
     <LinearLayout
+        android:id="@+id/ln_dialog_user_and_role"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
@@ -13,7 +15,6 @@
             layout="@layout/layout_tab"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
 
         <com.booking.rtlviewpager.RtlViewPager
             android:id="@+id/view_pager"
@@ -42,7 +43,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/margin_minimum"
                 android:layout_weight="0.5"
-                android:text="@string/cancel" />
+                android:text="@string/close" />
         </LinearLayout>
     </LinearLayout>
 

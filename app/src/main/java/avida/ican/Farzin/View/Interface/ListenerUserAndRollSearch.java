@@ -9,10 +9,10 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB
  */
 
 public interface ListenerUserAndRollSearch {
-    void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesSearch);
+        void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesSearch);
 
-    void onFailed();
+        void onFailed();
 
-    void onCancel();
+        void onCancel();
 
 }

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
@@ -20,13 +22,13 @@ import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
-import avida.ican.Farzin.Presenter.Service.Message.SendMessageService;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
@@ -36,6 +38,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
@@ -47,6 +50,9 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     @BindView(R.id.bottom_navigation)
     BottomNavigationViewEx bottomNavigation;
+    @BindView(R.id.container)
+    LinearLayout container;
+
     private static BottomNavigationViewEx staticbottomNavigation;
     @BindString(R.string.title_farzin_login)
     String Title;
@@ -61,6 +67,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private String mCurrentTab = "";
     private Fragment CurentFragment = null;
     private FarzinPrefrences farzinPrefrences;
+    private MenuItem actionfilter;
+    private boolean isFilter = false;
 
     @Override
     protected int getLayoutResource() {
@@ -156,11 +164,13 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             }
         });
         if (!farzinPrefrences.isDataForFirstTimeSync()) {
+            container.setVisibility(View.GONE);
             BaseActivity.dialogMataDataSync = new DialogFirstMetaDataSync(App.CurentActivity, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
                 @Override
                 public void onFinish() {
                     if (staticbottomNavigation != null) {
                         staticbottomNavigation.setCurrentItem(1);
+                        container.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -256,6 +266,9 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     public void pushFragments(String tag, Fragment fragment, boolean shouldAdd) {
         if (shouldAdd) {
             App.fragmentStacks.get(tag).push(fragment);
+            if (tag == TAB_Message) {
+                actionfilter.setVisible(true);
+            }
             getSupportFragmentManager()
                     .beginTransaction()
                     .hide(CurentFragment)
@@ -264,12 +277,16 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         } else {
             if (tag == TAB_DASHBOARD) {
                 FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tag).lastElement();
-                fragmentHome.ReGetData();
+                fragmentHome.reGetDataFromLocal();
                 fragment = fragmentHome;
+                actionfilter.setVisible(false);
             } else if (tag == TAB_CARTABLE) {
                 FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tag).lastElement();
-                fragmentCartable.ReGetData();
+                fragmentCartable.reGetDataFromLocal();
                 fragment = fragmentCartable;
+                actionfilter.setVisible(false);
+            } else if (tag == TAB_Message) {
+                controlActionFilter();
             }
             getSupportFragmentManager()
                     .beginTransaction()
@@ -314,18 +331,28 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         return false;
     }
 
-    public void selectMessageFragment() {
+    public void selectMessageFragment(boolean isFilter) {
+        this.isFilter=isFilter;
         if (staticbottomNavigation != null) {
             staticbottomNavigation.setCurrentItem(2);
+            controlActionFilter();
         }
 
     }
+    public void selectMessageFragment() {
+        if (staticbottomNavigation != null) {
+            staticbottomNavigation.setCurrentItem(2);
+            controlActionFilter();
+        }
+
+    }
+
 
     public void selectCartableDocumentFragment() {
         if (staticbottomNavigation != null) {
             staticbottomNavigation.setCurrentItem(0);
         }
-
+        actionfilter.setVisible(false);
     }
 
     private void CheckNetWork() {
@@ -373,6 +400,43 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     /* Goto previous fragment in navigation stack of this tab */
         popFragments();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.filter_toolbar_menu, menu);
+        // menu.findItem(R.id.action_search).setIntent(new Intent(G.currentActivity, ActivitySearch.class));
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        setlnToolbarTitleMargin(0);
+        actionfilter = menu.findItem(R.id.action_filter);
+        actionfilter.setVisible(false);
+        actionfilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                isFilter = !isFilter;
+                selectMessageFragment();
+                return false;
+            }
+        });
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void controlActionFilter() {
+        FragmentMessageList fragmentMessageList = (FragmentMessageList) App.fragmentStacks.get(TAB_Message).lastElement();
+        actionfilter.setVisible(true);
+        if (isFilter) {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            fragmentMessageList.reGetReceiveMessage(Status.UnRead,isFilter);
+        } else {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            fragmentMessageList.reGetReceiveMessage(null,isFilter);
+        }
     }
 
     @Override

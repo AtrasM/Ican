@@ -77,7 +77,7 @@ public class CartableDocumentAppendToServerPresenter {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         soapObject.addProperty("EntityTypeCode", structureAppendREQ.getETC());
         soapObject.addProperty("EntityCode", structureAppendREQ.getEC());
-        String DocumentTag = "<Document><Workflow><Sender roleId=\"" + structureAppendREQ.getStructureSenderREQ().getRoleId() + "\" sendParentCode=\"-1\" description=\"\" isLocked=\"0\" viewInOutbox=\"1\" /><Receivers>";
+        String DocumentTag = "<Document><Workflow><Sender roleId=\"" + structureAppendREQ.getStructureSenderREQ().getRoleId() + "\" sendParentCode=\"" + structureAppendREQ.getStructureSenderREQ().getSendParentCode() + "\" description=\"\" isLocked=\"0\" viewInOutbox=\"1\" /><Receivers>";
         for (int i = 0; i < structureAppendREQ.getStructurePersonsREQ().size(); i++) {
             StructurePersonREQ structurePersonREQ = structureAppendREQ.getStructurePersonsREQ().get(i);
             DocumentTag = DocumentTag + "<Person RoleID=\"" + structurePersonREQ.getRoleId() + "\" action=\"" + structurePersonREQ.getAction() + "\" description=\"" + structurePersonREQ.getDescription() + "\" hameshTitle=\"" + structurePersonREQ.getHameshTitle() + "\" hameshContent=\"" + structurePersonREQ.getHameshContent() + "\"/>";

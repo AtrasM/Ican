@@ -35,7 +35,7 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 
 public class SendMessageService extends Service {
 
-    private final long PERIOD = TimeValue.MinutesInMilli();
+    private final long PERIOD = TimeValue.SecondsInMilli() * 30;
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private Timer timer;
@@ -79,13 +79,13 @@ public class SendMessageService extends Service {
                     @Override
                     public void run() {
                         //ShowToast("onFailed -->> " + App.networkStatus + " ****** " + App.netWorkStatusListener);
-                        if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
+                        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                             App.getHandler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     onFailed("", structureMessageQueueDBS);
                                 }
-                            },FAILED_DELAY);
+                            }, FAILED_DELAY);
 
                         } else {
                             if (tryCount == MaxTry) {
@@ -162,15 +162,16 @@ public class SendMessageService extends Service {
                 FarzinMessageQuery farzinMessageQuery = new FarzinMessageQuery();
                 int idMessageQueue = structureMessageQueueDBS.get(0).getId();
                 int mainId = structureMessageQueueDBS.get(0).getMessage().getId();
-                farzinMessageQuery.UpdateMessageID(mainId, MessageID);
-                farzinMessageQuery.UpdateMessageStatus(mainId, Status.UnRead);
+                farzinMessageQuery.DeletMessageRowWithId(mainId);
+           /*     farzinMessageQuery.UpdateMessageID(mainId, MessageID);
+                farzinMessageQuery.UpdateMessageStatus(mainId, Status.UnRead);*/
                 boolean isdelet = farzinMessageQuery.DeletMessageQueueRowWithId(idMessageQueue);
                 if (isdelet) {
                     structureMessageQueueDBS.remove(0);
                 }
-                if (App.fragmentMessageList != null) {
+             /*   if (App.fragmentMessageList != null) {
                     App.fragmentMessageList.UpdateSendMessageStatus(farzinMessageQuery.GetMessage(MessageID));
-                }
+                }*/
                 sendMessageServiceListener.onSuccess(structureMessageQueueDBS);
             }
 
@@ -219,8 +220,8 @@ public class SendMessageService extends Service {
                     List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.WAITING);
 
                     if (structureMessageQueueDBS.size() > 0) {
-                        SendMessage(structureMessageQueueDBS);
                         timer.cancel();
+                        SendMessage(structureMessageQueueDBS);
                     } else {
                         structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.STOPED);
                         if (structureMessageQueueDBS.size() > 0) {

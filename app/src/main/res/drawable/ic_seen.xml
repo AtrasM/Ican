@@ -4,6 +4,6 @@
    <!-- <solid android:color="@color/LightFillColor"  ></solid>-->
     <solid android:color="@color/colorPrimaryDark" />
     <stroke
-        android:width="@dimen/stroke"
-        android:color="@color/color_border" />
+        android:width="@dimen/stroke_minimum"
+        android:color="@color/colorPrimaryDark" />
 </shape>

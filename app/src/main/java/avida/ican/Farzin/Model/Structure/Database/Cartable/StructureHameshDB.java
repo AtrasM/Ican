@@ -38,7 +38,7 @@ public class StructureHameshDB implements Serializable {
     @DatabaseField()
     String FileBinary;
     @DatabaseField()
-    String FileExtens;
+    String FileExtension;
     @DatabaseField()
     String FileName;
     @DatabaseField()
@@ -61,14 +61,13 @@ public class StructureHameshDB implements Serializable {
         CreationDate = structureHameshRES.getCreationDate();
         IsPrivate = structureHameshRES.isPrivate();
         IsHidden = structureHameshRES.isHidden();
-        this.ETC=ETC;
-        this.EC=EC;
+        this.ETC = ETC;
+        this.EC = EC;
         if (structureHameshRES.getHameshImage() != null) {
             FileBinary = structureHameshRES.getHameshImage().getFileBinary();
-            FileExtens = structureHameshRES.getHameshImage().getFileExtens();
+            FileExtension = structureHameshRES.getHameshImage().getFileExtension();
             FileName = structureHameshRES.getHameshImage().getFileName();
         }
-
     }
 
     public int getId() {
@@ -159,12 +158,12 @@ public class StructureHameshDB implements Serializable {
         FileBinary = fileBinary;
     }
 
-    public String getFileExtens() {
-        return FileExtens;
+    public String getFileExtension() {
+        return FileExtension;
     }
 
-    public void setFileExtens(String fileExtens) {
-        FileExtens = fileExtens;
+    public void setFileExtension(String fileExtension) {
+        FileExtension = fileExtension;
     }
 
     public String getFileName() {

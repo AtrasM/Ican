@@ -122,6 +122,10 @@ public class FarzinPrefrences {
         sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
     }
 
+    public String getMessageViewLastSyncDate() {
+        return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
+    }
+
     public String getMetaDataLastSyncDate() {
         return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
     }
@@ -130,16 +134,37 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", "");
     }
 
-    public String getMessageViewLastSyncDate() {
-        return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
-    }
 
     public void putDataForFirstTimeSync(boolean isDataForFirstTimeSync) {
         sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();
     }
+
     public boolean isDataForFirstTimeSync() {
         return sharedPreferencesValue.getBoolean(TAG + "isDataForFirstTimeSync", false);
     }
 
+    public void putCartableLastCheckDate(long TimeInMili) {
+        sharedPreferencesValue.edit().putLong(TAG + "CartableLastCheckDate", TimeInMili).apply();
+    }
+
+    public long getCartableLastCheckDate() {
+        return sharedPreferencesValue.getLong(TAG + "CartableLastCheckDate", -1);
+    }
+
+    public void putMessageRecieveLastCheckDate(long TimeInMili) {
+        sharedPreferencesValue.edit().putLong(TAG + "MessageRecieveLastCheckDate", TimeInMili).apply();
+    }
+
+    public long getMessageRecieveLastCheckDate() {
+        return sharedPreferencesValue.getLong(TAG + "MessageRecieveLastCheckDate", -1);
+    }
+
+    public void putMessageSentLastCheckDate(long TimeInMili) {
+        sharedPreferencesValue.edit().putLong(TAG + "MessageSendLastCheckDate", TimeInMili).apply();
+    }
+
+    public long getMessageSentLastCheckDate() {
+        return sharedPreferencesValue.getLong(TAG + "MessageSendLastCheckDate", -1);
+    }
 
 }

@@ -141,6 +141,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             structurePersons.get(position).setRoleId(item.getRole_ID());
+            structurePersons.get(position).setFullName(item.getFirstName() + " " + item.getLastName());
             String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + " [ " + item.getRoleName() + " ] ";
             structurePersons.get(position).setHameshTitle(hameshTitle);
             ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
@@ -156,7 +157,6 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
                 }
             });
-
 
             viewHolder.edtPrivateDiscription.addTextChangedListener(new TextWatcher() {
                 @Override
@@ -192,8 +192,10 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
                 }
             });
             viewHolder.lnImgMore.setVisibility(View.VISIBLE);
+            viewHolder.imgMore.setVisibility(View.VISIBLE);
             viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
         } else {
+            viewHolder.imgMore.setVisibility(View.GONE);
             viewHolder.lnImgMore.setVisibility(View.GONE);
         }
 

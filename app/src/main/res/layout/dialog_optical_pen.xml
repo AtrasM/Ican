@@ -5,7 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:id="@+id/ln_main_optical_pen"
     android:background="@color/color_background"
+    android:layout_margin="@dimen/margin_minimum"
     android:orientation="vertical"
     android:visibility="visible">
 
@@ -14,9 +16,10 @@
         style="@style/custom_normal_edittext_style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/margin_maximum"
-        android:layout_marginLeft="@dimen/margin_maximum"
+        android:layout_marginRight="@dimen/margin"
+        android:layout_marginLeft="@dimen/margin"
         android:layout_marginTop="@dimen/margin"
+        android:maxLines="1"
         android:hint="@string/title_optical_pen_edt"
         android:padding="@dimen/padding" />
 
@@ -166,7 +169,7 @@
         android:padding="@dimen/padding">
 
         <Button
-            android:id="@+id/btn_send"
+            android:id="@+id/btn_dialog_optical_pen_send"
             style="@style/custom_right_button_style"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -174,13 +177,13 @@
             android:text="@string/send" />
 
         <Button
-            android:id="@+id/btn_cancel"
+            android:id="@+id/btn_dialog_optical_pen_cancel"
             style="@style/custom_left_button_style"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginRight="@dimen/margin_minimum"
             android:layout_weight="0.5"
-            android:text="@string/cancel" />
+            android:text="@string/close" />
     </LinearLayout>
 
 </LinearLayout>

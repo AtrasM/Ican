@@ -12,7 +12,7 @@ public class StructureHameshImageRES {
     @Element(required = false)
     String FileBinary;
     @Element(required = false)
-    String FileExtens;
+    String FileExtension;
     @Element(required = false)
     String FileName;
 
@@ -24,12 +24,12 @@ public class StructureHameshImageRES {
         FileBinary = fileBinary;
     }
 
-    public String getFileExtens() {
-        return FileExtens;
+    public String getFileExtension() {
+        return FileExtension;
     }
 
-    public void setFileExtens(String fileExtens) {
-        FileExtens = fileExtens;
+    public void setFileExtension(String fileExtension) {
+        FileExtension = fileExtension;
     }
 
     public String getFileName() {

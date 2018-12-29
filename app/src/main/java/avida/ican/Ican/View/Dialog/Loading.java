@@ -24,7 +24,7 @@ import io.reactivex.annotations.Nullable;
 public class Loading {
     private final Activity context;
     private int gravity = Gravity.CENTER;
-    private DialogPlus dialog;
+    private DialogPlus dialogLoading;
     private Binding viewHolder;
     private String indicatore = "BallGridPulseIndicator";
 
@@ -55,12 +55,12 @@ public class Loading {
     }
 
     public void Show() {
-        dialog.show();
+        dialogLoading.show();
         App.isLoading = true;
     }
 
     public void Hide() {
-        dialog.dismiss();
+        dialogLoading.dismiss();
         App.isLoading = false;
     }
 
@@ -70,14 +70,14 @@ public class Loading {
         context.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                dialog = DialogPlus.newDialog(context)
+                dialogLoading = DialogPlus.newDialog(context)
                         .setContentHolder(new ViewHolder(R.layout.item_loading))
                         .setGravity(gravity)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                         .setCancelable(false)
                         .setContentBackgroundResource(android.R.color.transparent)
                         .create();
-                viewHolder = new Binding(dialog.getHolderView());
+                viewHolder = new Binding(dialogLoading.getHolderView());
                 viewHolder.avLoadingIndicatorView.setIndicator(indicatore);
                 viewHolder.avLoadingIndicatorView.setVisibility(View.VISIBLE);
             }

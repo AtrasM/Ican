@@ -1,6 +1,5 @@
 package avida.ican.Farzin.View.Fragment;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,24 +17,25 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentRefreshListener;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
 import avida.ican.Farzin.View.Adapter.AdapterCartableActionPin;
-import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
-import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
@@ -69,6 +69,7 @@ public class FragmentCartable extends BaseFragment {
     private Bundle bundleObject = new Bundle();
     private DialogPin_unPin dialogPin_unPin;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
+    private FarzinCartableDocumentListPresenter farzinCartableDocumentListPresenter;
 
     @Override
     public int getLayoutResId() {
@@ -97,10 +98,60 @@ public class FragmentCartable extends BaseFragment {
         srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ReGetData();
+                reGetDataFromServer();
             }
         });
+        initCartableDocumentListPresenter();
         initData();
+    }
+
+
+    private void initCartableDocumentListPresenter() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentRefreshListener() {
+            @Override
+            public void newData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void noData() {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                App.CurentActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        reGetDataFromLocal();
+                        srlRefresh.setRefreshing(false);
+                    }
+                });
+            }
+        });
+    }
+
+
+    public void reGetDataFromServer() {
+        CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getCartableLastCheckDate(), (TimeValue.SecondsInMilli() * 10));
+        if (compareTimeEnum == CompareTimeEnum.isAfter) {
+            farzinCartableDocumentListPresenter.GetFromServer();
+        } else {
+            reGetDataFromLocal();
+        }
+
     }
 
     private void initData() {
@@ -114,7 +165,7 @@ public class FragmentCartable extends BaseFragment {
         initRcv();
     }
 
-    public void ReGetData() {
+    public void reGetDataFromLocal() {
         structureCartableActions = new FarzinCartableQuery().getCartableAction(false, null);
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
         if (structureCartableActionsPin.size() > 0) {
@@ -157,7 +208,7 @@ public class FragmentCartable extends BaseFragment {
                 adapterCartableActionPin.addItem(structureCartableAction);
                 adapterCartableAction.remove(position);
                 frmRcvPin.setVisibility(View.VISIBLE);*/
-                ReGetData();
+                reGetDataFromLocal();
 
             }
 
@@ -172,7 +223,7 @@ public class FragmentCartable extends BaseFragment {
                 if (structureCartableActionsPin.size() == 0) {
                     frmRcvPin.setVisibility(View.GONE);
                 }*/
-                ReGetData();
+                reGetDataFromLocal();
             }
 
             @Override
@@ -223,6 +274,10 @@ public class FragmentCartable extends BaseFragment {
         dialogPin_unPin.Show(isPin);
     }
 
+
+    private FarzinPrefrences getFarzinPrefrences() {
+        return new FarzinPrefrences().init();
+    }
 
     @Override
     public void onAttach(Context context) {

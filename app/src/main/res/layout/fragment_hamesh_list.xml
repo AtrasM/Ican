@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <FrameLayout
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/srl_refresh"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -24,12 +25,14 @@
 
 
             <include layout="@layout/layout_fab_list_move_up" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-        <include layout="@layout/item_txt_nodata"/>
+
+            <include layout="@layout/item_txt_nodata" />
 
 
             <include layout="@layout/ln_loading" />
 
-    </FrameLayout>
+        </FrameLayout>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </LinearLayout>

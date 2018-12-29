@@ -8,6 +8,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
+import com.j256.ormlite.stmt.Where;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
@@ -321,6 +323,19 @@ public class FarzinMessageQuery {
         return isDelet;
     }
 
+    public boolean DeletMessageRowWithId(int id) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureMessageDB, Integer> deleteBuilder = messageDao.deleteBuilder();
+            deleteBuilder.where().eq("id", id);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
     public void UpdateMessageQueueStatus(int id, Status status) {
         try {
             UpdateBuilder<StructureMessageQueueDB, Integer> updateBuilder = messageQueueDao.updateBuilder();
@@ -355,8 +370,6 @@ public class FarzinMessageQuery {
             e.printStackTrace();
         }
     }
-
-
 
 
     public void UpdateMessageID(int CurentID, int NewID) {
@@ -395,7 +408,6 @@ public class FarzinMessageQuery {
                 }
             }
 
-            StructureMessageDB MessageDB2 = GetMessage(MessageRES.getID());
             new FarzinPrefrences().init().putMessageViewSyncDate(CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue()));
 
         } catch (SQLException e) {

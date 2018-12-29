@@ -1,15 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
 
     <uses-permission android:name="android.checkPermission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
-    <!--______________________________________________________________________________________-->
+    <!-- ______________________________________________________________________________________ -->
     <uses-permission android:name="android.checkPermission.RECORD_AUDIO" />
     <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.checkPermission.WAKE_LOCK" />
-    <!--______________________________________________________________________________________-->
+    <!-- ______________________________________________________________________________________ -->
     <application
         android:name=".Ican.App"
         android:allowBackup="true"
@@ -22,8 +24,6 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator"
         tools:replace="theme, allowBackup">
-
-
         <receiver
             android:name=".Farzin.FarzinBroadcastReceiver"
             tools:ignore="ExtraText">
@@ -46,10 +46,29 @@
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".Farzin.FarzinCartableNotificationReceiver"
+            tools:ignore="ExtraText">
+            android:enabled="true"
+            android:exported="true"
+            <intent-filter>
+                <action
+                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
+                    tools:ignore="BatteryLife" />
+            </intent-filter>
+        </receiver>
 
-        <service
-            android:name=".Ican.View.Custom.NetWorkCheckingService"
+        <!--
+              <service
+              android:name=".Ican.View.Custom.NetWorkCheckingService"
+              android:enabled="true" />
+        -->
+        <service android:name=".Farzin.Presenter.Service.CheckServerAviableService" />
+        <!--
+  <service
+            android:name=".Farzin.Presenter.Service.CheckServerAviableService"
             android:enabled="true" />
+        -->
         <service android:name=".Farzin.Presenter.Service.Message.SendMessageService" />
         <service android:name=".Farzin.Presenter.Service.Message.GetSentMessageService" />
         <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService" />
@@ -67,7 +86,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
-
 
         <activity android:name=".Ican.View.ActivitySplash">
             <intent-filter>
@@ -88,18 +106,18 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityWriteMessage"
-            android:windowSoftInputMode="adjustNothing|stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityDetailMessage"
-            android:windowSoftInputMode="adjustNothing|stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityCartableDocument"
-            android:windowSoftInputMode="adjustNothing|stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
-            android:windowSoftInputMode="adjustNothing|stateHidden" />
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".Farzin.View.FarzinNotificationClickManager" />
-
-
+        <activity android:name=".Ican.View.ActivityImageViewer" />
     </application>
+
 </manifest>

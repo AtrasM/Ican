@@ -20,11 +20,11 @@ public class StructureSenderREQ  {
     public StructureSenderREQ() {
     }
 
-    public StructureSenderREQ(int roleId) {
+    public StructureSenderREQ(int roleId,int sendParentCode) {
         this.roleId = roleId;
-        sendParentCode = -1;
         description = "";
         isLocked = false;
+        this.sendParentCode = sendParentCode;
         viewInOutbox = 1;
     }
 

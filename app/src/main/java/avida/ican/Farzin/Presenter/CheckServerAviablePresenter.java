@@ -53,7 +53,7 @@ public class CheckServerAviablePresenter {
 
             @Override
             public void onCancel() {
-
+                listenerNetwork.onFailed();
             }
         });
 
@@ -89,7 +89,7 @@ public class CheckServerAviablePresenter {
         String BaseUrl = farzinPrefrences.getBaseUrl();
         new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
-                .setTimeOut((int) TimeValue.SecondsInMilli() * 2)
+                .setTimeOut((int) TimeValue.SecondsInMilli() * 3)
                 .setNetworkCheking(true)
                 .setOnListener(new WebserviceResponseListener() {
 

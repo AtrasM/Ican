@@ -41,5 +41,9 @@
     <color name="color_back_taeed_sweep_view">#5fcf5f</color>
     <color name="color_back_send_sweep_view">#5fcf5f</color>
     <color name="dialog_background">#80bebebe</color>
+    <color name="color_background_close_button">#f5f6f7</color>
+    <color name="color_document_detail_actions">#848484</color>
+    <color name="color_editore_icon">#848484</color>
+    <color name="Color_image_viewer_background">#55ffffff</color>
 </resources>
 

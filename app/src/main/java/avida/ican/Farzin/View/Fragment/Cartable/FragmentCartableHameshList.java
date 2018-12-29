@@ -14,17 +14,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
 import avida.ican.Farzin.Presenter.Cartable.FarzinHameshListPresenter;
-import avida.ican.Farzin.Presenter.Cartable.FarzinZanjireMadrakPresenter;
-import avida.ican.Farzin.View.Adapter.AdapteZanjireMadrak;
 import avida.ican.Farzin.View.Adapter.AdapterHamesh;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterZanjireMadrak;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerZanjireMadrak;
 import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
@@ -102,6 +96,7 @@ public class FragmentCartableHameshList extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
                         adapterHamesh.updateData(structureHameshDBS);
                     }
@@ -114,6 +109,7 @@ public class FragmentCartableHameshList extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         if (adapterHamesh.getDataSize() <= 0) {
                             txtNoData.setVisibility(View.VISIBLE);
                         }
@@ -130,31 +126,32 @@ public class FragmentCartableHameshList extends BaseFragment {
     public void reGetData() {
         start = 0;
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
-        if (structureHameshDBS.size() > 0) {
-            srlRefresh.setRefreshing(false);
+
+        if (!srlRefresh.isRefreshing()) {
+            lnLoading.setVisibility(View.VISIBLE);
         }
         if (App.networkStatus == NetworkStatus.Connected) {
-            lnLoading.setVisibility(View.VISIBLE);
             farzinHameshListPresenter.GetHameshFromServer();
         } else {
             if (structureHameshDBS.size() <= 0) {
                 txtNoData.setVisibility(View.VISIBLE);
             }
+            srlRefresh.setRefreshing(false);
+            lnLoading.setVisibility(View.GONE);
         }
         start = structureHameshDBS.size();
         adapterHamesh.updateData(structureHameshDBS);
     }
 
     private void initData() {
-        // lnLoading.setVisibility(View.VISIBLE);
+        lnLoading.setVisibility(View.VISIBLE);
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
 
         if (App.networkStatus == NetworkStatus.Connected) {
-            lnLoading.setVisibility(View.VISIBLE);
             farzinHameshListPresenter.GetHameshFromServer();
         } else {
+            lnLoading.setVisibility(View.GONE);
             if (structureHameshDBS.size() <= 0) {
-                lnLoading.setVisibility(View.GONE);
                 txtNoData.setVisibility(View.VISIBLE);
             }
         }

@@ -51,7 +51,6 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
     private ImageLoader imageLoader;
     private ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList;
     private ViewBinderHelper binderHelper;
-    private boolean isLnMoreVisible = false;
     private Animator animator;
     private boolean isLongClick;
 
@@ -159,6 +158,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         viewHolder.txtTime.setText(time);
 
         if (item.getTitle() != null && !item.getTitle().isEmpty()) {
+            viewHolder.txtSubject.setVisibility(View.VISIBLE);
             viewHolder.txtSubject.setText("" + item.getTitle());
         } else {
             viewHolder.txtSubject.setVisibility(View.GONE);
@@ -187,14 +187,17 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
                 break;
             }
             case IMMEDIATE: {
+                viewHolder.tlv.setVisibility(View.VISIBLE);
                 viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_Warning));
                 break;
             }
             case VERYURGENT: {
+                viewHolder.tlv.setVisibility(View.VISIBLE);
                 viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_orange));
                 break;
             }
             case MOMENTARY: {
+                viewHolder.tlv.setVisibility(View.VISIBLE);
                 viewHolder.tlv.setTriangleBackgroundColor(Resorse.getColor(R.color.color_Danger));
                 break;
             }
@@ -234,18 +237,23 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
 
             }
         });
-
+        if (item.isLnMoreVisible()) {
+            viewHolder.lnMore.setVisibility(View.VISIBLE);
+        } else {
+            viewHolder.lnMore.setVisibility(View.GONE);
+        }
         viewHolder.lnMain.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (!isLnMoreVisible) {
-                    animator.slideInFromDownFast(viewHolder.lnMore);
-                    viewHolder.lnMore.setVisibility(View.VISIBLE);
-                } else {
+                if (item.isLnMoreVisible()) {
                     animator.slideOutToDown(viewHolder.lnMore);
                     viewHolder.lnMore.setVisibility(View.GONE);
+
+                } else {
+                    animator.slideInFromDownFast(viewHolder.lnMore);
+                    viewHolder.lnMore.setVisibility(View.VISIBLE);
                 }
-                isLnMoreVisible = !isLnMoreVisible;
+                item.setLnMoreVisible(!item.isLnMoreVisible());
                 isLongClick = true;
                 return false;
             }
