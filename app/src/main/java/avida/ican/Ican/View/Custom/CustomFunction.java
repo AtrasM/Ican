@@ -44,6 +44,8 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -357,16 +359,31 @@ public class CustomFunction {
 
     public static CompareTimeEnum compareTimeInMiliWithCurentSystemTime(long timeInMili, long deficultTimeInMili) {
         long curentTime = System.currentTimeMillis();
+        long lastTime = timeInMili + deficultTimeInMili;
 
         CompareTimeEnum compareTimeEnum;
-        if (timeInMili + deficultTimeInMili >= curentTime) {
+        if (lastTime >= curentTime) {
             compareTimeEnum = CompareTimeEnum.isAfter;
-        } else if (timeInMili + deficultTimeInMili < curentTime) {
+        } else if (lastTime < curentTime) {
             compareTimeEnum = CompareTimeEnum.isBefore;
         } else {
             compareTimeEnum = CompareTimeEnum.isEqual;
         }
         return compareTimeEnum;
+    }
+
+    public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long delay) {
+        Date lastDate = new Date(strLastDate);
+        Date curentDate = getCurentDateTime();
+        //int a = curentDate.compareTo(lastDate);
+        long dificalt = curentDate.getTime() - lastDate.getTime();
+        CompareDateTimeEnum compareDateTimeEnum;
+        if (dificalt >= delay) {
+            compareDateTimeEnum = CompareDateTimeEnum.isAfter;
+        } else {
+            compareDateTimeEnum = CompareDateTimeEnum.isBefore;
+        }
+        return compareDateTimeEnum;
     }
 
     public static CompareDateTimeEnum compareDates(String DateTime1, String DateTime2) {

@@ -20,6 +20,7 @@ import avida.ican.Farzin.Presenter.Cartable.OpticalPenPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
@@ -27,8 +28,7 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class OpticalPenQueueService extends Service {
-
-    private final long PERIOD = TimeValue.SecondsInMilli()*30;
+    private final long PERIOD = TimeValue.SecondsInMilli() * 30;
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 25;
     private Timer timer;
@@ -56,7 +56,7 @@ public class OpticalPenQueueService extends Service {
         return Service.START_STICKY;
     }
 
-    private void setOpticalPen(final StructureOpticalPenQueueDB structureOpticalPenQueueDB) {
+    private void sendOpticalPen(final StructureOpticalPenQueueDB structureOpticalPenQueueDB) {
         opticalPenPresenter = new OpticalPenPresenter();
         opticalPenListener = new OpticalPenListener() {
 
@@ -68,7 +68,7 @@ public class OpticalPenQueueService extends Service {
 
                     if (opticalPenQueueDB != null) {
                         if (opticalPenQueueDB.getETC() > 0) {
-                            setOpticalPen(opticalPenQueueDB);
+                            sendOpticalPen(opticalPenQueueDB);
                         } else {
                             startOpticalPenQueueTimer();
                         }
@@ -102,7 +102,7 @@ public class OpticalPenQueueService extends Service {
 
 
         };
-        StructureOpticalPenREQ structureOpticalPenREQ=new StructureOpticalPenREQ(structureOpticalPenQueueDB.getETC(),structureOpticalPenQueueDB.getEC(),structureOpticalPenQueueDB.getBfile(),structureOpticalPenQueueDB.getStrExtention(),structureOpticalPenQueueDB.getHameshtitle(),structureOpticalPenQueueDB.isHiddenHamesh());
+        StructureOpticalPenREQ structureOpticalPenREQ = new StructureOpticalPenREQ(structureOpticalPenQueueDB.getETC(), structureOpticalPenQueueDB.getEC(), structureOpticalPenQueueDB.getBfile(), structureOpticalPenQueueDB.getStrExtention(), structureOpticalPenQueueDB.getHameshtitle(), structureOpticalPenQueueDB.isHiddenHamesh());
         opticalPenPresenter.CallRequest(structureOpticalPenREQ, opticalPenListener);
 
     }
@@ -114,7 +114,7 @@ public class OpticalPenQueueService extends Service {
                 new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                     @Override
                     public void onConnected() {
-                        setOpticalPen(structureOpticalPenQueueDB);
+                        sendOpticalPen(structureOpticalPenQueueDB);
                     }
 
                     @Override
@@ -167,14 +167,26 @@ public class OpticalPenQueueService extends Service {
             @Override
             public void run() {
                 try {
-                    StructureOpticalPenQueueDB structureOpticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
+                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                    if (structureOpticalPenQueueDB != null) {
-                        if (structureOpticalPenQueueDB.getETC() > 0) {
-                            setOpticalPen(structureOpticalPenQueueDB);
+                        App.getHandler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startOpticalPenQueueTimer();
+                            }
+                        }, FAILED_DELAY);
+                        timer.cancel();
+                    } else {
+                        StructureOpticalPenQueueDB structureOpticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
+
+                        if (structureOpticalPenQueueDB != null) {
+                            if (structureOpticalPenQueueDB.getETC() > 0) {
+                                sendOpticalPen(structureOpticalPenQueueDB);
+                            }
                         }
+                        timer.cancel();
                     }
-                    timer.cancel();
+
 
                 } catch (Exception e) {
                     e.printStackTrace();

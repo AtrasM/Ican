@@ -135,6 +135,7 @@
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:id="@+id/ln_message_date"
                 android:gravity="center|left"
                 android:orientation="vertical">
 

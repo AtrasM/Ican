@@ -51,7 +51,6 @@ public class App extends MultiDexApplication {
     public static NetworkStatus networkStatus = NetworkStatus.NoAction;
     private static Bus sBus;
     // public static boolean canRecreatFragment = false;
-
     private static CurentProject curentProject;
     private static FarzinDatabaseHelper farzinDatabaseHelper;
     public static String fontPath = "font/iran_sans_mobile.ttf";

@@ -19,6 +19,7 @@ import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
@@ -26,7 +27,6 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentTaeedQueueService extends Service {
-
     private final long PERIOD = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
@@ -166,14 +166,26 @@ public class CartableDocumentTaeedQueueService extends Service {
             @Override
             public void run() {
                 try {
-                    StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                    if (cartableDocumentTaeedQueueDB != null) {
-                        if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
-                            TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                        App.getHandler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startTaeedQueueTimer();
+                            }
+                        }, FAILED_DELAY);
+                        timer.cancel();
+                    } else {
+                        StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
+
+                        if (cartableDocumentTaeedQueueDB != null) {
+                            if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
+                                TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                            }
                         }
+                        timer.cancel();
                     }
-                    timer.cancel();
+
 
                 } catch (Exception e) {
                     e.printStackTrace();

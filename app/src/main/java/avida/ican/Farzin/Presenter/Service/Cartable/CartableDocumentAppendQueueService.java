@@ -21,6 +21,7 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 /**
@@ -28,7 +29,6 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentAppendQueueService extends Service {
-
     private final long PERIOD = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
@@ -169,14 +169,25 @@ public class CartableDocumentAppendQueueService extends Service {
             @Override
             public void run() {
                 try {
-                    StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
+                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                    if (structureCartableSendQueueDB != null) {
-                        if (structureCartableSendQueueDB.getETC() > 0) {
-                            CartableSend(structureCartableSendQueueDB);
+                        App.getHandler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                startSendQueueTimer();
+                            }
+                        }, FAILED_DELAY);
+                        timer.cancel();
+                    } else {
+                        StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
+                        if (structureCartableSendQueueDB != null) {
+                            if (structureCartableSendQueueDB.getETC() > 0) {
+                                CartableSend(structureCartableSendQueueDB);
+                            }
                         }
+                        timer.cancel();
                     }
-                    timer.cancel();
+
 
                 } catch (Exception e) {
                     e.printStackTrace();

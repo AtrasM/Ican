@@ -1,6 +1,7 @@
 package avida.ican.Farzin.View;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -15,6 +16,8 @@ import static avida.ican.Ican.BaseActivity.goToActivity;
  */
 
 public class FarzinNotificationClickManager extends AppCompatActivity {
+    private FarzinActivityMain activityMain;
+    private Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,21 +25,32 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
         App.CurentActivity = this;
         String Extra = getIntent().getStringExtra(PutExtraEnum.Notification.getValue());
         if (Extra.equals(PutExtraEnum.MultyMessage.getValue())) {
-            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
-            FarzinActivityMain activityMain;
-            if (App.activityStacks != null) {
+            activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
 
+            if (App.activityStacks != null) {
                 if (activity != null) {
                     activityMain = (FarzinActivityMain) activity;
+                    activityMain.setFilter(true);
                     activityMain.selectMessageFragment();
                 }
             } else {
-                goToActivity(FarzinActivityMain.class);
+                Intent intent = new Intent(this, FarzinActivityMain.class);
+                intent.putExtra(PutExtraEnum.IsFilter.getValue(), true);
+                goToActivity(intent);
+                App.getHandlerMainThread().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+                        if (activity != null) {
+                            activityMain = (FarzinActivityMain) activity;
+                            activityMain.selectMessageFragment();
+                        }
+                    }
+                }, 1000);
             }
 
         } else if (Extra.equals(PutExtraEnum.MultyCartableDocument.getValue())) {
-            Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
-            FarzinActivityMain activityMain;
+            activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
             if (App.activityStacks != null) {
                 if (activity != null) {
                     activityMain = (FarzinActivityMain) activity;
@@ -44,6 +58,17 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
                 }
             } else {
                 goToActivity(FarzinActivityMain.class);
+
+                App.getHandlerMainThread().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+                        if (activity != null) {
+                            activityMain = (FarzinActivityMain) activity;
+                            activityMain.selectMessageFragment();
+                        }
+                    }
+                }, 500);
             }
 
         }

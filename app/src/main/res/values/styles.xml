@@ -214,7 +214,7 @@
         <item name="android:layout_marginLeft">@dimen/margin</item>
         <item name="android:layout_marginRight">@dimen/margin</item>
         <item name="android:layout_marginTop">@dimen/margin_minimum</item>
-        <item name="android:layout_marginBottom">@dimen/margin_minimum</item>
+       <!-- <item name="android:layout_marginBottom">@dimen/margin_minimum</item>-->
         <item name="android:background">@color/color_Divider</item>
         <item name="android:alpha">@dimen/divider_alpha</item>
     </style>

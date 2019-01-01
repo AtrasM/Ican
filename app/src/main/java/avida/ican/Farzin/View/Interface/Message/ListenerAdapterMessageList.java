@@ -9,5 +9,5 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 
 public interface ListenerAdapterMessageList {
     void onDelet(StructureMessageDB structureMessageDB);
-    void onItemClick(StructureDetailMessageBND structureDetailMessageBND);
+    void onItemClick(StructureDetailMessageBND structureDetailMessageBND,int position);
 }

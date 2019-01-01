@@ -16,6 +16,7 @@ import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-07-03 at 5:27 PM
@@ -30,7 +31,6 @@ public class GetMessageFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetMessageFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
-    private boolean RecieveMessage;
 
 
     public GetMessageFromServerPresenter() {
@@ -40,14 +40,12 @@ public class GetMessageFromServerPresenter {
     public void GetRecieveMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetRecieveMessageList";
         GetMessage(page, count, true, messageListListener);
-        this.RecieveMessage=true;
 
     }
 
     public void GetSentMessageList(int page, int count, MessageListListener messageListListener) {
         this.MetodName = "GetSentMessageList";
         GetMessage(page, count, false, messageListListener);
-        this.RecieveMessage=false;
     }
 
     private void GetMessage(int page, int count, final boolean RecieveMessage, final MessageListListener messageListListener) {
@@ -86,6 +84,7 @@ public class GetMessageFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
+            getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
         } else {
             messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
         }
@@ -101,11 +100,8 @@ public class GetMessageFromServerPresenter {
                 // changeXml.CharDecoder(structureMessageList.get())
                 messageListListener.onSuccess(new ArrayList<>(messageListResult));
             }
-            if(RecieveMessage){
-                getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
-            }else{
-                getFarzinPrefrences().putMessageSentLastCheckDate(System.currentTimeMillis());
-            }
+            getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+
 
         } else {
             messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
@@ -134,6 +130,7 @@ public class GetMessageFromServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();

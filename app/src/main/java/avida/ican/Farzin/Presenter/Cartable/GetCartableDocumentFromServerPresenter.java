@@ -76,7 +76,7 @@ public class GetCartableDocumentFromServerPresenter {
         } else {
             cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
         }
-        getFarzinPrefrences().putCartableLastCheckDate(System.currentTimeMillis());
+        getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
     }
 
 

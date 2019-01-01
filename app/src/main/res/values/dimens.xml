@@ -22,6 +22,7 @@
     <dimen name="stroke_maximum">3dp</dimen>
     <dimen name="elevation">2dp</dimen>
     <dimen name="margin_dialog_meta_data">30dp</dimen>
+    <dimen name="margin_toolbar_title">-72dp</dimen>
 
     <item name="divider_alpha" format="float" type="dimen">0.4</item>
 </resources>

@@ -23,6 +23,7 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
@@ -134,7 +135,7 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
         }
 
-        viewHolder.txtRoleName.setText(" [ " + structureUserAndRoleDB.getRoleName() + " ] ");
+        viewHolder.txtRoleName.setText("[ " + structureUserAndRoleDB.getRoleName() + " ] ");
         String[] splitDateTime = CustomFunction.MiladyToJalaly(item.getSent_date().toString()).split(" ");
         final String date = splitDateTime[0];
         final String time = splitDateTime[1];
@@ -148,7 +149,7 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
             } else {
                 viewHolder.imgAttach.setVisibility(View.GONE);
             }
-        }else{
+        } else {
             viewHolder.imgAttach.setVisibility(View.GONE);
         }
         if (item.getStatus() == Status.READ) {
@@ -161,8 +162,10 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS, Type.RECEIVED);
-                listenerAdapterMessageList.onItemClick(structureDetailMessageBND);
+                itemList.get(position).setStatus(Status.READ);
+                StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS,new ArrayList<StructureReceiverDB>(), Type.RECEIVED);
+                listenerAdapterMessageList.onItemClick(structureDetailMessageBND,position);
+                notifyDataSetChanged();
             }
         });
  /*       viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {

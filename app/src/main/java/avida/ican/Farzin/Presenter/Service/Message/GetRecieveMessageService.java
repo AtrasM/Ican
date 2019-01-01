@@ -37,7 +37,7 @@ import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
+import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -48,8 +48,9 @@ import avida.ican.R;
  */
 
 public class GetRecieveMessageService extends Service {
+    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli() + (TimeValue.SecondsInMilli() * 30);
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private MessageListListener messageListListener;
     private Context context;
@@ -59,11 +60,13 @@ public class GetRecieveMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.IsNew;
     private int Count = 2;
-    private final int MaxCount = 10;
+    private final int MaxCount = 20;
     private final int MinCount = 2;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
-    private static int newCount =0;
+    private static int newCount = 0;
+    private long tempDelay = LOWDELAY;
+    private boolean canShowNotification = true;
 
 
     @Override
@@ -85,10 +88,12 @@ public class GetRecieveMessageService extends Service {
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                 if (messageList.size() == 0) {
                     if (BaseActivity.dialogMataDataSync != null) {
+                        canShowNotification = false;
                         BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
                     }
                     reGetMessage();
                 } else {
+                    canShowNotification = true;
                     SaveMessage(messageList);
                 }
             }
@@ -129,16 +134,23 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        if(!getFarzinPrefrences().isDataForFirstTimeSync()){
-            getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
-        }else {
-            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getMessageRecieveLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
-            if (compareTimeEnum == CompareTimeEnum.isAfter) {
-                getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
+
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+            reGetMessage();
+        } else {
+            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
                 getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
-            }else{
-                reGetMessage();
+            } else {
+                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageRecieveLastCheckDate(), tempDelay);
+                getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                    getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+                } else {
+                    reGetMessage();
+                }
             }
+
         }
 
     }
@@ -168,7 +180,7 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onSuccess(StructureMessageDB structureMessageDB) {
-                newCount = newCount++;
+                newCount++;
                 if (App.fragmentMessageList != null) {
                     final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
                     structureMessagesDB.add(structureMessageDB);
@@ -176,7 +188,7 @@ public class GetRecieveMessageService extends Service {
                         App.getHandlerMainThread().post(new Runnable() {
                             @Override
                             public void run() {
-                                if(App.fragmentMessageList!=null){
+                                if (App.fragmentMessageList != null) {
                                     App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
                                 }
 
@@ -203,6 +215,7 @@ public class GetRecieveMessageService extends Service {
                 if (BaseActivity.dialogMataDataSync != null) {
                     BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
                 }
+                CallMulltiMessageNotification();
                 reGetMessage();
 
             }
@@ -224,21 +237,16 @@ public class GetRecieveMessageService extends Service {
     private void CallMulltiMessageNotification() {
         if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
             return;
-        }/* else {
-            if (App.networkStatus != null) {
-                if (App.networkStatus == NetworkStatus.Syncing) {
-                    return;
-                }
-            }
-        }*/
-        int UserId = getFarzinPrefrences().getUserID();
-       // MessageSize = new FarzinMessageQuery().GetMessageCount(UserId, Type.RECEIVED, Status.IsNew);
+        }
+        if (!canShowNotification) {
+            return;
+        }
         if (newCount > 0) {
             String title = Resorse.getString(context, R.string.newMessage);
             String message = newCount + " " + Resorse.getString(context, R.string.NewMessageContent);
             callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiMessageIntent()));
         }
-        newCount =0;
+        newCount = 0;
     }
 
 
@@ -246,20 +254,22 @@ public class GetRecieveMessageService extends Service {
         ShowToast("re Get Message");
         pageNumber = 1;
         Count = MinCount;
-        long delay = 1;
-        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            delay = DELAY;
+        if (App.activityStacks == null) {
+            tempDelay = DELAYWhenAppClose;
         } else {
-            delay = LOWDELAY;
+            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+                tempDelay = DELAY;
+            } else {
+                tempDelay = LOWDELAY;
+            }
         }
-        getFarzinPrefrences().putMessageRecieveLastCheckDate(System.currentTimeMillis());
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetMessage(pageNumber, Count);
             }
-        }, delay);
+        }, tempDelay);
     }
 
 

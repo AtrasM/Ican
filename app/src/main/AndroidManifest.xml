@@ -3,8 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
 
-    <uses-permission android:name="android.checkPermission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.checkPermission.INTERNET" />
     <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
     <!-- ______________________________________________________________________________________ -->
@@ -63,19 +64,27 @@
               android:name=".Ican.View.Custom.NetWorkCheckingService"
               android:enabled="true" />
         -->
-        <service android:name=".Farzin.Presenter.Service.CheckServerAviableService" />
+        <service android:name=".Farzin.Presenter.Service.CheckServerAviableService"
+            android:enabled="true"/>
         <!--
   <service
             android:name=".Farzin.Presenter.Service.CheckServerAviableService"
             android:enabled="true" />
         -->
-        <service android:name=".Farzin.Presenter.Service.Message.SendMessageService" />
-        <service android:name=".Farzin.Presenter.Service.Message.GetSentMessageService" />
-        <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService" />
-        <service android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentService" />
-        <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService" />
-        <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueService" />
-        <service android:name=".Farzin.Presenter.Service.Cartable.OpticalPenQueueService" />
+        <service android:name=".Farzin.Presenter.Service.Message.SendMessageService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Message.GetSentMessageService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueService"
+            android:enabled="true"/>
+        <service android:name=".Farzin.Presenter.Service.Cartable.OpticalPenQueueService"
+            android:enabled="true"/>
 
         <provider
             android:name="android.support.v4.content.FileProvider"

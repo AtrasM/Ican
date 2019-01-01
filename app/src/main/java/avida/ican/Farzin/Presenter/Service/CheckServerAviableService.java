@@ -18,6 +18,7 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CheckServerAviableService extends Service {
+    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 10;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 15;
     private Context context;
@@ -91,6 +92,7 @@ public class CheckServerAviableService extends Service {
 
 
     private void reCheck() {
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -98,7 +100,6 @@ public class CheckServerAviableService extends Service {
             }
         }, DELAY);
     }
-
 
     private void ShowToast(final String s) {
         handler.post(new Runnable() {

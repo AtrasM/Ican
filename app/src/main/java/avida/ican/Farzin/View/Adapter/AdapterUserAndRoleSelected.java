@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import java.security.cert.Extension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,11 +139,11 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureUserAndRoleDB item = itemList.get(position);
         viewHolder.txtName.setText(item.getFirstName() + " " + item.getLastName());
-        viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
+        viewHolder.txtRoleName.setText("[ " + item.getRoleName() + " ] ");
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             structurePersons.get(position).setRoleId(item.getRole_ID());
             structurePersons.get(position).setFullName(item.getFirstName() + " " + item.getLastName());
-            String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + " [ " + item.getRoleName() + " ] ";
+            String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + "[ " + item.getRoleName() + " ] ";
             structurePersons.get(position).setHameshTitle(hameshTitle);
             ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
             viewHolder.spActions.setAdapter(adapterSize);
@@ -257,12 +258,17 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
             @Override
             protected void onPostExecute(Integer pos) {
-                if (pos > -1) {
-                    int position = pos;
-                    itemList.remove(position);
-                    structurePersons.remove(position);
-                    notifyItemRemoved(position);
+                try {
+                    if (pos > -1) {
+                        int position = pos;
+                        itemList.remove(position);
+                        structurePersons.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
+
                 listenerAdapterUserAndRole.hideLoading();
                 super.onPostExecute(pos);
             }

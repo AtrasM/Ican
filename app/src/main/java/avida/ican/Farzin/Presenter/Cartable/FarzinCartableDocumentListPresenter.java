@@ -92,6 +92,10 @@ public class FarzinCartableDocumentListPresenter {
         return farzinCartableQuery.getCartableDocuments(actionCode, null, Start, Count);
     }
 
+    public List<StructureInboxDocumentDB> GetFromLocal(int actionCode, Status status, long Start, long Count) {
+        return farzinCartableQuery.getCartableDocuments(actionCode, status, Start, Count);
+    }
+
     private void SaveData(final ArrayList<StructureInboxDocumentRES> inboxCartableDocumentList) {
 
         final StructureInboxDocumentRES structureInboxDocumentRES = inboxCartableDocumentList.get(0);

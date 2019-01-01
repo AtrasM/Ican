@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -27,17 +28,14 @@ import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentTaeedServerPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
-import avida.ican.Farzin.Presenter.Cartable.GetCartableDocumentFromServerPresenter;
 import avida.ican.Farzin.View.Adapter.AdapteCartableDocument;
 import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
@@ -116,6 +114,8 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     private DialogUserAndRole dialogUserAndRole;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
     private FarzinCartableDocumentListPresenter farzinCartableDocumentListPresenter;
+    private MenuItem actionfilter;
+    private boolean isFilter;
 
     @Override
     protected void onResume() {
@@ -141,12 +141,11 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         Bundle bundleObject = getIntent().getExtras();
         StructureCartableDocumentBND structureCartableDocumentBND = (StructureCartableDocumentBND) bundleObject.getSerializable(PutExtraEnum.BundleCartableDocument.getValue());
         Title = structureCartableDocumentBND.getActionNAme();
+        isFilter = structureCartableDocumentBND.isFilter();
         initTollBar(Title);
         actionCode = structureCartableDocumentBND.getActionCode();
         animator = new Animator(App.CurentActivity);
         initCartableDocumentListPresenter();
-        initData(actionCode);
-
         rcvMain.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -233,7 +232,11 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         start = 0;
         canLoading = false;
         structureInboxDocumentDB.clear();
-        structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+        if (isFilter) {
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, Status.UnRead, start, COUNT);
+        } else {
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+        }
         start = structureInboxDocumentDB.size();
         if (!srlRefresh.isRefreshing()) {
             lnLoading.setVisibility(View.VISIBLE);
@@ -250,7 +253,13 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     }
 
     private void initData(int actionCode) {
-        structureInboxDocumentDB = new FarzinCartableQuery().getCartableDocuments(actionCode, null, start, COUNT);
+        if (isFilter) {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, Status.UnRead, start, COUNT);
+        } else {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+        }
         start = structureInboxDocumentDB.size();
         initRcv();
     }
@@ -501,16 +510,19 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                 bundleObject.putSerializable(PutExtraEnum.BundleCartableDocumentDetail.getValue(), cartableDocumentDetailBND);
                 Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocumentDetail.class);
                 intent.putExtras(bundleObject);
-                // goToActivity(intent);
                 goToActivityForResult(intent, DOCUMENTDETAILCODE);
                 curentItem = item;
                 lnLoading.setVisibility(View.GONE);
             }
         });
         farzinCartableQuery.updateCartableDocumentStatus(item.getId(), Status.READ);
-        item.setStatus(Status.READ);
-        item.setRead(true);
-        adapteCartableDocument.updateItem(item);
+        if (isFilter) {
+            adapteCartableDocument.deletItem(item);
+        } else {
+            item.setStatus(Status.READ);
+            item.setRead(true);
+            adapteCartableDocument.updateItem(item);
+        }
     }
 
     //_________________________________*****___Taeed___*****__________________________________
@@ -609,7 +621,11 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         final Loading loading = new Loading(App.CurentActivity).Creat();
         loading.Show();
         List<StructureInboxDocumentDB> inboxDocumentDBS = new ArrayList<>();
-        inboxDocumentDBS = new FarzinCartableQuery().getCartableDocuments(actionCode, null, start, COUNT);
+        if (isFilter) {
+            inboxDocumentDBS = new FarzinCartableQuery().getCartableDocuments(actionCode, Status.UnRead, start, COUNT);
+        } else {
+            inboxDocumentDBS = new FarzinCartableQuery().getCartableDocuments(actionCode, null, start, COUNT);
+        }
         start = structureInboxDocumentDB.size();
         structureInboxDocumentDB.addAll(inboxDocumentDBS);
         if (inboxDocumentDBS.size() > 0) {
@@ -645,6 +661,53 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
             }
         }
         return true;
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.filter_toolbar_menu, menu);
+        // menu.findItem(R.id.action_search).setIntent(new Intent(G.currentActivity, ActivitySearch.class));
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        actionfilter = menu.findItem(R.id.action_filter);
+        actionfilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (lnLoading.getVisibility() == View.GONE) {
+                    isFilter = !isFilter;
+                    filterData();
+                }
+
+                return false;
+            }
+        });
+        initData(actionCode);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void filterData() {
+        lnLoading.setVisibility(View.VISIBLE);
+        start = 0;
+        canLoading = false;
+        structureInboxDocumentDB.clear();
+        if (isFilter) {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, Status.UnRead, start, COUNT);
+        } else {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+        }
+        start = structureInboxDocumentDB.size();
+        canLoading = true;
+        srlRefresh.setRefreshing(false);
+        lnLoading.setVisibility(View.GONE);
+        adapteCartableDocument.updateData(structureInboxDocumentDB);
     }
 
 

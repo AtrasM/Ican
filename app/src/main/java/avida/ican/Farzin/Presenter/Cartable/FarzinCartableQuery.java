@@ -568,15 +568,17 @@ public class FarzinCartableQuery {
 
     public List<StructureInboxDocumentDB> getCartableDocuments(int actionCode, Status status, long start, long count) {
         QueryBuilder<StructureInboxDocumentDB, Integer> queryBuilder = cartableDocumentDao.queryBuilder();
+        Where<StructureInboxDocumentDB, Integer> where = queryBuilder.where();
         List<StructureInboxDocumentDB> structureInboxDocumentsDB = new ArrayList<>();
         try {
-            queryBuilder.where().eq("ActionCode", actionCode).and().eq("isTaeed", false);
+            where.eq("ActionCode", actionCode).and().eq("isTaeed", false);
             if (status != null) {
-                queryBuilder.where().eq("status", status);
+                where.and().eq("status", status);
             }
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
+            queryBuilder.setWhere(where);
             structureInboxDocumentsDB = queryBuilder.orderBy("ReceiveDate", false).query();
         } catch (SQLException e) {
             e.printStackTrace();

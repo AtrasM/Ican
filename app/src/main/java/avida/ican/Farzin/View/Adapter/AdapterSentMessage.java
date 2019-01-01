@@ -85,6 +85,8 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
         @BindView(R.id.ln_main)
         LinearLayout lnMain;
+        @BindView(R.id.ln_message_date)
+        LinearLayout lnMessageDate;
 
         public ViewHolder(View view) {
             super(view);
@@ -119,7 +121,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
 
         final StructureMessageDB item = itemList.get(position);
-        ArrayList<StructureReceiverDB> structureReceiverDBS = new ArrayList<>(item.getReceivers());
+        final ArrayList<StructureReceiverDB> structureReceiverDBS = new ArrayList<>(item.getReceivers());
         String Name = "";
 
         String[] splitDateTime = CustomFunction.MiladyToJalaly(item.getSent_date().toString()).split(" ");
@@ -135,11 +137,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
         }
 
         viewHolder.txtSubject.setText("" + item.getSubject());
-        if (item.getStatus() == Status.WAITING) {
-            viewHolder.imgWaiting.setVisibility(View.VISIBLE);
-        } else {
-            viewHolder.imgWaiting.setVisibility(View.GONE);
-        }
+
         if (structureReceiverDBS.size() == 1) {
             viewHolder.txtRoleName.setVisibility(View.VISIBLE);
             viewHolder.imgStatus.setVisibility(View.VISIBLE);
@@ -154,15 +152,19 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             Name = "" + structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
 
             if (item.getStatus() == Status.WAITING) {
+                viewHolder.imgWaiting.setVisibility(View.VISIBLE);
                 viewHolder.imgStatus.setVisibility(View.GONE);
+                viewHolder.lnMessageDate.setVisibility(View.GONE);
             } else {
-
+                viewHolder.imgWaiting.setVisibility(View.GONE);
+                viewHolder.lnMessageDate.setVisibility(View.VISIBLE);
+                viewHolder.imgStatus.setVisibility(View.VISIBLE);
                 if (structureReceiverDBS.get(0).Is_read()) {
                     viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_d_tick));
                 } else {
                     viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_tick));
                 }
-                viewHolder.imgStatus.setVisibility(View.VISIBLE);
+
             }
 
             if (!structureUserAndRoleDB.getLastName().isEmpty() && structureUserAndRoleDB.getLastName().length() > 1) {
@@ -173,7 +175,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
                 viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
             }
             viewHolder.txtName.setText(Name);
-            viewHolder.txtRoleName.setText(" [ " + structureUserAndRoleDB.getRoleName() + " ] ");
+            viewHolder.txtRoleName.setText("[ " + structureUserAndRoleDB.getRoleName() + " ] ");
 
         } else {
             viewHolder.imgProfile.setImageDrawable(Resorse.getDrawable(R.drawable.ic_group));
@@ -186,8 +188,10 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             @Override
             public void onClick(View v) {
                 if (item.getStatus() != Status.WAITING && item.getStatus() != Status.STOPED) {
-                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS, Type.SENDED);
-                    listenerAdapterMessageList.onItemClick(structureDetailMessageBND);
+                    itemList.get(position).setStatus(Status.READ);
+                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS, structureReceiverDBS, Type.SENDED);
+                    listenerAdapterMessageList.onItemClick(structureDetailMessageBND,position);
+                    notifyDataSetChanged();
                 }
 
             }

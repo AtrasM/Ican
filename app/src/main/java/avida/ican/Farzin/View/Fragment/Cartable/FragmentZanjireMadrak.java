@@ -208,11 +208,10 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     adapteDarErtebatBa.updateData(structureDarErtebat);
                     lnDarErtebat.setVisibility(View.VISIBLE);
                 }
-                lnLoading.setVisibility(View.GONE);
-                srlRefresh.setRefreshing(false);
             }
         });
-
+        lnLoading.setVisibility(View.GONE);
+        srlRefresh.setRefreshing(false);
     }
 
 
@@ -232,7 +231,9 @@ public class FragmentZanjireMadrak extends BaseFragment {
     }
 
     private void reGetData() {
-
+        if (!srlRefresh.isRefreshing()) {
+            lnLoading.setVisibility(View.VISIBLE);
+        }
         if (App.networkStatus == NetworkStatus.Connected) {
             farzinZanjireMadrakPresenter.GetZanjireMadrakFromServer();
         } else {
@@ -242,6 +243,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
             }else{
                 txtNoData.setVisibility(View.GONE);
             }
+            srlRefresh.setRefreshing(false);
         }
 
     }

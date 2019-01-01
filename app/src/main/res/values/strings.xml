@@ -56,7 +56,7 @@
     <string name="title_video">فیلم</string>
     <string name="title_voice_recorder">ضبط صدا</string>
     <string name="title_file">فایل</string>
-    <string name="hint_message_subject">موضوع پیام</string>
+    <string name="hint_message_subject">موضوع پیام : </string>
     <string name="error_faild">مشکل در دریافت اطلاعات!</string>
     <string name="error_cartable_document_content">قالب نامه با مشکل مواجه شده است!</string>
     <string name="message_sent_successfully">پیام با موفقیت ارسال شد.</string>

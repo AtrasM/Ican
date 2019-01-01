@@ -32,11 +32,13 @@ import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogPin_unPin;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
 import butterknife.BindView;
@@ -145,12 +147,18 @@ public class FragmentCartable extends BaseFragment {
 
 
     public void reGetDataFromServer() {
-        CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getCartableLastCheckDate(), (TimeValue.SecondsInMilli() * 10));
-        if (compareTimeEnum == CompareTimeEnum.isAfter) {
-            farzinCartableDocumentListPresenter.GetFromServer();
-        } else {
+        if (App.networkStatus == NetworkStatus.Connected) {
+            CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), (TimeValue.SecondsInMilli() * 10));
+            if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                farzinCartableDocumentListPresenter.GetFromServer();
+            } else {
+                reGetDataFromLocal();
+            }
+        }else{
             reGetDataFromLocal();
         }
+
 
     }
 
@@ -237,7 +245,7 @@ public class FragmentCartable extends BaseFragment {
                     if (dialogPin_unPin != null && dialogPin_unPin.isShowing()) {
                         dialogPin_unPin.dismiss();
                     }
-                    StructureCartableDocumentBND structureCartableDocumentBND = new StructureCartableDocumentBND(structureCartableAction.getActionCode(), structureCartableAction.getActionName());
+                    StructureCartableDocumentBND structureCartableDocumentBND = new StructureCartableDocumentBND(structureCartableAction.getActionCode(), structureCartableAction.getActionName(),false);
                     bundleObject.putSerializable(PutExtraEnum.BundleCartableDocument.getValue(), structureCartableDocumentBND);
                     Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocument.class);
                     intent.putExtras(bundleObject);

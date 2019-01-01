@@ -20,7 +20,7 @@
         <avida.ican.Ican.View.Custom.TouchImageView
             android:id="@+id/image_viewer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:background="@drawable/border_rcv"
             android:layout_marginTop="@dimen/margin_maximum"
             android:layout_marginBottom="@dimen/margin_maximum"

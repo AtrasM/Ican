@@ -31,9 +31,11 @@ import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Farzin.View.Enum.CurentProject;
+import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
 import avida.ican.Farzin.View.Fragment.Message.FragmentMessageList;
+import avida.ican.Farzin.View.Interface.ListenerFilter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
@@ -68,7 +70,10 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private Fragment CurentFragment = null;
     private FarzinPrefrences farzinPrefrences;
     private MenuItem actionfilter;
+    private ListenerFilter listenerFilter;
     private boolean isFilter = false;
+    private boolean filtering = false;
+    private String curentTab = "";
 
     @Override
     protected int getLayoutResource() {
@@ -78,12 +83,24 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @Override
     protected void onResume() {
         CheckNetWork();
+        if (App.fragmentStacks != null && App.fragmentStacks.size() > 0){
+            if(actionfilter!=null){
+                if (curentTab == TAB_DASHBOARD) {
+                    FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(TAB_DASHBOARD).lastElement();
+                    fragmentHome.reGetDataFromLocal();
+                    actionfilter.setVisible(false);
+                }
+            }
+
+        }
+
         super.onResume();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        isFilter = getIntent().getBooleanExtra(PutExtraEnum.IsFilter.getValue(), false);
         CheckNetWork();
         farzinPrefrences = getFarzinPrefrences();
         initNavigationBar(Title, R.menu.main_drawer);
@@ -263,10 +280,13 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         setTollbarTitle(title);
     }
 
-    public void pushFragments(String tag, Fragment fragment, boolean shouldAdd) {
+    public void pushFragments(String tab, Fragment fragment, boolean shouldAdd) {
+
+
         if (shouldAdd) {
-            App.fragmentStacks.get(tag).push(fragment);
-            if (tag == TAB_Message) {
+            curentTab = tab;
+            App.fragmentStacks.get(tab).push(fragment);
+            if (tab == TAB_Message) {
                 actionfilter.setVisible(true);
             }
             getSupportFragmentManager()
@@ -275,29 +295,33 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                     .add(R.id.frm_main, fragment)
                     .commit();
         } else {
-            if (tag == TAB_DASHBOARD) {
-                FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tag).lastElement();
-                fragmentHome.reGetDataFromLocal();
-                fragment = fragmentHome;
-                actionfilter.setVisible(false);
-            } else if (tag == TAB_CARTABLE) {
-                FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tag).lastElement();
-                fragmentCartable.reGetDataFromLocal();
-                fragment = fragmentCartable;
-                actionfilter.setVisible(false);
-            } else if (tag == TAB_Message) {
-                controlActionFilter();
+            if (!tab.equals(curentTab)) {
+                curentTab = tab;
+                if (tab == TAB_DASHBOARD) {
+                    FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tab).lastElement();
+                    fragmentHome.reGetDataFromLocal();
+                    fragment = fragmentHome;
+                    actionfilter.setVisible(false);
+                } else if (tab == TAB_CARTABLE) {
+                    FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tab).lastElement();
+                    fragmentCartable.reGetDataFromLocal();
+                    fragment = fragmentCartable;
+                    actionfilter.setVisible(false);
+                } else if (tab == TAB_Message) {
+                    if (!filtering) {
+                        filterReceiveMessage();
+                    }
+                }
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .hide(CurentFragment)
+                        .show(fragment)
+                        .commit();
+
+
             }
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .hide(CurentFragment)
-                    .show(fragment)
-                    .commit();
         }
-
-
         CurentFragment = fragment;
-
 
     }
 
@@ -332,17 +356,22 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     public void selectMessageFragment(boolean isFilter) {
-        this.isFilter=isFilter;
-        if (staticbottomNavigation != null) {
-            staticbottomNavigation.setCurrentItem(2);
-            controlActionFilter();
+        if (!filtering) {
+            if (staticbottomNavigation != null) {
+                this.isFilter = isFilter;
+                staticbottomNavigation.setCurrentItem(2);
+            }
+            filterReceiveMessage();
         }
 
     }
+
     public void selectMessageFragment() {
         if (staticbottomNavigation != null) {
             staticbottomNavigation.setCurrentItem(2);
-            controlActionFilter();
+            if (!filtering) {
+                filterReceiveMessage();
+            }
         }
 
     }
@@ -374,6 +403,70 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         });
     }
 
+    public void setFilter(boolean isFilter) {
+        this.isFilter = isFilter;
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+
+        getMenuInflater().inflate(R.menu.filter_toolbar_menu, menu);
+        // menu.findItem(R.id.action_search).setIntent(new Intent(G.currentActivity, ActivitySearch.class));
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        actionfilter = menu.findItem(R.id.action_filter);
+        actionfilter.setVisible(false);
+        actionfilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (!filtering) {
+                    isFilter = !isFilter;
+                    selectMessageFragment();
+                }
+
+                return false;
+            }
+        });
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void filterReceiveMessage() {
+        filtering = true;
+        FragmentMessageList fragmentMessageList = (FragmentMessageList) App.fragmentStacks.get(TAB_Message).lastElement();
+        actionfilter.setVisible(true);
+        listenerFilter = new ListenerFilter() {
+            @Override
+            public void isFilter(boolean mIsFilter) {
+                isFilter = mIsFilter;
+                if (isFilter) {
+                    actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+                } else {
+                    actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+                }
+            }
+        };
+        if (isFilter) {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            fragmentMessageList.filterMessage(Status.UnRead, isFilter, listenerFilter);
+        } else {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            fragmentMessageList.filterMessage(null, isFilter, listenerFilter);
+        }
+        App.getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                filtering = false;
+            }
+        }, 1000);
+
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -403,43 +496,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
-        getMenuInflater().inflate(R.menu.filter_toolbar_menu, menu);
-        // menu.findItem(R.id.action_search).setIntent(new Intent(G.currentActivity, ActivitySearch.class));
-        return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        setlnToolbarTitleMargin(0);
-        actionfilter = menu.findItem(R.id.action_filter);
-        actionfilter.setVisible(false);
-        actionfilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                isFilter = !isFilter;
-                selectMessageFragment();
-                return false;
-            }
-        });
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    private void controlActionFilter() {
-        FragmentMessageList fragmentMessageList = (FragmentMessageList) App.fragmentStacks.get(TAB_Message).lastElement();
-        actionfilter.setVisible(true);
-        if (isFilter) {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
-            fragmentMessageList.reGetReceiveMessage(Status.UnRead,isFilter);
-        } else {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
-            fragmentMessageList.reGetReceiveMessage(null,isFilter);
-        }
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
@@ -462,4 +518,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
+
+
 }

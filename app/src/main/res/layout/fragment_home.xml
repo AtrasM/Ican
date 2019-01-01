@@ -27,8 +27,8 @@
                     android:layout_width="0dp"
                     android:layout_height="120dp"
                     android:layout_marginLeft="@dimen/margin"
-                    android:layout_marginTop="@dimen/margin"
                     android:layout_marginRight="@dimen/margin"
+                    android:layout_marginTop="@dimen/margin"
                     android:layout_weight="0.5"
                     android:background="@drawable/border">
 
@@ -43,7 +43,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="left|top"
-                            android:paddingLeft="0dp"
                             android:paddingTop="0dp"
                             android:text="90"
                             android:textColor="@color/colorPrimaryDark" />
@@ -67,8 +66,8 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:gravity="center"
                                 android:layout_marginTop="@dimen/margin"
+                                android:gravity="center"
                                 android:text="@string/title_all_cartable_document"
                                 android:textColor="@color/color_txt_Normal" />
                         </LinearLayout>
@@ -97,7 +96,6 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="left|top"
-                            android:paddingLeft="0dp"
                             android:paddingTop="0dp"
                             android:text="90"
                             android:textColor="@color/colorPrimaryDark" />
@@ -140,9 +138,9 @@
                 <android.support.v4.widget.NestedScrollView
                     android:id="@+id/scrollView"
                     android:layout_width="fill_parent"
-                    android:scrollbars="vertical"
+                    android:layout_height="wrap_content"
                     android:fadeScrollbars="false"
-                    android:layout_height="wrap_content">
+                    android:scrollbars="vertical">
 
                     <LinearLayout
                         android:id="@+id/ln_rcv"
@@ -164,7 +162,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:layout_marginTop="@dimen/margin_maximum"
-                                />
+                                android:background="@color/color_White" />
 
                             <LinearLayout
                                 android:layout_width="match_parent"
@@ -178,16 +176,24 @@
                                 android:layout_gravity="center|top"
                                 app:srcCompat="@drawable/ic_pin" />
 
-
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_gravity="bottom"
+                                android:layout_marginTop="@dimen/margin_minimum"
+                                android:background="@color/color_Divider" />
                         </FrameLayout>
 
                         <android.support.v7.widget.RecyclerView
                             android:id="@+id/rcv_action"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@color/color_White" />
+                            android:background="@color/color_White"
+                            android:elevation="@dimen/elevation" />
+
                     </LinearLayout>
                 </android.support.v4.widget.NestedScrollView>
+
 
                 <include layout="@layout/item_txt_nodata" />
             </FrameLayout>

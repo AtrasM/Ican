@@ -216,7 +216,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         }
 
         viewHolder.txtName.setText(item.getSenderName());
-        viewHolder.txtRoleName.setText(" [ " + item.getSenderRoleName() + " ] ");
+        viewHolder.txtRoleName.setText("[ " + item.getSenderRoleName() + " ] ");
         viewHolder.txtCode.setText("داخلی : " + item.getEntityNumber());
         viewHolder.lnHamesh.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -228,7 +228,7 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // ShowToast("" + item.getSenderRoleName());
+                // ShowToast("" + item.getReceiverRoleName());
                 if (isLongClick) {
                     isLongClick = false;
                 } else {

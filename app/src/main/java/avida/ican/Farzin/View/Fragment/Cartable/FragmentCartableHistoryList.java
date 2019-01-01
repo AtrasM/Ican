@@ -111,6 +111,7 @@ public class FragmentCartableHistoryList extends BaseFragment {
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
                         txtNoData.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         List<StructureNodeRES> structureNodesRES = structureHistoryListRES.get(0).getGetHistoryListResult().getGraphs().getGraph().get(0).getStartNode().getNode();
                         initSpinner(structureHistoryListRES.get(0).getGetHistoryListResult().getGraphs());
                         adapterCartableHistory.updateData(new ArrayList<>(structureNodesRES));
@@ -125,8 +126,8 @@ public class FragmentCartableHistoryList extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         if (adapterCartableHistory.getDataSize() <= 0) {
-                            lnLoading.setVisibility(View.GONE);
                             txtNoData.setVisibility(View.VISIBLE);
                         }
                     }
@@ -145,9 +146,9 @@ public class FragmentCartableHistoryList extends BaseFragment {
         for (int i = 1; i <= structureGraphs.getGraph().size(); i++) {
             item.add("شماره " + i);
         }
-        if(item.size()<=1){
+        if (item.size() <= 1) {
             lnHistoryNumber.setVisibility(View.GONE);
-        }else{
+        } else {
             lnHistoryNumber.setVisibility(View.VISIBLE);
         }
         ArrayAdapter<String> adapterSpinner = new CustomFunction(App.CurentActivity).getSpinnerAdapter(item);
@@ -167,27 +168,28 @@ public class FragmentCartableHistoryList extends BaseFragment {
     }
 
     private void reGetData() {
-        //lnHistoryNumber.setVisibility(View.GONE);
+        if (!srlRefresh.isRefreshing()) {
+            lnLoading.setVisibility(View.VISIBLE);
+        }
         List<StructureNodeRES> structureNodesRES = new ArrayList<>();
         StructureHistoryListRES structureHistoryListRES = new StructureHistoryListRES();
         List<StructureCartableHistoryDB> cartableHistoryDBS = farzinHistoryListPresenter.GetCartableHistoryList();
         if (cartableHistoryDBS.size() > 0) {
             structureHistoryListRES = farzinHistoryListPresenter.initObject(cartableHistoryDBS.get(0).getDataXml());
             initSpinner(structureHistoryListRES.getGetHistoryListResult().getGraphs());
-
             structureNodesRES = structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph().get(0).getStartNode().getNode();
             lnLoading.setVisibility(View.GONE);
-            srlRefresh.setRefreshing(false);
+
         }
         if (App.networkStatus == NetworkStatus.Connected) {
             farzinHistoryListPresenter.GetCartableHistoryFromServer();
         } else {
-            lnLoading.setVisibility(View.GONE);
             if (cartableHistoryDBS.size() <= 0) {
                 txtNoData.setVisibility(View.VISIBLE);
             }
+            lnLoading.setVisibility(View.GONE);
+            srlRefresh.setRefreshing(false);
         }
-
         adapterCartableHistory.updateData(new ArrayList<>(structureNodesRES));
 
     }

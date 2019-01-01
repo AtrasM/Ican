@@ -5,17 +5,20 @@ import java.util.ArrayList;
 
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 
 /**
  * Created by AtrasVida on 2018-08-26 at 3:18 PM
  */
 
 public class StructureDetailMessageBND implements Serializable {
+    private  ArrayList<StructureReceiverDB> structureReceiverDBS=new ArrayList<>();
+    private int id;
     private int main_id;
     private int sender_user_id;
     private int sender_role_id;
-    private String SenderFullName;
-    private String SenderRoleName;
+    private String ReceiverFullName;
+    private String ReceiverRoleName;
     private String subject;
     private String content;
     private String sent_date;
@@ -26,17 +29,19 @@ public class StructureDetailMessageBND implements Serializable {
     public StructureDetailMessageBND() {
     }
 
-    public StructureDetailMessageBND(int main_id, int sender_user_id, int sender_role_id, String senderFullName, String senderRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files,Type type) {
+    public StructureDetailMessageBND(int id, int main_id, int sender_user_id, int sender_role_id, String receiverFullName, String receiverRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files, ArrayList<StructureReceiverDB> structureReceiverDBS, Type type) {
+        this.id = id;
         this.main_id = main_id;
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
-        this.SenderFullName = senderFullName;
-        this.SenderRoleName = senderRoleName;
+        this.ReceiverFullName = receiverFullName;
+        this.ReceiverRoleName = receiverRoleName;
         this.subject = subject;
         this.content = content;
         this.sent_date = sent_date;
         this.sent_time = sent_time;
         this.message_files = message_files;
+        this.structureReceiverDBS = structureReceiverDBS;
         this.messageType = type;
     }
 
@@ -104,20 +109,20 @@ public class StructureDetailMessageBND implements Serializable {
         this.message_files = message_files;
     }
 
-    public String getSenderFullName() {
-        return SenderFullName;
+    public String getReceiverFullName() {
+        return ReceiverFullName;
     }
 
-    public void setSenderFullName(String senderFullName) {
-        SenderFullName = senderFullName;
+    public void setReceiverFullName(String receiverFullName) {
+        ReceiverFullName = receiverFullName;
     }
 
-    public String getSenderRoleName() {
-        return SenderRoleName;
+    public String getReceiverRoleName() {
+        return ReceiverRoleName;
     }
 
-    public void setSenderRoleName(String senderRoleName) {
-        SenderRoleName = senderRoleName;
+    public void setReceiverRoleName(String receiverRoleName) {
+        ReceiverRoleName = receiverRoleName;
     }
 
     public Type getMessageType() {
@@ -126,5 +131,21 @@ public class StructureDetailMessageBND implements Serializable {
 
     public void setMessageType(Type type) {
         this.messageType = type;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public ArrayList<StructureReceiverDB> getStructureReceiverDBS() {
+        return structureReceiverDBS;
+    }
+
+    public void setStructureReceiverDBS(ArrayList<StructureReceiverDB> structureReceiverDBS) {
+        this.structureReceiverDBS = structureReceiverDBS;
     }
 }

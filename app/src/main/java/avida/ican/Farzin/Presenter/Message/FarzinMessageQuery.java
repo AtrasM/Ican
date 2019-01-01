@@ -19,7 +19,6 @@ import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
@@ -47,7 +46,7 @@ public class FarzinMessageQuery {
     private int sender_role_id;
     private String subject;
     private String content;
-    private String Date;
+    private String tempstrDate;
     private ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
     private List<StructureUserAndRoleDB> structureUserAndRole = new ArrayList<>();
     private ChangeXml changeXml;
@@ -92,7 +91,7 @@ public class FarzinMessageQuery {
         this.structureUserAndRole = structureReceiver;
         this.messageQuerySaveListener = messageQuerySaveListener;
         this.status = Status.WAITING;
-        this.Date = CustomFunction.getCurentDateTimeAsDateFormat(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue()).toString();
+        this.tempstrDate = CustomFunction.getCurentDateTime().toString();
         this.SendFromApp = true;
         new SaveMessage().execute(Type.SENDED);
     }
@@ -109,7 +108,7 @@ public class FarzinMessageQuery {
             this.sender_user_id = structureMessageRES.getSender().getUserID();
             this.sender_role_id = structureMessageRES.getSender().getRoleID();
             this.subject = structureMessageRES.getSubject();
-            this.Date = structureMessageRES.getSentDate();
+            this.tempstrDate = structureMessageRES.getSentDate();
             if (structureMessageRES.getDescription() == null) {
                 content = "";
             } else {
@@ -143,11 +142,15 @@ public class FarzinMessageQuery {
         protected Void doInBackground(Type... types) {
             StructureMessageDB structureMessageDB;
             content = CustomFunction.AddXmlCData(content);
-            java.util.Date date = new Date(CustomFunction.StandardizeTheDateFormat(Date));
+            //String mDate = CustomFunction.StandardizeTheDateFormat(tempstrDate);
+            Date date = new Date();
+            if (tempstrDate != null && !tempstrDate.isEmpty()) {
+                date = new Date(tempstrDate);
+            }
+
             structureMessageDB = new StructureMessageDB(MessageID, sender_user_id, sender_role_id, subject, content, date, status);
             try {
                 messageDao.create(structureMessageDB);
-
                 for (int i = 0; i < structureAttaches.size(); i++) {
                     StructureAttach Attach = structureAttaches.get(i);
                     StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, Attach.getName(), Attach.getBase64File(), Attach.getFileExtension());
@@ -201,7 +204,6 @@ public class FarzinMessageQuery {
             return null;
         }
 
-
     }
 
     private void threadSleep() {
@@ -226,11 +228,24 @@ public class FarzinMessageQuery {
         return structureMessageQueueDBS;
     }
 
-    public StructureMessageDB GetMessage(int ID) {
+    public StructureMessageDB GetMessageWithId(int ID) {
         QueryBuilder<StructureMessageDB, Integer> queryBuilder = messageDao.queryBuilder();
         StructureMessageDB structureMessageDB = new StructureMessageDB();
         try {
-            queryBuilder.where().eq("main_id", ID).and().ne("status", Status.STOPED);
+            queryBuilder.where().eq("id", ID);
+            queryBuilder.orderBy("sent_date", false);
+            structureMessageDB = queryBuilder.queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureMessageDB;
+    }
+
+    public StructureMessageDB GetMessage(int mainId) {
+        QueryBuilder<StructureMessageDB, Integer> queryBuilder = messageDao.queryBuilder();
+        StructureMessageDB structureMessageDB = new StructureMessageDB();
+        try {
+            queryBuilder.where().eq("main_id", mainId).and().ne("status", Status.STOPED);
             queryBuilder.orderBy("sent_date", false);
             structureMessageDB = queryBuilder.queryForFirst();
         } catch (SQLException e) {
@@ -249,7 +264,9 @@ public class FarzinMessageQuery {
             messageQB.join(receiverQB);
             //structureMessageDBS = messageQB.query();
             if (status != null) {
-                messageQB.where().eq("status", status);
+                messageQB.where().eq("status", status).and().ne("status", Status.WAITING);
+            } else {
+                messageQB.where().ne("status", Status.WAITING);
             }
             //structureMessageDBS = messageQB.query();
             if (count > 0) {
@@ -267,15 +284,24 @@ public class FarzinMessageQuery {
     public List<StructureMessageDB> GetSendMessages(int user_id, Status status, long start, long count) {
         QueryBuilder<StructureMessageDB, Integer> messageQB = messageDao.queryBuilder();
         QueryBuilder<StructureReceiverDB, Integer> receiverQB = receiverDao.queryBuilder();
+        Where<StructureMessageDB, Integer> where = messageQB.where();
         List<StructureMessageDB> structureMessageDBS = new ArrayList<>();
         try {
-            if (status != null) {
-                messageQB.where().eq("status", status).and().eq("sender_user_id", user_id).and().ne("status", Status.STOPED);
-                ;
-            } else {
-                messageQB.where().eq("sender_user_id", user_id);
-            }
 
+            if (status != null) {
+                if (status == Status.READ) {
+                    receiverQB.where().eq("is_read", true);
+                } else {
+                    receiverQB.where().eq("is_read", false);
+                }
+                messageQB.join(receiverQB);
+                //where.eq("sender_user_id", user_id);
+
+            }
+            //where.and(where.eq("sender_user_id", user_id), where.or(where.ne("status", Status.STOPED), where.ne("status", Status.WAITING)));
+            where.eq("sender_user_id", user_id).and().ne("status", Status.STOPED).and().ne("status", Status.WAITING);
+
+            messageQB.setWhere(where);
             if (count > 0) {
                 messageQB.offset(start).limit(count);
             }
@@ -315,6 +341,19 @@ public class FarzinMessageQuery {
         try {
             DeleteBuilder<StructureReceiverDB, Integer> deleteBuilder = receiverDao.deleteBuilder();
             deleteBuilder.where().eq("message_id", MessageDB);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean DeletMessageFile(StructureMessageDB message) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureMessageFileDB, Integer> deleteBuilder = messageFileDao.deleteBuilder();
+            deleteBuilder.where().eq("message_id", message);
             deleteBuilder.delete();
             isDelet = true;
         } catch (SQLException e) {
@@ -385,6 +424,7 @@ public class FarzinMessageQuery {
 
     public void UpdateMessageView(StructureMessageRES MessageRES, Type type) {
         try {
+            ArrayList<StructureAttach> tempStructureAttaches = new ArrayList<>();
             UpdateBuilder<StructureMessageDB, Integer> updateBuilderMessage = messageDao.updateBuilder();
             updateBuilderMessage.where().eq("main_id", MessageRES.getID());
             if (MessageRES.isRead()) {
@@ -396,7 +436,18 @@ public class FarzinMessageQuery {
             updateBuilderMessage.update();
             if (type != Type.RECEIVED) {
                 StructureMessageDB MessageDB = GetMessage(MessageRES.getID());
-                DeletMessageReceiver(MessageDB);
+              boolean isDelet=  DeletMessageReceiver(MessageDB);
+                isDelet= DeletMessageFile(MessageDB);
+                for (int i = 0; i < MessageRES.getMessageFiles().size(); i++) {
+                    StructureMessageAttachRES MessageAttachRES = MessageRES.getMessageFiles().get(i);
+                    tempStructureAttaches.add(new StructureAttach(MessageAttachRES.getFileBinary(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
+                }
+                for (int i = 0; i < tempStructureAttaches.size(); i++) {
+                    StructureAttach Attach = tempStructureAttaches.get(i);
+                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(MessageDB, Attach.getName(), Attach.getBase64File(), Attach.getFileExtension());
+                    messageFileDao.create(structureMessageFileDB);
+                    threadSleep();
+                }
                 for (StructureReceiverRES receiverRES : MessageRES.getReceivers()) {
                     String ViewDate = "";
                     if (receiverRES.getViewDate() != null) {
@@ -408,7 +459,7 @@ public class FarzinMessageQuery {
                 }
             }
 
-            new FarzinPrefrences().init().putMessageViewSyncDate(CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue()));
+            new FarzinPrefrences().init().putMessageViewSyncDate(CustomFunction.getCurentDateTime().toString());
 
         } catch (SQLException e) {
             e.printStackTrace();

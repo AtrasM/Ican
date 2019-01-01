@@ -140,7 +140,7 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
         viewHolder.txtDate.setText(date);
         viewHolder.txtTime.setText(time);
         viewHolder.txtCreatorFullName.setText("" + item.getCreatorName());
-        viewHolder.txtCreatorRoleName.setText(" [ " + item.getCreatorRoleName() + " ] ");
+        viewHolder.txtCreatorRoleName.setText("[ " + item.getCreatorRoleName() + " ] ");
 
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

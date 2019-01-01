@@ -77,6 +77,7 @@ public class DialogUserAndRole {
     private FarzinCartableQuery farzinCartableQuery;
     private FarzinPrefrences farzinPrefrences;
     private ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS = new ArrayList<>();
+    private boolean canDo = true;
 
     @SuppressLint("ResourceAsColor")
 
@@ -168,6 +169,7 @@ public class DialogUserAndRole {
 
     private void initView() {
         App.canBack = false;
+
         dialogUserAndRole = DialogPlus.newDialog(context)
                 .setHeader(R.layout.item_dialog_header)
                 .setContentHolder(new ViewHolder(R.layout.dialog_activity_user_and_role))
@@ -189,27 +191,29 @@ public class DialogUserAndRole {
         viewHolder.btnOk.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
-                    final ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
-                    ValidationPerson(structurePersonsREQ, new ListenerValidate() {
-                        @Override
-                        public void onValid() {
-                            StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID(), sendCode);
-                            StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
-                            listenerUserAndRollMain.onSuccess(structureAppendREQ);
-                            finish();
-                        }
+                if (canDo) {
+                    if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
+                        final ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
+                        ValidationPerson(structurePersonsREQ, new ListenerValidate() {
+                            @Override
+                            public void onValid() {
+                                StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID(), sendCode);
+                                StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
+                                listenerUserAndRollMain.onSuccess(structureAppendREQ);
+                                finish();
+                            }
 
-                        @Override
-                        public void unValid() {
+                            @Override
+                            public void unValid() {
 
-                        }
-                    });
+                            }
+                        });
 
 
-                } else {
-                    listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
-                    finish();
+                    } else {
+                        listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
+                        finish();
+                    }
                 }
 
 
@@ -241,6 +245,13 @@ public class DialogUserAndRole {
             public String message = "";
 
             @Override
+            protected void onPreExecute() {
+                ShowLoading();
+                canDo = false;
+                super.onPreExecute();
+            }
+
+            @Override
             protected Boolean doInBackground(Void... voids) {
                 for (StructurePersonREQ structurePerson : structurePersonsREQ) {
                     if (structurePerson.getAction() == -1) {
@@ -260,6 +271,8 @@ public class DialogUserAndRole {
                     App.ShowMessage().ShowToast(message, Toast.LENGTH_LONG);
                     listenerValidate.unValid();
                 }
+                HideLoading();
+                canDo = true;
                 super.onPostExecute(aBoolean);
 
             }

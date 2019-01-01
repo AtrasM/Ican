@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
@@ -21,11 +22,13 @@ import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
 import avida.ican.Farzin.View.Adapter.AdapterSentMessage;
 import avida.ican.Farzin.View.FarzinActivityDetailMessage;
 import avida.ican.Farzin.View.FarzinActivityWriteMessage;
+import avida.ican.Farzin.View.Interface.ListenerFilter;
 import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
 import avida.ican.Ican.App;
@@ -48,7 +51,8 @@ public class FragmentMessageList extends BaseFragment {
     private FragmentSentMessageList fragmentSentMessageList;
     private FragmentReceiveMessageList fragmentReceiveMessageList;
     private static FragmentManager mfragmentManager;
-    private boolean isFilter = false;
+    private static boolean isFilter = false;
+    private static ListenerFilter listenerFilter;
 
     public FloatingActionButton getFabNewMsg() {
         return fabNewMsg;
@@ -79,7 +83,6 @@ public class FragmentMessageList extends BaseFragment {
         // Required empty public constructor
     }
 
-
     public FragmentMessageList newInstance(FragmentManager fragmentManager) {
         mfragmentManager = fragmentManager;
         return this;
@@ -109,7 +112,6 @@ public class FragmentMessageList extends BaseFragment {
         initTab();
     }
 
-
     private void initTab() {
         initData();
         assert smartTabLayout != null;
@@ -117,7 +119,6 @@ public class FragmentMessageList extends BaseFragment {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager());
         adapter.addFrag(fragmentReceiveMessageList, R.string.receive_message);
         adapter.addFrag(fragmentSentMessageList, R.string.set_message);
-
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
         smartTabLayout.setViewPager(viewPager);
@@ -125,19 +126,14 @@ public class FragmentMessageList extends BaseFragment {
 
     private void initReceiveMessageAdapter(List<StructureMessageDB> structureMessageDBS) {
         mstructuresReceiveMessages = structureMessageDBS;
-        adapterReceiveMessage = null;
         adapterReceiveMessage = new AdapterReceiveMessage(structureMessageDBS, new ListenerAdapterMessageList() {
             @Override
             public void onDelet(StructureMessageDB structureMessageDB) {
-
-                final Loading loading = new Loading(App.CurentActivity).Creat();
-                loading.Show();
-                loading.Hide();
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.delete_action), SnackBarEnum.SNACKBAR_SHORT_TIME);
             }
 
             @Override
-            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND) {
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND,int position) {
                 goToMessageDetail(structureDetailMessageBND);
             }
         });
@@ -146,7 +142,6 @@ public class FragmentMessageList extends BaseFragment {
 
     private void initSendMessageAdapter(List<StructureMessageDB> structureMessageDBS) {
         mstructuresSentMessages = structureMessageDBS;
-        adapterSentMessage = null;
         adapterSentMessage = new AdapterSentMessage(structureMessageDBS, new ListenerAdapterMessageList() {
             @Override
             public void onDelet(StructureMessageDB structureMessageDB) {
@@ -157,7 +152,7 @@ public class FragmentMessageList extends BaseFragment {
             }
 
             @Override
-            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND) {
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND,int position) {
                 goToMessageDetail(structureDetailMessageBND);
             }
         });
@@ -173,20 +168,38 @@ public class FragmentMessageList extends BaseFragment {
         intent = new Intent(App.CurentActivity, FarzinActivityDetailMessage.class);
         //intent.putExtras(bundleObject);
         goToActivity(intent);
+
+        new FarzinMessageQuery().UpdateMessageStatus(structureDetailMessageBND.getId(), Status.READ);
+
+        if (isFilter) {
+            reGetReceiveMessage(Status.UnRead, null);
+        } else {
+            reGetReceiveMessage(null, null);
+        }
+
     }
 
     private void initData() {
-    /*    StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
-        int user_id = structureUserAndRoleDB.getUser_ID();
-        int role_id = structureUserAndRoleDB.getRole_ID();*/
+        ReceiveMessageStart = 0;
+        SentMessageStart = 0;
         UserId = getFarzinPrefrences().getUserID();
-        mstructuresReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, null, ReceiveMessageStart, Count);
-        mstructuresSentMessages = new FarzinMessageQuery().GetSendMessages(UserId, null, SentMessageStart, Count);
+        if (isFilter) {
+            mstructuresReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, Status.UnRead, ReceiveMessageStart, Count);
+            mstructuresSentMessages = new FarzinMessageQuery().GetSendMessages(UserId, Status.UnRead, SentMessageStart, Count);
+        } else {
+            mstructuresReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, null, ReceiveMessageStart, Count);
+            mstructuresSentMessages = new FarzinMessageQuery().GetSendMessages(UserId, null, SentMessageStart, Count);
+        }
         ReceiveMessageStart = mstructuresReceiveMessages.size();
         SentMessageStart = mstructuresSentMessages.size();
         new FarzinMessageQuery().UpdateAllNewMessageStatusToUnreadStatus();
-        initReceiveMessageAdapter(mstructuresReceiveMessages);
-        initSendMessageAdapter(mstructuresSentMessages);
+        if (adapterReceiveMessage == null) {
+            initReceiveMessageAdapter(mstructuresReceiveMessages);
+            initSendMessageAdapter(mstructuresSentMessages);
+        } else {
+            adapterReceiveMessage.updateData(mstructuresReceiveMessages);
+            adapterSentMessage.updateData(mstructuresSentMessages);
+        }
     }
 
 
@@ -206,11 +219,18 @@ public class FragmentMessageList extends BaseFragment {
 
     }
 
-    public void AddSendNewMessage(StructureMessageDB SendMessages) {
-        SentMessageStart = SentMessageStart + 1;
+    public void UpdateSendMessageData() {
+        if (isFilter) {
+            reGetSendMessage(Status.UnRead, null);
+            reGetReceiveMessage(Status.UnRead, null);
+        } else {
+            reGetSendMessage(null, null);
+            reGetReceiveMessage(null, null);
+        }
+       /* SentMessageStart = SentMessageStart + 1;
         mstructuresSentMessages.add(0, SendMessages);
 
-        adapterSentMessage.updateData(0, SendMessages);
+        adapterSentMessage.updateData(0, SendMessages);*/
 
     }
 
@@ -221,45 +241,57 @@ public class FragmentMessageList extends BaseFragment {
     public void reGetReceiveMessage(Status status, final SwipeRefreshLayout swipeRefreshLayout) {
         List<StructureMessageDB> ReceiveMessages = new ArrayList<>();
         ReceiveMessageStart = 0;
+        mstructuresReceiveMessages.clear();
         ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
         mstructuresReceiveMessages = new ArrayList<>(ReceiveMessages);
-        ReceiveMessageStart = ReceiveMessageStart + ReceiveMessages.size();
+        ReceiveMessageStart = ReceiveMessages.size();
         adapterReceiveMessage.updateData(mstructuresReceiveMessages);
-        App.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-                fragmentReceiveMessageList.setCanLoading(true);
-            }
-        }, 1000);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        fragmentReceiveMessageList.setCanLoading(true);
     }
 
-    public void reGetReceiveMessage(Status status, boolean isFilter) {
-        this.isFilter = isFilter;
-        List<StructureMessageDB> ReceiveMessages = new ArrayList<>();
-        ReceiveMessageStart = 0;
-        ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
-        mstructuresReceiveMessages = new ArrayList<>(ReceiveMessages);
-        ReceiveMessageStart = ReceiveMessageStart + ReceiveMessages.size();
-        adapterReceiveMessage.updateData(mstructuresReceiveMessages);
 
-    }
-
-    private void reGetSendMessage(final SwipeRefreshLayout swipeRefreshLayout) {
+    public void reGetSendMessage(Status status, final SwipeRefreshLayout swipeRefreshLayout) {
         List<StructureMessageDB> SentMessages = new ArrayList<>();
         SentMessageStart = 0;
-        SentMessages = new FarzinMessageQuery().GetSendMessages(UserId, null, SentMessageStart, Count);
-        SentMessageStart = SentMessageStart + SentMessages.size();
+        mstructuresSentMessages.clear();
+        SentMessages = new FarzinMessageQuery().GetSendMessages(UserId, status, SentMessageStart, Count);
         mstructuresSentMessages = new ArrayList<>(SentMessages);
+        SentMessageStart = SentMessages.size();
         adapterSentMessage.updateData(mstructuresSentMessages);
+        if (swipeRefreshLayout != null){
+            swipeRefreshLayout.setRefreshing(false);
+        }
 
-        App.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                swipeRefreshLayout.setRefreshing(false);
-                fragmentSentMessageList.setCanLoading(true);
-            }
-        }, 1000);
+        fragmentSentMessageList.setCanLoading(true);
+    }
+
+    public void filterMessage(Status status, boolean isFilter, ListenerFilter listenerFilter) {
+        this.isFilter = isFilter;
+        this.listenerFilter = listenerFilter;
+        if (adapterReceiveMessage == null) {
+            initData();
+        } else {
+            List<StructureMessageDB> ReceiveMessages;
+            List<StructureMessageDB> SendMessages;
+            ReceiveMessageStart = 0;
+            SentMessageStart = 0;
+            ReceiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
+            SendMessages = new FarzinMessageQuery().GetSendMessages(UserId, status, SentMessageStart, Count);
+            mstructuresReceiveMessages = new ArrayList<>(ReceiveMessages);
+            mstructuresSentMessages = new ArrayList<>(SendMessages);
+            ReceiveMessageStart = ReceiveMessages.size();
+            SentMessageStart = SendMessages.size();
+            adapterReceiveMessage.updateData(mstructuresReceiveMessages);
+            adapterSentMessage.updateData(mstructuresSentMessages);
+            fragmentReceiveMessageList.setCanLoading(true);
+
+        }
+
+
     }
 
     private FarzinPrefrences getFarzinPrefrences() {
@@ -271,40 +303,63 @@ public class FragmentMessageList extends BaseFragment {
         fragmentReceiveMessageList = new FragmentReceiveMessageList().newInstance(App.CurentActivity, adapterReceiveMessage, new ListenerRcv() {
             @Override
             public void onLoadData() {
-                continueGetMessage(Type.RECEIVED);
+                if (isFilter) {
+                    continueGetMessage(Status.UnRead, Type.RECEIVED);
+                } else {
+                    continueGetMessage(null, Type.RECEIVED);
+                }
+
             }
 
             @Override
             public void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
+                //isFilter = false;
+                if (listenerFilter != null) {
+                    listenerFilter.isFilter(isFilter);
+                }
                 if (isFilter) {
                     reGetReceiveMessage(Status.UnRead, swipeRefreshLayout);
                 } else {
                     reGetReceiveMessage(null, swipeRefreshLayout);
                 }
 
+
             }
         });
         fragmentSentMessageList = new FragmentSentMessageList().newInstance(App.CurentActivity, adapterSentMessage, new ListenerRcv() {
             @Override
             public void onLoadData() {
-                continueGetMessage(Type.SENDED);
+                if (isFilter) {
+                    continueGetMessage(Status.UnRead, Type.SENDED);
+                } else {
+                    continueGetMessage(null, Type.SENDED);
+                }
             }
 
             @Override
             public void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
-                reGetSendMessage(swipeRefreshLayout);
+                //isFilter = false;
+                if (listenerFilter != null) {
+                    listenerFilter.isFilter(isFilter);
+                }
+                if (isFilter) {
+                    reGetSendMessage(Status.UnRead, swipeRefreshLayout);
+                } else {
+                    reGetSendMessage(null, swipeRefreshLayout);
+                }
+
             }
         });
 
 
     }
 
-    private void continueGetMessage(Type type) {
+    private void continueGetMessage(Status status, Type type) {
         final Loading loading = new Loading(App.CurentActivity).Creat();
         loading.Show();
         if (type == Type.RECEIVED) {
-            List<StructureMessageDB> receiveMessages = new ArrayList<>();
-            receiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, null, ReceiveMessageStart, Count);
+            List<StructureMessageDB> receiveMessages;
+            receiveMessages = new FarzinMessageQuery().GetReceiveMessages(UserId, status, ReceiveMessageStart, Count);
             if (receiveMessages.size() > 0) {
                 ReceiveMessageStart = ReceiveMessageStart + receiveMessages.size();
                 mstructuresReceiveMessages.addAll(receiveMessages);
@@ -315,8 +370,8 @@ public class FragmentMessageList extends BaseFragment {
                 fragmentReceiveMessageList.setCanLoading(false);
             }
         } else {
-            List<StructureMessageDB> sentMessages = new ArrayList<>();
-            sentMessages = new FarzinMessageQuery().GetSendMessages(UserId, null, SentMessageStart, Count);
+            List<StructureMessageDB> sentMessages;
+            sentMessages = new FarzinMessageQuery().GetSendMessages(UserId, status, SentMessageStart, Count);
             if (sentMessages.size() > 0) {
                 SentMessageStart = SentMessageStart + sentMessages.size();
                 mstructuresSentMessages.addAll(sentMessages);

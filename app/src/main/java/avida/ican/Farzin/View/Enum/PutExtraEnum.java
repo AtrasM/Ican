@@ -13,7 +13,9 @@ public enum PutExtraEnum {
     MultyMessage("MultyMessage"),
     MultyCartableDocument("MultyCartableDocument"),
     Notification("Notification"),
-    ISFwdReplyMessage("ISFwdReplyMessage");
+    ISFwdReplyMessage("ISFwdReplyMessage"),
+    IsFilter("IsFilter"),
+    ComeFromNotificationManager("ComeFromNotificationManager");
 
 
     private final String name;

@@ -187,6 +187,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static void goToActivity(Intent intent) {
         //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             App.CurentActivity.startActivity(intent);
             App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         } catch (Exception e) {

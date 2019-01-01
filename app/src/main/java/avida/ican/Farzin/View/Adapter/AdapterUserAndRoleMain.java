@@ -108,7 +108,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
         }
 
-        viewHolder.txtRoleName.setText(" [ " + item.getRoleName() + " ] ");
+        viewHolder.txtRoleName.setText("[ " + item.getRoleName() + " ] ");
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

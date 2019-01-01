@@ -16,7 +16,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinCartableNotificationReceiver;
-import avida.ican.Farzin.FarzinMessageNotificationReceiver;
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
@@ -33,7 +32,7 @@ import avida.ican.Farzin.View.FarzinNotificationClickManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
+import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -44,8 +43,9 @@ import avida.ican.R;
  */
 
 public class GetCartableDocumentService extends Service {
+    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli()+(TimeValue.SecondsInMilli()*40);
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;
@@ -61,6 +61,7 @@ public class GetCartableDocumentService extends Service {
     private static int existCont = 0;
     private static int dataSize = 0;
     private static int newCount = 0;
+    private long tempDelay = LOWDELAY;
 
     @Override
     public void onCreate() {
@@ -126,16 +127,23 @@ public class GetCartableDocumentService extends Service {
     }
 
     private void GetCartableDocument(int count) {
-        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
+            reGetData(Count);
         } else {
-            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getCartableLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
-            if (compareTimeEnum == CompareTimeEnum.isAfter) {
+            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
                 getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
             } else {
-                reGetData(Count);
+                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), tempDelay);
+                getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                    getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+                } else {
+                    reGetData(Count);
+                }
             }
         }
+
 
     }
 
@@ -158,7 +166,7 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
-                newCount = newCount++;
+                newCount++;
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
@@ -235,11 +243,14 @@ public class GetCartableDocumentService extends Service {
     private void reGetData(int count) {
         ShowToast("re Get cartable document");
         Count = count;
-        long delay = 1;
-        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            delay = DELAY;
-        } else {
-            delay = LOWDELAY;
+        if(App.activityStacks==null){
+            tempDelay=DELAYWhenAppClose;
+        }else{
+            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+                tempDelay = DELAY;
+            } else {
+                tempDelay = LOWDELAY;
+            }
         }
 
         handler.postDelayed(new Runnable() {
@@ -247,7 +258,7 @@ public class GetCartableDocumentService extends Service {
             public void run() {
                 GetCartableDocument(Count);
             }
-        }, delay);
+        }, tempDelay);
 
 
     }

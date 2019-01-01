@@ -12,13 +12,15 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 public class StructureCartableDocumentBND implements Serializable {
     private int actionCode;
     private String actionNAme;
+    private boolean isFilter;
 
     public StructureCartableDocumentBND() {
     }
 
-    public StructureCartableDocumentBND(int actionCode, String actionNAme) {
+    public StructureCartableDocumentBND(int actionCode, String actionNAme,boolean isFilter) {
         this.actionCode = actionCode;
         this.actionNAme = actionNAme;
+        this.isFilter = isFilter;
     }
 
     public int getActionCode() {
@@ -35,5 +37,13 @@ public class StructureCartableDocumentBND implements Serializable {
 
     public void setActionNAme(String actionNAme) {
         this.actionNAme = actionNAme;
+    }
+
+    public boolean isFilter() {
+        return isFilter;
+    }
+
+    public void setFilter(boolean filter) {
+        isFilter = filter;
     }
 }

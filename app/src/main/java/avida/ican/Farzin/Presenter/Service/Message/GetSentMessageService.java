@@ -1,13 +1,16 @@
 package avida.ican.Farzin.Presenter.Service.Message;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
@@ -17,13 +20,13 @@ import avida.ican.Farzin.Model.Interface.Message.MessageQuerySaveListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
-import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
+import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 
@@ -32,8 +35,9 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
  */
 
 public class GetSentMessageService extends Service {
-    private final long DELAY = TimeValue.MinutesInMilli();
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 15;
+    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli() + (TimeValue.SecondsInMilli() * 30);
+    private final long DELAY = TimeValue.SecondsInMilli() * 35;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private MessageListListener messageListListener;
     private Context context;
@@ -43,8 +47,9 @@ public class GetSentMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.UnRead;
     private int Count = 1;
-    private final int MaxCount = 10;
+    private final int MaxCount = 20;
     private final int MinCount = 1;
+    private long tempDelay = LOWDELAY;
 
 
     @Override
@@ -109,32 +114,49 @@ public class GetSentMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
+            reGetMessage();
         } else {
-            CompareTimeEnum compareTimeEnum = CustomFunction.compareTimeInMiliWithCurentSystemTime(getFarzinPrefrences().getMessageSentLastCheckDate(), DELAY - (TimeValue.SecondsInMilli() * 5));
-            if (compareTimeEnum == CompareTimeEnum.isAfter) {
-                getFarzinPrefrences().putMessageSentLastCheckDate(System.currentTimeMillis());
+            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
                 getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
             } else {
-                reGetMessage();
+                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageSentLastCheckDate(), tempDelay);
+                getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                    getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+                } else {
+                    reGetMessage();
+                }
             }
         }
 
+
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void SaveMessage(final ArrayList<StructureMessageRES> messageList) {
         final StructureMessageRES structureMessageRES = messageList.get(0);
-        if (structureMessageRES.isRead()) {
-            status = Status.READ;
-        } else {
-         /*   if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-                status = Status.IsNew;
-            } else {
-                status = Status.UnRead;
-            }*/
-            status = Status.UnRead;
-        }
+
+        AsyncTask<List<StructureReceiverRES>, Void, Void> asyncTask = new AsyncTask<List<StructureReceiverRES>, Void, Void>() {
+            @Override
+            protected Void doInBackground(List<StructureReceiverRES>[] lists) {
+                int count = 0;
+                for (int i = 0; i < lists.length; i++) {
+                    if (lists[0].get(i).isRead()) {
+                        count++;
+                    }
+                }
+                if (count == lists.length) {
+                    status = avida.ican.Farzin.Model.Enum.Status.READ;
+                } else {
+                    status = avida.ican.Farzin.Model.Enum.Status.UnRead;
+                }
+                return null;
+            }
+        };
+        asyncTask.execute(structureMessageRES.getReceivers());
+
         farzinMessageQuery.SaveMessage(structureMessageRES, Type.SENDED, status, new MessageQuerySaveListener() {
 
             @Override
@@ -145,7 +167,7 @@ public class GetSentMessageService extends Service {
                         App.CurentActivity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                App.fragmentMessageList.AddSendNewMessage(structureMessageDB);
+                                App.fragmentMessageList.UpdateSendMessageData();
                                 // UpdateAllNewMessageStatusToUnreadStatus();
                             }
                         });
@@ -195,19 +217,23 @@ public class GetSentMessageService extends Service {
         ShowToast("re Get Message");
         pageNumber = 1;
         Count = MinCount;
-        long delay = 1;
-        if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            delay = DELAY;
+        if (App.activityStacks == null) {
+            tempDelay = DELAYWhenAppClose;
         } else {
-            delay = LOWDELAY;
+            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+                tempDelay = DELAY;
+            } else {
+                tempDelay = LOWDELAY;
+            }
         }
+
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetMessage(pageNumber, Count);
             }
-        }, delay);
+        }, tempDelay);
     }
 
 

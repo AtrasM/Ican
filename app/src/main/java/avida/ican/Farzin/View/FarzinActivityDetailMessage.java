@@ -1,6 +1,5 @@
 package avida.ican.Farzin.View;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -14,18 +13,16 @@ import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
+import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
-import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -33,8 +30,6 @@ import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
 import avida.ican.R;
 import butterknife.BindString;
@@ -43,39 +38,30 @@ import butterknife.BindView;
 public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     @BindView(R.id.txt_subject)
     TextView txtSubject;
-
     @BindView(R.id.txt_time)
     TextView txtTime;
-
     @BindView(R.id.txt_date)
     TextView txtDate;
-
-    @BindView(R.id.txt_sender_role_name)
-    TextView txtSenderRoleName;
-
-    @BindView(R.id.txt_sender_name)
-    TextView txtSenderName;
-
+    @BindView(R.id.txt_role_name)
+    TextView txtRoleName;
+    @BindView(R.id.txt_name)
+    TextView txtName;
     @BindView(R.id.rcv_attach)
     RecyclerView rcvAttach;
-
     @BindView(R.id.img_delet)
     ImageView imgDelet;
-
     @BindView(R.id.img_forward)
     ImageView imgForward;
-
     @BindView(R.id.img_reply)
     ImageView imgReply;
     @BindView(R.id.ln_reply)
     LinearLayout lnReply;
-
-
     @BindView(R.id.ex_txt_message)
     ExpandableTextView exTxtMessage;
-
     @BindView(R.id.ln_main)
     LinearLayout lnMain;
+    @BindView(R.id.ln_loading)
+    LinearLayout lnLoading;
 
     @BindString(R.string.TitleDetailMessage)
     String Title;
@@ -86,6 +72,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     private AdapterAttach adapterAttach;
     private File file;
     private Bundle bundleObject = new Bundle();
+    private String receiveNames = "";
 
     @Override
     protected void onResume() {
@@ -110,13 +97,14 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
 /*        Bundle bundleObject = getIntent().getExtras();
         structureDetailMessageBND = (StructureDetailMessageBND) bundleObject.getSerializable(PutExtraEnum.BundleMessage.getValue());
        */
+        lnMain.setVisibility(View.GONE);
+        lnLoading.setVisibility(View.VISIBLE);
         if (structureDetailMessageBND.getMessageType() == Type.SENDED) {
             lnReply.setVisibility(View.GONE);
         }
         initTollBar(Title);
         txtSubject.setText(structureDetailMessageBND.getSubject());
-        txtSenderName.setText(structureDetailMessageBND.getSenderFullName());
-        txtSenderRoleName.setText(structureDetailMessageBND.getSenderRoleName());
+        txtRoleName.setText(structureDetailMessageBND.getReceiverRoleName());
         txtDate.setText(structureDetailMessageBND.getSent_date());
         txtTime.setText(structureDetailMessageBND.getSent_time());
         new CustomFunction(this).setHtmlText(exTxtMessage, structureDetailMessageBND.getContent());
@@ -135,10 +123,29 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
                 gotoActivityWriteMessage(false);
             }
         });
+
+        if (structureDetailMessageBND.getStructureReceiverDBS().size() > 1) {
+            txtRoleName.setVisibility(View.GONE);
+            StructureUserAndRoleDB structureUserAndRoleDB;
+            for (StructureReceiverDB structureReceiverDB : structureDetailMessageBND.getStructureReceiverDBS()) {
+                if (structureReceiverDB.getRole_id() <= 0) {
+                    structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDB.getUser_id());
+                } else {
+                    structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureReceiverDB.getUser_id(), structureReceiverDB.getRole_id());
+                }
+                receiveNames = receiveNames + "" + structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName() + " ,";
+            }
+            receiveNames = receiveNames.substring(0, receiveNames.length() - 1);
+        } else {
+            receiveNames = structureDetailMessageBND.getReceiverFullName();
+        }
+        txtName.setText(receiveNames);
+        lnMain.setVisibility(View.VISIBLE);
+        lnLoading.setVisibility(View.GONE);
     }
 
     private void gotoActivityWriteMessage(boolean isReply) {
-        StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getSenderFullName(), structureDetailMessageBND.getSenderRoleName(), structureDetailMessageBND.getSubject(), exTxtMessage.getText().toString(), structureAttaches, isReply);
+        StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getReceiverFullName(), structureDetailMessageBND.getReceiverRoleName(), structureDetailMessageBND.getSubject(), exTxtMessage.getText().toString(), structureAttaches, isReply);
         FarzinActivityWriteMessage.structureFwdReplyBND = structureFwdReplyBND;
         // bundleObject.putSerializable(PutExtraEnum.ISFwdReplyMessage.getValue(), structureFwdReplyBND);
         Intent intent = new Intent(App.CurentActivity, FarzinActivityWriteMessage.class);
@@ -147,7 +154,10 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     }
 
     private void initRcvAndAdapter() {
-
+        for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
+            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_binary(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
+            structureAttaches.add(structureAttach);
+        }
         GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
         adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
@@ -159,11 +169,8 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
             }
         });
         rcvAttach.setAdapter(adapterAttach);
-        for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
-            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_binary(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
-            structureAttaches.add(structureAttach);
-        }
-        adapterAttach.addAll(structureAttaches);
+
+       // adapterAttach.addAll(structureAttaches);
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 
@@ -28,7 +29,6 @@ import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
-import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
@@ -66,8 +66,8 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     EditText edtSubject;
     @BindView(R.id.re_msg)
     RichEditor reMsg;
-    @BindView(R.id.ln_add_contacts)
-    LinearLayout lnAddContacts;
+    @BindView(R.id.frm_add_contacts)
+    FrameLayout frmAddContacts;
     @BindView(R.id.ex_txt_contacts)
     ExpandableTextView exTxtContacts;
     @BindView(R.id.ln_rcv_attach)
@@ -147,20 +147,16 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         }
 
 
-        lnAddContacts.setOnClickListener(new View.OnClickListener() {
+        frmAddContacts.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 showUserAndRoleDialog();
             }
         });
-        exTxtContacts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                showUserAndRoleDialog();
-            }
-        });
+
+
 
     }
 
@@ -258,7 +254,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
     private void setUpRichEditore() {
         //reMsg.setEditorHeight(200);
-        reMsg.setAlignRight();
         reMsg.setEditorFontSize(textSize);
    /*     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             reMsg.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
@@ -269,7 +264,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         //reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
         reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
         reMsg.setAlignRight();
-        reMsg.setOutdent();
+        reMsg.getRight();
         reMsg.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
             public void onTextChange(String text) {
@@ -540,7 +535,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     @SuppressLint("StaticFieldLeak")
     private void addAllToAttach(final ArrayList<String> base64Files, final ArrayList<String> names, final int resID) {
         final ArrayList<StructureAttach> structureAttaches = new ArrayList<>();
-        final ArrayList<StructureMessageFileREQ> structureMessageFileREQS = new ArrayList<>();
         new AsyncTask<Void, Void, ArrayList<StructureAttach>>() {
             @Override
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {
@@ -579,7 +573,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        setlnToolbarTitleMargin(0);
         MenuItem actionSend = menu.findItem(R.id.action_send_message);
         MenuItem actionAttach = menu.findItem(R.id.action_attach);
 
@@ -619,13 +612,12 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                         @Override
                         public void run() {
                             loading.Hide();
-                            App.fragmentMessageList.AddSendNewMessage(structureMessageDB);
+                            App.fragmentMessageList.UpdateSendMessageData();
                             App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
                             Finish(App.CurentActivity);
                         }
                     });
                 }
-
             }
 
             @Override
