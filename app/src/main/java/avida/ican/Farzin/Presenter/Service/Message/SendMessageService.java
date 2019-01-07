@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.widget.Toast;
 
-import com.j256.ormlite.dao.ForeignCollection;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -38,7 +36,6 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 public class SendMessageService extends Service {
 
     private final long PERIOD = TimeValue.SecondsInMilli() * 30;
-    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli();
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private Timer timer;
@@ -140,7 +137,7 @@ public class SendMessageService extends Service {
         if (structureMessageDBS.getMessage_files() != null) {
             ArrayList<StructureMessageFileDB> structureMessageFileDBS = new ArrayList<>(structureMessageDBS.getMessage_files());
             for (int i = 0; i < structureMessageFileDBS.size(); i++) {
-                StructureAttach structureAttach = new StructureAttach(structureMessageFileDBS.get(i).getFile_binary(), structureMessageFileDBS.get(i).getFile_name(), structureMessageFileDBS.get(i).getFile_extension());
+                StructureAttach structureAttach = new StructureAttach(structureMessageFileDBS.get(i).getFile_path(), structureMessageFileDBS.get(i).getFile_name(), structureMessageFileDBS.get(i).getFile_extension());
                 structureAttaches.add(structureAttach);
                 threadSleep();
             }

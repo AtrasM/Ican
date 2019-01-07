@@ -1,12 +1,9 @@
 package avida.ican.Farzin.Model.Structure.Database.Cartable;
 
-import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
-
-import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 
 /**
  * Created by AtrasVida in 2018-12-05 at 11:40 AM
@@ -19,7 +16,7 @@ public class StructureCartableDocumentContentDB implements Serializable {
     @DatabaseField()
     private String file_name;
     @DatabaseField()
-    private String file_binary;
+    private String file_path;
     @DatabaseField()
     private String file_extension;
     @DatabaseField()
@@ -29,15 +26,15 @@ public class StructureCartableDocumentContentDB implements Serializable {
 
     public StructureCartableDocumentContentDB() {
         this.file_name = "";
-        this.file_binary = "";
+        this.file_path = "";
         this.file_extension = "";
         this.ETC = -1;
         this.EC = -1;
     }
 
-    public StructureCartableDocumentContentDB(String file_name, String file_binary, String file_extension, int ETC, int EC) {
+    public StructureCartableDocumentContentDB(String file_name, String file_path, String file_extension, int ETC, int EC) {
         this.file_name = file_name;
-        this.file_binary = file_binary;
+        this.file_path = file_path;
         this.file_extension = file_extension;
         this.ETC = ETC;
         this.EC = EC;
@@ -56,12 +53,12 @@ public class StructureCartableDocumentContentDB implements Serializable {
         this.file_name = file_name;
     }
 
-    public String getFile_binary() {
-        return file_binary;
+    public String getFile_path() {
+        return file_path;
     }
 
-    public void setFile_binary(String file_binary) {
-        this.file_binary = file_binary;
+    public void setFile_path(String file_path) {
+        this.file_path = file_path;
     }
 
     public String getFile_extension() {

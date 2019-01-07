@@ -129,6 +129,7 @@
     <string name="error_access_denied">دسترسی شما امکان پذیر نمی باشد!</string>
     <string name="title_question">آیا از انجام این عمل مطمئن هستید؟</string>
     <string name="error_null_image">مشکل در پردازش تصویر!</string>
+    <string name="shouldAllowexternalStoragePermision">برنامه نیاز به دسترسی به حافظه دستگاه را دارد تا شما بتوانید عکس، ویدئو و دیگر رسانه ها را دریافت و ارسال کنید.</string>
 
 
 </resources>

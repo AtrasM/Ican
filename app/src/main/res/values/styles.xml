@@ -183,6 +183,16 @@
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
         <item name="android:layout_marginBottom">@dimen/margin</item>
     </style>
+    <style name="custom_success_button_style" parent="custom_Txt_Normal_style">
+        <item name="android:textColor">@color/color_White</item>
+        <item name="android:background">@drawable/border_btn_success</item>
+        <item name="android:layout_marginLeft">@dimen/margin</item>
+        <item name="android:layout_marginRight">@dimen/margin</item>
+        <item name="android:layout_marginTop">@dimen/margin</item>
+        <item name="android:textSize">@dimen/txt_Title_Size</item>
+        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_marginBottom">@dimen/margin</item>
+    </style>
 
     <style name="custom_image_button_style">
         <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>

@@ -48,7 +48,6 @@ import avida.ican.R;
  */
 
 public class GetRecieveMessageService extends Service {
-    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli() + (TimeValue.SecondsInMilli() * 30);
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
     private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
@@ -60,7 +59,7 @@ public class GetRecieveMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.IsNew;
     private int Count = 2;
-    private final int MaxCount = 20;
+    private final int MaxCount = 5;
     private final int MinCount = 2;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
@@ -255,7 +254,7 @@ public class GetRecieveMessageService extends Service {
         pageNumber = 1;
         Count = MinCount;
         if (App.activityStacks == null) {
-            tempDelay = DELAYWhenAppClose;
+            tempDelay = App.DELAYWhenAppClose;
         } else {
             if (getFarzinPrefrences().isDataForFirstTimeSync()) {
                 tempDelay = DELAY;

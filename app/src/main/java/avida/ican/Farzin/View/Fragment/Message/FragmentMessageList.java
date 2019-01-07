@@ -171,11 +171,11 @@ public class FragmentMessageList extends BaseFragment {
 
         new FarzinMessageQuery().UpdateMessageStatus(structureDetailMessageBND.getId(), Status.READ);
 
-        if (isFilter) {
+      /*  if (isFilter) {
             reGetReceiveMessage(Status.UnRead, null);
         } else {
             reGetReceiveMessage(null, null);
-        }
+        }*/
 
     }
 

@@ -43,7 +43,6 @@ import avida.ican.R;
  */
 
 public class GetCartableDocumentService extends Service {
-    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli()+(TimeValue.SecondsInMilli()*40);
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
     private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
@@ -244,7 +243,7 @@ public class GetCartableDocumentService extends Service {
         ShowToast("re Get cartable document");
         Count = count;
         if(App.activityStacks==null){
-            tempDelay=DELAYWhenAppClose;
+            tempDelay=App.DELAYWhenAppClose;
         }else{
             if (getFarzinPrefrences().isDataForFirstTimeSync()) {
                 tempDelay = DELAY;

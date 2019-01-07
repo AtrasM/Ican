@@ -35,7 +35,7 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
  */
 
 public class GetSentMessageService extends Service {
-    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli() + (TimeValue.SecondsInMilli() * 30);
+
     private final long DELAY = TimeValue.SecondsInMilli() * 35;
     private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
@@ -218,7 +218,7 @@ public class GetSentMessageService extends Service {
         pageNumber = 1;
         Count = MinCount;
         if (App.activityStacks == null) {
-            tempDelay = DELAYWhenAppClose;
+            tempDelay = App.DELAYWhenAppClose;
         } else {
             if (getFarzinPrefrences().isDataForFirstTimeSync()) {
                 tempDelay = DELAY;

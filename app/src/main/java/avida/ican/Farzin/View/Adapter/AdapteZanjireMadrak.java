@@ -83,8 +83,8 @@ public class AdapteZanjireMadrak extends RecyclerView.Adapter<AdapteZanjireMadra
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(item.getFile_binary()!=null){
-                    final StructureAttach file = new StructureAttach(item.getFile_binary(), item.getFile_name(), item.getFile_extension(), null);
+                if(item.getFile_path()!=null){
+                    final StructureAttach file = new StructureAttach(item.getFile_path(), item.getFile_name(), item.getFile_extension(), null);
                     listenerAdapterZanjireMadrak.onOpenFile(file);
                 }else{
                     listenerAdapterZanjireMadrak.FileNotExist();

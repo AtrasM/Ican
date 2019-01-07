@@ -2,19 +2,11 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import android.os.Handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentQuerySaveListener;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableHameshListListener;
-import avida.ican.Farzin.Model.Interface.Cartable.HameshQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentContentBND;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerCartableDocumentContent;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
@@ -103,7 +95,7 @@ public class CartableDocumentContentPresenter {
 
             @Override
             public void onSuccess(StructureCartableDocumentContentDB structureCartableDocumentContentDB) {
-                listenerCartableDocumentContent.newData(structureCartableDocumentContentDB.getFile_binary());
+                listenerCartableDocumentContent.newData(structureCartableDocumentContentDB.getFile_path());
             }
 
             @Override

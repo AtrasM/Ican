@@ -145,6 +145,16 @@ public class Base64EncodeDecodeFile {
     public byte[] DecodeBase64ToByte(String encodedBase64File) {
         return decoded = Base64.decode(encodedBase64File, 0);
     }
+
+    public String EncodeByteArrayToString(byte[] encodedBase64File) {
+        if (encodedBase64File == null) {
+            return "";
+        } else {
+            return Base64.encodeToString(encodedBase64File, 0);
+
+        }
+
+    }
 }
   /*  try
     {

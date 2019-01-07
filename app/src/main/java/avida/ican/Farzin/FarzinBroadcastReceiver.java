@@ -32,8 +32,9 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(final Context context, Intent mintent) {
         App.setServiceContext(context);
         intents.clear();
+        context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
         //context.startService(new Intent(context, NetWorkCheckingService.class));
-        context.startService(new Intent(context, CheckServerAviableService.class));
+     /*   context.startService(new Intent(context, CheckServerAviableService.class));
         context.startService(putIntent(new Intent(context, GetCartableDocumentService.class)));
         context.startService(putIntent(new Intent(context, SendMessageService.class)));
         context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
@@ -45,7 +46,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
             public void run() {
                 context.startService(putIntent(new Intent(context, GetSentMessageService.class)));
             }
-        }, TimeValue.SecondsInMilli());
+        }, TimeValue.SecondsInMilli());*/
     }
 
     private Intent putIntent(Intent intent) {

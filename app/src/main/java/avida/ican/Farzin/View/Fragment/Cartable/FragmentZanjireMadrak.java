@@ -208,10 +208,11 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     adapteDarErtebatBa.updateData(structureDarErtebat);
                     lnDarErtebat.setVisibility(View.VISIBLE);
                 }
+                lnLoading.setVisibility(View.GONE);
+                srlRefresh.setRefreshing(false);
             }
         });
-        lnLoading.setVisibility(View.GONE);
-        srlRefresh.setRefreshing(false);
+
     }
 
 

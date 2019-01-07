@@ -18,13 +18,14 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CheckServerAviableService extends Service {
-    private final long DELAYWhenAppClose = TimeValue.MinutesInMilli();
+    private final long DELAYWhenAppClose = TimeValue.SecondsInMilli() * 35;
     private final long DELAY = TimeValue.SecondsInMilli() * 10;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 15;
     private Context context;
     private ListenerNetwork listenerNetwork;
     private Handler handler = new Handler();
     private CheckServerAviablePresenter checkServerAviablePresenter;
+    private long tempDelay;
 
 
     @Override
@@ -92,13 +93,17 @@ public class CheckServerAviableService extends Service {
 
 
     private void reCheck() {
-
+        if (App.activityStacks == null) {
+            tempDelay = DELAYWhenAppClose;
+        } else {
+            tempDelay = DELAY;
+        }
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Check();
             }
-        }, DELAY);
+        }, tempDelay);
     }
 
     private void ShowToast(final String s) {

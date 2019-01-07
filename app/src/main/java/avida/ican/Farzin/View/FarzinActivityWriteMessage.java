@@ -40,7 +40,6 @@ import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.AudioRecorder;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
@@ -156,8 +155,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         });
 
 
-
-
     }
 
     private void showUserAndRoleDialog() {
@@ -214,9 +211,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, true, new ListenerAdapterAttach() {
             @Override
             public void onOpenFile(StructureAttach structureAttach) {
-                byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
-                file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
-
+                file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
             }
         });
         RcvAttach.setAdapter(adapterAttach);

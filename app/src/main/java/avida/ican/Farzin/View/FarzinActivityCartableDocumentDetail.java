@@ -493,8 +493,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     }
 
     private void checkFile(StructureAttach structureAttach) {
-        byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
-        file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
+        file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
     }
 
     private void initTab() {

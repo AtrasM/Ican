@@ -6,9 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
-import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 
 /**
  * Created by AtrasVida in 2018-10-14 at 10:56 AM
@@ -21,7 +19,7 @@ public class StructureZanjireMadrakFileDB implements Serializable {
     @DatabaseField()
     private String file_name;
     @DatabaseField()
-    private String file_binary;
+    private String file_path;
     @DatabaseField()
     private String file_extension;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
@@ -34,9 +32,9 @@ public class StructureZanjireMadrakFileDB implements Serializable {
     public StructureZanjireMadrakFileDB() {
     }
 
-    public StructureZanjireMadrakFileDB(String file_name, String file_binary, String file_extension, ZanjireMadrakFileTypeEnum fileTypeEnum, int ETC, int EC) {
+    public StructureZanjireMadrakFileDB(String file_name, String file_path, String file_extension, ZanjireMadrakFileTypeEnum fileTypeEnum, int ETC, int EC) {
         this.file_name = file_name;
-        this.file_binary = file_binary;
+        this.file_path = file_path;
         this.file_extension = file_extension;
         this.fileTypeEnum = fileTypeEnum;
         this.ETC = ETC;
@@ -59,12 +57,12 @@ public class StructureZanjireMadrakFileDB implements Serializable {
         this.file_name = file_name;
     }
 
-    public String getFile_binary() {
-        return file_binary;
+    public String getFile_path() {
+        return file_path;
     }
 
-    public void setFile_binary(String file_binary) {
-        this.file_binary = file_binary;
+    public void setFile_path(String file_path) {
+        this.file_path = file_path;
     }
 
     public String getFile_extension() {

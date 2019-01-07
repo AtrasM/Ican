@@ -10,6 +10,7 @@ import android.util.Log;
 import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
@@ -22,6 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
@@ -55,7 +57,7 @@ public class WebService {
     private List headerList;
     private ArrayList headerArrayList = null;
     private WebserviceResponseListener webserviceResponseListener;
-    private int TimeOut =(int) TimeValue.SecondsInMilli()*20;
+    private int TimeOut = (int) TimeValue.SecondsInMilli() * 20;
     private String Tag = "WebService";
     private boolean IsPasswordEncript;
     private boolean isNetworkCheking;
@@ -211,7 +213,7 @@ public class WebService {
                 } else {
                     CheckNetwork(false, webServiceResponse);
                 }
-             } else {
+            } else {
                 if (webserviceResponseListener != null) {
                     boolean invalidLogin = false;
                     if (webServiceResponse.isResponse()) {
@@ -223,7 +225,7 @@ public class WebService {
                     }
 
                     if (isNetworkCheking) {
-                        isNetworkCheking=false;
+                        isNetworkCheking = false;
                         webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
                     } else {
                         if (App.networkStatus == NetworkStatus.NoAction) {
@@ -372,12 +374,19 @@ public class WebService {
             headerArrayList.add(headerPropertyObj);
         }
         try {
+       /*     //androidHttpTransport.getServiceConnection().
+            androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList);
+            SoapPrimitive primetive = (SoapPrimitive) envelope.getResponse();
+            String xml=  primetive.toString();*/
             webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList));
-        } catch (Exception e) {
+        }/* catch (OutOfMemoryError e) {
+            e.printStackTrace();
+            webServiceResponse.setHeaderList(new ArrayList());
+        } */catch (Exception e) {
             e.printStackTrace();
         }
 
-        return WebServiceResponse(envelope, androidHttpTransport, webServiceResponse.getHeaderList());
+        return WebServiceResponse(envelope, androidHttpTransport,  webServiceResponse.getHeaderList());
     }
 
     private WebServiceResponse WebServiceResponse(SoapSerializationEnvelope envelope, HttpTransportSE androidHttpTransport, List headerList) {

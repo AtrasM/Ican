@@ -25,6 +25,7 @@ import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.Message.FragmentMessageList;
 import avida.ican.Ican.View.Custom.Message;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.NetWorkStatusListener;
 import avida.ican.R;
@@ -46,7 +47,7 @@ public class App extends MultiDexApplication {
     public static boolean dialogIsShow = false;
     public static boolean canBack = true;
     public static boolean isLoading = false;
-    public static boolean isTestMod= false;
+    public static boolean isTestMod = false;
     public static NetWorkStatusListener netWorkStatusListener;
     public static NetworkStatus networkStatus = NetworkStatus.NoAction;
     private static Bus sBus;
@@ -56,13 +57,15 @@ public class App extends MultiDexApplication {
     public static String fontPath = "font/iran_sans_mobile.ttf";
     @SuppressLint("StaticFieldLeak")
     private static Context serviceContext;
-    public static String DEFAULTPATH = Environment.getExternalStorageDirectory() + "/ican_temp/";
+    public static String DEFAULTPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/IcanData/File";
+    public static String DEFAULTPATHTEMP =DEFAULTPATH+"/tempFile";
     public static FragmentMessageList fragmentMessageList = null;
     public static FragmentCartable fragmentCartable = null;
     public static HashMap<String, Stack<Fragment>> fragmentStacks;
     public static HashMap<String, Stack<Activity>> activityStacks;
     private static FarzinBroadcastReceiver farzinBroadCastReceiver;
     public static Activity activity;
+    public static final long DELAYWhenAppClose = TimeValue.MinutesInMilli() * 5;
 
     @Override
     public void onCreate() {

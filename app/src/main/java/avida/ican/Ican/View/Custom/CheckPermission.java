@@ -8,24 +8,24 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 
-
 /**
  * Created by AtrasVida on 2018-04-10 at 12:35 PM
  */
 
-class CheckPermission {
+public class CheckPermission {
     /**
      * Example: CheckPermission.requestPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)
      */
 
-    boolean recordAudio(int requestCode, Activity activity){
-        return  requestPermission(requestCode, activity, Manifest.permission.RECORD_AUDIO);
-    }
-    boolean writeExternalStorage(int requestCode, Activity activity){
-        return  requestPermission(requestCode, activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    public boolean recordAudio(int requestCode, Activity activity) {
+        return requestPermission(requestCode, activity, Manifest.permission.RECORD_AUDIO);
     }
 
-    private static boolean requestPermission(int requestCode,Activity activity, String permission) {
+    public boolean writeExternalStorage(int requestCode, Activity activity) {
+        return requestPermission(requestCode, activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private static boolean requestPermission(int requestCode, Activity activity, String permission) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(activity, permission)
                     != PackageManager.PERMISSION_GRANTED) {

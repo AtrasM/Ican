@@ -315,7 +315,10 @@ public class FarzinCartableQuery {
 
         @Override
         protected Void doInBackground(StructureCartableDocumentContentBND... cartableDocumentContentBND) {
-            StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB("file", cartableDocumentContentBND[0].getFileBinary(), ".pdf", cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC());
+            String fileName = "CDC" + cartableDocumentContentBND[0].getETC() + "" + cartableDocumentContentBND[0].getEC() + CustomFunction.getRandomUUID();
+            fileName = fileName.replace(" ", "");
+            String filePath = new CustomFunction().saveFileToStorage(cartableDocumentContentBND[0].getFileBinary(), fileName);
+            StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB(fileName, filePath, ".pdf", cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC());
             try {
                 mDocumentContentDao.create(structureCartableDocumentContentDB);
                 documentContentQuerySaveListener.onSuccess(getDocumentContent(cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC()));
@@ -373,6 +376,7 @@ public class FarzinCartableQuery {
 
         @Override
         protected Void doInBackground(StructureOpticalPenREQ... opticalPenREQS) {
+
             StructureOpticalPenQueueDB opticalPenQueueDB = new StructureOpticalPenQueueDB(opticalPenREQS[0].getETC(), opticalPenREQS[0].getEC(), opticalPenREQS[0].getBfile(), opticalPenREQS[0].getStrExtention(), opticalPenREQS[0].getHameshtitle(), opticalPenREQS[0].isHiddenHamesh());
             try {
                 mOpticalPenQueueDao.create(opticalPenQueueDB);
@@ -436,20 +440,34 @@ public class FarzinCartableQuery {
         protected Void doInBackground(StructureZanjireMadrakRES... zanjireMadrakRES) {
 
             try {
+                String fileName = "";
+                String filePath = "";
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyvast()) {
-                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEYVAST, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
+                    fileName = fileName.replace(" ", "");
+                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEYVAST, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getAtf()) {
-                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.ATF, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
+                    fileName = fileName.replace(" ", "");
+                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.ATF, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getDarErtebat()) {
-                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.DARERTEBAT, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
+                    fileName = fileName.replace(" ", "");
+                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.DARERTEBAT, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyro()) {
-                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(structureFileRES.getFileName(), structureFileRES.getFileBinary(), structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEIRO, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
+                    fileName = fileName.replace(" ", "");
+                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEIRO, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 zanjireMadrakQuerySaveListener.onSuccess();
@@ -472,6 +490,19 @@ public class FarzinCartableQuery {
 
             e.printStackTrace();
         }
+    }
+
+    public List<StructureHameshDB> getImageHamesh(int ETC, int EC) {
+        QueryBuilder<StructureHameshDB, Integer> queryBuilder = hameshDao.queryBuilder();
+        List<StructureHameshDB> structureHameshsDB = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC).and().eq("hameshType", "Image");
+
+            structureHameshsDB = queryBuilder.orderBy("CreationDate", true).query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureHameshsDB;
     }
 
     public List<StructureHameshDB> getHamesh(int ETC, int EC, long start, long count) {

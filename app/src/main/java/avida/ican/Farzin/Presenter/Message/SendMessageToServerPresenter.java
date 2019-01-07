@@ -18,6 +18,8 @@ import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-06-09 at 14:59 PM
@@ -45,7 +47,7 @@ public class SendMessageToServerPresenter {
             public void onSuccess(String Xml) {
                 StructureSendMessageRES structureSendMessageRES = xmlToObject.DeserializationGsonXml(Xml, StructureSendMessageRES.class);
                 if (structureSendMessageRES.getSendMessageResult() > 0) {
-                    int ID=structureSendMessageRES.getSendMessageResult();
+                    int ID = structureSendMessageRES.getSendMessageResult();
                     messageListener.onSuccess(ID);
                 } else {
                     messageListener.onFailed("" + structureSendMessageRES.getStrErrorMsg());
@@ -75,7 +77,9 @@ public class SendMessageToServerPresenter {
         SoapObject messageFileHeader = new SoapObject(NameSpace, "messagefile");
 
         for (int i = 0; i < structureAttaches.size(); i++) {
-            StructureMessageFileREQ structureMessageFileREQ = new StructureMessageFileREQ(structureAttaches.get(i).getName(), structureAttaches.get(i).getBase64File(), structureAttaches.get(i).getFileExtension());
+
+            String fileAsBase64 = new CustomFunction().getFileFromStorageAsBase64(structureAttaches.get(i).getFilePath());
+            StructureMessageFileREQ structureMessageFileREQ = new StructureMessageFileREQ(structureAttaches.get(i).getName(), fileAsBase64, structureAttaches.get(i).getFileExtension());
             messageFileHeader.addProperty("MessageFile", structureMessageFileREQ);
         }
         //*******___________________________________________________________________________********
@@ -110,6 +114,7 @@ public class SendMessageToServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();

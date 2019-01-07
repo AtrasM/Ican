@@ -129,8 +129,6 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
                 viewHolder.txtHamesh.setVisibility(View.VISIBLE);
                 viewHolder.txtHamesh.setText("" + item.getContent());
             }
-
-
         }
 
 
@@ -153,7 +151,7 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
                     } else {
                         extention = ".png";
                     }
-                    StructureAttach structureAttach = new StructureAttach(item.getFileBinary(), item.getFileName(), extention);
+                    StructureAttach structureAttach = new StructureAttach(item.getFilePath(), item.getFileName(), extention);
                     listenerAdapterHameshList.onOpenFile(structureAttach);
                 }
             }
@@ -182,6 +180,7 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
     }
 
     public void updateData(List<StructureHameshDB> structureHameshDBS) {
+        itemList.clear();
         itemList = new ArrayList<>();
         itemList.addAll(structureHameshDBS);
         notifyDataSetChanged();

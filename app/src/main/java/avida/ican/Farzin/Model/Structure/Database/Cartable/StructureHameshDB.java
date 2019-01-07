@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.Serializable;
 
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-09-26 at 12:15 PM
@@ -36,7 +37,7 @@ public class StructureHameshDB implements Serializable {
     @DatabaseField()
     boolean IsHidden;
     @DatabaseField()
-    String FileBinary;
+    String FilePath;
     @DatabaseField()
     String FileExtension;
     @DatabaseField()
@@ -64,9 +65,10 @@ public class StructureHameshDB implements Serializable {
         this.ETC = ETC;
         this.EC = EC;
         if (structureHameshRES.getHameshImage() != null) {
-            FileBinary = structureHameshRES.getHameshImage().getFileBinary();
             FileExtension = structureHameshRES.getHameshImage().getFileExtension();
-            FileName = structureHameshRES.getHameshImage().getFileName();
+            FileName ="HAMESH_"+ structureHameshRES.getHameshImage().getFileName()+CustomFunction.getRandomUUID();
+            FileName=FileName.replace(" ","");
+            FilePath = new CustomFunction().saveFileToStorage(structureHameshRES.getHameshImage().getFileBinary(), FileName);
         }
     }
 
@@ -150,12 +152,12 @@ public class StructureHameshDB implements Serializable {
         IsHidden = hidden;
     }
 
-    public String getFileBinary() {
-        return FileBinary;
+    public String getFilePath() {
+        return FilePath;
     }
 
-    public void setFileBinary(String fileBinary) {
-        FileBinary = fileBinary;
+    public void setFilePath(String filePath) {
+        FilePath = filePath;
     }
 
     public String getFileExtension() {

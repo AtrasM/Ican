@@ -6,6 +6,6 @@ package avida.ican.Farzin.View.Interface.Cartable;
  */
 
 public interface ListenerCartableDocumentContent {
-    void newData(String FileBinary);
+    void newData(String filePath);
     void noData();
 }

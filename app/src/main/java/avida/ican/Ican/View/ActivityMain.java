@@ -13,49 +13,33 @@ import android.widget.TextView;
 
 
 import com.github.barteksc.pdfviewer.PDFView;
-import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
-import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
-import com.github.barteksc.pdfviewer.scroll.ScrollHandle;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
 import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
-import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
-import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
-import avida.ican.Farzin.Presenter.Cartable.GetCartableHistoryFromServerPresenter;
-import avida.ican.Farzin.Presenter.Cartable.GetZanjireMadrakFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
-import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
-import avida.ican.Ican.Model.Structure.StructureOpticalPen;
 import avida.ican.Ican.View.Custom.AudioRecorder;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
 import avida.ican.Ican.View.Custom.MediaPicker;
 import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Dialog.DialogOpticalPen;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.AudioRecorderListener;
 import avida.ican.Ican.View.Interface.FilePickerListener;
 import avida.ican.Ican.View.Interface.MediaPickerListener;
-import avida.ican.Ican.View.Interface.OpticalPenDialogListener;
 import avida.ican.R;
 import butterknife.BindView;
 
@@ -202,8 +186,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     }
 
     private void checkFile(StructureAttach structureAttach) {
-        byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
-        file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
+        file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
     }
 
     private void ShowAudioRecorde() {
@@ -318,7 +301,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private void showUserAndRoleDialog() {
 
 
-        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, 645, 300,-1).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
+        dialogUserAndRole = new DialogUserAndRole(App.CurentActivity, 645, 300, -1).setTitle(Resorse.getString(R.string.title_send)).init(getSupportFragmentManager(), (List<StructureUserAndRoleDB>) CustomFunction.deepClone(userAndRolesMain), new ArrayList<StructureUserAndRoleDB>(), UserAndRoleEnum.SEND, new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 userAndRolesMain = structureUserAndRolesMain;

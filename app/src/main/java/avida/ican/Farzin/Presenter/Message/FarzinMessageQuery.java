@@ -10,6 +10,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.stmt.Where;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +32,6 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.CustomFunction;
-import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 
 
@@ -153,8 +153,11 @@ public class FarzinMessageQuery {
                 messageDao.create(structureMessageDB);
                 for (int i = 0; i < structureAttaches.size(); i++) {
                     StructureAttach Attach = structureAttaches.get(i);
-                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, Attach.getName(), Attach.getBase64File(), Attach.getFileExtension());
-
+                    String fileName =  CustomFunction.deletExtentionAsFileName(Attach.getName());
+                    fileName = "ATTACH_" + fileName +CustomFunction.getRandomUUID();
+                    fileName=fileName.replace(" ","");
+                    String filePath = new CustomFunction().saveFileToStorage(Attach.getFilePath(), fileName);
+                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, fileName, filePath, Attach.getFileExtension());
                     messageFileDao.create(structureMessageFileDB);
                     threadSleep();
                 }
@@ -351,6 +354,13 @@ public class FarzinMessageQuery {
 
     public boolean DeletMessageFile(StructureMessageDB message) {
         boolean isDelet = false;
+        ArrayList<StructureMessageFileDB> structureMessageFileDBS = new ArrayList<>(message.getMessage_files());
+        for (StructureMessageFileDB structureMessageFileDB : structureMessageFileDBS) {
+            String fileName = structureMessageFileDB.getFile_name();
+            String filePath = structureMessageFileDB.getFile_path();
+            File file = new File(filePath);
+            file.delete();
+        }
         try {
             DeleteBuilder<StructureMessageFileDB, Integer> deleteBuilder = messageFileDao.deleteBuilder();
             deleteBuilder.where().eq("message_id", message);
@@ -436,18 +446,18 @@ public class FarzinMessageQuery {
             updateBuilderMessage.update();
             if (type != Type.RECEIVED) {
                 StructureMessageDB MessageDB = GetMessage(MessageRES.getID());
-              boolean isDelet=  DeletMessageReceiver(MessageDB);
-                isDelet= DeletMessageFile(MessageDB);
+                boolean isDelet = DeletMessageReceiver(MessageDB);
+                //isDelet = DeletMessageFile(MessageDB);
                 for (int i = 0; i < MessageRES.getMessageFiles().size(); i++) {
                     StructureMessageAttachRES MessageAttachRES = MessageRES.getMessageFiles().get(i);
                     tempStructureAttaches.add(new StructureAttach(MessageAttachRES.getFileBinary(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
                 }
-                for (int i = 0; i < tempStructureAttaches.size(); i++) {
+               /* for (int i = 0; i < tempStructureAttaches.size(); i++) {
                     StructureAttach Attach = tempStructureAttaches.get(i);
-                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(MessageDB, Attach.getName(), Attach.getBase64File(), Attach.getFileExtension());
+                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(MessageDB, Attach.getName(), Attach.getFilePath(), Attach.getFileExtension());
                     messageFileDao.create(structureMessageFileDB);
                     threadSleep();
-                }
+                }*/
                 for (StructureReceiverRES receiverRES : MessageRES.getReceivers()) {
                     String ViewDate = "";
                     if (receiverRES.getViewDate() != null) {

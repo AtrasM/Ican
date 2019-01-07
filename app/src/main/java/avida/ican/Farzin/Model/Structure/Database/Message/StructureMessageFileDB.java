@@ -19,7 +19,7 @@ public class StructureMessageFileDB implements Serializable {
     @DatabaseField()
     private String file_name;
     @DatabaseField()
-    private  String file_binary;
+    private  String file_path;
     @DatabaseField()
     private   String file_extension;
 
@@ -27,10 +27,10 @@ public class StructureMessageFileDB implements Serializable {
     public StructureMessageFileDB() {
     }
 
-    public StructureMessageFileDB(StructureMessageDB message, String file_name, String file_binary, String file_extension) {
+    public StructureMessageFileDB(StructureMessageDB message, String file_name, String file_path, String file_extension) {
         this.message = message;
         this.file_name = file_name;
-        this.file_binary = file_binary;
+        this.file_path = file_path;
         this.file_extension = file_extension;
     }
 
@@ -46,8 +46,8 @@ public class StructureMessageFileDB implements Serializable {
         return file_name;
     }
 
-    public String getFile_binary() {
-        return file_binary;
+    public String getFile_path() {
+        return file_path;
     }
 
     public String getFile_extension() {

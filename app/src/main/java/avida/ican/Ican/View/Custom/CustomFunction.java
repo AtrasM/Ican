@@ -35,6 +35,7 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -44,23 +45,23 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.ActivityImageViewer;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
-import avida.ican.Ican.View.Dialog.DialogImageViewer;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
@@ -243,7 +244,6 @@ public class CustomFunction {
 
         }
 
-
         return extensionEnum;
     }
 
@@ -271,9 +271,76 @@ public class CustomFunction {
         return type;
     }
 
-    public File OpenFile(byte[] fileAsBytes, String fileName, String fileExtension) {
+    /*  public File OpenFile(byte[] fileAsBytes, String fileName, String fileExtension) {
 
+          File file = null;
+          if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
+              ActivityImageViewer.byteArray = fileAsBytes;
+              goToActivity(ActivityImageViewer.class);
+              //new DialogImageViewer(App.CurentActivity).Creat().show(fileAsBytes);
+              return file;
+          } else {
+              fileExtension = fileExtension.replace("waw", "wav");
+              boolean b = new CheckPermission().writeExternalStorage(1, activity);
+
+              if (b) {
+                  MimeTypeMap mime = MimeTypeMap.getSingleton();
+                  String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
+
+                  try {
+                      File dir = new File(App.DEFAULTPATH);
+                      if (fileName.contains(fileExtension)) {
+                          file = new File(dir, fileName);
+                      } else {
+                          file = new File(dir, fileName + fileExtension);
+                      }
+
+                      if (!file.exists()) {
+                          file.getParentFile().mkdirs();
+                          file.createNewFile();
+                      }
+
+                      BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                      bos.write(fileAsBytes);
+                      bos.flush();
+                      bos.close();
+                      Intent intent = new Intent();
+                      intent.setAction(Intent.ACTION_VIEW);
+                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                          intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                          Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
+                          intent.setDataAndType(contentUri, type);
+                      } else {
+                          intent.setDataAndType(Uri.fromFile(file), type);
+                      }
+                      intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                      activity.startActivity(intent);
+                  } catch (
+                          IOException e) {
+                      e.printStackTrace();
+                  }
+              }
+
+          }
+          return file;
+      }
+      */
+    public File OpenFile(StructureAttach structureAttach) {
+        String fileName = structureAttach.getName();
+        String fileExtension = structureAttach.getFileExtension();
+        /*String fileAsBase64 = getFileFromStorageAsByte(structureAttach.getFilePath());
+        byte[] fileAsBytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);*/
+        byte[] fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
         File file = null;
+        if (fileAsBytes == null) {
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_invalid_file), ToastEnum.TOAST_LONG_TIME);
+                }
+            });
+            return file;
+        }
         if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
             ActivityImageViewer.byteArray = fileAsBytes;
             goToActivity(ActivityImageViewer.class);
@@ -288,15 +355,15 @@ public class CustomFunction {
                 String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
 
                 try {
-                    File dir = new File(App.DEFAULTPATH);
+                    File dir = new File(App.DEFAULTPATHTEMP);
                     if (fileName.contains(fileExtension)) {
-                        file = new File(dir, fileName);
+                        file = new File(dir, "/" + fileName);
                     } else {
                         file = new File(dir, fileName + fileExtension);
                     }
 
                     if (!file.exists()) {
-                        file.getParentFile().mkdirs();
+                        dir.mkdirs();
                         file.createNewFile();
                     }
 
@@ -325,6 +392,120 @@ public class CustomFunction {
         return file;
     }
 
+
+    public String saveFileToStorage(String fileAsBase64, String name) {
+        ObjectOutputStream objectOutputStream = null;
+        String filePath = initFilePath(name);
+        byte[] fileAsBytes = null;
+        if (fileAsBase64 == null) {
+            fileAsBase64 = "";
+        }
+        fileAsBytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath));
+            objectOutputStream.writeUTF("@rasVida");
+            objectOutputStream.writeUTF("Ican");
+            objectOutputStream.writeInt(fileAsBytes.length);
+            objectOutputStream.writeUTF(name);
+            objectOutputStream.write(fileAsBytes);
+            objectOutputStream.writeUTF("Ican");
+            objectOutputStream.writeUTF("@rasVida");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("saveFile", e.toString());
+        } finally {
+            try {
+                objectOutputStream.flush();
+                objectOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("saveFile", e.toString());
+            }
+        }
+        return filePath;
+    }
+
+    public String getFileFromStorageAsBase64(String filePath) {
+        return new Base64EncodeDecodeFile().EncodeByteArrayToString(getFileFromStorageAsByte(filePath));
+    }
+
+
+    public byte[] getFileFromStorageAsByte(String filePath) {
+        ObjectInputStream objectInputStream = null;
+        //String fileAsBase64 = "";
+        byte[] fileAsBytes = null;
+        try {
+            objectInputStream = new ObjectInputStream(new FileInputStream(filePath));
+            objectInputStream.readUTF();
+            objectInputStream.readUTF();
+            int fileLength = objectInputStream.readInt();
+            fileAsBytes = new byte[fileLength];
+            String filename = objectInputStream.readUTF();
+            objectInputStream.readFully(fileAsBytes);
+            objectInputStream.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("readFile", e.toString());
+        } finally {
+            try {
+                if (objectInputStream != null) {
+                    objectInputStream.close();
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("readFile", e.toString());
+            }
+        }
+        return fileAsBytes;
+    }
+
+    public String initFilePath(String name) {
+        String DirPath = getDirAsString();
+        String filePath = DirPath + "/";
+        name = deletExtentionAsFileName(name);
+        filePath = filePath + name + ".ican";
+        File file = new File(filePath);
+        if (file.exists()) {
+            file.delete();
+            //filePath="";
+        }
+        return filePath;
+    }
+
+    public static String deletExtentionAsFileName(String fileName) {
+        int index = fileName.lastIndexOf(".");
+        if (index > 0) {
+            fileName = fileName.substring(0, index);
+        }
+        return fileName;
+    }
+
+    public String getDirAsString() {
+        File file = initDir();
+        return file.getPath();
+    }
+
+    public File getDirAsFile() {
+        return initDir();
+    }
+
+    private File initDir() {
+        Date date = getCurentDateTime();
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+        int hour = cal.get(Calendar.HOUR);
+        String folder = year + "_" + month + "_" + day;//+"_"+hour;
+        File dir = new File(App.DEFAULTPATH + "/" + folder);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        return dir;
+    }
+
     public String setSeparatorWithCommasToNumber(int number) {
         DecimalFormat formatter = new DecimalFormat("#,###,###");
         return formatter.format(number);
@@ -333,6 +514,17 @@ public class CustomFunction {
     public int getScreenOrientation() {
         return activity.getResources().getConfiguration().orientation;
     }
+
+    public static String getRandomUUID() {
+        String uuid = UUID.randomUUID().toString();
+        return uuid.replace("-", "");
+    } 
+ /*   public static int getRandomUUID() {
+        int min = 1;
+        int max = 10000;
+        Random r = new Random();
+        return r.nextInt(max - min) + min;
+    }*/
 
     /**
      * @param df example: "dd/M/yyyy hh:mm:ss"

@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,25 +12,12 @@ import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 
-import org.apache.commons.codec.Charsets;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentContentPresenter;
-import avida.ican.Farzin.Presenter.Cartable.FarzinHameshListPresenter;
-import avida.ican.Farzin.View.Adapter.AdapterHamesh;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerCartableDocumentContent;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
-import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
-import avida.ican.Ican.Model.Structure.StructureAttach;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
-import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
@@ -87,12 +71,12 @@ public class FragmentCartableDocumentContent extends BaseFragment {
         cartableDocumentContentPresenter = new CartableDocumentContentPresenter(Etc, Ec, new ListenerCartableDocumentContent() {
 
             @Override
-            public void newData(final String FileBinary) {
+            public void newData(final String filePath) {
                 App.CurentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
-                        initPdfViewer(FileBinary);
+                        initPdfViewer(filePath);
                     }
                 });
             }
@@ -119,7 +103,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     private void reGetData() {
         StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
         if (cartableDocumentContentDB.getETC() > 0) {
-            initPdfViewer(cartableDocumentContentDB.getFile_binary());
+            initPdfViewer(cartableDocumentContentDB.getFile_path());
         } else {
             if (App.networkStatus == NetworkStatus.Connected) {
                 lnLoading.setVisibility(View.VISIBLE);
@@ -134,7 +118,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     private void initData() {
         StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
         if (cartableDocumentContentDB.getETC() > 0) {
-            initPdfViewer(cartableDocumentContentDB.getFile_binary());
+            initPdfViewer(cartableDocumentContentDB.getFile_path());
         } else {
             if (App.networkStatus == NetworkStatus.Connected) {
                 lnLoading.setVisibility(View.VISIBLE);
@@ -146,31 +130,39 @@ public class FragmentCartableDocumentContent extends BaseFragment {
         }
     }
 
-    private void initPdfViewer(String strFile) {
-        if (strFile == null) {
-            txtNoData.setVisibility(View.VISIBLE);
-            return;
-        }
-        byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(strFile);
-        pdfViewer.fromBytes(FileAsbytes)
-                .enableSwipe(true)
-                .swipeHorizontal(false)
-                .enableDoubletap(true)
-                .spacing(6)
-                .onPageScroll(new OnPageScrollListener() {
-                    @Override
-                    public void onPageScrolled(int page, float positionOffset) {
+    private void initPdfViewer(String filePath) {
+        if (filePath != null && !filePath.isEmpty()) {
+           /* String fileAsBase64 = new CustomFunction().getFileFromStorageAsByte(filePath);
+            byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);*/
+            byte[] FileAsbytes = new CustomFunction().getFileFromStorageAsByte(filePath);
+            if (FileAsbytes != null && FileAsbytes.length > 0) {
+                pdfViewer.fromBytes(FileAsbytes)
+                        .enableSwipe(true)
+                        .swipeHorizontal(false)
+                        .enableDoubletap(true)
+                        .spacing(6)
+                        .onPageScroll(new OnPageScrollListener() {
+                            @Override
+                            public void onPageScrolled(int page, float positionOffset) {
 
-                    }
-                })
-                .onPageChange(new OnPageChangeListener() {
-                    @Override
-                    public void onPageChanged(int page, int pageCount) {
-                        String desc = Resorse.getString(R.string.page) + " " + (page + 1) + " " + Resorse.getString(R.string.of) + " " + pageCount;
-                        txtPdfPageNumber.setText(desc);
-                    }
-                })
-                .load();
+                            }
+                        })
+                        .onPageChange(new OnPageChangeListener() {
+                            @Override
+                            public void onPageChanged(int page, int pageCount) {
+                                String desc = Resorse.getString(R.string.page) + " " + (page + 1) + " " + Resorse.getString(R.string.of) + " " + pageCount;
+                                txtPdfPageNumber.setText(desc);
+                            }
+                        })
+                        .load();
+            } else {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+
+        } else {
+            txtNoData.setVisibility(View.VISIBLE);
+        }
+
     }
 
     @Override

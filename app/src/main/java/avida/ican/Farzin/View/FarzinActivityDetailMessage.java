@@ -155,7 +155,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
 
     private void initRcvAndAdapter() {
         for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
-            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_binary(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
+            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
             structureAttaches.add(structureAttach);
         }
         GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
@@ -163,14 +163,12 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
         adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
             @Override
             public void onOpenFile(StructureAttach structureAttach) {
-                byte[] aByte = new Base64EncodeDecodeFile().DecodeBase64ToByte(structureAttach.getBase64File());
-                file = new CustomFunction(App.CurentActivity).OpenFile(aByte, structureAttach.getName(), structureAttach.getFileExtension());
-
+                file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
             }
         });
         rcvAttach.setAdapter(adapterAttach);
 
-       // adapterAttach.addAll(structureAttaches);
+        // adapterAttach.addAll(structureAttaches);
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

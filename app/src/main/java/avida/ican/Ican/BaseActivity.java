@@ -225,8 +225,7 @@ public abstract class BaseActivity extends AppCompatActivity {
             audioRecorder.onActivityResult(requestCode, resultCode, data);
         } else if (requestCode == RequestCode.MediaPickerRequestCode.getValue()) {
             mediaPicker.onActivityResult(requestCode, resultCode, data);
-        }
-        else if (requestCode == RequestCode.MediaPickerRequestCode.getValue()) {
+        } else if (requestCode == RequestCode.MediaPickerRequestCode.getValue()) {
             mediaPicker.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -235,9 +234,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == RequestCode.AudioRecordRequestCode.getValue()) {
-            audioRecorder.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (audioRecorder != null) {
+                audioRecorder.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
         } else if (requestCode == RequestCode.FilePickerRequestCode.getValue()) {
-            filePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if (audioRecorder != null) {
+                filePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        } else if (requestCode == RequestCode.WRITEEXTERNALSTORAGE.getValue()) {
+            if (audioRecorder != null) {
+                filePicker.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
         }
     }
 

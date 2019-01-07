@@ -3,6 +3,7 @@ package avida.ican.Farzin.Presenter.Cartable;
 import android.os.Handler;
 import android.view.View;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 
@@ -46,6 +48,14 @@ public class FarzinHameshListPresenter {
                 if (structureHameshRES.size() == 0) {
                     listenerHamesh.noData();
                 } else {
+                    List<StructureHameshDB> structureHameshDBS = farzinCartableQuery.getImageHamesh(Etc, Ec);
+                    for (StructureHameshDB structureHameshDB : structureHameshDBS) {
+                        String filePath = structureHameshDB.getFilePath();
+                        File file = new File(filePath);
+                        if (file.exists()) {
+                            file.delete();
+                        }
+                    }
                     farzinCartableQuery.deletCartableHameshList(Etc, Ec);
                     SaveData(structureHameshRES);
                 }
