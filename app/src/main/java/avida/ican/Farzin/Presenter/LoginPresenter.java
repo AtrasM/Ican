@@ -12,6 +12,7 @@ import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
@@ -46,10 +47,9 @@ public class LoginPresenter {
         this.isRemember = farzinPrefrences.isRemember();
         if (!farzinPrefrences.getUserName().equals("-1")) {
 
-            new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
+            CheckNetwork(new ListenerNetwork() {
                 @Override
                 public void onConnected() {
-                    //App.networkStatus = NetworkStatus.Connected;
                     CallApi(farzinPrefrences.getBaseUrl(), farzinPrefrences.getServerUrl(), farzinPrefrences.getUserName(), farzinPrefrences.getPassword(), true);
 
                 }
@@ -64,7 +64,6 @@ public class LoginPresenter {
                         }
                     });
 
-
                 }
 
                 @Override
@@ -72,6 +71,7 @@ public class LoginPresenter {
 
                 }
             });
+
 
 
         } else {
@@ -139,6 +139,7 @@ public class LoginPresenter {
             return;
         }
         String Xml = webServiceResponse.getHttpTransportSE().responseDump;
+        //String Xml = new CustomFunction().readXmlResponseFromStorage();
         try {
             Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
             Log.i(Tag, "XmlCropAsResponseTag= " + Xml);

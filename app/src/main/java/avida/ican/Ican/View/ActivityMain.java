@@ -14,14 +14,24 @@ import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.parsers.SAXParserFactory;
+
 import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
+import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
+import avida.ican.Farzin.Model.MessageSaxHandler;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
@@ -112,9 +122,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
         switch (view.getId()) {
             case R.id.cv_farzin: {
 
-                //showUserAndRoleDialog();
-                //goToActivity(FarzinActivityLogin.class);
-                //CartableSend();
+                getReceiveMessage();
 
                 break;
             }
@@ -183,6 +191,63 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
                 break;
             }
         }
+    }
+
+    private void getReceiveMessage() {
+        GetMessageFromServerPresenter getMessageFromServerPresenter = new GetMessageFromServerPresenter();
+        getMessageFromServerPresenter.GetRecieveMessageList(1, 1, new MessageListListener() {
+            @Override
+            public void onSuccess(ArrayList<StructureMessageRES> messageList) {
+                for (int i = 0; i < messageList.size(); i++) {
+                    Log.i("ReceiveMessage", "get message.getSubject i=" + i + " " + messageList.get(i).getSubject());
+                    Log.i("ReceiveMessage", "get message.description i=" + i + " " + messageList.get(i).getDescription());
+                    Log.i("ReceiveMessage", "get message.getSender().getUserName i=" + i + " " + messageList.get(i).getSender().getUserName());
+
+                }
+
+                Log.i("ReceiveMessage", "messageList.size()= " + messageList.size());
+            }
+
+            @Override
+            public void onFailed(String message) {
+                message.isEmpty();
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+   /*     String filePath = App.RESPONSEPATH + "/data_test.xml";
+        StructureRecieveMessageListRES structureRecieveMessageListRES = parseXmlWithSax1(filePath);*/
+    }
+
+
+    private StructureRecieveMessageListRES parseXmlWithSax1(String xmlFilePath) {
+        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
+        List<StructureMessageRES> Messages = new ArrayList<>();
+        File file = new File(xmlFilePath);
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // create a XMLReader from SAXParser
+            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser()
+                    .getXMLReader();
+            // create a SaxHandler
+            MessageSaxHandler saxHandler = new MessageSaxHandler();
+            // store handler in XMLReader
+            xmlReader.setContentHandler(saxHandler);
+            // the process starts
+            xmlReader.parse(new InputSource(fileInputStream));
+            // get the `Employee list`
+            Messages = saxHandler.getObject();
+            structureRecieveMessageListRES.setGetRecieveMessageListResult(Messages);
+        } catch (Exception ex) {
+            Log.d("XML", "SAXXMLParser error =" + ex.toString());
+            Log.d("XML", "SAXXMLParser: parse() failed");
+        }
+
+        return structureRecieveMessageListRES;
     }
 
     private void checkFile(StructureAttach structureAttach) {

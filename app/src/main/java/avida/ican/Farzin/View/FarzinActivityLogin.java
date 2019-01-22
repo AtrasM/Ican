@@ -171,7 +171,8 @@ public class FarzinActivityLogin extends BaseActivity {
         loginPresenter.Authentiocation(UserName, Password, ServerUrl, isRemember, new LoginViewListener() {
             @Override
             public void onSuccess() {
-                goToActivity(FarzinActivityMain.class);
+                //goToActivity(FarzinActivityMain.class);
+                goToActivity(ActivityMain.class);
                 loading.Hide();
                 Finish(App.CurentActivity);
             }

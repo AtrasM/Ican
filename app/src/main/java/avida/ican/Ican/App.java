@@ -59,6 +59,8 @@ public class App extends MultiDexApplication {
     private static Context serviceContext;
     public static String DEFAULTPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/IcanData/File";
     public static String DEFAULTPATHTEMP =DEFAULTPATH+"/tempFile";
+    public static String RESPONSEPATH =DEFAULTPATH+"/Data/Response/";
+    public static String RESPONSEFILENAME="responseData.xml";
     public static FragmentMessageList fragmentMessageList = null;
     public static FragmentCartable fragmentCartable = null;
     public static HashMap<String, Stack<Fragment>> fragmentStacks;

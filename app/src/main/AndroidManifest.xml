@@ -119,7 +119,9 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+
+        </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
             android:label="@string/title_activity_farzin_main"

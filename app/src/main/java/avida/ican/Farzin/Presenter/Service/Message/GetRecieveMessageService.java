@@ -59,8 +59,8 @@ public class GetRecieveMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.IsNew;
     private int Count = 2;
-    private final int MaxCount = 5;
-    private final int MinCount = 2;
+    private final int MaxCount =20;
+    private final int MinCount = 1;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
     private static int newCount = 0;

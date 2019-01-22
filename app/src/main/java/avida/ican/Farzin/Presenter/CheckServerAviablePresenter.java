@@ -14,6 +14,7 @@ import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
@@ -114,7 +115,9 @@ public class CheckServerAviablePresenter {
                 dataProcessListener.onFailed();
                 return;
             }
+
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
+            //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 //Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodeName);

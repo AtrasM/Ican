@@ -12,6 +12,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -31,15 +32,24 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import org.apache.commons.codec.Charsets;
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -49,6 +59,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Scanner;
 import java.util.UUID;
 
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
@@ -57,11 +68,14 @@ import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.ActivityImageViewer;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerAttach;
+import avida.ican.Ican.View.Interface.ListenerStorageFile;
 import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
@@ -424,6 +438,192 @@ public class CustomFunction {
         }
         return filePath;
     }
+
+    public String saveXmlToStorage(String data) {
+        byte[] fileAsBytes = null;
+
+        String filePath = "";
+        try {
+            fileAsBytes = data.getBytes("UTF-8");
+            filePath = saveXmlToStorage(fileAsBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return filePath;
+    }
+
+    public String saveXmlToStorage(InputStream is) {
+        byte[] fileAsBytes = null;
+
+        String filePath = "";
+        try {
+            fileAsBytes = IOUtils.toByteArray(is);
+
+            filePath = saveXmlToStorage(fileAsBytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return filePath;
+    }
+
+    public String saveXmlToStorage(byte[] fileAsBytes) {
+        ObjectOutputStream objectOutputStream = null;
+        File dir = new File(App.RESPONSEPATH);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        try {
+            objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath));
+            objectOutputStream.writeUTF("@rasVida");
+            objectOutputStream.writeUTF("Ican");
+            objectOutputStream.writeInt(fileAsBytes.length);
+            objectOutputStream.writeUTF("");
+            objectOutputStream.write(fileAsBytes);
+            objectOutputStream.writeUTF("Ican");
+            objectOutputStream.writeUTF("@rasVida");
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("saveFile", e.toString());
+        } finally {
+            try {
+                objectOutputStream.flush();
+                objectOutputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("saveFile", e.toString());
+            }
+        }
+        return filePath;
+    }
+
+    public String saveXmlResponseToStorage(String xml) {
+        ObjectOutputStream objectOutputStream = null;
+        File dir = new File(App.RESPONSEPATH);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        try {
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(filePath));
+            outputStreamWriter.write(xml);
+            outputStreamWriter.close();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }
+        return filePath;
+    }
+
+    public String saveXmlResponseToStorage(InputStream is) {
+        ObjectOutputStream objectOutputStream = null;
+        File dir = new File(App.RESPONSEPATH);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        try {
+            File file = new File(filePath);
+            OutputStream output = new FileOutputStream(file);
+            try {
+                byte[] buffer = new byte[4 * 1024]; // or other buffer size
+                int read;
+                boolean canChange = true;
+                while ((read = is.read(buffer)) != -1) {
+
+                    /*if (canChange) {
+                        String data = new String(buffer, "UTF-8");
+                        if (data.contains("<?xml")) {
+                            canChange = false;
+                            String mainData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+                            String changeData = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss version=\"2.0\">";
+                            data = data.replace(mainData, changeData);
+                            data = new ChangeXml().SaxCharDecoder(data);
+                            byte[] buffer2 = data.getBytes("UTF-8");
+                            output.write(buffer2, 0, read);
+                        }
+                    } else {
+                        String data = new String(buffer, "UTF-8");
+                        data = new ChangeXml().SaxCharDecoder(data);
+                        buffer = data.getBytes("UTF-8");
+                        data = "";
+                        // output.write(data.getBytes("UTF-8"), 0, read);
+                        output.write(buffer, 0, read);
+                    }*/
+                    String data = new String(buffer, "UTF-8");
+                    data = new ChangeXml().SaxCharDecoder(data);
+                    buffer = data.getBytes("UTF-8");
+                    data = "";
+                    // output.write(data.getBytes("UTF-8"), 0, read);
+                    output.write(buffer, 0, read);
+                }
+
+                output.flush();
+            } finally {
+                output.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return filePath;
+    }
+
+    public String readXmlResponseFromStorage(String filePath) {
+        String xmlData = "";
+
+        try {
+            FileInputStream fis = new FileInputStream(filePath);
+            xmlData = new Scanner(fis, "UTF-8").useDelimiter("\\Z").next();
+          /*  File file = new File(filePath);
+            file.delete();*/
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        /*InputStream inputStream = new ByteArrayInputStream(getFileFromStorageAsByte(filePath));
+        xmlData = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();*/
+      /*  xmlData = new String(getFileFromStorageAsByte(filePath));
+        File file = new File(filePath);
+        file.delete();*/
+        return xmlData;
+    }
+
+/*    public String readXmlResponseFromStorage() {
+
+        String ret = "";
+        String filePath = App.RESPONSEPATH + App.RESPONSEFILENAME;
+        try {
+            InputStream inputStream = new ObjectInputStream(new FileInputStream(filePath));
+
+            if (inputStream != null) {
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                String receiveString = "";
+                StringBuilder stringBuilder = new StringBuilder();
+
+                while ((receiveString = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(receiveString);
+                }
+
+                inputStream.close();
+                ret = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("readXml", "File not found: " + e.toString());
+        } catch (IOException e) {
+            Log.e("readXml", "Can not read file: " + e.toString());
+        }
+
+        return ret;
+    }*/
 
     public String getFileFromStorageAsBase64(String filePath) {
         return new Base64EncodeDecodeFile().EncodeByteArrayToString(getFileFromStorageAsByte(filePath));

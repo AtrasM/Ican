@@ -1,13 +1,31 @@
 package avida.ican.Ican.Model;
 
+import android.util.Log;
+
 import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.parsers.SAXParserFactory;
+
+import avida.ican.Farzin.Model.MessageSaxHandler;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
+import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 
 /**
@@ -31,6 +49,7 @@ public class XmlToObject {
 
 
     public <T> T DeserializationGsonXml(String xml, Class<T> tClass) {
+
         try {
             return (T) getGsoanXml().fromXml(xml, tClass);
 
@@ -39,17 +58,38 @@ public class XmlToObject {
             return (T) tClass;
         }
     }
+
     public <T> T DeserializationSimpleXml(String xml, Class<T> tClass) {
         Serializer serializer = new Persister();
         try {
-            return (T) serializer.read(tClass, xml,false);
+            return (T) serializer.read(tClass, xml, false);
         } catch (Exception e) {
+            Log.i("SimpleXmlErrorAvida", "Exception= " + e.toString());
             e.printStackTrace();
             return (T) tClass;
         }
     }
 
+    public <T> T parseXmlWithSax(String xmlFilePath, ContentHandler saxHandler) {
+        File file = new File(xmlFilePath);
 
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // create a XMLReader from SAXParser
+            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser()
+                    .getXMLReader();
+            // store handler in XMLReader
+            xmlReader.setContentHandler(saxHandler);
+            // the process starts
+            xmlReader.parse(new InputSource(fileInputStream));
+
+        } catch (Exception ex) {
+            Log.d("XML", "SAXXMLParser error =" + ex.toString());
+            Log.d("XML", "SAXXMLParser: parse() failed");
+        }
+
+        return (T) saxHandler;
+    }
 
     private GsonXml getGsoanXml() {
         XmlParserCreator parserCreator = new XmlParserCreator() {

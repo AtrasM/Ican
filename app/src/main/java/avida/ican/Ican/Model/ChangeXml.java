@@ -20,6 +20,37 @@ public class ChangeXml {
         return xmlString;
     }
 
+    public String GetContentTag(String xmlString, String StartTag, String EndTag) {
+        try {
+            xmlString = xmlString.substring(xmlString.indexOf(StartTag), xmlString.indexOf(EndTag));
+
+            if (xmlString.contains("![CDATA[")) {
+                xmlString = RemoveTag(xmlString, "<![CDATA[", "]]>");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return xmlString;
+    }
+
+    public String RemoveContentWithTag(String xmlString, String StartTag, String EndTag) {
+        String temp = xmlString;
+        try {
+            int index = xmlString.indexOf(StartTag);
+            if (index > 0) {
+                temp = xmlString.substring(0, index);
+            }
+            index = xmlString.lastIndexOf(EndTag);
+            if (index > 0) {
+                index = index + EndTag.length();
+                temp = temp + "" + xmlString.substring(index, xmlString.length());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return temp;
+    }
+
     public String RemoveTag(String xmlString, String StartTag, String EndTag) {
         try {
             xmlString = xmlString.replace(StartTag, "").replace(EndTag, "");
@@ -39,6 +70,9 @@ public class ChangeXml {
     }
 
     public String CharDecoder(String xml) {
+        if (xml.contains("![CDATA[")) {
+            xml = RemoveTag(xml, "<![CDATA[", "]]>");
+        }
 
         xml = xml.replaceAll("&amp;", "&")
                 .replaceAll("&lt;", "<")
@@ -51,4 +85,24 @@ public class ChangeXml {
         return xml;
     }
 
+    public String SaxCharDecoder(String xml) {
+       /* if (xml.contains("![CDATA[")) {
+            xml = RemoveTag(xml, "<![CDATA[", "]]>");
+        }*/
+        xml = xml.replaceAll("&", "&amp;")
+                .replaceAll("&amp;amp;", "&amp;");
+
+/*
+        xml = xml.replaceAll("&amp;amp;", "&amp;")
+                .replaceAll("&amp;lt;", "&lt;")
+                .replaceAll("&amp;gt;", "&gt;")
+                .replaceAll("&amp;apos;", "&apos;")
+                .replaceAll("&amp;quot;", "&quot;")
+                .replaceAll("&amp;nbsp;", "&nbsp;")
+                .replaceAll("&amp;copy;", "&copy;");
+*/
+
+
+        return xml;
+    }
 }

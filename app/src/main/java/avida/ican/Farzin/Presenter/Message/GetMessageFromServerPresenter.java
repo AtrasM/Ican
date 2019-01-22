@@ -1,16 +1,26 @@
 package avida.ican.Farzin.Presenter.Message;
 
-import org.ksoap2.serialization.SoapObject;
+import android.util.Log;
 
+import org.ksoap2.serialization.SoapObject;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.parsers.SAXParserFactory;
+
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
+import avida.ican.Farzin.Model.MessageSaxHandler;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureSentMessageListRES;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -31,6 +41,7 @@ public class GetMessageFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetMessageFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
+    private String XmlFile = "";
 
 
     public GetMessageFromServerPresenter() {
@@ -91,8 +102,17 @@ public class GetMessageFromServerPresenter {
     }
 
     private void CheckReciverMessageListStructure(String xml, MessageListListener messageListListener) {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
-        if (structureRecieveMessageListRES.getStrErrorMsg() == null || structureRecieveMessageListRES.getStrErrorMsg().isEmpty()) {
+        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
+        if (xml.contains(App.RESPONSEPATH)) {
+            //structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
+
+            MessageSaxHandler contentHandler = xmlToObject.parseXmlWithSax(xml, new MessageSaxHandler());
+            structureRecieveMessageListRES = contentHandler.getObject();
+            Log.i("MessageData", "xml= " + xml);
+        } else {
+            structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
+        }
+        if (structureRecieveMessageListRES.getStrErrorMsg() != null || structureRecieveMessageListRES.getStrErrorMsg().isEmpty()) {
             if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
                 messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
             } else {
@@ -107,6 +127,7 @@ public class GetMessageFromServerPresenter {
             messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
         }
     }
+
 
     private SoapObject getSoapObject(int page, int count) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
@@ -147,9 +168,21 @@ public class GetMessageFromServerPresenter {
                 return;
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
+            //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
-                //Xml = changeXml.CharDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                if (Xml.contains(MetodName)) {
+                    Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                }
+               /* XmlFile = changeXml.GetContentTag(Xml, "<MessageFiles>", "</MessageFiles>");
+                Xml = changeXml.RemoveContentWithTag(Xml, "<MessageFiles>", "</MessageFiles>");
+                Log.i("MessageData", "MessageWithout data Xml= " + Xml);
+                Log.i("MessageData", "XmlFile= " + XmlFile);
+                new CustomFunction().saveXmlResponseToStorage(XmlFile);
+                List<StructureMessageAttachRES> MessageFiles = new ArrayList<>();
+                StructureMessageRES structureMessageRES = xmlToObject.DeserializationGsonXml(XmlFile, StructureMessageRES.class);
+                Log.i("MessageData", "MessageFiles= " + structureMessageRES.getMessageFiles().size());
+                MessageFiles = structureMessageRES.getMessageFiles();*/
+
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {
@@ -161,6 +194,32 @@ public class GetMessageFromServerPresenter {
             }
         }
 
+    }
+
+    private StructureRecieveMessageListRES parseXmlWithSax(String xmlFilePath) {
+        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
+        List<StructureMessageRES> Messages = new ArrayList<>();
+        File file = new File(xmlFilePath);
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // create a XMLReader from SAXParser
+            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser()
+                    .getXMLReader();
+            // create a SaxHandler
+            MessageSaxHandler saxHandler = new MessageSaxHandler();
+            // store handler in XMLReader
+            xmlReader.setContentHandler(saxHandler);
+            // the process starts
+            xmlReader.parse(new InputSource(fileInputStream));
+            // get the `Employee list`
+            structureRecieveMessageListRES = saxHandler.getObject();
+        } catch (Exception ex) {
+            Log.d("XML", "SAXXMLParser error =" + ex.toString());
+            Log.d("XML", "SAXXMLParser: parse() failed");
+        }
+
+        return structureRecieveMessageListRES;
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

@@ -26,6 +26,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Ican.App;
+import avida.ican.Ican.IcanHttpTransportSE;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
@@ -349,11 +350,10 @@ public class WebService {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(EnvelopVersion);
         envelope.setOutputSoapObject(soapObject);
         envelope.dotNet = true;
-        HttpTransportSE androidHttpTransport = new HttpTransportSE(URL, TimeOut);
+        IcanHttpTransportSE androidHttpTransport = new IcanHttpTransportSE(URL, TimeOut);
         androidHttpTransport.debug = true;
         webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, null));
-        return WebServiceResponse(envelope, androidHttpTransport, webServiceResponse.getHeaderList());
-
+        return WebServiceResponse( androidHttpTransport, webServiceResponse.getHeaderList());
     }
 
     private WebServiceResponse CallApi() throws IOException, XmlPullParserException {
@@ -366,7 +366,7 @@ public class WebService {
         }
         envelope.implicitTypes = true;
         envelope.dotNet = true;
-        HttpTransportSE androidHttpTransport = new HttpTransportSE(URL, TimeOut);
+        IcanHttpTransportSE androidHttpTransport = new IcanHttpTransportSE(URL, TimeOut);
         androidHttpTransport.debug = true;
         if (!TextUtils.isEmpty(SESSION_ID)) {
             headerArrayList = new ArrayList();
@@ -374,23 +374,16 @@ public class WebService {
             headerArrayList.add(headerPropertyObj);
         }
         try {
-       /*     //androidHttpTransport.getServiceConnection().
-            androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList);
-            SoapPrimitive primetive = (SoapPrimitive) envelope.getResponse();
-            String xml=  primetive.toString();*/
             webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, headerArrayList));
-        }/* catch (OutOfMemoryError e) {
-            e.printStackTrace();
-            webServiceResponse.setHeaderList(new ArrayList());
-        } */catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return WebServiceResponse(envelope, androidHttpTransport,  webServiceResponse.getHeaderList());
+        return WebServiceResponse( androidHttpTransport, webServiceResponse.getHeaderList());
     }
 
-    private WebServiceResponse WebServiceResponse(SoapSerializationEnvelope envelope, HttpTransportSE androidHttpTransport, List headerList) {
-        webServiceResponse.setEnvelope(envelope);
+    private WebServiceResponse WebServiceResponse( IcanHttpTransportSE androidHttpTransport, List headerList) {
+        //webServiceResponse.setEnvelope(envelope);
         webServiceResponse.setHttpTransportSE(androidHttpTransport);
         webServiceResponse.setHeaderList(headerList);
         webServiceResponse.setResponse(true);

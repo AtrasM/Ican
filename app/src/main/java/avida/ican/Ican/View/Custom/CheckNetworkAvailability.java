@@ -50,7 +50,8 @@ public class CheckNetworkAvailability {
 
     @SuppressLint("StaticFieldLeak")
     public void isServerAvailable(final ListenerNetwork listenerNetwork) {
-        CheckServerAviablePresenter checkServerAviablePresenter = new CheckServerAviablePresenter();
+        listenerNetwork.onConnected();
+ /*       CheckServerAviablePresenter checkServerAviablePresenter = new CheckServerAviablePresenter();
 
         checkServerAviablePresenter.CallRequest(new ListenerNetwork() {
             @Override
@@ -67,7 +68,7 @@ public class CheckNetworkAvailability {
             public void onFailed() {
                 listenerNetwork.disConnected();
             }
-        });
+        });*/
 
     }
 

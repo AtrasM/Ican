@@ -202,6 +202,10 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 }
             });
             BaseActivity.dialogMataDataSync.Creat();
+        }else{
+            if (staticbottomNavigation != null) {
+                staticbottomNavigation.setCurrentItem(1);
+            }
         }
 
     }

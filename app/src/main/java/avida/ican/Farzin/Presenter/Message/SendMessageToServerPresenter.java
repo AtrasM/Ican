@@ -131,6 +131,7 @@ public class SendMessageToServerPresenter {
                 return;
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
+            //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);

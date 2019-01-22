@@ -10,6 +10,10 @@ import android.view.View;
 
 import com.wang.avi.AVLoadingIndicatorView;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Presenter.LoginPresenter;
 import avida.ican.Farzin.View.FarzinActivityLogin;
@@ -47,7 +51,9 @@ public class ActivitySplash extends BaseActivity {
         avLoadingIndicatorView.setIndicatorColor(Resorse.getColor(R.color.color_White));
         avLoadingIndicatorView.setVisibility(View.VISIBLE);
         boolean b = new CheckPermission().writeExternalStorage(1, App.CurentActivity);
+
         if (b) {
+            //String xml=new CustomFunction().readXmlResponseFromStorage("/storage/emulated/0/IcanData/File/Data/Response/843193628b024b4c95a0b062da87d993responseData.xml");
             continueProcess();
         }
 
@@ -81,7 +87,8 @@ public class ActivitySplash extends BaseActivity {
         if (index > 0) {
             filepath = filepath.substring(0, index);
         }*/
-        isRemember = farzinPrefrences.isRemember();
+        isRemember = false;
+       // isRemember = farzinPrefrences.isRemember();
         if (!isRemember) {
             goToActivity(FarzinActivityLogin.class);
             avLoadingIndicatorView.setVisibility(View.GONE);
@@ -90,7 +97,7 @@ public class ActivitySplash extends BaseActivity {
             loginPresenter.AutoAuthentiocation(new LoginViewListener() {
                 @Override
                 public void onSuccess() {
-                    goToActivity(FarzinActivityMain.class);
+                    goToActivity(ActivityMain.class);
                     avLoadingIndicatorView.setVisibility(View.GONE);
                     Finish(App.CurentActivity);
                 }
