@@ -1,5 +1,7 @@
 package avida.ican.Ican.Model.Structure;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-11-04 at 2:33 PM
  */
@@ -24,7 +26,7 @@ public class StructureOpticalPen {
     }
 
     public String getTitle() {
-        return Title;
+        return new ChangeXml().viewCharDecoder(Title);
     }
 
     public void setTitle(String title) {

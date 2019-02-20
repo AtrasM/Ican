@@ -112,6 +112,6 @@ public class UserAndRolePresenter {
                 listenerUserAndRollSearch.onSuccess(structuresSearch);
                 return null;
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 }

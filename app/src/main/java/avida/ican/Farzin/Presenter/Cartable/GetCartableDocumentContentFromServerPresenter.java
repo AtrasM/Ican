@@ -1,5 +1,8 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
@@ -10,11 +13,15 @@ import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentContentRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
+import avida.ican.Farzin.Model.saxHandler.DocumentContentSaxHandler;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
+import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.TimeValue;
 
 /**
  * Created by AtrasVida on 2018-12-04 at 1:38 PM
@@ -31,6 +38,7 @@ public class GetCartableDocumentContentFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetCartableDocumentContentFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
+    private AsyncTask<Void, Void, Void> task;
 
     public GetCartableDocumentContentFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
@@ -61,15 +69,39 @@ public class GetCartableDocumentContentFromServerPresenter {
 
     }
 
-    private void initStructure(String xml, CartableDocumentContentListener documentContentListener) {
-        StructureCartableDocumentContentRES cartableDocumentContentRES = xmlToObject.DeserializationGsonXml(xml, StructureCartableDocumentContentRES.class);
-        if (cartableDocumentContentRES.getStrErrorMsg() == null || cartableDocumentContentRES.getStrErrorMsg().isEmpty()) {
-            documentContentListener.onSuccess(cartableDocumentContentRES.getGetContentFormAsResult());
-        } else {
-            documentContentListener.onFailed("" + cartableDocumentContentRES.getStrErrorMsg());
-        }
-    }
+    @SuppressLint("StaticFieldLeak")
+    private void initStructure(final String xml, final CartableDocumentContentListener documentContentListener) {
+        final StructureCartableDocumentContentRES[] cartableDocumentContentRES = new StructureCartableDocumentContentRES[1];
+        task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                if (xml.contains(App.RESPONSEPATH)) {
+                    DocumentContentSaxHandler documentContentSaxHandler = xmlToObject.parseXmlWithSax(xml, new DocumentContentSaxHandler());
+                    cartableDocumentContentRES[0] = documentContentSaxHandler.getObject();
+                } else {
+                    cartableDocumentContentRES[0] = xmlToObject.DeserializationGsonXml(xml, StructureCartableDocumentContentRES.class);
+                }
+                return null;
+            }
 
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (cartableDocumentContentRES[0].getStrErrorMsg() == null || cartableDocumentContentRES[0].getStrErrorMsg().isEmpty()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (cartableDocumentContentRES[0].getGetContentFormAsStringBuilder() != null && cartableDocumentContentRES[0].getGetContentFormAsStringBuilder().length() > 0) {
+                        stringBuilder = cartableDocumentContentRES[0].getGetContentFormAsStringBuilder();
+                    } else {
+                        stringBuilder.append(cartableDocumentContentRES[0].getGetContentFormAsResult());
+                    }
+                    documentContentListener.onSuccess(stringBuilder);
+                } else {
+                    documentContentListener.onFailed("" + cartableDocumentContentRES[0].getStrErrorMsg());
+                }
+            }
+        };
+
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
 
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
@@ -112,8 +144,9 @@ public class GetCartableDocumentContentFromServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                //Xml = changeXml.CharDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                if (Xml.contains(MetodName)) {
+                    Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                }
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

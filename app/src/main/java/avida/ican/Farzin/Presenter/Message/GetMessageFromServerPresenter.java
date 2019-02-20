@@ -1,21 +1,17 @@
 package avida.ican.Farzin.Presenter.Message;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.ksoap2.serialization.SoapObject;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.parsers.SAXParserFactory;
-
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
-import avida.ican.Farzin.Model.MessageSaxHandler;
+import avida.ican.Farzin.Model.saxHandler.MessageSaxHandler;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
@@ -27,6 +23,7 @@ import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.TimeValue;
 
 /**
  * Created by AtrasVida on 2018-07-03 at 5:27 PM
@@ -42,7 +39,8 @@ public class GetMessageFromServerPresenter {
     private String Tag = "GetMessageFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
     private String XmlFile = "";
-
+    private AsyncTask<Void, Void, StructureSentMessageListRES> SentMessageTask;
+    private AsyncTask<Void, Void, StructureRecieveMessageListRES> RecieveMessageTask;
 
     public GetMessageFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
@@ -85,46 +83,95 @@ public class GetMessageFromServerPresenter {
 
     }
 
-    private void CheckSentMessageListStructure(String xml, MessageListListener messageListListener) {
-        StructureSentMessageListRES structureSentMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureSentMessageListRES.class);
-        if (structureSentMessageListRES.getStrErrorMsg() == null || structureSentMessageListRES.getStrErrorMsg().isEmpty()) {
-            if (structureSentMessageListRES.getGetSentMessageListResult().size() <= 0) {
-                messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
-            } else {
-                List<StructureMessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
-                // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<>(messageListResult));
+    @SuppressLint("StaticFieldLeak")
+    private void CheckSentMessageListStructure(final String xml, final MessageListListener messageListListener) {
+        //final StructureSentMessageListRES[] structureSentMessageListRES = new StructureSentMessageListRES[1];
+
+
+        SentMessageTask = new AsyncTask<Void, Void, StructureSentMessageListRES>() {
+            @Override
+            protected StructureSentMessageListRES doInBackground(Void... voids) {
+                Log.i("xml", "doInBackground SentMessage xmlfile= " + xml);
+                StructureSentMessageListRES structureSentMessageListRES = new StructureSentMessageListRES();
+
+                if (xml.contains(App.RESPONSEPATH)) {
+                    MessageSaxHandler contentHandler = xmlToObject.parseXmlWithSax(xml, new MessageSaxHandler());
+                    structureSentMessageListRES = contentHandler.getObject(false);
+                    sleep();
+                } else {
+                    structureSentMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureSentMessageListRES.class);
+                }
+
+                return structureSentMessageListRES;
             }
-            getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
-        } else {
-            messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
-        }
+
+            @Override
+            protected void onPostExecute(StructureSentMessageListRES structureSentMessageListRES) {
+                Log.i("xml", "onPostExecute SentMessage xmlfile= " + xml);
+                if (structureSentMessageListRES.getStrErrorMsg() == null || structureSentMessageListRES.getStrErrorMsg().isEmpty()) {
+                    if (structureSentMessageListRES.getGetSentMessageListResult().size() <= 0) {
+                        messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
+                    } else {
+                        List<StructureMessageRES> messageListResult = structureSentMessageListRES.getGetSentMessageListResult();
+                        messageListListener.onSuccess(new ArrayList<>(messageListResult));
+                    }
+                    getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                } else {
+                    messageListListener.onFailed("" + structureSentMessageListRES.getStrErrorMsg());
+                }
+            }
+        };
+        //SentMessageTask.execute();
+        SentMessageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
     }
 
-    private void CheckReciverMessageListStructure(String xml, MessageListListener messageListListener) {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
-        if (xml.contains(App.RESPONSEPATH)) {
-            //structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
+    @SuppressLint("StaticFieldLeak")
+    private void CheckReciverMessageListStructure(final String xml, final MessageListListener messageListListener) {
+        //final StructureRecieveMessageListRES[] structureRecieveMessageListRES = new StructureRecieveMessageListRES[1];
+        RecieveMessageTask = new AsyncTask<Void, Void, StructureRecieveMessageListRES>() {
+            @Override
+            protected StructureRecieveMessageListRES doInBackground(Void... voids) {
+                Log.i("xml", "doInBackground ReciverMessage xmlfile= " + xml);
+                StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
 
-            MessageSaxHandler contentHandler = xmlToObject.parseXmlWithSax(xml, new MessageSaxHandler());
-            structureRecieveMessageListRES = contentHandler.getObject();
-            Log.i("MessageData", "xml= " + xml);
-        } else {
-            structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
-        }
-        if (structureRecieveMessageListRES.getStrErrorMsg() != null || structureRecieveMessageListRES.getStrErrorMsg().isEmpty()) {
-            if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
-                messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
-            } else {
-                List<StructureMessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
-                // changeXml.CharDecoder(structureMessageList.get())
-                messageListListener.onSuccess(new ArrayList<>(messageListResult));
+                if (xml.contains(App.RESPONSEPATH)) {
+                    MessageSaxHandler contentHandler = xmlToObject.parseXmlWithSax(xml, new MessageSaxHandler());
+                    structureRecieveMessageListRES = contentHandler.getObject(true);
+                    sleep();
+                } else {
+                    structureRecieveMessageListRES = xmlToObject.DeserializationSimpleXml(xml, StructureRecieveMessageListRES.class);
+                }
+                return structureRecieveMessageListRES;
             }
-            getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
 
+            @Override
+            protected void onPostExecute(StructureRecieveMessageListRES structureRecieveMessageListRES) {
+                Log.i("xml", "onPostExecute ReciverMessage xmlfile= " + xml);
+                if (structureRecieveMessageListRES.getStrErrorMsg() == null || structureRecieveMessageListRES.getStrErrorMsg().isEmpty()) {
+                    if (structureRecieveMessageListRES.getGetRecieveMessageListResult().size() <= 0) {
+                        messageListListener.onSuccess(new ArrayList<StructureMessageRES>());
+                    } else {
+                        List<StructureMessageRES> messageListResult = structureRecieveMessageListRES.getGetRecieveMessageListResult();
+                        // changeXml.charDecoder(structureMessageList.get())
+                        messageListListener.onSuccess(new ArrayList<>(messageListResult));
+                    }
+                    getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                } else {
+                    messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
+                }
+            }
+        };
+        //RecieveMessageTask.execute();
+        RecieveMessageTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
-        } else {
-            messageListListener.onFailed("" + structureRecieveMessageListRES.getStrErrorMsg());
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(TimeValue.SecondsInMilli() * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -168,21 +215,10 @@ public class GetMessageFromServerPresenter {
                 return;
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
-            //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 if (Xml.contains(MetodName)) {
                     Xml = changeXml.CropAsResponseTag(Xml, MetodName);
                 }
-               /* XmlFile = changeXml.GetContentTag(Xml, "<MessageFiles>", "</MessageFiles>");
-                Xml = changeXml.RemoveContentWithTag(Xml, "<MessageFiles>", "</MessageFiles>");
-                Log.i("MessageData", "MessageWithout data Xml= " + Xml);
-                Log.i("MessageData", "XmlFile= " + XmlFile);
-                new CustomFunction().saveXmlResponseToStorage(XmlFile);
-                List<StructureMessageAttachRES> MessageFiles = new ArrayList<>();
-                StructureMessageRES structureMessageRES = xmlToObject.DeserializationGsonXml(XmlFile, StructureMessageRES.class);
-                Log.i("MessageData", "MessageFiles= " + structureMessageRES.getMessageFiles().size());
-                MessageFiles = structureMessageRES.getMessageFiles();*/
-
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {
@@ -194,32 +230,6 @@ public class GetMessageFromServerPresenter {
             }
         }
 
-    }
-
-    private StructureRecieveMessageListRES parseXmlWithSax(String xmlFilePath) {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
-        List<StructureMessageRES> Messages = new ArrayList<>();
-        File file = new File(xmlFilePath);
-
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            // create a XMLReader from SAXParser
-            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser()
-                    .getXMLReader();
-            // create a SaxHandler
-            MessageSaxHandler saxHandler = new MessageSaxHandler();
-            // store handler in XMLReader
-            xmlReader.setContentHandler(saxHandler);
-            // the process starts
-            xmlReader.parse(new InputSource(fileInputStream));
-            // get the `Employee list`
-            structureRecieveMessageListRES = saxHandler.getObject();
-        } catch (Exception ex) {
-            Log.d("XML", "SAXXMLParser error =" + ex.toString());
-            Log.d("XML", "SAXXMLParser: parse() failed");
-        }
-
-        return structureRecieveMessageListRES;
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

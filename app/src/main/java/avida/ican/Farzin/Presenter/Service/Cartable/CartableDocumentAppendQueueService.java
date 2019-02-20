@@ -29,11 +29,8 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentAppendQueueService extends Service {
-    private final long PERIOD = TimeValue.MinutesInMilli();
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
+    private final long DELAY = TimeValue.MinutesInMilli();
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
-    private Timer timer;
-    private TimerTask timerTask;
     private SendListener sendListener;
     private Context context;
     private Handler handler = new Handler();
@@ -164,20 +161,18 @@ public class CartableDocumentAppendQueueService extends Service {
 
 
     private void startSendQueueTimer() {
-        timer = new Timer();
-        timerTask = new TimerTask() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                        App.getHandler().postDelayed(new Runnable() {
+                        App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 startSendQueueTimer();
                             }
                         }, FAILED_DELAY);
-                        timer.cancel();
                     } else {
                         StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
                         if (structureCartableSendQueueDB != null) {
@@ -185,7 +180,6 @@ public class CartableDocumentAppendQueueService extends Service {
                                 CartableSend(structureCartableSendQueueDB);
                             }
                         }
-                        timer.cancel();
                     }
 
 
@@ -193,8 +187,8 @@ public class CartableDocumentAppendQueueService extends Service {
                     e.printStackTrace();
                 }
             }
-        };
-        timer.schedule(timerTask, 0, PERIOD);
+        }, DELAY);
+
     }
 
     @Override

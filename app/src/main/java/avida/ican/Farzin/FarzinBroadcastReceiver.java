@@ -26,30 +26,41 @@ import avida.ican.Ican.View.Custom.TimeValue;
 public class FarzinBroadcastReceiver extends BroadcastReceiver {
     Handler handler = new Handler();
     ArrayList<Intent> intents = new ArrayList<>();
+    private int SERVICECOUNT = 0;
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(final Context context, Intent mintent) {
         App.setServiceContext(context);
         intents.clear();
-        //context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
         //context.startService(new Intent(context, NetWorkCheckingService.class));
         context.startService(new Intent(context, CheckServerAviableService.class));
-        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class)));
+        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
         context.startService(putIntent(new Intent(context, SendMessageService.class)));
-        context.startService(putIntent(new Intent(context, GetRecieveMessageService.class)));
         context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
         context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
         context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                context.startService(putIntent(new Intent(context, GetSentMessageService.class)));
+                context.startService(putIntent(new Intent(context, GetRecieveMessageService.class), true));
             }
-        }, TimeValue.SecondsInMilli());
+        }, (TimeValue.SecondsInMilli()*3));
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                context.startService(putIntent(new Intent(context, GetSentMessageService.class), true));
+            }
+        }, (TimeValue.SecondsInMilli()*5));
     }
 
     private Intent putIntent(Intent intent) {
+        intents.add(intent);
+        return intent;
+    }
+
+    private Intent putIntent(Intent intent, boolean ServiceCountPlus) {
+        SERVICECOUNT++;
         intents.add(intent);
         return intent;
     }
@@ -58,6 +69,10 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         for (Intent intent : intents) {
             App.getServiceContext().stopService(intent);
         }
+    }
+
+    public int getServiceSyncCount() {
+        return SERVICECOUNT;
     }
 }
 

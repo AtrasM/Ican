@@ -10,7 +10,7 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocu
  */
 
 public interface CartableDocumentContentListener {
-    void onSuccess(String FileBinary);
+    void onSuccess(StringBuilder FileBinaryAsStringBuilder);
 
     void onFailed(String message);
 

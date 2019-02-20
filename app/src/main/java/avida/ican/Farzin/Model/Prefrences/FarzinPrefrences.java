@@ -68,10 +68,10 @@ public class FarzinPrefrences {
                 SESSION_ID = headerValue.trim();
                 break;
             }
-
         }
         sharedPreferencesValue.edit().putString(TAG + "cookie", SESSION_ID).apply();
     }
+
 
     public void putPassword(String password) {
         sharedPreferencesValue.edit().putString(TAG + "password", password).apply();
@@ -134,6 +134,29 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", "");
     }
 
+    public void putCartableDocumentForFirstTimeSync(boolean isDataForFirstTimeSync) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "isCartableDocumentForFirstTimeSync", isDataForFirstTimeSync).apply();
+    }
+
+    public boolean isCartableDocumentForFirstTimeSync() {
+        return sharedPreferencesValue.getBoolean(TAG + "isCartableDocumentForFirstTimeSync", false);
+    }
+
+    public void putReceiveMessageForFirstTimeSync(boolean isDataForFirstTimeSync) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "isReceiveMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+    }
+
+    public boolean isReceiveMessageForFirstTimeSync() {
+        return sharedPreferencesValue.getBoolean(TAG + "isReceiveMessageForFirstTimeSync", false);
+    }
+
+    public void putSendMessageForFirstTimeSync(boolean isDataForFirstTimeSync) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "isSendMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+    }
+
+    public boolean isSendMessageForFirstTimeSync() {
+        return sharedPreferencesValue.getBoolean(TAG + "isSendMessageForFirstTimeSync", false);
+    }
 
     public void putDataForFirstTimeSync(boolean isDataForFirstTimeSync) {
         sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();

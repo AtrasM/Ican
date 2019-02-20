@@ -32,17 +32,22 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
-import org.apache.commons.codec.Charsets;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,23 +64,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Scanner;
 import java.util.UUID;
 
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
+import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.Model.Interface.ListenerWorkWithFile;
 import avida.ican.Ican.Model.Structure.StructureAttach;
-import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.ActivityImageViewer;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
-import avida.ican.Ican.View.Interface.ListenerAttach;
-import avida.ican.Ican.View.Interface.ListenerStorageFile;
 import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
@@ -285,159 +288,81 @@ public class CustomFunction {
         return type;
     }
 
-    /*  public File OpenFile(byte[] fileAsBytes, String fileName, String fileExtension) {
 
-          File file = null;
-          if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
-              ActivityImageViewer.byteArray = fileAsBytes;
-              goToActivity(ActivityImageViewer.class);
-              //new DialogImageViewer(App.CurentActivity).Creat().show(fileAsBytes);
-              return file;
-          } else {
-              fileExtension = fileExtension.replace("waw", "wav");
-              boolean b = new CheckPermission().writeExternalStorage(1, activity);
-
-              if (b) {
-                  MimeTypeMap mime = MimeTypeMap.getSingleton();
-                  String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
-
-                  try {
-                      File dir = new File(App.DEFAULTPATH);
-                      if (fileName.contains(fileExtension)) {
-                          file = new File(dir, fileName);
-                      } else {
-                          file = new File(dir, fileName + fileExtension);
-                      }
-
-                      if (!file.exists()) {
-                          file.getParentFile().mkdirs();
-                          file.createNewFile();
-                      }
-
-                      BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                      bos.write(fileAsBytes);
-                      bos.flush();
-                      bos.close();
-                      Intent intent = new Intent();
-                      intent.setAction(Intent.ACTION_VIEW);
-                      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                          intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                          Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
-                          intent.setDataAndType(contentUri, type);
-                      } else {
-                          intent.setDataAndType(Uri.fromFile(file), type);
-                      }
-                      intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                      activity.startActivity(intent);
-                  } catch (
-                          IOException e) {
-                      e.printStackTrace();
-                  }
-              }
-
-          }
-          return file;
-      }
-      */
     public File OpenFile(StructureAttach structureAttach) {
         String fileName = structureAttach.getName();
         String fileExtension = structureAttach.getFileExtension();
-        /*String fileAsBase64 = getFileFromStorageAsByte(structureAttach.getFilePath());
-        byte[] fileAsBytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);*/
-        byte[] fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
+        Log.i("OpenFile", "file path = " + structureAttach.getFilePath());
+        byte[] fileAsBytes = new byte[0];
+        fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
+        Log.i("OpenFile", "fileAsBytes.length = " + fileAsBytes.length);
         File file = null;
-        if (fileAsBytes == null) {
+        if (fileAsBytes != null && fileAsBytes.length > 0) {
+            if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE && !UnSupportMediaFormat(fileExtension)) {
+                ActivityImageViewer.byteArray = fileAsBytes;
+                goToActivity(ActivityImageViewer.class);
+                return file;
+            } else {
+                fileExtension = fileExtension.replace("waw", "wav");
+                boolean b = new CheckPermission().writeExternalStorage(1, activity);
+
+                if (b) {
+                    MimeTypeMap mime = MimeTypeMap.getSingleton();
+                    String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
+
+                    try {
+                        File dir = new File(App.DEFAULTPATHTEMP);
+                        fileName = fileName.replace(".ican", "");
+                        if (fileName.contains(fileExtension)) {
+                            file = new File(dir, "/" + fileName);
+                        } else {
+                            file = new File(dir, fileName + fileExtension);
+                        }
+
+                        if (!file.exists()) {
+                            dir.mkdirs();
+                            file.createNewFile();
+                        }
+
+                        BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+                        bos.write(fileAsBytes);
+                        bos.flush();
+                        bos.close();
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_VIEW);
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
+                            intent.setDataAndType(contentUri, type);
+                        } else {
+                            intent.setDataAndType(Uri.fromFile(file), type);
+                        }
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                        activity.startActivity(intent);
+                    } catch (
+                            IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            }
+        } else {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     App.ShowMessage().ShowToast(Resorse.getString(R.string.error_invalid_file), ToastEnum.TOAST_LONG_TIME);
                 }
             });
-            return file;
-        }
-        if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
-            ActivityImageViewer.byteArray = fileAsBytes;
-            goToActivity(ActivityImageViewer.class);
-            //new DialogImageViewer(App.CurentActivity).Creat().show(fileAsBytes);
-            return file;
-        } else {
-            fileExtension = fileExtension.replace("waw", "wav");
-            boolean b = new CheckPermission().writeExternalStorage(1, activity);
-
-            if (b) {
-                MimeTypeMap mime = MimeTypeMap.getSingleton();
-                String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
-
-                try {
-                    File dir = new File(App.DEFAULTPATHTEMP);
-                    if (fileName.contains(fileExtension)) {
-                        file = new File(dir, "/" + fileName);
-                    } else {
-                        file = new File(dir, fileName + fileExtension);
-                    }
-
-                    if (!file.exists()) {
-                        dir.mkdirs();
-                        file.createNewFile();
-                    }
-
-                    BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
-                    bos.write(fileAsBytes);
-                    bos.flush();
-                    bos.close();
-                    Intent intent = new Intent();
-                    intent.setAction(Intent.ACTION_VIEW);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        Uri contentUri = FileProvider.getUriForFile(activity, "avida.ican.fileprovider", file);
-                        intent.setDataAndType(contentUri, type);
-                    } else {
-                        intent.setDataAndType(Uri.fromFile(file), type);
-                    }
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    activity.startActivity(intent);
-                } catch (
-                        IOException e) {
-                    e.printStackTrace();
-                }
-            }
 
         }
         return file;
     }
 
-
-    public String saveFileToStorage(String fileAsBase64, String name) {
-        ObjectOutputStream objectOutputStream = null;
-        String filePath = initFilePath(name);
-        byte[] fileAsBytes = null;
-        if (fileAsBase64 == null) {
-            fileAsBase64 = "";
-        }
-        fileAsBytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);
-        try {
-            objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath));
-            objectOutputStream.writeUTF("@rasVida");
-            objectOutputStream.writeUTF("Ican");
-            objectOutputStream.writeInt(fileAsBytes.length);
-            objectOutputStream.writeUTF(name);
-            objectOutputStream.write(fileAsBytes);
-            objectOutputStream.writeUTF("Ican");
-            objectOutputStream.writeUTF("@rasVida");
-        } catch (IOException e) {
-            e.printStackTrace();
-            Log.e("saveFile", e.toString());
-        } finally {
-            try {
-                objectOutputStream.flush();
-                objectOutputStream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e("saveFile", e.toString());
-            }
-        }
-        return filePath;
+    private boolean UnSupportMediaFormat(String fileExtension) {
+        String format = ".tiff";
+        return format.contains(fileExtension);
     }
+
 
     public String saveXmlToStorage(String data) {
         byte[] fileAsBytes = null;
@@ -516,121 +441,116 @@ public class CustomFunction {
         return filePath;
     }
 
+
     public String saveXmlResponseToStorage(InputStream is) {
-        ObjectOutputStream objectOutputStream = null;
+
+
         File dir = new File(App.RESPONSEPATH);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        int buferSize = 4 * 1024;
         try {
-            File file = new File(filePath);
-            OutputStream output = new FileOutputStream(file);
-            try {
-                byte[] buffer = new byte[4 * 1024]; // or other buffer size
-                int read;
-                boolean canChange = true;
-                while ((read = is.read(buffer)) != -1) {
-
-                    /*if (canChange) {
-                        String data = new String(buffer, "UTF-8");
-                        if (data.contains("<?xml")) {
-                            canChange = false;
-                            String mainData = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-                            String changeData = "<?xml version='1.0' encoding='UTF-8'?>" + "<rss version=\"2.0\">";
-                            data = data.replace(mainData, changeData);
-                            data = new ChangeXml().SaxCharDecoder(data);
-                            byte[] buffer2 = data.getBytes("UTF-8");
-                            output.write(buffer2, 0, read);
-                        }
-                    } else {
-                        String data = new String(buffer, "UTF-8");
-                        data = new ChangeXml().SaxCharDecoder(data);
-                        buffer = data.getBytes("UTF-8");
-                        data = "";
-                        // output.write(data.getBytes("UTF-8"), 0, read);
-                        output.write(buffer, 0, read);
-                    }*/
-                    String data = new String(buffer, "UTF-8");
-                    data = new ChangeXml().SaxCharDecoder(data);
-                    buffer = data.getBytes("UTF-8");
-                    data = "";
-                    // output.write(data.getBytes("UTF-8"), 0, read);
-                    output.write(buffer, 0, read);
-                }
-
-                output.flush();
-            } finally {
-                output.close();
+            FileOutputStream fOut = new FileOutputStream(filePath);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            byte[] buffer = new byte[buferSize]; // or other buffer size
+            while (is.read(buffer) != -1) {
+                String data = new String(buffer, "UTF-8");
+                buffer = new byte[buferSize];
+                data = new ChangeXml().saxCharEncoder(data);
+                myOutWriter.append(data.trim());
+                //Thread.sleep(50);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
+            myOutWriter.close();
+
+            fOut.flush();
+            fOut.close();
         } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        } catch (Exception e) {
+            Log.e("Exception", "File write failed: " + e.toString());
             e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
+
+
         return filePath;
     }
 
     public String readXmlResponseFromStorage(String filePath) {
         String xmlData = "";
+        File file = new File(filePath);
+
+        //Read text from file
+        StringBuilder text = new StringBuilder();
 
         try {
-            FileInputStream fis = new FileInputStream(filePath);
-            xmlData = new Scanner(fis, "UTF-8").useDelimiter("\\Z").next();
-          /*  File file = new File(filePath);
-            file.delete();*/
-        } catch (FileNotFoundException e) {
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                text.append(line);
+            }
+            xmlData = text.toString();
+            file.delete();
+            br.close();
+        } catch (IOException e) {
             e.printStackTrace();
+            //You'll need to add proper error handling here
         }
-        /*InputStream inputStream = new ByteArrayInputStream(getFileFromStorageAsByte(filePath));
-        xmlData = new Scanner(inputStream, "UTF-8").useDelimiter("\\A").next();*/
-      /*  xmlData = new String(getFileFromStorageAsByte(filePath));
-        File file = new File(filePath);
-        file.delete();*/
         return xmlData;
     }
 
-/*    public String readXmlResponseFromStorage() {
 
-        String ret = "";
-        String filePath = App.RESPONSEPATH + App.RESPONSEFILENAME;
+    public String saveFileToStorage(StringBuilder stringBuilder, String name) {
+        String filePath = initFilePath(name);
         try {
-            InputStream inputStream = new ObjectInputStream(new FileInputStream(filePath));
-
-            if (inputStream != null) {
-                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
-
-                while ((receiveString = bufferedReader.readLine()) != null) {
-                    stringBuilder.append(receiveString);
-                }
-
-                inputStream.close();
-                ret = stringBuilder.toString();
-            }
-        } catch (FileNotFoundException e) {
-            Log.e("readXml", "File not found: " + e.toString());
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
+            bufferedWriter.write(stringBuilder.toString());
+            bufferedWriter.close();
+            Log.e("Log", "The file was successfully saved");
         } catch (IOException e) {
-            Log.e("readXml", "Can not read file: " + e.toString());
+            Log.e("Log", "saveFileToStorage File write failed: " + e.toString());
         }
+     /*   try {
+            FileOutputStream fOut = new FileOutputStream(filePath);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            for (int i = 0; i < stringBuilder.length(); i++) {
+                myOutWriter.append(stringBuilder.charAt(i));
+            }
+            myOutWriter.close();
 
-        return ret;
-    }*/
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            Log.e("Exception", "File write failed: " + e.toString());
+        }*/
+
+
+        return filePath;
+    }
 
     public String getFileFromStorageAsBase64(String filePath) {
         return new Base64EncodeDecodeFile().EncodeByteArrayToString(getFileFromStorageAsByte(filePath));
+
     }
 
-
     public byte[] getFileFromStorageAsByte(String filePath) {
+
+        File file = new File(filePath);
+        byte[] fileAsBytes = new byte[0];
+        try {
+            fileAsBytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(FileUtils.readFileToByteArray(file));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return fileAsBytes;
+    }
+
+/*    public byte[] getFileFromStorageAsByte(String filePath) {
         ObjectInputStream objectInputStream = null;
         //String fileAsBase64 = "";
         byte[] fileAsBytes = null;
@@ -658,9 +578,14 @@ public class CustomFunction {
             }
         }
         return fileAsBytes;
-    }
+    }*/
 
     public String initFilePath(String name) {
+
+        if (name == null || name.isEmpty()) {
+            name = "";
+        }
+
         String DirPath = getDirAsString();
         String filePath = DirPath + "/";
         name = deletExtentionAsFileName(name);
@@ -674,6 +599,9 @@ public class CustomFunction {
     }
 
     public static String deletExtentionAsFileName(String fileName) {
+        if (fileName == null || fileName.isEmpty()) {
+            return "";
+        }
         int index = fileName.lastIndexOf(".");
         if (index > 0) {
             fileName = fileName.substring(0, index);
@@ -698,7 +626,7 @@ public class CustomFunction {
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
         int hour = cal.get(Calendar.HOUR);
-        String folder = year + "_" + month + "_" + day;//+"_"+hour;
+        String folder = year + "_" + (month + 1) + "_" + day;//+"_"+hour;
         File dir = new File(App.DEFAULTPATH + "/" + folder);
         if (!dir.exists()) {
             dir.mkdirs();
@@ -838,7 +766,7 @@ public class CustomFunction {
         if (myText.contains("![CDATA[")) {
             myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
         }
-        myText = changeXml.CharDecoder(myText);
+        myText = changeXml.charDecoder(myText);
         UrlImageParser p = new UrlImageParser(myTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myTextView.setText(htmlSpan);
@@ -849,7 +777,7 @@ public class CustomFunction {
         if (myText.contains("![CDATA[")) {
             myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
         }
-        myText = changeXml.CharDecoder(myText);
+        myText = changeXml.charDecoder(myText);
         UrlImageParser p = new UrlImageParser(myExTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myExTextView.setText(htmlSpan);
@@ -934,6 +862,10 @@ public class CustomFunction {
     @SuppressWarnings("WeakerAccess")
     public static String getFileName(String filePath) {
         return filePath.substring(filePath.lastIndexOf("/") + 1);
+    }
+
+    public static String getFileDir(String filePath) {
+        return filePath.substring(0, filePath.lastIndexOf("/"));
     }
 
     public static String FileExtension(String fileName) {
@@ -1034,4 +966,21 @@ public class CustomFunction {
         return byteArray;
     }
 
+    public static void freeMemory() {
+        System.runFinalization();
+        Runtime.getRuntime().gc();
+        System.gc();
+    }
+
+    public static String reNameFile(String filePath, String newFileName) {
+        String filrDir = getFileDir(filePath);
+        File from = new File(filrDir, getFileName(filePath));
+        File to = new File(filrDir, newFileName);
+        boolean rename = from.renameTo(to);
+        if (rename) {
+            return to.getPath();
+        } else {
+            return filePath;
+        }
+    }
 }

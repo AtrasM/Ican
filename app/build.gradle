@@ -126,6 +126,4 @@ dependencies {
     implementation 'com.byox.drawview:drawview:1.0.3'
 
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
-
-
 }

@@ -1,21 +1,35 @@
-package avida.ican.Farzin.Model;
+package avida.ican.Farzin.Model.saxHandler;
+
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+import android.util.Log;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.ext.DefaultHandler2;
 import org.xml.sax.helpers.DefaultHandler;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
+import java.util.zip.DataFormatException;
+import java.util.zip.Inflater;
+
 
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageAttachRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureSenderRES;
-import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureSentMessageListRES;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2019-01-14 at 4:21 PM
@@ -24,12 +38,7 @@ import avida.ican.Ican.Model.ChangeXml;
 public class MessageSaxHandler extends DefaultHandler {
     private List<StructureMessageRES> Messages;
     private StructureMessageRES Message;
-    private int ID;
-    private boolean IsRead;
-    private String Subject;
-    private String Description;
-    private String SentDate;
-    private String ViewDate;
+
     private List<StructureReceiverRES> Receivers;
     private StructureReceiverRES Receiver;
     private List<StructureMessageAttachRES> MessageFiles;
@@ -37,7 +46,12 @@ public class MessageSaxHandler extends DefaultHandler {
     private StructureSenderRES Sender;
     private String tempVal;
     private final Stack<String> tagsStack = new Stack<String>();
-    private ChangeXml changeXml = new ChangeXml();
+
+    private StringBuilder sb;
+    private boolean isFile = false;
+    private String filePath = "";
+    private FileOutputStream fOut;
+    private OutputStreamWriter myOutWriter;
 
     public MessageSaxHandler() {
         Messages = new ArrayList<>();
@@ -45,11 +59,18 @@ public class MessageSaxHandler extends DefaultHandler {
         MessageFiles = new ArrayList<>();
     }
 
-    public <T> T getObject() {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
-        structureRecieveMessageListRES.setGetRecieveMessageListResult(Messages);
-        structureRecieveMessageListRES.setStrErrorMsg("");
-        return (T) structureRecieveMessageListRES;
+    public <T> T getObject(boolean isReciverMessage) {
+        if (isReciverMessage) {
+            StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
+            structureRecieveMessageListRES.setGetRecieveMessageListResult(Messages);
+            structureRecieveMessageListRES.setStrErrorMsg("");
+            return (T) structureRecieveMessageListRES;
+        } else {
+            StructureSentMessageListRES structureSentMessageListRES = new StructureSentMessageListRES();
+            structureSentMessageListRES.setGetSentMessageListResult(Messages);
+            structureSentMessageListRES.setStrErrorMsg("");
+            return (T) structureSentMessageListRES;
+        }
     }
 
 
@@ -57,39 +78,70 @@ public class MessageSaxHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName,
                              Attributes attributes) throws SAXException {
         // reset
+
         pushTag(qName);
+        sb = new StringBuilder();
         tempVal = "";
+
+        //Log.i("Data", "startElement");
         if (qName.equalsIgnoreCase("Message")) {
-            // create a new instance of employee
             Message = new StructureMessageRES();
-        } else if (qName.equalsIgnoreCase("Receiver")) {
-            // create a new instance of address
+        } else if (qName.equalsIgnoreCase("Receivers")) {
+            Receivers = new ArrayList<>();
+        }else if (qName.equalsIgnoreCase("Receiver")) {
             Receiver = new StructureReceiverRES();
         } else if (qName.equalsIgnoreCase("Sender")) {
-            // create a new instance of address
             Sender = new StructureSenderRES();
+        } else if (qName.equalsIgnoreCase("MessageFiles")) {
+            MessageFiles = new ArrayList<>();
         } else if (qName.equalsIgnoreCase("MessageFile")) {
-            // create a new instance of address
             MessageFile = new StructureMessageAttachRES();
+        } else if (qName.equalsIgnoreCase("FileBinary")) {
+            initStream();
         }
     }
 
-    public void characters(char[] ch, int start, int length)
+    @SuppressLint("StaticFieldLeak")
+    public void characters(final char[] buffer, final int start, final int length)
             throws SAXException {
-        tempVal = new String(ch, start, length);
+
+        if (isFile) {
+            try {
+                myOutWriter.append(new String(buffer, start, length));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            sb.append(buffer, start, length);
+        }
+    /*    try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void endElement(String uri, String localName, String qName)
             throws SAXException {
 
         String tag = peekTag();
         if (!qName.equals(tag)) {
+            Log.i("endDocument", "InternalError");
             throw new InternalError();
         }
 
         popTag();
         String parentTag = peekTag();
+        //Log.i("Data", "endElement");
+        if (qName.equalsIgnoreCase("FileBinary")) {
+            closeStream();
+        } else {
+            tempVal = sb.toString();
+        }
         if (qName.equalsIgnoreCase("Message")) {
             // add it to the list
             Messages.add(Message);
@@ -180,14 +232,18 @@ public class MessageSaxHandler extends DefaultHandler {
                 MessageFile.setFileName(tempVal);
             }
         } else if (qName.equalsIgnoreCase("FileBinary")) {
-            if (tempVal != null && !tempVal.isEmpty()) {
-                MessageFile.setFileBinary(tempVal);
-            }
+            MessageFile.setFileAsStringBuilder(getFilePath());
         } else if (qName.equalsIgnoreCase("FileExtension")) {
             if (tempVal != null && !tempVal.isEmpty()) {
                 MessageFile.setFileExtension(tempVal);
             }
         }
+    }
+
+    @Override
+    public void endDocument() throws SAXException {
+        Log.i("endDocument", "endDocument");
+        super.endDocument();
     }
 
     private void pushTag(String tag) {
@@ -209,6 +265,38 @@ public class MessageSaxHandler extends DefaultHandler {
         } catch (EmptyStackException e) {
             return "";
         }
+    }
+
+
+    private void initStream() {
+        filePath = new CustomFunction().initFilePath(CustomFunction.getRandomUUID());
+        try {
+            fOut = new FileOutputStream(filePath);
+            myOutWriter = new OutputStreamWriter(fOut);
+            isFile = true;
+            //Log.i("FileBinary", "FileBinary filePath= " + filePath);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void closeStream() {
+        try {
+            isFile = false;
+            myOutWriter.close();
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private StringBuilder getFilePath() {
+        sb = new StringBuilder();
+        sb.append(filePath);
+        Log.i("FilePath", "filePath= " + sb.toString());
+        return sb;
     }
 
 }

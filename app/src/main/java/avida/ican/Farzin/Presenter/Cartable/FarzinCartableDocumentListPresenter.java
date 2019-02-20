@@ -103,7 +103,7 @@ public class FarzinCartableDocumentListPresenter {
         if (structureInboxDocumentRES.isRead()) {
             status = Status.READ;
         } else {
-            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (!getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
                 status = Status.IsNew;
             } else {
                 status = Status.UnRead;
@@ -115,12 +115,18 @@ public class FarzinCartableDocumentListPresenter {
 
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
-
-                if (inboxCartableDocumentList.size() > 0) {
-                    SaveData(inboxCartableDocumentList);
-                } else {
-                    cartableDocumentRefreshListener.newData();
+                try {
+                    inboxCartableDocumentList.remove(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                if (inboxCartableDocumentList.size() == 0) {
+                    cartableDocumentRefreshListener.newData();
+                } else {
+                    SaveData(inboxCartableDocumentList);
+                }
+
             }
 
             @Override

@@ -2,6 +2,8 @@ package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
 import com.google.gson.annotations.SerializedName;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-10-06 at 10:59 AM
  */
@@ -78,7 +80,7 @@ public class StructureNodeRES {
     }
 
     public String getSenderRoleName() {
-        return SenderRoleName;
+        return new ChangeXml().viewCharDecoder(SenderRoleName);
     }
 
     public void setSenderRoleName(String senderRoleName) {
@@ -86,7 +88,7 @@ public class StructureNodeRES {
     }
 
     public String getSenderFirstName() {
-        return SenderFirstName;
+        return new ChangeXml().viewCharDecoder(SenderFirstName);
     }
 
     public void setSenderFirstName(String senderFirstName) {
@@ -94,7 +96,7 @@ public class StructureNodeRES {
     }
 
     public String getSenderLastName() {
-        return SenderLastName;
+        return new ChangeXml().viewCharDecoder(SenderLastName);
     }
 
     public void setSenderLastName(String senderLastName) {
@@ -102,7 +104,7 @@ public class StructureNodeRES {
     }
 
     public String getRoleName() {
-        return RoleName;
+        return new ChangeXml().viewCharDecoder(RoleName);
     }
 
     public void setRoleName(String roleName) {
@@ -110,7 +112,7 @@ public class StructureNodeRES {
     }
 
     public String getFirstName() {
-        return FirstName;
+        return new ChangeXml().viewCharDecoder(FirstName);
     }
 
     public void setFirstName(String firstName) {
@@ -118,7 +120,7 @@ public class StructureNodeRES {
     }
 
     public String getLastName() {
-        return LastName;
+        return new ChangeXml().viewCharDecoder(LastName);
     }
 
     public void setLastName(String lastName) {
@@ -126,7 +128,7 @@ public class StructureNodeRES {
     }
 
     public String getResponseDate() {
-        return ResponseDate;
+        return new ChangeXml().viewCharDecoder(ResponseDate);
     }
 
     public void setResponseDate(String responseDate) {
@@ -143,7 +145,7 @@ public class StructureNodeRES {
     }
 
     public String getReceiveDateGeorgian() {
-        return ReceiveDateGeorgian;
+        return new ChangeXml().viewCharDecoder(ReceiveDateGeorgian);
     }
 
     public void setReceiveDateGeorgian(String receiveDateGeorgian) {
@@ -151,7 +153,7 @@ public class StructureNodeRES {
     }
 
     public String getResponseDateGeorgian() {
-        return ResponseDateGeorgian;
+        return new ChangeXml().viewCharDecoder(ResponseDateGeorgian);
     }
 
     public void setResponseDateGeorgian(String responseDateGeorgian) {
@@ -170,7 +172,7 @@ public class StructureNodeRES {
         String Type;
 
         public String getTitle() {
-            return Title;
+            return new ChangeXml().viewCharDecoder(Title);
         }
 
         public void setTitle(String title) {
@@ -178,7 +180,7 @@ public class StructureNodeRES {
         }
 
         public String getContent() {
-            return Content;
+            return new ChangeXml().viewCharDecoder(Content);
         }
 
         public void setContent(String content) {

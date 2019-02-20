@@ -16,16 +16,8 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.SAXParserFactory;
-
-import avida.ican.Farzin.Model.MessageSaxHandler;
-import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
-import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
-import avida.ican.Ican.App;
-import avida.ican.Ican.View.Custom.CustomFunction;
 
 
 /**
@@ -82,7 +74,9 @@ public class XmlToObject {
             xmlReader.setContentHandler(saxHandler);
             // the process starts
             xmlReader.parse(new InputSource(fileInputStream));
-
+            if (file.exists()) {
+                file.delete();
+            }
         } catch (Exception ex) {
             Log.d("XML", "SAXXMLParser error =" + ex.toString());
             Log.d("XML", "SAXXMLParser: parse() failed");

@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.Status;
+import avida.ican.Farzin.Model.Enum.Type;
 
 /**
  * Created by AtrasVida on 2018-06-19 at 1:24 PM
@@ -38,18 +39,20 @@ public class StructureMessageDB implements Serializable {
 
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
-
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
+    private Type type;
 
     public StructureMessageDB() {
     }
 
-    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String subject, String content, Date sent_date, Status status) {
+    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String subject, String content, Date sent_date, Status status,Type type) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.subject = subject;
         this.content = content;
         this.sent_date = sent_date;
         this.status = status;
+        this.type = type;
         this.main_id = main_id;
     }
 
@@ -99,5 +102,13 @@ public class StructureMessageDB implements Serializable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

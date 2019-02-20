@@ -119,7 +119,7 @@ public class CheckServerAviablePresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
-                //Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

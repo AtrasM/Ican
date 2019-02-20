@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -58,8 +59,8 @@ public class GetRecieveMessageService extends Service {
     private FarzinMessageQuery farzinMessageQuery;
     private int pageNumber = 1;
     private Status status = Status.IsNew;
-    private int Count = 2;
-    private final int MaxCount =20;
+    private int Count = 1;
+    private final int MaxCount = 50;
     private final int MinCount = 1;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
@@ -77,7 +78,13 @@ public class GetRecieveMessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
-        Count = MaxCount;
+        if (getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
+            Count = MinCount;
+            callDataFinish();
+        } else {
+            Count = MaxCount;
+        }
+
         pageNumber = 1;
 
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
@@ -86,10 +93,6 @@ public class GetRecieveMessageService extends Service {
             @Override
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                 if (messageList.size() == 0) {
-                    if (BaseActivity.dialogMataDataSync != null) {
-                        canShowNotification = false;
-                        BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
-                    }
                     reGetMessage();
                 } else {
                     canShowNotification = true;
@@ -133,12 +136,12 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-
+        Log.i("pageNumber", "GetRecieveMessage pageNumber= " + pageNumber);
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
             reGetMessage();
         } else {
-            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (!getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
                 getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
             } else {
                 CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageRecieveLastCheckDate(), tempDelay);
@@ -162,11 +165,6 @@ public class GetRecieveMessageService extends Service {
         if (structureMessageRES.isRead()) {
             status = Status.READ;
         } else {
-         /*   if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-                status = Status.IsNew;
-            } else {
-                status = Status.UnRead;
-            }*/
             status = Status.UnRead;
         }
 
@@ -179,43 +177,50 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onSuccess(StructureMessageDB structureMessageDB) {
-                newCount++;
-                if (App.fragmentMessageList != null) {
-                    final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
-                    structureMessagesDB.add(structureMessageDB);
-                    if (App.CurentActivity != null) {
-                        App.getHandlerMainThread().post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (App.fragmentMessageList != null) {
-                                    App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
+
+                if (structureMessageDB.getId() > 0) {
+                    newCount++;
+                    if (App.fragmentMessageList != null) {
+                        final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
+                        structureMessagesDB.add(structureMessageDB);
+                        if (App.CurentActivity != null) {
+                            App.getHandlerMainThread().post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (App.fragmentMessageList != null) {
+                                        App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
+                                    }
+
+                                    // UpdateAllNewMessageStatusToUnreadStatus();
                                 }
-
-                                // UpdateAllNewMessageStatusToUnreadStatus();
-                            }
-                        });
-
+                            });
+                        }
                     }
                 }
-                messageList.remove(0);
+
+
+                try {
+                    messageList.remove(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (messageList.size() == 0) {
                     pageNumber = pageNumber + 1;
                     GetMessage(pageNumber, Count);
                     CallMulltiMessageNotification();
-                    //reGetMessage();
                 } else {
                     SaveMessage(messageList);
                 }
+
+
             }
 
             @Override
             public void onExisting() {
                 ShowToast("Duplicate message");
-                if (BaseActivity.dialogMataDataSync != null) {
-                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
-                }
-                CallMulltiMessageNotification();
                 reGetMessage();
+                CallMulltiMessageNotification();
 
             }
 
@@ -251,12 +256,13 @@ public class GetRecieveMessageService extends Service {
 
     private void reGetMessage() {
         ShowToast("re Get Message");
+        callDataFinish();
         pageNumber = 1;
         Count = MinCount;
         if (App.activityStacks == null) {
             tempDelay = App.DELAYWhenAppClose;
         } else {
-            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
                 tempDelay = DELAY;
             } else {
                 tempDelay = LOWDELAY;
@@ -269,6 +275,14 @@ public class GetRecieveMessageService extends Service {
                 GetMessage(pageNumber, Count);
             }
         }, tempDelay);
+    }
+
+    private void callDataFinish() {
+        getFarzinPrefrences().putReceiveMessageForFirstTimeSync(true);
+        if (BaseActivity.dialogMataDataSync != null) {
+            canShowNotification = false;
+            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
+        }
     }
 
 

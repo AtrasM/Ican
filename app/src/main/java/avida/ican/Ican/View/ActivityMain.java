@@ -14,25 +14,34 @@ import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
 
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
+
+import org.ksoap2.serialization.SoapObject;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.parsers.SAXParserFactory;
 
 import avida.ican.Farzin.Model.Interface.Cartable.SendListener;
+import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
-import avida.ican.Farzin.Model.MessageSaxHandler;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentContentRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshListRES;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakListRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
+import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
+import avida.ican.Farzin.Model.saxHandler.DocumentContentSaxHandler;
+import avida.ican.Farzin.Model.saxHandler.HameshSaxHandler;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.saxHandler.MessageSaxHandler;
+import avida.ican.Farzin.Model.saxHandler.ZanjireMadrakSaxHandler;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
+import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
@@ -40,7 +49,12 @@ import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
+import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.Structure.StructureAttach;
+import avida.ican.Ican.Model.WebService;
+import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.FilePicker;
@@ -52,6 +66,8 @@ import avida.ican.Ican.View.Interface.FilePickerListener;
 import avida.ican.Ican.View.Interface.MediaPickerListener;
 import avida.ican.R;
 import butterknife.BindView;
+
+import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRole;
 
 public class ActivityMain extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.cv_farzin)
@@ -70,8 +86,8 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     CardView cvUserAndRole;
     @BindView(R.id.sp_size)
     Spinner spSize;
-
     private DialogUserAndRole dialogUserAndRole;
+
 
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> structuresSelect = new ArrayList<>();
@@ -79,6 +95,12 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private Context context;
     private List<StructureUserAndRoleDB> userAndRolesMain = new ArrayList<>();
     private File file;
+
+    private ChangeXml changeXml = new ChangeXml();
+    String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
+    String EndPoint = "";
+    String MetodeName = "";
+    private FarzinPrefrences farzinPrefrences;
 
     @Override
     protected int getLayoutResource() {
@@ -121,9 +143,20 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-
-                getReceiveMessage();
-
+                //String filePath = App.RESPONSEPATH + "/c07b94026ba2495cbcf1d2604605db73.ican";
+                String filePath = "/storage/emulated/0/IcanData/File/2019_2_12/c07b94026ba2495cbcf1d2604605db73.ican";
+                //String filePath2=    CustomFunction.reNameFile(filePath,"atras.txt");
+                StructureAttach structureAttach = new StructureAttach(filePath, "file", ".jpg");
+                new CustomFunction(this).OpenFile(structureAttach);
+/*
+                String filePath = App.RESPONSEPATH + "/data.xml";
+                String filePath2 = App.RESPONSEPATH + "/response_data.xml";
+                CustomFunction.reNameFile(filePath,filePath2);*/
+                //getUserAndRoile();
+                //getReceiveMessage();
+                //getDocumentContent();
+                //getZanjireMadrak();
+                //getHamesh();
                 break;
             }
 
@@ -194,15 +227,23 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     }
 
     private void getReceiveMessage() {
+/*
+        String filePath = App.RESPONSEPATH + "/responseData.xml";
+        XmlToObject xmlToObject = new XmlToObject();
+        MessageSaxHandler messageSaxHandler = xmlToObject.parseXmlWithSax(filePath, new MessageSaxHandler());
+        StructureRecieveMessageListRES structureRecieveMessageListRES = messageSaxHandler.getObject();
+        Log.i("Message", "structureRecieveMessageListRES= " + structureRecieveMessageListRES.getGetRecieveMessageListResult().size());
+*/
+
         GetMessageFromServerPresenter getMessageFromServerPresenter = new GetMessageFromServerPresenter();
-        getMessageFromServerPresenter.GetRecieveMessageList(1, 1, new MessageListListener() {
+        getMessageFromServerPresenter.GetRecieveMessageList(1, 7, new MessageListListener() {
             @Override
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
+
                 for (int i = 0; i < messageList.size(); i++) {
                     Log.i("ReceiveMessage", "get message.getSubject i=" + i + " " + messageList.get(i).getSubject());
                     Log.i("ReceiveMessage", "get message.description i=" + i + " " + messageList.get(i).getDescription());
                     Log.i("ReceiveMessage", "get message.getSender().getUserName i=" + i + " " + messageList.get(i).getSender().getUserName());
-
                 }
 
                 Log.i("ReceiveMessage", "messageList.size()= " + messageList.size());
@@ -218,36 +259,95 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
             }
         });
-   /*     String filePath = App.RESPONSEPATH + "/data_test.xml";
-        StructureRecieveMessageListRES structureRecieveMessageListRES = parseXmlWithSax1(filePath);*/
+
     }
 
+    private void getUserAndRoile() {
+        final XmlToObject xmlToObject = new XmlToObject();
+     /*   String filePath = App.RESPONSEPATH + "/userAndRoileData2.xml";
+        String xml = new CustomFunction().readXmlResponseFromStorage(filePath);*/
+     /*   StructureUserAndRoleRows1RES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(xml, StructureUserAndRoleRows1RES.class);
+        List<StructureUserAndRole1RES> structureUserAndRoleRES = structureUserAndRoleRowsRES.getGetUserAndRoleListResult().getRows().getRowList();
+    */
 
-    private StructureRecieveMessageListRES parseXmlWithSax1(String xmlFilePath) {
-        StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
-        List<StructureMessageRES> Messages = new ArrayList<>();
-        File file = new File(xmlFilePath);
 
-        try {
-            FileInputStream fileInputStream = new FileInputStream(file);
-            // create a XMLReader from SAXParser
-            XMLReader xmlReader = SAXParserFactory.newInstance().newSAXParser()
-                    .getXMLReader();
-            // create a SaxHandler
-            MessageSaxHandler saxHandler = new MessageSaxHandler();
-            // store handler in XMLReader
-            xmlReader.setContentHandler(saxHandler);
-            // the process starts
-            xmlReader.parse(new InputSource(fileInputStream));
-            // get the `Employee list`
-            Messages = saxHandler.getObject();
-            structureRecieveMessageListRES.setGetRecieveMessageListResult(Messages);
-        } catch (Exception ex) {
-            Log.d("XML", "SAXXMLParser error =" + ex.toString());
-            Log.d("XML", "SAXXMLParser: parse() failed");
+        EndPoint = "UserManagment";
+        MetodeName = "GetUserAndRoleList";
+        SoapObject soapObject = new SoapObject(NameSpace, MetodeName);
+        farzinPrefrences = new FarzinPrefrences().init();
+        String ServerUrl = farzinPrefrences.getServerUrl();
+        String BaseUrl = farzinPrefrences.getBaseUrl();
+        String SessionId = farzinPrefrences.getCookie();
+        new CallApi(MetodeName, EndPoint, soapObject, new DataProcessListener() {
+            @Override
+            public void onSuccess(String Xml) {
+                StructureUserAndRoleRowsRES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(Xml, StructureUserAndRoleRowsRES.class);
+                List<StructureUserAndRoleRES> structureUserAndRoleRES = structureUserAndRoleRowsRES.getGetUserAndRoleListResult().getRows().getRowList();
+
+            }
+
+            @Override
+            public void onFailed() {
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
+            }
+
+            @Override
+            public void onCancel() {
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.rule_cancel), ToastEnum.TOAST_LONG_TIME);
+            }
+        });
+    }
+
+    private class CallApi {
+        CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+            String ServerUrl = farzinPrefrences.getServerUrl();
+            String BaseUrl = farzinPrefrences.getBaseUrl();
+            String SessionId = farzinPrefrences.getCookie();
+            new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+                    .setSoapObject(soapObject)
+                    .setSessionId(SessionId)
+                    .setOnListener(new WebserviceResponseListener() {
+
+                        @Override
+                        public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
+                            new processData(webServiceResponse, dataProcessListener);
+                        }
+
+                        @Override
+                        public void NetworkAccessDenied() {
+                            dataProcessListener.onFailed();
+                        }
+                    }).execute();
+
         }
 
-        return structureRecieveMessageListRES;
+    }
+
+    private void getHamesh() {
+        String filePath = App.RESPONSEPATH + "/hamesh.xml";
+        XmlToObject xmlToObject = new XmlToObject();
+        HameshSaxHandler hameshSaxHandler = xmlToObject.parseXmlWithSax(filePath, new HameshSaxHandler());
+        StructureHameshListRES structureHameshListRES = hameshSaxHandler.getObject();
+
+        Log.i("ZanjireMadrak", "structureZanjireMadrakListRES= " + structureHameshListRES.getGetHameshListResult().size());
+    }
+
+    private void getZanjireMadrak() {
+        String filePath = App.RESPONSEPATH + "/zanjire_madrak.xml";
+        XmlToObject xmlToObject = new XmlToObject();
+        ZanjireMadrakSaxHandler zanjireMadrakSaxHandler = xmlToObject.parseXmlWithSax(filePath, new ZanjireMadrakSaxHandler());
+        StructureZanjireMadrakListRES structureZanjireMadrakListRES = zanjireMadrakSaxHandler.getObject();
+
+        Log.i("ZanjireMadrak", "structureZanjireMadrakListRES= " + structureZanjireMadrakListRES.getGetFileDependencyResult().getPeyvast().size());
+    }
+
+    private void getDocumentContent() {
+        String filePath = App.RESPONSEPATH + "/document_content.xml";
+        XmlToObject xmlToObject = new XmlToObject();
+        DocumentContentSaxHandler documentContentSaxHandler = xmlToObject.parseXmlWithSax(filePath, new DocumentContentSaxHandler());
+        StructureCartableDocumentContentRES cartableDocumentContentRES = documentContentSaxHandler.getObject();
+
+        Log.i("DocumentContent", "cartableDocumentContentRES= " + cartableDocumentContentRES.getGetContentFormAsResult().length());
     }
 
     private void checkFile(StructureAttach structureAttach) {
@@ -422,4 +522,28 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
     }
 
+
+    private class processData {
+        processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {
+            if (!webServiceResponse.isResponse()) {
+                dataProcessListener.onFailed();
+                return;
+            }
+            String Xml = webServiceResponse.getHttpTransportSE().responseDump;
+            try {
+                Xml = changeXml.charDecoder(Xml);
+                Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+                //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
+                if (!Xml.isEmpty()) {
+                    dataProcessListener.onSuccess(Xml);
+                } else {
+                    dataProcessListener.onFailed();
+                }
+            } catch (Exception e) {
+                dataProcessListener.onFailed();
+                e.printStackTrace();
+            }
+        }
+
+    }
 }

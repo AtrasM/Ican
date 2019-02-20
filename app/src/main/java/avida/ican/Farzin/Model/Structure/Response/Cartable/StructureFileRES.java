@@ -1,6 +1,7 @@
 package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
 import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
 /**
@@ -11,9 +12,10 @@ import org.simpleframework.xml.Root;
 public class StructureFileRES {
     @Element(required = false)
     private String FileBinary;
-    @Element
+    private StringBuilder FileAsStringBuilder = new StringBuilder();
+    @Element(required = false)
     private String FileExtension;
-    @Element
+    @Element(required = false)
     private String FileName;
 
     public String getFileBinary() {
@@ -38,5 +40,13 @@ public class StructureFileRES {
 
     public void setFileName(String fileName) {
         FileName = fileName;
+    }
+
+    public StringBuilder getFileAsStringBuilder() {
+        return FileAsStringBuilder;
+    }
+
+    public void setFileAsStringBuilder(StringBuilder fileAsStringBuilder) {
+        FileAsStringBuilder = fileAsStringBuilder;
     }
 }

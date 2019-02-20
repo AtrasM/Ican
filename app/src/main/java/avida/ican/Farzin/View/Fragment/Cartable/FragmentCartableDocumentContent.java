@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,6 +13,8 @@ import android.widget.TextView;
 import com.github.barteksc.pdfviewer.PDFView;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
+
+import java.io.IOException;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentContentPresenter;
@@ -34,6 +38,8 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     LinearLayout lnLoading;
     @BindView(R.id.txt_pdf_page_number)
     TextView txtPdfPageNumber;
+    @BindView(R.id.srl_refresh)
+    SwipeRefreshLayout srlRefresh;
     private Activity context;
     private int Etc;
     private int Ec;
@@ -63,6 +69,12 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         txtNoData.setText(Resorse.getString(R.string.error_cartable_document_content));
+        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                reGetData();
+            }
+        });
         initPresenter();
     }
 
@@ -76,6 +88,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         initPdfViewer(filePath);
                     }
                 });
@@ -87,6 +100,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
+                        srlRefresh.setRefreshing(false);
                         if (FileAsBytes == null) {
                             txtNoData.setVisibility(View.VISIBLE);
                         }
@@ -101,23 +115,24 @@ public class FragmentCartableDocumentContent extends BaseFragment {
 
 
     private void reGetData() {
+        txtNoData.setVisibility(View.GONE);
         StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
-        if (cartableDocumentContentDB.getETC() > 0) {
+        if (cartableDocumentContentDB.getETC() > 0 && !cartableDocumentContentDB.getFile_path().isEmpty()) {
             initPdfViewer(cartableDocumentContentDB.getFile_path());
         } else {
             if (App.networkStatus == NetworkStatus.Connected) {
-                lnLoading.setVisibility(View.VISIBLE);
                 cartableDocumentContentPresenter.GetFromServer();
             } else {
                 lnLoading.setVisibility(View.GONE);
                 txtNoData.setVisibility(View.VISIBLE);
+                srlRefresh.setRefreshing(false);
             }
         }
     }
 
     private void initData() {
         StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
-        if (cartableDocumentContentDB.getETC() > 0) {
+        if (cartableDocumentContentDB.getETC() > 0 && !cartableDocumentContentDB.getFile_path().isEmpty()) {
             initPdfViewer(cartableDocumentContentDB.getFile_path());
         } else {
             if (App.networkStatus == NetworkStatus.Connected) {
@@ -131,12 +146,12 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     }
 
     private void initPdfViewer(String filePath) {
+        srlRefresh.setRefreshing(false);
         if (filePath != null && !filePath.isEmpty()) {
-           /* String fileAsBase64 = new CustomFunction().getFileFromStorageAsByte(filePath);
-            byte[] FileAsbytes = new Base64EncodeDecodeFile().DecodeBase64ToByte(fileAsBase64);*/
-            byte[] FileAsbytes = new CustomFunction().getFileFromStorageAsByte(filePath);
-            if (FileAsbytes != null && FileAsbytes.length > 0) {
-                pdfViewer.fromBytes(FileAsbytes)
+            byte[] fileAsbytes = new CustomFunction().getFileFromStorageAsByte(filePath);
+            Log.i("PdfViewer", "initPdfViewer fileAsbytes.length = " + fileAsbytes.length);
+            if (fileAsbytes != null && fileAsbytes.length > 0) {
+                pdfViewer.fromBytes(fileAsbytes)
                         .enableSwipe(true)
                         .swipeHorizontal(false)
                         .enableDoubletap(true)

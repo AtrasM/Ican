@@ -20,7 +20,6 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
-import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
@@ -149,11 +148,9 @@ public class FarzinMetaDataQuery {
         new CallApi(MetodeName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                //App.ShowMessage().ShowToast("داده ها با موفقیت دریافت شد.", ToastEnum.TOAST_LONG_TIME);
                 StructureUserAndRoleRowsRES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(Xml, StructureUserAndRoleRowsRES.class);
                 List<StructureUserAndRoleRES> structureUserAndRoleRES = structureUserAndRoleRowsRES.getGetUserAndRoleListResult().getRows().getRowList();
-                new SaveUserAndRoleList().execute(structureUserAndRoleRES);
-
+                new SaveUserAndRoleList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureUserAndRoleRES);
             }
 
             @Override
@@ -203,7 +200,6 @@ public class FarzinMetaDataQuery {
             }
             for (int i = 0; i < structureUserAndRolesRES.size(); i++) {
                 StructureUserAndRoleRES structureUserAndRoleRES = structureUserAndRolesRES.get(i);
-                //StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
                 StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB(structureUserAndRoleRES.getUser_ID(), structureUserAndRoleRES.getUserName(), structureUserAndRoleRES.getFirstName(), structureUserAndRoleRES.getLastName(), structureUserAndRoleRES.getRole_ParentID(), structureUserAndRoleRES.getIsDefForCardTable(), structureUserAndRoleRES.getRoleCode(), structureUserAndRoleRES.getRoleName(), structureUserAndRoleRES.getRole_ID(), structureUserAndRoleRES.getOrganCode(), structureUserAndRoleRES.getOrganizationRoleName(), structureUserAndRoleRES.getOrganizationRole_ID(), structureUserAndRoleRES.getDepartmentID(), structureUserAndRoleRES.getMobile(), structureUserAndRoleRES.getGender(), structureUserAndRoleRES.getBirthDate(), structureUserAndRoleRES.getE_Mail(), structureUserAndRoleRES.getNativeID());
                 try {
                     userAndRoleListDao.create(structureUserAndRoleDB);
@@ -238,7 +234,7 @@ public class FarzinMetaDataQuery {
         try {
             queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "1");
             userAndRoles = queryBuilder.queryForFirst();
-            if (!userAndRoles.getUserName().equals(user_name) ) {
+            if (!userAndRoles.getUserName().equals(user_name)) {
                 queryBuilder.reset();
                 queryBuilder.where().eq("UserName", user_name).and().eq("IsDefForCardTable", "0");
                 userAndRoles = queryBuilder.queryForFirst();
@@ -261,6 +257,7 @@ public class FarzinMetaDataQuery {
         }
         return userAndRoles;
     }
+
     public StructureUserAndRoleDB getUserInfo(int user_id, int role_id) {
 
         QueryBuilder<StructureUserAndRoleDB, Integer> queryBuilder = userAndRoleListDao.queryBuilder();
@@ -290,6 +287,7 @@ public class FarzinMetaDataQuery {
                         public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                             new processData(webServiceResponse, dataProcessListener);
                         }
+
                         @Override
                         public void NetworkAccessDenied() {
                             dataProcessListener.onFailed();
@@ -313,6 +311,7 @@ public class FarzinMetaDataQuery {
                         public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                             new processData(webServiceResponse, dataProcessListener);
                         }
+
                         @Override
                         public void NetworkAccessDenied() {
                             dataProcessListener.onFailed();
@@ -330,7 +329,7 @@ public class FarzinMetaDataQuery {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                Xml = changeXml.CharDecoder(Xml);
+                Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
                 //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {

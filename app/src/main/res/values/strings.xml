@@ -32,7 +32,7 @@
     <string name="navigation_drawer_close">بستن منوی کشویی</string>
     <string name="hint_subject_massage">موضوع</string>
     <string name="hint_content_massage">متن پیام</string>
-    <string name="title_base_data_sync">برنامه احتیاج به، به روز رسانی داده های اولیه دارد.</string>
+    <string name="title_base_data_sync">برنامه احتیاج به دریافت داده های اولیه دارد.</string>
     <string name="subtitle_first_meta_data_sync">لطفا شکیبا باشید.</string>
     <string name="error_adapter_item_count">خطای Null در اطلاعات</string>
     <string name="IMAGE_PROVIDER">avida.ican.fileprovider</string>

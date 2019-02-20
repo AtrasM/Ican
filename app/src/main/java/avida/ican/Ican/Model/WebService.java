@@ -169,7 +169,7 @@ public class WebService {
     }
 
     public void execute() {
-        new SoapRequest().execute();
+        new SoapRequest().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
        /* boolean Connected = new CheckNetworkAvailability().execuet();
         if (Connected) {
             new SoapRequest().execute();

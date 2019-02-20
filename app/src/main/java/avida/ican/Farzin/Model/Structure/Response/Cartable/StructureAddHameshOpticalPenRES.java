@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-10-31 at 1:06 PM
  */
@@ -17,7 +19,7 @@ public class StructureAddHameshOpticalPenRES {
     }
 
     public String getStrErrorMsg() {
-        return strErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {

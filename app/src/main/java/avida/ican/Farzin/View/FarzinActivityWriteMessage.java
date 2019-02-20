@@ -244,7 +244,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 loading.Hide();
                 super.onPostExecute(s);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void setUpRichEditore() {
@@ -523,7 +523,9 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void addToAttach(String base64File, String name, String fileExtension, int resID) {
-        StructureAttach structureAttach = new StructureAttach(base64File, name, fileExtension, resID);
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(base64File);
+        StructureAttach structureAttach = new StructureAttach(stringBuilder, name, fileExtension, resID);
         adapterAttach.add(structureAttach);
     }
 
@@ -535,7 +537,9 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             protected ArrayList<StructureAttach> doInBackground(Void... voids) {
                 for (int i = 0; i < base64Files.size(); i++) {
                     String fileExtension = CustomFunction.FileExtension(names.get(i));
-                    StructureAttach structureAttach = new StructureAttach(base64Files.get(i), names.get(i), fileExtension, resID);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    stringBuilder.append(base64Files.get(i));
+                    StructureAttach structureAttach = new StructureAttach(stringBuilder, names.get(i), fileExtension, resID);
                     structureAttaches.add(structureAttach);
                     try {
                         Thread.sleep(10);
@@ -552,7 +556,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 adapterAttach.addAll(structureAttaches);
                 super.onPostExecute(structureAttaches);
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
     }

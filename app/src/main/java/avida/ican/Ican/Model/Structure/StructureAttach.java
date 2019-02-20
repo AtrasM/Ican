@@ -1,18 +1,21 @@
 package avida.ican.Ican.Model.Structure;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-06-02 at 11:35 AM
  */
 
 public class StructureAttach {
     private String filePath;
+    private StringBuilder fileAsStringBuilder;
     private String Name;
     private String FileExtension;
     private String Description;
     private int icon;
 
     public String getFilePath() {
-        return filePath;
+        return new ChangeXml().viewCharDecoder(filePath);
     }
 
     public void setFilePath(String filePath) {
@@ -20,7 +23,7 @@ public class StructureAttach {
     }
 
     public String getName() {
-        return Name;
+        return new ChangeXml().viewCharDecoder(Name);
     }
 
     public void setName(String name) {
@@ -43,8 +46,7 @@ public class StructureAttach {
         FileExtension = fileExtension;
     }
 
-    public StructureAttach(String filePath, String name, String fileExtension, int icon) {
-        this.filePath = filePath;
+    public StructureAttach(String name, String fileExtension, int icon) {
         this.Name = name;
         this.FileExtension = fileExtension;
         this.icon = icon;
@@ -56,10 +58,45 @@ public class StructureAttach {
         this.FileExtension = fileExtension;
     }
 
-    public StructureAttach(String filePath, String name, String fileExtension, String description) {
-        this.filePath = filePath;
+    public StructureAttach(StringBuilder fileAsStringBuilder, String name, String fileExtension, int icon) {
+        this.fileAsStringBuilder = fileAsStringBuilder;
+        this.Name = name;
+        this.FileExtension = fileExtension;
+        this.icon = icon;
+    }
+
+    public StructureAttach(String name, String fileExtension) {
+        this.Name = name;
+        this.FileExtension = fileExtension;
+    }
+
+    public StructureAttach(StringBuilder fileAsStringBuilder, String name, String fileExtension) {
+        this.fileAsStringBuilder = fileAsStringBuilder;
+        this.Name = name;
+        this.FileExtension = fileExtension;
+    }
+
+
+    public StructureAttach(StringBuilder fileAsStringBuilder, String name, String fileExtension, String description) {
+        this.fileAsStringBuilder = fileAsStringBuilder;
         this.Name = name;
         this.FileExtension = fileExtension;
         this.Description = description;
+    }
+
+    public StringBuilder getFileAsStringBuilder() {
+        return fileAsStringBuilder;
+    }
+
+    public void setFileAsStringBuilder(StringBuilder fileAsStringBuilder) {
+        this.fileAsStringBuilder = fileAsStringBuilder;
+    }
+
+    public String getDescription() {
+        return new ChangeXml().viewCharDecoder(Description);
+    }
+
+    public void setDescription(String description) {
+        Description = description;
     }
 }

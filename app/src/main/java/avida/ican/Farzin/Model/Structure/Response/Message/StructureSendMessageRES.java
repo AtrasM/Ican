@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Model.Structure.Response.Message;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-03-17 at 3:33 PM
  */
@@ -17,7 +19,7 @@ public class StructureSendMessageRES {
     }
 
     public String getStrErrorMsg() {
-        return strErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {

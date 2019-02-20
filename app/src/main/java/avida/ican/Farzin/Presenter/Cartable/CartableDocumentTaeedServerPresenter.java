@@ -118,7 +118,7 @@ public class CartableDocumentTaeedServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                //Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

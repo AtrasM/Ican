@@ -112,12 +112,13 @@ public class AdapterCartableHistory extends RecyclerView.Adapter<AdapterCartable
         viewHolder.txtCreatorRoleName.setText("[ " + item.getSenderRoleName() + " ] ");
         viewHolder.txtTitle.setText("" + item.getFirstName() + " " + item.getLastName() + "[ " + item.getRoleName() + " ] ");
         viewHolder.txtAction.setText("" + item.getReceiveAction());
-        if (item.getPrivateHamesh().getContent() != null) {
+        if (item.getPrivateHamesh().getContent() == null || item.getPrivateHamesh().getContent().isEmpty() || item.getPrivateHamesh().getContent().equals("null")) {
+            viewHolder.txtContent.setVisibility(View.GONE);
+
+        } else {
             viewHolder.txtContent.setVisibility(View.VISIBLE);
             String content = item.getPrivateHamesh().getContent();
             viewHolder.txtContent.setText(content);
-        } else {
-            viewHolder.txtContent.setVisibility(View.GONE);
         }
     }
 

@@ -3,13 +3,15 @@ package avida.ican.Farzin.Model.Structure.Response.Cartable;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-10-06 at 10:19 AM
  */
 
 public class StructureHistoryListRES {
     StructureHistoryListResult GetHistoryListResult = new StructureHistoryListResult();
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
     public StructureHistoryListResult getGetHistoryListResult() {
         return GetHistoryListResult;
@@ -20,11 +22,11 @@ public class StructureHistoryListRES {
     }
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 
 

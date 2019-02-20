@@ -5,6 +5,8 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Namespace;
 import org.simpleframework.xml.Root;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-09-26 at 11:28 AM
  */
@@ -15,19 +17,19 @@ public class StructureHameshRES {
     @Element()
     int HameshID;
     @Element(required = false)
-     String Title;
+     String Title="";
     @Element(required = false)
-    String Content;
+    String Content="";
     @Element
-    String hameshType;
+    String hameshType="";
     @Element
-    String CreatorName;
+    String CreatorName="";
     @Element
-    String CreatorRoleName;
+    String CreatorRoleName="";
     @Element
-    String CreationShamsiDate;
+    String CreationShamsiDate="";
     @Element
-    String CreationDate;
+    String CreationDate="";
     @Element
     boolean IsPrivate;
     @Element
@@ -47,7 +49,7 @@ public class StructureHameshRES {
     }
 
     public String getContent() {
-        return Content;
+        return new ChangeXml().viewCharDecoder(Content);
     }
 
     public void setContent(String content) {
@@ -63,7 +65,7 @@ public class StructureHameshRES {
     }
 
     public String getCreatorName() {
-        return CreatorName;
+        return new ChangeXml().viewCharDecoder(CreatorName);
     }
 
     public void setCreatorName(String creatorName) {
@@ -71,7 +73,7 @@ public class StructureHameshRES {
     }
 
     public String getCreatorRoleName() {
-        return CreatorRoleName;
+        return new ChangeXml().viewCharDecoder(CreatorRoleName);
     }
 
     public void setCreatorRoleName(String creatorRoleName) {
@@ -79,7 +81,7 @@ public class StructureHameshRES {
     }
 
     public String getCreationShamsiDate() {
-        return CreationShamsiDate;
+        return new ChangeXml().viewCharDecoder(CreationShamsiDate);
     }
 
     public void setCreationShamsiDate(String creationShamsiDate) {
@@ -87,7 +89,7 @@ public class StructureHameshRES {
     }
 
     public String getCreationDate() {
-        return CreationDate;
+        return new ChangeXml().viewCharDecoder(CreationDate);
     }
 
     public void setCreationDate(String creationDate) {

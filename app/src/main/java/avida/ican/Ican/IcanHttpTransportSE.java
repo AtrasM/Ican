@@ -3,16 +3,11 @@ package avida.ican.Ican;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Proxy;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
@@ -22,11 +17,10 @@ import org.ksoap2.transport.HttpResponseException;
 import org.ksoap2.transport.ServiceConnection;
 import org.ksoap2.transport.ServiceConnectionSE;
 import org.ksoap2.transport.Transport;
-import org.kxml2.io.KXmlParser;
-import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.Model.Interface.ListenerWorkWithFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 public class IcanHttpTransportSE extends Transport {
@@ -181,61 +175,49 @@ public class IcanHttpTransportSE extends Transport {
     }
 
     protected void parseResponse(SoapEnvelope envelope, final InputStream is, List returnedHeaders) throws XmlPullParserException, IOException {
-     /*   String xml = "<?xml version=\"1.0\"?>\n" +
-                "<EmptyTag>\n" +
-                "</EmptyTag>";
-        InputStream stream = new ByteArrayInputStream(xml.getBytes());
-        String filepath = new CustomFunction().saveXmlToStorage(is);
-        Log.i(App.RESPONSEPATH, filepath);*/
         this.parseResponse(envelope, is);
     }
 
 
-    /* private InputStream readDebug(InputStream is, int contentLength, File outputFile) throws IOException {
-         Object bos;
-         if (outputFile != null) {
-             bos = new FileOutputStream(outputFile);
-         } else {
-             bos = new ByteArrayOutputStream(contentLength > 0 ? contentLength : 26214444);
-         }
-
-         byte[] buf = new byte[6144];
-
-         while (true) {
-             int rd = is.read(buf, 0, 6144);
-             if (rd == -1) {
-                 ((OutputStream) bos).flush();
-                 if (bos instanceof ByteArrayOutputStream) {
-                     buf = ((ByteArrayOutputStream) bos).toByteArray();
-                 }
-
-                 bos = null;
-                 this.responseDump = new String(buf);
-                 is.close();
-                 return (InputStream) (outputFile != null ? new FileInputStream(outputFile) : new ByteArrayInputStream(buf));
-             }
-
-             ((OutputStream) bos).write(buf, 0, rd);
-         }
-     }*/
-
     private void readDebug(InputStream is, int contentLength, File outputFile) throws IOException {
+      /*  new CustomFunction.saveXmlResponseToStorage(is, new ListenerWorkWithFile() {
+            @Override
+            public void onSuccess(String filePath) {
+                File file = new File(filePath);
+                CustomFunction.freeMemory();
+                int kilobyte = 1024;
+                long megabyte = 1024 * kilobyte;
+                double fileSizeAsMB = (file.length() / megabyte);
+                long freeMemorySpaceAsMB  = Runtime.getRuntime().freeMemory() / megabyte;
+                long limitSize = (2 * megabyte);
+                if (fileSizeAsMB <= limitSize && fileSizeAsMB <= (freeMemorySpaceAsMB)) {
+                    //this.responseDump = new ChangeXml().charDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
+                    responseDump = new CustomFunction().readXmlResponseFromStorage(filePath);
+                    //this.requestDump = this.responseDump.replace("<strErrorMsg />", "<strErrorMsg/>");
+                } else {
+                    responseDump = filePath;
+                }
+            }
+
+            @Override
+            public void onFailed(String error) {
+                responseDump = "";
+            }
+        }).execute();*/
+
         String filePath = new CustomFunction().saveXmlResponseToStorage(is);
         File file = new File(filePath);
-        double fileSizeAsKB = (file.length() / 1024);
-        long freeMemorySpaceAsKB = Runtime.getRuntime().freeMemory();
-        Log.i("LOGFILE", "MemoryFeeSpace of KB = " + freeMemorySpaceAsKB);
-        Log.i("LOGFILE", "MemoryFeeSpace/2 of KB = " + (freeMemorySpaceAsKB / 2));
-        Log.i("LOGFILE", "file Size of KB = " + fileSizeAsKB);
-        long megabyte = 1024;
-        long limitSize = (5 * megabyte);
-        if (fileSizeAsKB <= limitSize && fileSizeAsKB < (freeMemorySpaceAsKB / 2)) {
-            this.responseDump = new CustomFunction().readXmlResponseFromStorage(filePath);
-            this.responseDump = new ChangeXml().CharDecoder(this.responseDump);
-        } else {
-            this.responseDump = filePath;
+        CustomFunction.freeMemory();
+        int kilobyte = 1024;
+        long megabyte = 1024*1024;
+        double fileSizeAsKB = (file.length() / kilobyte);
+        long freeMemorySpaceAsKB = Runtime.getRuntime().freeMemory() / kilobyte;
+        long limitSize = (4 * megabyte);
+        if (fileSizeAsKB <= limitSize && fileSizeAsKB <= (freeMemorySpaceAsKB)) {
+            this.responseDump = new ChangeXml().charSpaceDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
+                } else {
+            responseDump = filePath;
         }
-        Log.i("LOGFILE", "responseDump = " + responseDump);
 
     }
 

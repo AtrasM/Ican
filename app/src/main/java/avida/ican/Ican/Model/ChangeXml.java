@@ -69,40 +69,53 @@ public class ChangeXml {
         return xmlString;
     }
 
-    public String CharDecoder(String xml) {
-        if (xml.contains("![CDATA[")) {
+    public String charDecoder(String xml) {
+      /*  if (xml.contains("![CDATA[")) {
             xml = RemoveTag(xml, "<![CDATA[", "]]>");
-        }
+        }*/
 
-        xml = xml.replaceAll("&amp;", "&")
+ /*       xml = xml.replaceAll("&amp;", "&")
                 .replaceAll("&lt;", "<")
                 .replaceAll("&gt;", ">")
                 .replaceAll("&apos;", "\'")
                 .replaceAll("&quot;", "\"")
                 .replaceAll("&nbsp;", " ")
                 .replaceAll("&copy;", "@")
-                .replaceAll("&reg;", "?");
+                .replaceAll("&reg;", "?");*/
+        xml = xml.replaceAll("&amp;lt;", "<")
+                .replaceAll("&amp;gt;", ">")
+                .replaceAll("&amp;apos;", "\'")
+                .replaceAll("&amp;quot;", "\"")
+                .replaceAll("&amp;nbsp;", " ")
+                .replaceAll("&amp;copy;", "@")
+                .replaceAll("&amp;reg;", "?")
+                .replaceAll("\u0020", " ");
         return xml;
     }
 
-    public String SaxCharDecoder(String xml) {
-       /* if (xml.contains("![CDATA[")) {
-            xml = RemoveTag(xml, "<![CDATA[", "]]>");
-        }*/
+    public String charSpaceDecoder(String xml) {
+        xml = xml.replaceAll("&amp;nbsp;", " ")
+                .replaceAll("\u0020", " ");
+        return xml;
+    }
+
+    public String saxCharEncoder(String xml) {
         xml = xml.replaceAll("&", "&amp;")
-                .replaceAll("&amp;amp;", "&amp;");
-
-/*
-        xml = xml.replaceAll("&amp;amp;", "&amp;")
-                .replaceAll("&amp;lt;", "&lt;")
-                .replaceAll("&amp;gt;", "&gt;")
-                .replaceAll("&amp;apos;", "&apos;")
-                .replaceAll("&amp;quot;", "&quot;")
-                .replaceAll("&amp;nbsp;", "&nbsp;")
-                .replaceAll("&amp;copy;", "&copy;");
-*/
-
+                .replaceAll("&amp;amp;", "&amp;")
+                .replaceAll("\\s", "\u0020")
+                .replaceAll(" ", "\u0020");
 
         return xml;
+    }
+
+
+    public String viewCharDecoder(String data) {
+        if (data != null && !data.isEmpty()) {
+            data = charDecoder(data).replaceAll("&amp;", "&");
+        } else {
+            data = "";
+        }
+
+        return data;
     }
 }

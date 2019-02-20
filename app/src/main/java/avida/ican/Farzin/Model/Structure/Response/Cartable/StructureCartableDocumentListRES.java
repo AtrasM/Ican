@@ -6,6 +6,8 @@ import org.simpleframework.xml.Root;
 
 import java.util.List;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-09-12 at 15:44 PM
  */
@@ -17,7 +19,7 @@ public class StructureCartableDocumentListRES {
     private List<StructureInboxDocumentRES>  GetCartableDocumentResult;
 
     @Element(required = false)
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
     public List<StructureInboxDocumentRES> getGetCartableDocumentResult() {
         return GetCartableDocumentResult;
@@ -28,11 +30,11 @@ public class StructureCartableDocumentListRES {
     }
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 
 

@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -37,5 +40,5 @@
         <include layout="@layout/ln_loading" />
 
     </FrameLayout>
-
+    </android.support.v4.widget.SwipeRefreshLayout>
 </LinearLayout>

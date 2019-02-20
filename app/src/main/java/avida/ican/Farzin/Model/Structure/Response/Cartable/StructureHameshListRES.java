@@ -6,6 +6,8 @@ import org.simpleframework.xml.Root;
 
 import java.util.List;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-09-26 at 11:27 AM
  */
@@ -17,7 +19,7 @@ public class StructureHameshListRES {
     private List<StructureHameshRES>  GetHameshListResult;
 
     @Element(required = false)
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
     public List<StructureHameshRES> getGetHameshListResult() {
         return GetHameshListResult;
@@ -28,11 +30,11 @@ public class StructureHameshListRES {
     }
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 
 

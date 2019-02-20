@@ -19,7 +19,7 @@ import avida.ican.Ican.Model.Structure.StructureFileStringTypeList;
 
 public class Base64EncodeDecodeFile {
     private String encoded = "";
-    byte[] decoded = null;
+    private byte[] decoded = null;
 
     //___________________==========File===========____________________________________
 
@@ -65,7 +65,6 @@ public class Base64EncodeDecodeFile {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return encoded = Base64.encodeToString(bytes, 0);
     }
 
@@ -144,6 +143,9 @@ public class Base64EncodeDecodeFile {
 
     public byte[] DecodeBase64ToByte(String encodedBase64File) {
         return decoded = Base64.decode(encodedBase64File, 0);
+    }
+    public byte[] DecodeBase64ToByte(byte[] bytes) {
+        return decoded = Base64.decode(bytes, Base64.NO_WRAP);
     }
 
     public String EncodeByteArrayToString(byte[] encodedBase64File) {

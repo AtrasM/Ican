@@ -35,9 +35,8 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 
 public class SendMessageService extends Service {
 
-    private final long PERIOD = TimeValue.SecondsInMilli() * 30;
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private Timer timer;
     private TimerTask timerTask;
     private SendMessageServiceListener sendMessageServiceListener;
@@ -212,32 +211,28 @@ public class SendMessageService extends Service {
 
     private void startMessageQueueTimer() {
 
-        timer = new Timer();
-        timerTask = new TimerTask() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
 
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                        App.getHandler().postDelayed(new Runnable() {
+                        App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 startMessageQueueTimer();
                             }
                         }, FAILED_DELAY);
-                        timer.cancel();
                     } else {
                         List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.WAITING);
 
                         if (structureMessageQueueDBS.size() > 0) {
                             SendMessage(structureMessageQueueDBS);
-                            timer.cancel();
                         } else {
                             structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.STOPED);
                             if (structureMessageQueueDBS.size() > 0) {
                                 SendMessage(structureMessageQueueDBS);
-                                timer.cancel();
                             }
                         }
                     }
@@ -246,9 +241,10 @@ public class SendMessageService extends Service {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
-        };
-        timer.schedule(timerTask, 0, PERIOD);
+        }, DELAY);
+
     }
 
     @Override

@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.util.Log;
+
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
@@ -47,7 +49,7 @@ public class GetCartableDocumentFromServerPresenter {
         CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
-                CheckCartableDocumentListStructure(Xml, cartableDocumentListListener);
+                initStructure(Xml, cartableDocumentListListener);
             }
 
             @Override
@@ -63,14 +65,14 @@ public class GetCartableDocumentFromServerPresenter {
 
     }
 
-    private void CheckCartableDocumentListStructure(String xml, CartableDocumentListListener cartableDocumentListListener) {
+    private void initStructure(String xml, CartableDocumentListListener cartableDocumentListListener) {
+        Log.i("xml", "CartableDocumen xml= " + xml);
         StructureCartableDocumentListRES structureCartableDocumentListRES = xmlToObject.DeserializationSimpleXml(xml, StructureCartableDocumentListRES.class);
         if (structureCartableDocumentListRES.getStrErrorMsg() == null || structureCartableDocumentListRES.getStrErrorMsg().isEmpty()) {
             if (structureCartableDocumentListRES.getGetCartableDocumentResult().size() <= 0) {
                 cartableDocumentListListener.onSuccess(new ArrayList<StructureInboxDocumentRES>());
             } else {
                 ArrayList<StructureInboxDocumentRES> structureInboxDocumentRES = new ArrayList<>(structureCartableDocumentListRES.getGetCartableDocumentResult());
-                // changeXml.CharDecoder(structureMessageList.get())
                 cartableDocumentListListener.onSuccess(structureInboxDocumentRES);
             }
         } else {
@@ -130,7 +132,7 @@ public class GetCartableDocumentFromServerPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
-                //Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

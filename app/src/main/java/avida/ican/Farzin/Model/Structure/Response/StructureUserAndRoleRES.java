@@ -2,6 +2,8 @@ package avida.ican.Farzin.Model.Structure.Response;
 
 import com.google.gson.annotations.SerializedName;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-04-18 at 5:24 PM
  */
@@ -53,7 +55,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getUserName() {
-        return UserName;
+        return new ChangeXml().viewCharDecoder(UserName);
     }
 
     public void setUserName(String userName) {
@@ -61,7 +63,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getFirstName() {
-        return FirstName;
+        return new ChangeXml().viewCharDecoder(FirstName);
     }
 
     public void setFirstName(String firstName) {
@@ -69,7 +71,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getLastName() {
-        return LastName;
+        return new ChangeXml().viewCharDecoder(LastName);
     }
 
     public void setLastName(String lastName) {
@@ -93,7 +95,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getRoleCode() {
-        return RoleCode;
+        return new ChangeXml().viewCharDecoder(RoleCode);
     }
 
     public void setRoleCode(String roleCode) {
@@ -101,7 +103,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getRoleName() {
-        return RoleName;
+        return new ChangeXml().viewCharDecoder(RoleName);
     }
 
     public void setRoleName(String roleName) {
@@ -117,7 +119,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getOrganCode() {
-        return OrganCode;
+        return new ChangeXml().viewCharDecoder(OrganCode);
     }
 
     public void setOrganCode(String organCode) {
@@ -125,7 +127,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getOrganizationRoleName() {
-        return OrganizationRoleName;
+        return new ChangeXml().viewCharDecoder(OrganizationRoleName);
     }
 
     public void setOrganizationRoleName(String organizationRoleName) {
@@ -165,7 +167,7 @@ public class StructureUserAndRoleRES {
     }
 
     public String getBirthDate() {
-        return BirthDate;
+        return new ChangeXml().viewCharDecoder(BirthDate);
     }
 
     public void setBirthDate(String birthDate) {

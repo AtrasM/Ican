@@ -83,8 +83,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @Override
     protected void onResume() {
         CheckNetWork();
-        if (App.fragmentStacks != null && App.fragmentStacks.size() > 0){
-            if(actionfilter!=null){
+        if (App.fragmentStacks != null && App.fragmentStacks.size() > 0) {
+            if (actionfilter != null) {
                 if (curentTab == TAB_DASHBOARD) {
                     FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(TAB_DASHBOARD).lastElement();
                     fragmentHome.reGetDataFromLocal();
@@ -180,8 +180,11 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 setNavHeadeViewTitle(title);
             }
         });
+
+        //if (!farzinPrefrences.isDataForFirstTimeSync()) {
         if (!farzinPrefrences.isDataForFirstTimeSync()) {
             container.setVisibility(View.GONE);
+
             BaseActivity.dialogMataDataSync = new DialogFirstMetaDataSync(App.CurentActivity, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
                 @Override
                 public void onFinish() {
@@ -202,7 +205,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 }
             });
             BaseActivity.dialogMataDataSync.Creat();
-        }else{
+        } else {
             if (staticbottomNavigation != null) {
                 staticbottomNavigation.setCurrentItem(1);
             }
@@ -230,7 +233,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             case R.id.navigation_cartable: {
                 Title = "کارتابل";
                 selectedTab(Title, R.menu.main_drawer, TAB_CARTABLE);
-
                 break;
             }
 
@@ -473,11 +475,12 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (broadcastReceiver != null) {
             unregisterReceiver(broadcastReceiver);
         }
         farzinMetaDataSync.onDestory();
+        super.onDestroy();
+
     }
 
     @Override

@@ -6,25 +6,25 @@ package avida.ican.Farzin.Model.Structure.Bundle;
  */
 
 public class StructureCartableDocumentContentBND {
-    private String FileBinary;
+    private StringBuilder FileAsStringBuilder =new StringBuilder();
     private int ETC;
     private int EC;
 
     public StructureCartableDocumentContentBND() {
     }
 
-    public StructureCartableDocumentContentBND(String fileBinary, int ETC, int EC) {
-        FileBinary = fileBinary;
+    public StructureCartableDocumentContentBND(StringBuilder fileAsStringBuilder, int ETC, int EC) {
+        FileAsStringBuilder = fileAsStringBuilder;
         this.ETC = ETC;
         this.EC = EC;
     }
 
-    public String getFileBinary() {
-        return FileBinary;
+    public StringBuilder getFileAsStringBuilder() {
+        return FileAsStringBuilder;
     }
 
-    public void setFileBinary(String fileBinary) {
-        FileBinary = fileBinary;
+    public void setFileAsStringBuilder(StringBuilder fileAsStringBuilder) {
+        FileAsStringBuilder = fileAsStringBuilder;
     }
 
     public int getETC() {

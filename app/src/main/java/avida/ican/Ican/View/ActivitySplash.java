@@ -53,7 +53,6 @@ public class ActivitySplash extends BaseActivity {
         boolean b = new CheckPermission().writeExternalStorage(1, App.CurentActivity);
 
         if (b) {
-            //String xml=new CustomFunction().readXmlResponseFromStorage("/storage/emulated/0/IcanData/File/Data/Response/843193628b024b4c95a0b062da87d993responseData.xml");
             continueProcess();
         }
 
@@ -87,8 +86,8 @@ public class ActivitySplash extends BaseActivity {
         if (index > 0) {
             filepath = filepath.substring(0, index);
         }*/
-        isRemember = false;
-       // isRemember = farzinPrefrences.isRemember();
+        //isRemember = false;
+        isRemember = farzinPrefrences.isRemember();
         if (!isRemember) {
             goToActivity(FarzinActivityLogin.class);
             avLoadingIndicatorView.setVisibility(View.GONE);
@@ -97,7 +96,8 @@ public class ActivitySplash extends BaseActivity {
             loginPresenter.AutoAuthentiocation(new LoginViewListener() {
                 @Override
                 public void onSuccess() {
-                    goToActivity(ActivityMain.class);
+                    //goToActivity(ActivityMain.class);
+                    goToActivity(FarzinActivityMain.class);
                     avLoadingIndicatorView.setVisibility(View.GONE);
                     Finish(App.CurentActivity);
                 }

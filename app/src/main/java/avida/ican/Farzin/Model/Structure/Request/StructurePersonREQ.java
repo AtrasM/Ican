@@ -5,6 +5,8 @@ import org.ksoap2.serialization.PropertyInfo;
 
 import java.util.Hashtable;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida in 2018-11-18 at 12:28 AM
  */
@@ -82,7 +84,7 @@ public class StructurePersonREQ  {
     }
 
     public String getResponseUntilDate() {
-        return responseUntilDate;
+        return new ChangeXml().viewCharDecoder(responseUntilDate);
     }
 
     public void setResponseUntilDate(String responseUntilDate) {

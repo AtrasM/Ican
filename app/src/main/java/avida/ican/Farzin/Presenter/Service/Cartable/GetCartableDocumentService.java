@@ -71,7 +71,12 @@ public class GetCartableDocumentService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
-        Count = MaxCount;
+        if (getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
+            Count = MinCount;
+            callDataFinish();
+        } else {
+            Count = MaxCount;
+        }
         getCartableDocumentFromServerPresenter = new GetCartableDocumentFromServerPresenter();
         farzinCartableQuery = new FarzinCartableQuery();
         cartableDocumentListListener = new CartableDocumentListListener() {
@@ -80,11 +85,7 @@ public class GetCartableDocumentService extends Service {
                 existCont = 0;
                 dataSize = inboxCartableDocumentList.size();
                 if (inboxCartableDocumentList.size() == 0) {
-                    if (BaseActivity.dialogMataDataSync != null) {
-                        BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
-                    }
-
-                    reGetData(MaxCount);
+                    reGetData(MinCount);
                 } else {
                     SaveData(inboxCartableDocumentList);
 
@@ -130,7 +131,7 @@ public class GetCartableDocumentService extends Service {
             getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
             reGetData(Count);
         } else {
-            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (!getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
                 getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
             } else {
                 CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), tempDelay);
@@ -165,8 +166,18 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
-                newCount++;
-                inboxCartableDocumentList.remove(0);
+                if(structureInboxDocumentDB==null || structureInboxDocumentDB.getId()<=0){
+                    existCont++;
+                }else{
+                    newCount++;
+                }
+
+                try {
+                    inboxCartableDocumentList.remove(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
                         reGetData(MinCount);
@@ -189,9 +200,6 @@ public class GetCartableDocumentService extends Service {
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
                     if (existCont == dataSize) {
-                        if (BaseActivity.dialogMataDataSync != null) {
-                            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
-                        }
                         reGetData(MinCount);
                     } else {
                         GetCartableDocument(Count);
@@ -241,11 +249,12 @@ public class GetCartableDocumentService extends Service {
 
     private void reGetData(int count) {
         ShowToast("re Get cartable document");
+        callDataFinish();
         Count = count;
-        if(App.activityStacks==null){
-            tempDelay=App.DELAYWhenAppClose;
-        }else{
-            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+        if (App.activityStacks == null) {
+            tempDelay = App.DELAYWhenAppClose;
+        } else {
+            if (getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
                 tempDelay = DELAY;
             } else {
                 tempDelay = LOWDELAY;
@@ -260,6 +269,13 @@ public class GetCartableDocumentService extends Service {
         }, tempDelay);
 
 
+    }
+
+    private void callDataFinish() {
+        getFarzinPrefrences().putCartableDocumentForFirstTimeSync(true);
+        if (BaseActivity.dialogMataDataSync != null) {
+            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
+        }
     }
 
     private void CallMulltiMessageNotification() {

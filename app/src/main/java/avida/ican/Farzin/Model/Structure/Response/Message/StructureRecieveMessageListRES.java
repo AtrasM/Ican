@@ -4,7 +4,10 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import avida.ican.Ican.Model.ChangeXml;
 
 /**
  * Created by AtrasVida on 2018-07-16 at 3:35 AM
@@ -14,10 +17,10 @@ import java.util.List;
 public class StructureRecieveMessageListRES {
 
     @ElementList(required = false)
-    private List<StructureMessageRES> GetRecieveMessageListResult;
+    private List<StructureMessageRES> GetRecieveMessageListResult=new ArrayList<>();
 
     @Element(required = false)
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
     public List<StructureMessageRES> getGetRecieveMessageListResult() {
         return GetRecieveMessageListResult;
@@ -28,10 +31,10 @@ public class StructureRecieveMessageListRES {
     }
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 }

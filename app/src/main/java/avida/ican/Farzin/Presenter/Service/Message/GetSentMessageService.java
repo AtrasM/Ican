@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class GetSentMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.UnRead;
     private int Count = 1;
-    private final int MaxCount = 20;
+    private final int MaxCount = 50;
     private final int MinCount = 1;
     private long tempDelay = LOWDELAY;
 
@@ -61,7 +62,12 @@ public class GetSentMessageService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
-        Count = MaxCount;
+        if (getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
+            Count = MinCount;
+            callDataFinish();
+        } else {
+            Count = MaxCount;
+        }
         pageNumber = 1;
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
         farzinMessageQuery = new FarzinMessageQuery();
@@ -69,9 +75,6 @@ public class GetSentMessageService extends Service {
             @Override
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
                 if (messageList.size() == 0) {
-                    if (BaseActivity.dialogMataDataSync != null) {
-                        BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
-                    }
                     reGetMessage();
                 } else {
                     SaveMessage(messageList);
@@ -114,11 +117,12 @@ public class GetSentMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
+        Log.i("pageNumber", "GetSentMessage pageNumber= " + pageNumber);
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
             reGetMessage();
         } else {
-            if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (!getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
                 getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
             } else {
                 CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageSentLastCheckDate(), tempDelay);
@@ -130,7 +134,6 @@ public class GetSentMessageService extends Service {
                 }
             }
         }
-
 
     }
 
@@ -155,47 +158,44 @@ public class GetSentMessageService extends Service {
                 return null;
             }
         };
-        asyncTask.execute(structureMessageRES.getReceivers());
+        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,structureMessageRES.getReceivers());
 
         farzinMessageQuery.SaveMessage(structureMessageRES, Type.SENDED, status, new MessageQuerySaveListener() {
 
             @Override
             public void onSuccess(final StructureMessageDB structureMessageDB) {
-
-                if (App.fragmentMessageList != null) {
-                    if (App.CurentActivity != null) {
-                        App.CurentActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                App.fragmentMessageList.UpdateSendMessageData();
-                                // UpdateAllNewMessageStatusToUnreadStatus();
-                            }
-                        });
-
+                if (structureMessageDB.getId() > 0) {
+                    if (App.fragmentMessageList != null) {
+                        if (App.CurentActivity != null) {
+                            App.CurentActivity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    App.fragmentMessageList.UpdateSendMessageData();
+                                    // UpdateAllNewMessageStatusToUnreadStatus();
+                                }
+                            });
+                        }
                     }
                 }
-
-                if (messageList.size() > 0) {
+                try {
                     messageList.remove(0);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 if (messageList.size() == 0) {
                     pageNumber = pageNumber + 1;
                     GetMessage(pageNumber, Count);
-
                 } else {
                     SaveMessage(messageList);
                 }
+
             }
 
             @Override
             public void onExisting() {
                 ShowToast("Duplicate message");
-                if (BaseActivity.dialogMataDataSync != null) {
-                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
-                }
                 reGetMessage();
-
             }
 
             @Override
@@ -208,19 +208,18 @@ public class GetSentMessageService extends Service {
                 ShowToast("save message onCancel");
             }
         });
-
-
     }
 
 
     private void reGetMessage() {
         ShowToast("re Get Message");
+        callDataFinish();
         pageNumber = 1;
         Count = MinCount;
         if (App.activityStacks == null) {
             tempDelay = App.DELAYWhenAppClose;
         } else {
-            if (getFarzinPrefrences().isDataForFirstTimeSync()) {
+            if (getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
                 tempDelay = DELAY;
             } else {
                 tempDelay = LOWDELAY;
@@ -236,6 +235,12 @@ public class GetSentMessageService extends Service {
         }, tempDelay);
     }
 
+    private void callDataFinish() {
+        getFarzinPrefrences().putSendMessageForFirstTimeSync(true);
+        if (BaseActivity.dialogMataDataSync != null) {
+            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
+        }
+    }
 
     private void ShowToast(final String s) {
         handler.post(new Runnable() {
@@ -255,7 +260,6 @@ public class GetSentMessageService extends Service {
             e.printStackTrace();
         }
     }
-
 
     @Override
     public IBinder onBind(Intent intent) {

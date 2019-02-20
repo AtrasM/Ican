@@ -2,10 +2,15 @@ package avida.ican.Ican.View;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
+import android.graphics.Rect;
+import android.graphics.YuvImage;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import java.io.ByteArrayOutputStream;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
@@ -35,6 +40,7 @@ public class ActivityImageViewer extends BaseActivity {
             App.ShowMessage().ShowToast(Resorse.getString(R.string.error_null_image), ToastEnum.TOAST_LONG_TIME);
             Finish();
         } else {
+
             Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             setImage(bmp);
         }

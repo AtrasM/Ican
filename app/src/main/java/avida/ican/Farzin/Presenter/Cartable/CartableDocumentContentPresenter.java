@@ -39,9 +39,8 @@ public class CartableDocumentContentPresenter {
 
 
             @Override
-            public void onSuccess(String FileBinary) {
-                ///listenerCartableDocumentContent.newData(FileBinary);
-                SaveData(FileBinary);
+            public void onSuccess(StringBuilder FileBinaryAsStringBuilder) {
+                SaveData(FileBinaryAsStringBuilder);
             }
 
             @Override
@@ -88,9 +87,9 @@ public class CartableDocumentContentPresenter {
     }
 
 
-    private void SaveData(final String FileBinary) {
+    private void SaveData(final StringBuilder fileBinaryAsStringBuilder) {
 
-        StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(FileBinary, Etc, Ec);
+        StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(fileBinaryAsStringBuilder, Etc, Ec);
         farzinCartableQuery.saveCartableDocumentContent(cartableDocumentContentBND, new CartableDocumentContentQuerySaveListener() {
 
             @Override

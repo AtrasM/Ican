@@ -16,6 +16,7 @@ public enum MetaDataNameEnum {
     MetaDataNameEnum(int value) {
         intValue = value;
     }
+
     MetaDataNameEnum(String value) {
         strValue = value;
     }
@@ -24,6 +25,11 @@ public enum MetaDataNameEnum {
     public int getIntValue() {
         return intValue;
     }
+
+    public static int getMetaDataCount() {
+        return 4;
+    }
+
     public String getStringValue() {
         return strValue;
     }

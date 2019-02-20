@@ -2,6 +2,8 @@ package avida.ican.Farzin.Model.Structure.Response.Cartable;
 
 import com.google.gson.annotations.SerializedName;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-11-19 at 4:01 PM
  */
@@ -25,7 +27,7 @@ public class StructureCartableDocumentActionRES {
     }
 
     public String getActionName() {
-        return ActionName;
+        return new ChangeXml().viewCharDecoder(ActionName);
     }
 
     public void setActionName(String actionName) {
@@ -41,7 +43,7 @@ public class StructureCartableDocumentActionRES {
     }
 
     public String getFarsiDescription() {
-        return FarsiDescription;
+        return new ChangeXml().viewCharDecoder(FarsiDescription);
     }
 
     public void setFarsiDescription(String farsiDescription) {

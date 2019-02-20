@@ -27,11 +27,8 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentTaeedQueueService extends Service {
-    private final long PERIOD = TimeValue.MinutesInMilli();
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
+    private final long DELAY = TimeValue.MinutesInMilli();
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
-    private Timer timer;
-    private TimerTask timerTask;
     private TaeedListener taeedListener;
     private Context context;
     private Handler handler = new Handler();
@@ -161,20 +158,18 @@ public class CartableDocumentTaeedQueueService extends Service {
 
 
     private void startTaeedQueueTimer() {
-        timer = new Timer();
-        timerTask = new TimerTask() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                        App.getHandler().postDelayed(new Runnable() {
+                        App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 startTaeedQueueTimer();
                             }
                         }, FAILED_DELAY);
-                        timer.cancel();
                     } else {
                         StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
 
@@ -183,7 +178,6 @@ public class CartableDocumentTaeedQueueService extends Service {
                                 TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
                             }
                         }
-                        timer.cancel();
                     }
 
 
@@ -191,8 +185,8 @@ public class CartableDocumentTaeedQueueService extends Service {
                     e.printStackTrace();
                 }
             }
-        };
-        timer.schedule(timerTask, 0, PERIOD);
+        }, DELAY);
+
     }
 
     @Override

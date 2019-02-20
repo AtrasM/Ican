@@ -3,6 +3,7 @@ package avida.ican.Farzin.Model.Structure.Response.Cartable;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,15 +12,15 @@ import java.util.List;
 @Root(name = "GetFileDependencyResult")
 public class StructureZanjireMadrakRES {
     @ElementList(required = false)
-    private List<StructureFileRES> Peyro;
+    private List<StructureFileRES> Peyro = new ArrayList<>();
     @ElementList(required = false)
-    private List<StructureFileRES> Peyvast;
+    private List<StructureFileRES> Peyvast = new ArrayList<>();
     @ElementList(required = false)
-    private List<StructureFileRES> DarErtebat;
+    private List<StructureFileRES> DarErtebat = new ArrayList<>();
     @ElementList(required = false)
-    private List<StructureFileRES> Atf;
-    private    int ETC;
-    private   int EC;
+    private List<StructureFileRES> Atf = new ArrayList<>();
+    private int ETC;
+    private int EC;
 
     public List<StructureFileRES> getPeyro() {
         return Peyro;

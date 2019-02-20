@@ -1,8 +1,6 @@
 package avida.ican.Farzin.View;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -10,32 +8,22 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
-
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.LoginPresenter;
-import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Interface.LoginViewListener;
 import avida.ican.Farzin.View.Validation.Validation;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
-import avida.ican.Ican.BaseToolbarActivity;
-import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.View.ActivityMain;
-import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TextDrawableProvider;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
-import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -171,8 +159,8 @@ public class FarzinActivityLogin extends BaseActivity {
         loginPresenter.Authentiocation(UserName, Password, ServerUrl, isRemember, new LoginViewListener() {
             @Override
             public void onSuccess() {
-                //goToActivity(FarzinActivityMain.class);
-                goToActivity(ActivityMain.class);
+                goToActivity(FarzinActivityMain.class);
+                //goToActivity(ActivityMain.class);
                 loading.Hide();
                 Finish(App.CurentActivity);
             }

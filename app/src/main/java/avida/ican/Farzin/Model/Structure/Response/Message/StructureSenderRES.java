@@ -3,6 +3,8 @@ package avida.ican.Farzin.Model.Structure.Response.Message;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida in 2018-07-24 at 1:25 PM
  */
@@ -34,7 +36,7 @@ public class StructureSenderRES {
     }
 
     public String getUserName() {
-        return UserName;
+        return new ChangeXml().viewCharDecoder(UserName);
     }
 
     public void setUserName(String userName) {

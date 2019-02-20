@@ -9,12 +9,14 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
 import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 
@@ -24,34 +26,41 @@ import avida.ican.R;
 
 public class DialogFirstMetaDataSync {
     private final Activity context;
-    private static int SERVICECOUNT = 4;
+    private static int SERVICECOUNT = MetaDataNameEnum.getMetaDataCount();
     private static int serviceCounter = 0;
     private FarzinPrefrences farzinPrefrences;
     private static ArrayList<String> dataFinish = new ArrayList<>();
     private static MetaDataSyncListener metaDataSyncListener;
+    private long startTime;
+    private long endTime;
 
     public DialogFirstMetaDataSync(Activity context, MetaDataSyncListener metaDataSyncListener) {
         this.context = context;
         this.metaDataSyncListener = metaDataSyncListener;
         farzinPrefrences = new FarzinPrefrences().init();
+        startTime = System.nanoTime();
+        Log.i("SyncTime", "StartSyncTime= " + startTime);
     }
 
     public void serviceGetDataFinish(MetaDataNameEnum metaDataNameEnum) {
-        Log.i("Log", "" + metaDataNameEnum.getStringValue());
+        Log.i("MetaDataNameEnum", "" + metaDataNameEnum.getStringValue());
         if (!dataFinish.contains(metaDataNameEnum.getStringValue())) {
             serviceCounter++;
             dataFinish.add(metaDataNameEnum.getStringValue());
         }
 
-
         try {
             if (serviceCounter >= SERVICECOUNT) {
+                endTime = System.nanoTime();
+                long elapsedTime = endTime - startTime;
+                double seconds = (double) elapsedTime / 1_000_000_000.0;
+                Log.i("SyncTime", "endSyncTime= " + elapsedTime);
+                Log.i("SyncTime", "elapsedTime as Seconds= " + seconds);
                 farzinPrefrences.putDataForFirstTimeSync(true);
                 if (BaseActivity.dialogMataDataSync != null) {
                     dismiss();
                     App.canBack = true;
                 }
-
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,11 +100,9 @@ public class DialogFirstMetaDataSync {
                 BaseActivity.dialog.show();
             }
         });
-
         App.networkStatus = NetworkStatus.Syncing;
         if (App.netWorkStatusListener != null) {
             App.netWorkStatusListener.Syncing();
         }
     }
-
 }

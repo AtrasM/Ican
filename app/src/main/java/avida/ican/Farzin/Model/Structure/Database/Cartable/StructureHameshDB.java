@@ -1,11 +1,14 @@
 package avida.ican.Farzin.Model.Structure.Database.Cartable;
 
+import android.util.Log;
+
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
+import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
@@ -65,10 +68,27 @@ public class StructureHameshDB implements Serializable {
         this.ETC = ETC;
         this.EC = EC;
         if (structureHameshRES.getHameshImage() != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (structureHameshRES.getHameshImage().getFileAsStringBuilder() != null && structureHameshRES.getHameshImage().getFileAsStringBuilder().length() > 0) {
+                stringBuilder = structureHameshRES.getHameshImage().getFileAsStringBuilder();
+            } else {
+                stringBuilder.append(structureHameshRES.getHameshImage().getFileBinary());
+
+            }
             FileExtension = structureHameshRES.getHameshImage().getFileExtension();
-            FileName ="HAMESH_"+ structureHameshRES.getHameshImage().getFileName()+CustomFunction.getRandomUUID();
-            FileName=FileName.replace(" ","");
-            FilePath = new CustomFunction().saveFileToStorage(structureHameshRES.getHameshImage().getFileBinary(), FileName);
+            FileName = "HAMESH_" + structureHameshRES.getHameshImage().getFileName() + CustomFunction.getRandomUUID();
+            FileName = FileName.replace(" ", "");
+            Log.i("largeFile","getFileAsStringBuilder().length() = " +stringBuilder.length());
+            if (stringBuilder.length() < 256) {
+                //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
+                    //FilePath = CustomFunction.reNameFile(stringBuilder.toString(), FileName);
+                Log.i("largeFile","getFileAsStringBuilder().length() in if= " +stringBuilder.length());
+                    FilePath = stringBuilder.toString();
+                    FileName = CustomFunction.getFileName(FilePath);
+                //}
+            } else {
+                FilePath = new CustomFunction().saveFileToStorage(stringBuilder, FileName);
+            }
         }
     }
 

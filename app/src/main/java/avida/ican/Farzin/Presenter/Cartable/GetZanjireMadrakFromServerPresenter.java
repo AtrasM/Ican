@@ -1,17 +1,25 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.annotation.SuppressLint;
+import android.os.AsyncTask;
+
 import org.ksoap2.serialization.SoapObject;
 
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentContentRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakListRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
+import avida.ican.Farzin.Model.saxHandler.DocumentContentSaxHandler;
+import avida.ican.Farzin.Model.saxHandler.ZanjireMadrakSaxHandler;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.TimeValue;
 
 /**
  * Created by AtrasVida on 2018-10-14 at 11:16 AM
@@ -27,7 +35,7 @@ public class GetZanjireMadrakFromServerPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetZanjireMadrakFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
-
+    private AsyncTask<Void, Void, Void> task;
     public GetZanjireMadrakFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
@@ -57,23 +65,50 @@ public class GetZanjireMadrakFromServerPresenter {
 
     }
 
-    private void initStructure(String xml, ZanjireMadrakListener zanjireMadrakListener) {
-        xml=xml.replaceAll("xsi:type=\"FarzinFile\"","");
-        StructureZanjireMadrakListRES structureZanjireMadrakListRES = xmlToObject.DeserializationSimpleXml(xml, StructureZanjireMadrakListRES.class);
-        if (structureZanjireMadrakListRES.getStrErrorMsg() == null || structureZanjireMadrakListRES.getStrErrorMsg().isEmpty()) {
-            if (structureZanjireMadrakListRES.getGetFileDependencyResult() == null) {
-                zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
-            } else {
-                StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES.getGetFileDependencyResult();
-                // changeXml.CharDecoder(structureMessageList.get())
-                zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+    @SuppressLint("StaticFieldLeak")
+    private void initStructure(final String data, final ZanjireMadrakListener zanjireMadrakListener) {
+        final StructureZanjireMadrakListRES[] structureZanjireMadrakListRES = new StructureZanjireMadrakListRES[1];
+
+         task = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                if (data.contains(App.RESPONSEPATH)) {
+                    ZanjireMadrakSaxHandler zanjireMadrakSaxHandler = xmlToObject.parseXmlWithSax(data, new ZanjireMadrakSaxHandler());
+                    structureZanjireMadrakListRES[0] = zanjireMadrakSaxHandler.getObject();
+                    sleep();
+                } else {
+                    String xml = data.replaceAll("xsi:type=\"FarzinFile\"", "");
+                    structureZanjireMadrakListRES[0] = xmlToObject.DeserializationSimpleXml(xml, StructureZanjireMadrakListRES.class);
+                }
+                return null;
             }
-        } else {
-            zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES.getStrErrorMsg());
-        }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (structureZanjireMadrakListRES[0].getStrErrorMsg() == null || structureZanjireMadrakListRES[0].getStrErrorMsg().isEmpty()) {
+                    if (structureZanjireMadrakListRES[0].getGetFileDependencyResult() == null) {
+                        zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
+                    } else {
+                        StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES[0].getGetFileDependencyResult();
+                        // changeXml.charDecoder(structureMessageList.get())
+                        zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+                    }
+                } else {
+                    zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES[0].getStrErrorMsg());
+                }
+            }
+        };
+
+        task.execute();
     }
 
-
+    private void sleep() {
+        try {
+            Thread.sleep(TimeValue.SecondsInMilli() * 15);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
@@ -98,6 +133,7 @@ public class GetZanjireMadrakFromServerPresenter {
                     public void WebserviceResponseListener(WebServiceResponse webServiceResponse) {
                         new processData(webServiceResponse, dataProcessListener);
                     }
+
                     @Override
                     public void NetworkAccessDenied() {
                         dataProcessListener.onFailed();
@@ -115,7 +151,7 @@ public class GetZanjireMadrakFromServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                //Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

@@ -28,11 +28,8 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class OpticalPenQueueService extends Service {
-    private final long PERIOD = TimeValue.SecondsInMilli() * 30;
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 25;
-    private Timer timer;
-    private TimerTask timerTask;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private OpticalPenListener opticalPenListener;
     private Context context;
     private Handler handler = new Handler();
@@ -162,20 +159,18 @@ public class OpticalPenQueueService extends Service {
 
 
     private void startOpticalPenQueueTimer() {
-        timer = new Timer();
-        timerTask = new TimerTask() {
+        handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
 
-                        App.getHandler().postDelayed(new Runnable() {
+                        App.getHandlerMainThread().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 startOpticalPenQueueTimer();
                             }
                         }, FAILED_DELAY);
-                        timer.cancel();
                     } else {
                         StructureOpticalPenQueueDB structureOpticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
 
@@ -184,7 +179,6 @@ public class OpticalPenQueueService extends Service {
                                 sendOpticalPen(structureOpticalPenQueueDB);
                             }
                         }
-                        timer.cancel();
                     }
 
 
@@ -192,8 +186,8 @@ public class OpticalPenQueueService extends Service {
                     e.printStackTrace();
                 }
             }
-        };
-        timer.schedule(timerTask, 0, PERIOD);
+        },DELAY);
+
     }
 
     @Override

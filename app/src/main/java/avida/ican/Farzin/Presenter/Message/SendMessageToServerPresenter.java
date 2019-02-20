@@ -18,7 +18,6 @@ import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
@@ -133,7 +132,7 @@ public class SendMessageToServerPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
-                Xml = changeXml.CharDecoder(Xml);
+                Xml = changeXml.charDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
                 //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {

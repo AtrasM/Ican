@@ -1,11 +1,16 @@
 package avida.ican.Farzin.Model.Structure.Response.Message;
 
 
+import android.util.Log;
+
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import avida.ican.Ican.Model.ChangeXml;
 
 /**
  * Created by AtrasVida on 2018-07-02 at 4:16 PM
@@ -27,14 +32,14 @@ public class StructureMessageRES {
     @Element(required = false)
     private String ViewDate;
     @ElementList(required = false)
-    private List<StructureReceiverRES> Receivers;
+    private List<StructureReceiverRES> Receivers = new ArrayList<>();
     @ElementList(required = false)
-    private List<StructureMessageAttachRES> MessageFiles;
+    private List<StructureMessageAttachRES> MessageFiles = new ArrayList<>();
     @Element(required = false)
     private StructureSenderRES Sender;
 
     public String getSubject() {
-        return Subject;
+        return new ChangeXml().viewCharDecoder(Subject);
     }
 
     public void setSubject(String subject) {
@@ -50,7 +55,7 @@ public class StructureMessageRES {
     }
 
     public String getDescription() {
-        return Description;
+        return new ChangeXml().viewCharDecoder(Description);
     }
 
     public void setDescription(String description) {
@@ -58,10 +63,14 @@ public class StructureMessageRES {
     }
 
     public String getSentDate() {
-        return SentDate;
+        Log.i("SentDate", "befor getSentDate= " + SentDate);
+        Log.i("SentDate", "after getSentDate= " + new ChangeXml().viewCharDecoder(SentDate));
+
+        return new ChangeXml().viewCharDecoder(SentDate);
     }
 
     public void setSentDate(String sentDate) {
+        Log.i("SentDate", "setSentDate= " + sentDate);
         SentDate = sentDate;
     }
 
@@ -98,7 +107,7 @@ public class StructureMessageRES {
     }
 
     public String getViewDate() {
-        return ViewDate;
+        return new ChangeXml().viewCharDecoder(ViewDate);
     }
 
     public void setViewDate(String viewDate) {

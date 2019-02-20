@@ -38,7 +38,7 @@ public class UrlImageParser implements ImageGetter {
         ImageGetterAsyncTask asyncTask =
                 new ImageGetterAsyncTask( urlDrawable);
 
-        asyncTask.execute(source);
+        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,source);
 
         // return reference to URLDrawable where I will change with actual image from
         // the src tag

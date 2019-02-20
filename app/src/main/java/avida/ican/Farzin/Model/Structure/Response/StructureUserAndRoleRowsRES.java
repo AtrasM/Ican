@@ -2,27 +2,29 @@ package avida.ican.Farzin.Model.Structure.Response;
 
 import java.util.List;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-04-18 at 5:24 PM
  */
 public class StructureUserAndRoleRowsRES {
     private mGetUserAndRoleListResponse GetUserAndRoleListResult = new mGetUserAndRoleListResponse();
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
     public mGetUserAndRoleListResponse getGetUserAndRoleListResult() {
         return GetUserAndRoleListResult;
     }
-
+   
     public void setGetUserAndRoleListResult(mGetUserAndRoleListResponse getUserAndRoleListResult) {
         GetUserAndRoleListResult = getUserAndRoleListResult;
     }
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 
     //_______________________________<mGetUserAndRoleListResponse>_______________________________

@@ -7,6 +7,8 @@ import org.simpleframework.xml.Root;
 
 import java.util.Date;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-09-12 at 3:53 PM
  */
@@ -88,7 +90,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getSecurityLevelName() {
-        return SecurityLevelName;
+        return new ChangeXml().viewCharDecoder(SecurityLevelName);
     }
 
     public void setSecurityLevelName(String securityLevelName) {
@@ -112,7 +114,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getActionName() {
-        return ActionName;
+        return new ChangeXml().viewCharDecoder(ActionName);
     }
 
     public void setActionName(String actionName) {
@@ -120,7 +122,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getSenderName() {
-        return SenderName;
+        return new ChangeXml().viewCharDecoder(SenderName);
     }
 
     public void setSenderName(String senderName) {
@@ -128,7 +130,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getSenderRoleName() {
-        return SenderRoleName;
+        return new ChangeXml().viewCharDecoder(SenderRoleName);
     }
 
     public void setSenderRoleName(String senderRoleName) {
@@ -144,7 +146,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getImportDate() {
-        return ImportDate;
+        return new ChangeXml().viewCharDecoder(ImportDate);
     }
 
     public void setImportDate(String importDate) {
@@ -152,7 +154,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getExportDate() {
-        return ExportDate;
+        return new ChangeXml().viewCharDecoder(ExportDate);
     }
 
     public void setExportDate(String exportDate) {
@@ -160,7 +162,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getReceiveDate() {
-        return ReceiveDate;
+        return new ChangeXml().viewCharDecoder(ReceiveDate);
     }
 
     public void setReceiveDate(String receiveDate) {
@@ -168,7 +170,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getExpireDate() {
-        return ExpireDate;
+        return new ChangeXml().viewCharDecoder(ExpireDate);
     }
 
     public void setExpireDate(String expireDate) {
@@ -176,7 +178,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getUserDescription() {
-        return UserDescription;
+        return new ChangeXml().viewCharDecoder(UserDescription);
     }
 
     public void setUserDescription(String userDescription) {
@@ -200,7 +202,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getPrivateHameshContent() {
-        return PrivateHameshContent;
+        return new ChangeXml().viewCharDecoder(PrivateHameshContent);
     }
 
     public void setPrivateHameshContent(String privateHameshContent) {
@@ -216,7 +218,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getTitle() {
-        return Title;
+        return new ChangeXml().viewCharDecoder(Title);
     }
 
     public void setTitle(String title) {
@@ -240,7 +242,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getPriorityEntity_Name() {
-        return PriorityEntity_Name;
+        return new ChangeXml().viewCharDecoder(PriorityEntity_Name);
     }
 
     public void setPriorityEntity_Name(String priorityEntity_Name) {
@@ -272,7 +274,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getSenderFirstName() {
-        return SenderFirstName;
+        return new ChangeXml().viewCharDecoder(SenderFirstName);
     }
 
     public void setSenderFirstName(String senderFirstName) {
@@ -280,7 +282,7 @@ public class StructureInboxDocumentRES {
     }
 
     public String getSenderLastName() {
-        return SenderLastName;
+        return new ChangeXml().viewCharDecoder(SenderLastName);
     }
 
     public void setSenderLastName(String senderLastName) {

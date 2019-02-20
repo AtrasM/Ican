@@ -3,6 +3,8 @@ package avida.ican.Farzin.Model.Structure.Response.Cartable;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import avida.ican.Ican.Model.ChangeXml;
+
 /**
  * Created by AtrasVida on 2018-10-14 at 10:33 AM
  */
@@ -11,18 +13,18 @@ import org.simpleframework.xml.Root;
 public class StructureZanjireMadrakListRES {
 
     @Element
-    private StructureZanjireMadrakRES GetFileDependencyResult;
+    private StructureZanjireMadrakRES GetFileDependencyResult=new StructureZanjireMadrakRES();
 
     @Element(required = false)
-    private String StrErrorMsg;
+    private String strErrorMsg;
 
 
     public String getStrErrorMsg() {
-        return StrErrorMsg;
+        return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
 
     public void setStrErrorMsg(String strErrorMsg) {
-        StrErrorMsg = strErrorMsg;
+        this.strErrorMsg = strErrorMsg;
     }
 
     public StructureZanjireMadrakRES getGetFileDependencyResult() {

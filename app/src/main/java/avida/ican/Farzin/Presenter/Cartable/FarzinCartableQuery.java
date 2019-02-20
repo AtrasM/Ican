@@ -11,6 +11,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.stmt.Where;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,10 +50,13 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
+import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.Model.Interface.ListenerDelet;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerValidate;
 
 
 /**
@@ -129,39 +133,46 @@ public class FarzinCartableQuery {
 
     public void saveCartableDocument(StructureInboxDocumentRES structureInboxDocumentRES, Type type, final Status status, final CartableDocumentQuerySaveListener cartableDocumentQuerySaveListener) {
         int code = structureInboxDocumentRES.getReceiverCode();
-
         if (IsDocumentExist(code)) {
+            if (!getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
+                cartableDocumentQuerySaveListener.onSuccess(new StructureInboxDocumentDB());
+            } else {
+                cartableDocumentQuerySaveListener.onExisting();
+            }
             // UpdateMessageView(structureMessageRES, type);
-            cartableDocumentQuerySaveListener.onExisting();
+
         } else {
             this.status = status;
             this.cartableDocumentQuerySaveListener = cartableDocumentQuerySaveListener;
-            new saveCartableDocument().execute(structureInboxDocumentRES);
+            new saveCartableDocument().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureInboxDocumentRES);
         }
-
     }
 
     public void saveDocumentAction(StructureCartableDocumentActionRES structureCartableDocumentActionRES, int ETC, final CartableDocumentActionsQuerySaveListener cartableDocumentActionsQuerySaveListener) {
-
         structureCartableDocumentActionRES.setETC(ETC);
         this.cartableDocumentActionsQuerySaveListener = cartableDocumentActionsQuerySaveListener;
-        new saveDocumentAction().execute(structureCartableDocumentActionRES);
+        new saveDocumentAction().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureCartableDocumentActionRES);
     }
 
     public void saveHamesh(StructureHameshRES structureHameshRES, int ETC, int EC, final HameshQuerySaveListener hameshQuerySaveListener) {
         structureHameshRES.setETC(ETC);
         structureHameshRES.setEC(EC);
         this.hameshQuerySaveListener = hameshQuerySaveListener;
-        new saveHamesh().execute(structureHameshRES);
+        new saveHamesh().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureHameshRES);
     }
 
     public void saveCartableDocumentContent(StructureCartableDocumentContentBND cartableDocumentContentBND, final CartableDocumentContentQuerySaveListener documentContentQuerySaveListener) {
         this.documentContentQuerySaveListener = documentContentQuerySaveListener;
         if (IsDocumentContentExist(cartableDocumentContentBND.getETC(), cartableDocumentContentBND.getEC())) {
-            documentContentQuerySaveListener.onExisting();
-        } else {
-            new saveCartableDocumentContent().execute(cartableDocumentContentBND);
+            if (cartableDocumentContentBND.getFileAsStringBuilder().length() < 256) {
+                File file = new File(cartableDocumentContentBND.getFileAsStringBuilder().toString());
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+            deletCartableDocumentContent(cartableDocumentContentBND.getETC(), cartableDocumentContentBND.getEC());
         }
+        new saveCartableDocumentContent().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cartableDocumentContentBND);
 
     }
 
@@ -172,22 +183,31 @@ public class FarzinCartableQuery {
         if (IsCartableHistoryExist(ETC, EC)) {
             updateCartableHistory(structureCartableHistoryBND);
         } else {
-            new saveHistory().execute(structureCartableHistoryBND);
+            new saveHistory().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureCartableHistoryBND);
         }
 
 
     }
 
-    public void saveZanjireMadrak(StructureZanjireMadrakRES structureZanjireMadrakRES, int ETC, int EC, final ZanjireMadrakQuerySaveListener zanjireMadrakQuerySaveListener) {
+    public void saveZanjireMadrak(final StructureZanjireMadrakRES structureZanjireMadrakRES, int ETC, int EC, final ZanjireMadrakQuerySaveListener zanjireMadrakQuerySaveListener) {
         structureZanjireMadrakRES.setETC(ETC);
         structureZanjireMadrakRES.setEC(EC);
         this.zanjireMadrakQuerySaveListener = zanjireMadrakQuerySaveListener;
         if (IsZanjireMadrakExist(ETC, EC)) {
-            if (deletZanjireMadrak(ETC, EC)) {
-                new saveZanjireMadrak().execute(structureZanjireMadrakRES);
-            }
+            deletZanjireMadrak(ETC, EC, new ListenerDelet() {
+                @Override
+                public void onSuccess() {
+                    new saveZanjireMadrak().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureZanjireMadrakRES);
+                }
+
+                @Override
+                public void onFailed(String error) {
+                    zanjireMadrakQuerySaveListener.onFailed(error);
+                }
+            });
+
         } else {
-            new saveZanjireMadrak().execute(structureZanjireMadrakRES);
+            new saveZanjireMadrak().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureZanjireMadrakRES);
         }
 
     }
@@ -198,20 +218,20 @@ public class FarzinCartableQuery {
         if (IsCartableDocumentTaeedQueueExist(receiveCode)) {
             cartableDocumentTaeedQueueQuerySaveListener.onExisting();
         } else {
-            new saveCartableDocumentTaeed().execute(receiveCode);
+            new saveCartableDocumentTaeed().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, receiveCode);
         }
 
     }
 
     public void saveOpticalPenQueue(StructureOpticalPenREQ opticalPenREQ, OpticalPenQueueQuerySaveListener opticalPenQueueQuerySaveListener) {
         this.opticalPenQueueQuerySaveListener = opticalPenQueueQuerySaveListener;
-        new saveOpticalPenQueue().execute(opticalPenREQ);
+        new saveOpticalPenQueue().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, opticalPenREQ);
 
     }
 
     public void saveCartableSendQueue(StructureAppendREQ structureAppendREQ, CartableSendQuerySaveListener cartableSendQuerySaveListener) {
         this.cartableSendQuerySaveListener = cartableSendQuerySaveListener;
-        new saveCartableSendQueue().execute(structureAppendREQ);
+        new saveCartableSendQueue().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureAppendREQ);
 
     }
 
@@ -317,7 +337,19 @@ public class FarzinCartableQuery {
         protected Void doInBackground(StructureCartableDocumentContentBND... cartableDocumentContentBND) {
             String fileName = "CDC" + cartableDocumentContentBND[0].getETC() + "" + cartableDocumentContentBND[0].getEC() + CustomFunction.getRandomUUID();
             fileName = fileName.replace(" ", "");
-            String filePath = new CustomFunction().saveFileToStorage(cartableDocumentContentBND[0].getFileBinary(), fileName);
+            String filePath = "";
+            Log.i("largeFile", "getFileAsStringBuilder().length()= " + cartableDocumentContentBND[0].getFileAsStringBuilder().length());
+            if (cartableDocumentContentBND[0].getFileAsStringBuilder().length() < 256) {
+                //if (cartableDocumentContentBND[0].getFileAsStringBuilder().indexOf(App.DEFAULTPATH) > 0) {
+                //filePath = CustomFunction.reNameFile(cartableDocumentContentBND[0].getFileAsStringBuilder().toString(), fileName);
+                Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + cartableDocumentContentBND[0].getFileAsStringBuilder().length());
+                filePath = cartableDocumentContentBND[0].getFileAsStringBuilder().toString();
+                fileName = CustomFunction.getFileName(filePath);
+
+                //}
+            } else {
+                filePath = new CustomFunction().saveFileToStorage(cartableDocumentContentBND[0].getFileAsStringBuilder(), fileName);
+            }
             StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB(fileName, filePath, ".pdf", cartableDocumentContentBND[0].getETC(), cartableDocumentContentBND[0].getEC());
             try {
                 mDocumentContentDao.create(structureCartableDocumentContentDB);
@@ -443,30 +475,99 @@ public class FarzinCartableQuery {
                 String fileName = "";
                 String filePath = "";
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyvast()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (structureFileRES.getFileAsStringBuilder() != null && structureFileRES.getFileAsStringBuilder().length() > 0) {
+                        stringBuilder = structureFileRES.getFileAsStringBuilder();
+                    } else {
+                        stringBuilder.append(structureFileRES.getFileBinary());
+
+                    }
+
                     fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
                     fileName = fileName.replace(" ", "");
-                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    if (stringBuilder.length() < 256) {
+                        //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
+                        //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
+                        filePath = stringBuilder.toString();
+                        fileName = CustomFunction.getFileName(filePath);
+                        //}
+                    } else {
+                        filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
+                    }
+
                     StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEYVAST, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getAtf()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (structureFileRES.getFileAsStringBuilder() != null && structureFileRES.getFileAsStringBuilder().length() > 0) {
+                        stringBuilder = structureFileRES.getFileAsStringBuilder();
+                    } else {
+                        stringBuilder.append(structureFileRES.getFileBinary());
+
+                    }
+
                     fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
                     fileName = fileName.replace(" ", "");
-                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    if (stringBuilder.length() < 256) {
+                        //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
+                        //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
+                        filePath = stringBuilder.toString();
+                        fileName = CustomFunction.getFileName(filePath);
+                        //}
+                    } else {
+                        filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
+                    }
                     StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.ATF, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getDarErtebat()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (structureFileRES.getFileAsStringBuilder() != null && structureFileRES.getFileAsStringBuilder().length() > 0) {
+                        stringBuilder = structureFileRES.getFileAsStringBuilder();
+                    } else {
+                        stringBuilder.append(structureFileRES.getFileBinary());
+
+                    }
+
                     fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
                     fileName = fileName.replace(" ", "");
-                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    Log.i("largeFile", "getFileAsStringBuilder().length() = " + stringBuilder.length());
+                    if (stringBuilder.length() < 256) {
+                        // if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
+                        // filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
+                        Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + stringBuilder.length());
+                        filePath = stringBuilder.toString();
+                        fileName = CustomFunction.getFileName(filePath);
+                        // }
+                    } else {
+                        filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
+                    }
                     StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.DARERTEBAT, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
                 for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getPeyro()) {
+                    StringBuilder stringBuilder = new StringBuilder();
+                    if (structureFileRES.getFileAsStringBuilder() != null && structureFileRES.getFileAsStringBuilder().length() > 0) {
+                        stringBuilder = structureFileRES.getFileAsStringBuilder();
+                    } else {
+                        stringBuilder.append(structureFileRES.getFileBinary());
+
+                    }
+
                     fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
                     fileName = fileName.replace(" ", "");
-                    filePath = new CustomFunction().saveFileToStorage(structureFileRES.getFileBinary(), fileName);
+                    Log.i("largeFile", "getFileAsStringBuilder().length()= " + stringBuilder.length());
+                    if (stringBuilder.length() < 256) {
+                        // if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
+                        //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
+                        Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + stringBuilder.length());
+                        filePath = stringBuilder.toString();
+                        fileName = CustomFunction.getFileName(filePath);
+                        // }
+                    } else {
+                        filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
+                    }
                     StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEIRO, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
@@ -566,6 +667,19 @@ public class FarzinCartableQuery {
         List<StructureZanjireMadrakFileDB> structureZanjireMadrakFileDBS = new ArrayList<>();
         try {
             queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC).and().eq("fileTypeEnum", fileTypeEnum);
+
+            structureZanjireMadrakFileDBS = queryBuilder.query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureZanjireMadrakFileDBS;
+    }
+
+    public List<StructureZanjireMadrakFileDB> getZanjireMadrakAllType(int ETC, int EC) {
+        QueryBuilder<StructureZanjireMadrakFileDB, Integer> queryBuilder = zanjireMadrakFileDao.queryBuilder();
+        List<StructureZanjireMadrakFileDB> structureZanjireMadrakFileDBS = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
 
             structureZanjireMadrakFileDBS = queryBuilder.query();
         } catch (SQLException e) {
@@ -755,9 +869,33 @@ public class FarzinCartableQuery {
     public void deletCartableDocumentAllContent(int receiveCode) {
         StructureInboxDocumentDB item = getCartableDocumentWithReceiveCode(receiveCode);
         deletCartableDocument(item.getEntityTypeCode(), item.getEntityCode());
-        deletZanjireMadrak(item.getEntityTypeCode(), item.getEntityCode());
+        deletCartableDocumentContent(item.getEntityTypeCode(), item.getEntityCode());
+        deletZanjireMadrak(item.getEntityTypeCode(), item.getEntityCode(), new ListenerDelet() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+
+            }
+        });
         deletCartableHameshList(item.getEntityTypeCode(), item.getEntityCode());
         deletCartableHistoryList(item.getEntityTypeCode(), item.getEntityCode());
+    }
+
+    public boolean deletCartableDocumentContent(int ETC, int EC) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureCartableDocumentContentDB, Integer> deleteBuilder = mDocumentContentDao.deleteBuilder();
+            deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
     }
 
     public boolean deletCartableDocument(int ETC, int EC) {
@@ -773,17 +911,25 @@ public class FarzinCartableQuery {
         return isDelet;
     }
 
-    public boolean deletZanjireMadrak(int ETC, int EC) {
-        boolean isDelet = false;
+    public void deletZanjireMadrak(int ETC, int EC, ListenerDelet listenerDelet) {
+        List<StructureZanjireMadrakFileDB> structureZanjireMadrakFileDBS = getZanjireMadrakAllType(ETC, EC);
+        for (StructureZanjireMadrakFileDB zanjireMadrakFileDB : structureZanjireMadrakFileDBS) {
+            if (zanjireMadrakFileDB.getFile_path().length() < 256) {
+                File file = new File(zanjireMadrakFileDB.getFile_path());
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+        }
         try {
             DeleteBuilder<StructureZanjireMadrakFileDB, Integer> deleteBuilder = zanjireMadrakFileDao.deleteBuilder();
             deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
             deleteBuilder.delete();
-            isDelet = true;
+            listenerDelet.onSuccess();
         } catch (SQLException e) {
             e.printStackTrace();
+            listenerDelet.onFailed(e.toString());
         }
-        return isDelet;
     }
 
     public boolean deletCartableSendQueue(int id) {
