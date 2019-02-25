@@ -123,7 +123,7 @@ public class IcanHttpTransportSE extends Transport {
             if (status != 200 && status != 202) {
                 throw new HttpResponseException("HTTP request failed, HTTP status: " + status, status, retHeaders);
             }
-
+            //CustomFunction.freeMemory();
             if (contentLength > 0) {
                 if (gZippedContent) {
                     is = this.getUnZippedInputStream(new BufferedInputStream(connection.openInputStream(), contentLength));
@@ -180,42 +180,19 @@ public class IcanHttpTransportSE extends Transport {
 
 
     private void readDebug(InputStream is, int contentLength, File outputFile) throws IOException {
-      /*  new CustomFunction.saveXmlResponseToStorage(is, new ListenerWorkWithFile() {
-            @Override
-            public void onSuccess(String filePath) {
-                File file = new File(filePath);
-                CustomFunction.freeMemory();
-                int kilobyte = 1024;
-                long megabyte = 1024 * kilobyte;
-                double fileSizeAsMB = (file.length() / megabyte);
-                long freeMemorySpaceAsMB  = Runtime.getRuntime().freeMemory() / megabyte;
-                long limitSize = (2 * megabyte);
-                if (fileSizeAsMB <= limitSize && fileSizeAsMB <= (freeMemorySpaceAsMB)) {
-                    //this.responseDump = new ChangeXml().charDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
-                    responseDump = new CustomFunction().readXmlResponseFromStorage(filePath);
-                    //this.requestDump = this.responseDump.replace("<strErrorMsg />", "<strErrorMsg/>");
-                } else {
-                    responseDump = filePath;
-                }
-            }
-
-            @Override
-            public void onFailed(String error) {
-                responseDump = "";
-            }
-        }).execute();*/
-
         String filePath = new CustomFunction().saveXmlResponseToStorage(is);
         File file = new File(filePath);
-        CustomFunction.freeMemory();
         int kilobyte = 1024;
-        long megabyte = 1024*1024;
+        long megabyte = 1024 * 1024;
         double fileSizeAsKB = (file.length() / kilobyte);
-        long freeMemorySpaceAsKB = Runtime.getRuntime().freeMemory() / kilobyte;
         long limitSize = (4 * megabyte);
+        CustomFunction.freeMemory();
+        long freeMemorySpaceAsKB = Runtime.getRuntime().freeMemory() / kilobyte;
+        //Log.i("readDebug", "fileSizeAsKB1= " + fileSizeAsKB + " freeMemorySpaceAsKB1= " + freeMemorySpaceAsKB);
+        //Log.i("readDebug", "fileSizeAsKB2= " + fileSizeAsKB + " freeMemorySpaceAsKB2= " + freeMemorySpaceAsKB);
         if (fileSizeAsKB <= limitSize && fileSizeAsKB <= (freeMemorySpaceAsKB)) {
             this.responseDump = new ChangeXml().charSpaceDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
-                } else {
+        } else {
             responseDump = filePath;
         }
 

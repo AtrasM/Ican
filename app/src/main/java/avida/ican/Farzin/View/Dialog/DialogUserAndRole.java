@@ -238,7 +238,6 @@ public class DialogUserAndRole {
 
     @SuppressLint("StaticFieldLeak")
     private void ValidationPerson(final ArrayList<StructurePersonREQ> structurePersonsREQ, final ListenerValidate listenerValidate) {
-        final boolean[] isValid = {false};
         new AsyncTask<Void, Void, Boolean>() {
 
 
@@ -273,10 +272,9 @@ public class DialogUserAndRole {
                 }
                 HideLoading();
                 canDo = true;
-                super.onPostExecute(aBoolean);
 
             }
-        }.execute();
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
 

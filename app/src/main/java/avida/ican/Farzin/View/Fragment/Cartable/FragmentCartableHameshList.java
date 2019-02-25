@@ -125,6 +125,7 @@ public class FragmentCartableHameshList extends BaseFragment {
 
     public void reGetData() {
         start = 0;
+        txtNoData.setVisibility(View.GONE);
         List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
 
         if (!srlRefresh.isRefreshing()) {

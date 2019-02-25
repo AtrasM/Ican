@@ -15,8 +15,8 @@
             android:id="@+id/ln_main"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -25,42 +25,56 @@
                 android:background="@color/color_White"
                 android:elevation="@dimen/elevation"
                 android:orientation="vertical"
-                android:padding="@dimen/padding_maximum">
+                android:paddingLeft="@dimen/padding_maximum"
+                android:paddingRight="@dimen/padding_maximum"
+                android:paddingTop="@dimen/padding">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/txt_name"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center|right"
+                        android:text="name" />
+
+                    <TextView
+                        android:id="@+id/txt_role_name"
+                        style="@style/custom_Txt_Normal_style"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:gravity="center|right"
+                        android:text="role name" />
 
-                        <TextView
-                            android:id="@+id/txt_name"
-                            style="@style/custom_Txt_Normal_style"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|right"
-                            android:text="name" />
+                </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/txt_role_name"
-                            style="@style/custom_Txt_Normal_style"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|right"
-                            android:text="role name" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/txt_subject"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|right"
+                        android:layout_weight="1"
+                        android:gravity="center|right"
+                        android:text="subject" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center|top"
-                        android:gravity="left|top"
+                        android:layout_gravity="center|left"
+                        android:gravity="left|center"
                         android:orientation="vertical">
 
                         <TextView
@@ -68,8 +82,9 @@
                             style="@style/custom_Txt_Sub_Title_style"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:paddingLeft="@dimen/padding_minimum"
+                            android:paddingRight="@dimen/padding_minimum"
                             android:gravity="center|left"
-                            android:paddingBottom="0dp"
                             android:text="date" />
 
                         <TextView
@@ -79,18 +94,14 @@
                             android:layout_height="wrap_content"
                             android:gravity="center|left"
                             android:paddingTop="0dp"
-                            android:text="time" />
+                            android:text="time"
+                            android:visibility="gone" />
                     </LinearLayout>
+
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/txt_subject"
-                    style="@style/custom_Txt_Sub_Title_style"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center|right"
-                    android:text="subject" />
+
             </LinearLayout>
 
             <FrameLayout

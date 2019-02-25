@@ -98,7 +98,6 @@ public class AdapterCartableHistory extends RecyclerView.Adapter<AdapterCartable
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
 
-
         final StructureNodeRES item = itemList.get(position);
 
         String receiveDate = CustomFunction.StandardizeTheDateFormat(item.getReceiveDateGeorgian());
@@ -114,7 +113,6 @@ public class AdapterCartableHistory extends RecyclerView.Adapter<AdapterCartable
         viewHolder.txtAction.setText("" + item.getReceiveAction());
         if (item.getPrivateHamesh().getContent() == null || item.getPrivateHamesh().getContent().isEmpty() || item.getPrivateHamesh().getContent().equals("null")) {
             viewHolder.txtContent.setVisibility(View.GONE);
-
         } else {
             viewHolder.txtContent.setVisibility(View.VISIBLE);
             String content = item.getPrivateHamesh().getContent();

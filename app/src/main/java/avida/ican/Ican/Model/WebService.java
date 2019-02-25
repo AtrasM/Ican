@@ -58,7 +58,7 @@ public class WebService {
     private List headerList;
     private ArrayList headerArrayList = null;
     private WebserviceResponseListener webserviceResponseListener;
-    private int TimeOut = (int) TimeValue.SecondsInMilli() * 20;
+    private int TimeOut = (int) TimeValue.SecondsInMilli() * 30;
     private String Tag = "WebService";
     private boolean IsPasswordEncript;
     private boolean isNetworkCheking;
@@ -169,6 +169,7 @@ public class WebService {
     }
 
     public void execute() {
+        //new SoapRequest().execute();
         new SoapRequest().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
        /* boolean Connected = new CheckNetworkAvailability().execuet();
         if (Connected) {

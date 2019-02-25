@@ -1,6 +1,8 @@
 package avida.ican.Ican.Model;
 
 
+import java.util.regex.Pattern;
+
 /**
  * Created by AtrasVida on 2018-03-14 at 1:31 PM
  */
@@ -88,26 +90,28 @@ public class ChangeXml {
                 .replaceAll("&amp;quot;", "\"")
                 .replaceAll("&amp;nbsp;", " ")
                 .replaceAll("&amp;copy;", "@")
-                .replaceAll("&amp;reg;", "?")
-                .replaceAll("\u0020", " ");
+                .replaceAll("&amp;reg;", "?");/*
+                .replaceAll("\u0020+", " ");*/
         return xml;
     }
 
     public String charSpaceDecoder(String xml) {
-        xml = xml.replaceAll("&amp;nbsp;", " ")
-                .replaceAll("\u0020", " ");
+        xml = xml.replaceAll("&amp;nbsp;+", " ");/*
+                .replaceAll("\u0020+", " ");*/
         return xml;
     }
 
     public String saxCharEncoder(String xml) {
-        xml = xml.replaceAll("&", "&amp;")
-                .replaceAll("&amp;amp;", "&amp;")
-                .replaceAll("\\s", "\u0020")
-                .replaceAll(" ", "\u0020");
+       /* Pattern  p = Pattern.compile("[\\s ]+");
+        xml = p.matcher(xml).replaceAll("%20");*/
+
+        xml = xml.replaceAll("&+", "&amp;")
+                .replaceAll("&amp;amp;+", "&amp;");
+                /*replaceAll("\\s+", "\u0020")
+                .replaceAll(" ", "\u0020");*/
 
         return xml;
     }
-
 
     public String viewCharDecoder(String data) {
         if (data != null && !data.isEmpty()) {
@@ -118,4 +122,5 @@ public class ChangeXml {
 
         return data;
     }
+
 }

@@ -49,8 +49,8 @@ import avida.ican.R;
  */
 
 public class GetRecieveMessageService extends Service {
-    private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
+    private final long DELAY = TimeValue.SecondsInMilli() * 40;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 2;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private MessageListListener messageListListener;
     private Context context;
@@ -226,11 +226,33 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
+               handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            messageList.remove(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        SaveMessage(messageList);
+                    }
+                }, FAILED_DELAY);
                 ShowToast("save message onFailed");
             }
 
             @Override
             public void onCancel() {
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            messageList.remove(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        SaveMessage(messageList);
+                    }
+                }, FAILED_DELAY);
                 ShowToast("save message onCancel");
             }
         });
@@ -240,6 +262,7 @@ public class GetRecieveMessageService extends Service {
 
     private void CallMulltiMessageNotification() {
         if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
+            newCount=0;
             return;
         }
         if (!canShowNotification) {

@@ -44,7 +44,7 @@ import avida.ican.R;
 
 public class GetCartableDocumentService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 2;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;

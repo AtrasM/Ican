@@ -170,7 +170,7 @@ public class FarzinMessageQuery {
         @Override
         protected Void doInBackground(Type... types) {
             StructureMessageDB structureMessageDB;
-            content = CustomFunction.AddXmlCData(content);
+            //content = CustomFunction.AddXmlCData(content);
             //String mDate = CustomFunction.StandardizeTheDateFormat(tempstrDate);
             Date date = new Date();
             if (tempstrDate != null && !tempstrDate.isEmpty()) {
@@ -215,25 +215,6 @@ public class FarzinMessageQuery {
                         threadSleep();
                     }
                 }
-               /* if (types != null) {
-                    if (types[0] == Type.RECEIVED) {
-                        if (App.fragmentMessageList != null) {
-                            final ArrayList<StructureMessageDB> structureMessagesDB = new ArrayList<>();
-                            structureMessagesDB.add(GetMessage(structureMessageDB.getMain_id()));
-                            if (App.CurentActivity != null) {
-                                App.CurentActivity.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        App.fragmentMessageList.AddReceiveNewMessage(structureMessagesDB);
-                                        // UpdateAllNewMessageStatusToUnreadStatus();
-                                    }
-                                });
-
-                            }
-
-                        }
-                    }
-                }*/
                 messageQuerySaveListener.onSuccess(GetMessage(structureMessageDB.getMain_id()));
 
             } catch (SQLException e) {

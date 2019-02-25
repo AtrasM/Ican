@@ -19,7 +19,7 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 public class CheckServerAviableService extends Service {
     private final long DELAYWhenAppClose = TimeValue.SecondsInMilli() * 35;
-    private final long DELAY = TimeValue.SecondsInMilli() * 10;
+    private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 15;
     private Context context;
     private ListenerNetwork listenerNetwork;

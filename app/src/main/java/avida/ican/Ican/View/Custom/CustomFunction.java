@@ -294,7 +294,11 @@ public class CustomFunction {
         String fileExtension = structureAttach.getFileExtension();
         Log.i("OpenFile", "file path = " + structureAttach.getFilePath());
         byte[] fileAsBytes = new byte[0];
-        fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
+        if (structureAttach.getFilePath() != null && !structureAttach.getFilePath().isEmpty()) {
+            fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
+        } else {
+            fileAsBytes = android.util.Base64.decode(structureAttach.getFileAsStringBuilder().toString(), android.util.Base64.NO_WRAP);
+        }
         Log.i("OpenFile", "fileAsBytes.length = " + fileAsBytes.length);
         File file = null;
         if (fileAsBytes != null && fileAsBytes.length > 0) {
@@ -444,22 +448,26 @@ public class CustomFunction {
 
     public String saveXmlResponseToStorage(InputStream is) {
 
-
+        boolean isError = false;
         File dir = new File(App.RESPONSEPATH);
         if (!dir.exists()) {
             dir.mkdirs();
         }
         String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
-        int buferSize = 4 * 1024;
+        long megabyte = 1024 * 1024;
+        int buferSize = 8 * 1024;
+        FileOutputStream fOut = null;
         try {
-            FileOutputStream fOut = new FileOutputStream(filePath);
+            fOut = new FileOutputStream(filePath);
             OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
             byte[] buffer = new byte[buferSize]; // or other buffer size
-            while (is.read(buffer) != -1) {
-                String data = new String(buffer, "UTF-8");
+            int read = 0;
+            while ((read = is.read(buffer)) != -1) {
+                //String data = new String(buffer, "UTF-8");
+                String data = new String(buffer, 0, read, "UTF-8");
                 buffer = new byte[buferSize];
                 data = new ChangeXml().saxCharEncoder(data);
-                myOutWriter.append(data.trim());
+                myOutWriter.append(data);
                 //Thread.sleep(50);
             }
 
@@ -468,13 +476,26 @@ public class CustomFunction {
             fOut.flush();
             fOut.close();
         } catch (IOException e) {
+            isError = true;
             Log.e("Exception", "File write failed: " + e.toString());
         } catch (Exception e) {
+            isError = true;
             Log.e("Exception", "File write failed: " + e.toString());
             e.printStackTrace();
         }
 
-
+        if (isError) {
+            try {
+                fOut.flush();
+                fOut.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            File file = new File(filePath);
+            file.delete();
+            filePath = "";
+            Log.e("isError", "error to save file");
+        }
         return filePath;
     }
 
@@ -693,17 +714,23 @@ public class CustomFunction {
     }
 
     public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long delay) {
-        Date lastDate = new Date(strLastDate);
-        Date curentDate = getCurentDateTime();
-        //int a = curentDate.compareTo(lastDate);
-        long dificalt = curentDate.getTime() - lastDate.getTime();
-        CompareDateTimeEnum compareDateTimeEnum;
-        if (dificalt >= delay) {
-            compareDateTimeEnum = CompareDateTimeEnum.isAfter;
-        } else {
-            compareDateTimeEnum = CompareDateTimeEnum.isBefore;
+        try {
+            Date lastDate = new Date(strLastDate);
+            Date curentDate = getCurentDateTime();
+            //int a = curentDate.compareTo(lastDate);
+            long dificalt = curentDate.getTime() - lastDate.getTime();
+            CompareDateTimeEnum compareDateTimeEnum;
+            if (dificalt >= delay) {
+                compareDateTimeEnum = CompareDateTimeEnum.isAfter;
+            } else {
+                compareDateTimeEnum = CompareDateTimeEnum.isBefore;
+            }
+            return compareDateTimeEnum;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return CompareDateTimeEnum.ErrorFormat;
         }
-        return compareDateTimeEnum;
+
     }
 
     public static CompareDateTimeEnum compareDates(String DateTime1, String DateTime2) {
@@ -777,6 +804,7 @@ public class CustomFunction {
         if (myText.contains("![CDATA[")) {
             myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
         }
+        myText = changeXml.saxCharEncoder(myText);
         myText = changeXml.charDecoder(myText);
         UrlImageParser p = new UrlImageParser(myExTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);

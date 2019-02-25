@@ -163,25 +163,24 @@ public class CartableDocumentTaeedQueueService extends Service {
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-
-                        App.getHandlerMainThread().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
                                 startTaeedQueueTimer();
-                            }
-                        }, FAILED_DELAY);
                     } else {
                         StructureCartableDocumentTaeedQueueDB cartableDocumentTaeedQueueDB = new FarzinCartableQuery().getFirstItemTaeedQueue();
 
                         if (cartableDocumentTaeedQueueDB != null) {
                             if (cartableDocumentTaeedQueueDB.getReceiveCode() > 0) {
                                 TaeedDocument(cartableDocumentTaeedQueueDB.getReceiveCode());
+                            }else{
+                                startTaeedQueueTimer();
                             }
+                        }else{
+                            startTaeedQueueTimer();
                         }
                     }
 
 
                 } catch (Exception e) {
+                    startTaeedQueueTimer();
                     e.printStackTrace();
                 }
             }

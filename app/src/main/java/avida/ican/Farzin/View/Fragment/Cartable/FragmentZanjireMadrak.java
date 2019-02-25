@@ -134,7 +134,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     public void run() {
                         if (counter == 0) {
                             txtNoData.setVisibility(View.VISIBLE);
-                        }else{
+                        } else {
                             txtNoData.setVisibility(View.GONE);
                         }
 
@@ -232,6 +232,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
     }
 
     private void reGetData() {
+        txtNoData.setVisibility(View.GONE);
         if (!srlRefresh.isRefreshing()) {
             lnLoading.setVisibility(View.VISIBLE);
         }
@@ -241,7 +242,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
             ProcessData();
             if (counter <= 0) {
                 txtNoData.setVisibility(View.VISIBLE);
-            }else{
+            } else {
                 txtNoData.setVisibility(View.GONE);
             }
             srlRefresh.setRefreshing(false);

@@ -169,7 +169,7 @@ public class GetMessageFromServerPresenter {
 
     private void sleep() {
         try {
-            Thread.sleep(TimeValue.SecondsInMilli() * 15);
+            Thread.sleep(TimeValue.SecondsInMilli() * 5);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

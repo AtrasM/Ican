@@ -8,4 +8,5 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 
 public interface ListenerAdapterAttach {
     void onOpenFile(StructureAttach structureAttach);
+    void onDeletFile(StructureAttach structureAttach);
 }

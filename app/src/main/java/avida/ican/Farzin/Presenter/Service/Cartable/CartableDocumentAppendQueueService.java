@@ -166,24 +166,23 @@ public class CartableDocumentAppendQueueService extends Service {
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-
-                        App.getHandlerMainThread().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                startSendQueueTimer();
-                            }
-                        }, FAILED_DELAY);
+                        startSendQueueTimer();
                     } else {
                         StructureCartableSendQueueDB structureCartableSendQueueDB = new FarzinCartableQuery().getFirstItemCartableSendQueue();
                         if (structureCartableSendQueueDB != null) {
                             if (structureCartableSendQueueDB.getETC() > 0) {
                                 CartableSend(structureCartableSendQueueDB);
+                            } else {
+                                startSendQueueTimer();
                             }
+                        } else {
+                            startSendQueueTimer();
                         }
                     }
 
 
                 } catch (Exception e) {
+                    startSendQueueTimer();
                     e.printStackTrace();
                 }
             }

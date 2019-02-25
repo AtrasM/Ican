@@ -14,7 +14,6 @@ import android.widget.EditText;
 
 import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleMain;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
-import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;

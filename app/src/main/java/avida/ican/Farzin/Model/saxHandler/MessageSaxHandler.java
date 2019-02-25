@@ -88,7 +88,7 @@ public class MessageSaxHandler extends DefaultHandler {
             Message = new StructureMessageRES();
         } else if (qName.equalsIgnoreCase("Receivers")) {
             Receivers = new ArrayList<>();
-        }else if (qName.equalsIgnoreCase("Receiver")) {
+        } else if (qName.equalsIgnoreCase("Receiver")) {
             Receiver = new StructureReceiverRES();
         } else if (qName.equalsIgnoreCase("Sender")) {
             Sender = new StructureSenderRES();
@@ -115,7 +115,7 @@ public class MessageSaxHandler extends DefaultHandler {
         } else {
             sb.append(buffer, start, length);
         }
-    /*    try {
+       /* try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();

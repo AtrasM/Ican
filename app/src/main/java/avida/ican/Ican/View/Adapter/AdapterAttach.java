@@ -91,7 +91,13 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureAttach item = itemList.get(position);
+        if (item.getName() == null || item.getName().isEmpty() || item.getName().contains("null")) {
+            item.setName(Resorse.getString(R.string.noName));
+        }
         if (!item.getFileExtension().isEmpty()) {
+            if (item.getName().contains(".ican")) {
+                item.getName().replace(".ican", "");
+            }
             if (item.getName().contains(item.getFileExtension())) {
                 viewHolder.txtName.setText(item.getName());
             } else {
@@ -158,7 +164,7 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                     public void onCancel() {
 
                     }
-                }).Show();
+                }).setTitle(Resorse.getString(R.string.delet_question)).Show();
             }
         });
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +192,7 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
         int pos = itemList.indexOf(structureAttach);
         if (pos > -1) {
             itemList.remove(structureAttach);
+            listenerAdapterAttach.onDeletFile(structureAttach);
             notifyItemRemoved(pos);
         }
 

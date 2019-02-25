@@ -67,7 +67,7 @@ public class App extends MultiDexApplication {
     public static HashMap<String, Stack<Activity>> activityStacks;
     private static FarzinBroadcastReceiver farzinBroadCastReceiver;
     public static Activity activity;
-    public static final long DELAYWhenAppClose = TimeValue.MinutesInMilli() * 5;
+    public static final long DELAYWhenAppClose = TimeValue.MinutesInMilli() * 3;
 
     @Override
     public void onCreate() {

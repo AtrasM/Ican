@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_Black"
-    android:paddingTop="@dimen/padding_maximum"
     android:paddingBottom="@dimen/padding_maximum"
+    android:paddingTop="@dimen/padding_maximum"
     tools:context="avida.ican.Ican.View.ActivityImageViewer">
 
 
@@ -14,6 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:layout_margin="@dimen/margin_maximum"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -21,22 +22,16 @@
             android:id="@+id/image_viewer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border_rcv"
-            android:layout_marginTop="@dimen/margin_maximum"
-            android:layout_marginBottom="@dimen/margin_maximum"
             android:adjustViewBounds="true"
+            android:background="@drawable/border_rcv"
             android:scaleType="fitCenter" />
-      <!--  <Button
-            android:id="@+id/btn_dialog_image_viewer_close"
-            style="@style/custom_close_button_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/close" />-->
+        <!--  <Button
+              android:id="@+id/btn_dialog_image_viewer_close"
+              style="@style/custom_close_button_style"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:text="@string/close" />-->
     </LinearLayout>
-
-
-
-
 
 
 </FrameLayout>

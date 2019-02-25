@@ -37,8 +37,8 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 
 public class GetSentMessageService extends Service {
 
-    private final long DELAY = TimeValue.SecondsInMilli() * 35;
-    private final long LOWDELAY = TimeValue.SecondsInMilli() * 5;
+    private final long DELAY = TimeValue.SecondsInMilli() * 40;
+    private final long LOWDELAY = TimeValue.SecondsInMilli() * 2;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
     private MessageListListener messageListListener;
     private Context context;
@@ -158,7 +158,7 @@ public class GetSentMessageService extends Service {
                 return null;
             }
         };
-        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,structureMessageRES.getReceivers());
+        asyncTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureMessageRES.getReceivers());
 
         farzinMessageQuery.SaveMessage(structureMessageRES, Type.SENDED, status, new MessageQuerySaveListener() {
 
@@ -200,11 +200,34 @@ public class GetSentMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
+                App.getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            messageList.remove(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        SaveMessage(messageList);
+                    }
+                }, FAILED_DELAY);
+
                 ShowToast("save message onFailed");
             }
 
             @Override
             public void onCancel() {
+                App.getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            messageList.remove(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        SaveMessage(messageList);
+                    }
+                }, FAILED_DELAY);
                 ShowToast("save message onCancel");
             }
         });

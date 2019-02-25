@@ -165,6 +165,11 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
             public void onOpenFile(StructureAttach structureAttach) {
                 file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
             }
+
+            @Override
+            public void onDeletFile(StructureAttach structureAttach) {
+                structureAttaches.remove(structureAttach);
+            }
         });
         rcvAttach.setAdapter(adapterAttach);
 

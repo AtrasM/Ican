@@ -38,8 +38,8 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     LinearLayout lnLoading;
     @BindView(R.id.txt_pdf_page_number)
     TextView txtPdfPageNumber;
-    @BindView(R.id.srl_refresh)
-    SwipeRefreshLayout srlRefresh;
+    /*    @BindView(R.id.srl_refresh)
+        SwipeRefreshLayout srlRefresh;*/
     private Activity context;
     private int Etc;
     private int Ec;
@@ -69,12 +69,12 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         txtNoData.setText(Resorse.getString(R.string.error_cartable_document_content));
-        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+      /*  srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 reGetData();
             }
-        });
+        });*/
         initPresenter();
     }
 
@@ -88,7 +88,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
-                        srlRefresh.setRefreshing(false);
+                        //srlRefresh.setRefreshing(false);
                         initPdfViewer(filePath);
                     }
                 });
@@ -100,7 +100,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                     @Override
                     public void run() {
                         lnLoading.setVisibility(View.GONE);
-                        srlRefresh.setRefreshing(false);
+                        // srlRefresh.setRefreshing(false);
                         if (FileAsBytes == null) {
                             txtNoData.setVisibility(View.VISIBLE);
                         }
@@ -125,7 +125,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
             } else {
                 lnLoading.setVisibility(View.GONE);
                 txtNoData.setVisibility(View.VISIBLE);
-                srlRefresh.setRefreshing(false);
+                //srlRefresh.setRefreshing(false);
             }
         }
     }
@@ -146,7 +146,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     }
 
     private void initPdfViewer(String filePath) {
-        srlRefresh.setRefreshing(false);
+        //srlRefresh.setRefreshing(false);
         if (filePath != null && !filePath.isEmpty()) {
             byte[] fileAsbytes = new CustomFunction().getFileFromStorageAsByte(filePath);
             Log.i("PdfViewer", "initPdfViewer fileAsbytes.length = " + fileAsbytes.length);

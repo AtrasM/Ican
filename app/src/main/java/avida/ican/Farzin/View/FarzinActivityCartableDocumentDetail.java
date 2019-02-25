@@ -306,7 +306,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
     //_________________________________*****___Send___*****__________________________________
     private void Send(final StructureAppendREQ structureAppendREQ, final boolean TaeedAndSend) {
-        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+       if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             SendAddToQueue(structureAppendREQ);
             if (TaeedAndSend) {
                 Taeed();

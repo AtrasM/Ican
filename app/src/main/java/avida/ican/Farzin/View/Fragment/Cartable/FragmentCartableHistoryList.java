@@ -168,6 +168,7 @@ public class FragmentCartableHistoryList extends BaseFragment {
     }
 
     private void reGetData() {
+        txtNoData.setVisibility(View.GONE);
         if (!srlRefresh.isRefreshing()) {
             lnLoading.setVisibility(View.VISIBLE);
         }

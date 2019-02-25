@@ -213,6 +213,11 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             public void onOpenFile(StructureAttach structureAttach) {
                 file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
             }
+
+            @Override
+            public void onDeletFile(StructureAttach structureAttach) {
+                structureAttaches.remove(structureAttach);
+            }
         });
         RcvAttach.setAdapter(adapterAttach);
     }
@@ -258,8 +263,9 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         reMsg.focusEditor();
         //reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
         reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
+        reMsg.focusEditor();
         reMsg.setAlignRight();
-        reMsg.getRight();
+        //reMsg.getRight();
         reMsg.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
             @Override
             public void onTextChange(String text) {
@@ -372,7 +378,8 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 reMsg.setNumbers();
             }
         });
-
+        reMsg.focusEditor();
+        reMsg.setAlignRight();
     }
 
 

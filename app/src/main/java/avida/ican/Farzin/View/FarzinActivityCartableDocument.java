@@ -432,8 +432,6 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     private void Send(final StructureAppendREQ structureAppendREQ) {
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             SendAddToQueue(structureAppendREQ);
-
-
         } else {
             new CartableDocumentAppendToServerPresenter().AppendDocument(structureAppendREQ, new SendListener() {
                 @Override
@@ -453,8 +451,8 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
                 @Override
                 public void onFinish() {
-                    lnLoading.setVisibility(View.GONE);
                     App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_send_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    lnLoading.setVisibility(View.GONE);
 
                 }
             });

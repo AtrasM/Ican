@@ -169,7 +169,7 @@
                                 style="@style/custom_ic_right_style"
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
-                                app:srcCompat="@drawable/ic_atf" />
+                                app:srcCompat="@drawable/ic_dar_ertebat" />
 
                             <TextView
                                 style="@style/custom_Txt_Normal_style"

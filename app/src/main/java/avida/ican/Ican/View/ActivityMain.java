@@ -143,11 +143,16 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-                //String filePath = App.RESPONSEPATH + "/c07b94026ba2495cbcf1d2604605db73.ican";
-                String filePath = "/storage/emulated/0/IcanData/File/2019_2_12/c07b94026ba2495cbcf1d2604605db73.ican";
+                String data="xml data 12/98 10:02  ";
+                 data="xml data 12/98 10:02 ";
+                data = new ChangeXml().saxCharEncoder(data);
+                data=data.trim();
+                data = new ChangeXml().viewCharDecoder(data);
+                //String filePath = App/.RESPONSEPATH + "/c07b94026ba2495cbcf1d2604605db73.ican";
+              /*  String filePath = "/storage/emulated/0/IcanData/File/2019_2_12/c07b94026ba2495cbcf1d2604605db73.ican";
                 //String filePath2=    CustomFunction.reNameFile(filePath,"atras.txt");
                 StructureAttach structureAttach = new StructureAttach(filePath, "file", ".jpg");
-                new CustomFunction(this).OpenFile(structureAttach);
+                new CustomFunction(this).OpenFile(structureAttach);*/
 /*
                 String filePath = App.RESPONSEPATH + "/data.xml";
                 String filePath2 = App.RESPONSEPATH + "/response_data.xml";

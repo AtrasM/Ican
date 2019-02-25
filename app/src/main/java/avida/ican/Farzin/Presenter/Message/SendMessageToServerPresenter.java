@@ -76,7 +76,6 @@ public class SendMessageToServerPresenter {
         SoapObject messageFileHeader = new SoapObject(NameSpace, "messagefile");
 
         for (int i = 0; i < structureAttaches.size(); i++) {
-
             String fileAsBase64 = new CustomFunction().getFileFromStorageAsBase64(structureAttaches.get(i).getFilePath());
             StructureMessageFileREQ structureMessageFileREQ = new StructureMessageFileREQ(structureAttaches.get(i).getName(), fileAsBase64, structureAttaches.get(i).getFileExtension());
             messageFileHeader.addProperty("MessageFile", structureMessageFileREQ);

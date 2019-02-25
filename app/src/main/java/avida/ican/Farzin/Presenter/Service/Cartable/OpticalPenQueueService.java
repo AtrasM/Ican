@@ -164,25 +164,24 @@ public class OpticalPenQueueService extends Service {
             public void run() {
                 try {
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-
-                        App.getHandlerMainThread().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
                                 startOpticalPenQueueTimer();
-                            }
-                        }, FAILED_DELAY);
                     } else {
                         StructureOpticalPenQueueDB structureOpticalPenQueueDB = new FarzinCartableQuery().getFirstItemOpticalPenQueue();
 
                         if (structureOpticalPenQueueDB != null) {
                             if (structureOpticalPenQueueDB.getETC() > 0) {
                                 sendOpticalPen(structureOpticalPenQueueDB);
+                            }else{
+                                startOpticalPenQueueTimer();
                             }
+                        }else{
+                            startOpticalPenQueueTimer();
                         }
                     }
 
 
                 } catch (Exception e) {
+                    startOpticalPenQueueTimer();
                     e.printStackTrace();
                 }
             }

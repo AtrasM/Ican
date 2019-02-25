@@ -36,9 +36,7 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 public class SendMessageService extends Service {
 
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
-    private Timer timer;
-    private TimerTask timerTask;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 5;
     private SendMessageServiceListener sendMessageServiceListener;
     private Context context;
     private Handler handler = new Handler();
@@ -88,7 +86,9 @@ public class SendMessageService extends Service {
 
                         } else {
                             if (tryCount == MaxTry) {
-                                new FarzinMessageQuery().UpdateMessageQueueStatus(structureMessageQueueDBS.get(0).getId(), Status.STOPED);
+                                if (structureMessageQueueDBS.get(0).getMessage().getStatus() == Status.WAITING) {
+                                    new FarzinMessageQuery().UpdateMessageQueueStatus(structureMessageQueueDBS.get(0).getId(), Status.STOPED);
+                                }
                                 structureMessageQueueDBS.remove(0);
                                 tryCount = 0;
                             }
@@ -101,7 +101,7 @@ public class SendMessageService extends Service {
                         }
 
                     }
-                }, DELAY);
+                }, FAILED_DELAY);
             }
 
             @Override
@@ -112,12 +112,13 @@ public class SendMessageService extends Service {
                         ShowToast("onCancel");
                         SendMessage(structureMessageQueueDBS);
                     }
-                }, DELAY);
+                }, FAILED_DELAY);
 
             }
 
             @Override
             public void onFinish() {
+                tryCount = 0;
                 startMessageQueueTimer();
             }
         };
@@ -176,6 +177,7 @@ public class SendMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
+
                 sendMessageServiceListener.onFailed(message, structureMessageQueueDBS);
             }
 
@@ -217,13 +219,7 @@ public class SendMessageService extends Service {
                 try {
 
                     if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-
-                        App.getHandlerMainThread().postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                startMessageQueueTimer();
-                            }
-                        }, FAILED_DELAY);
+                        startMessageQueueTimer();
                     } else {
                         List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.WAITING);
 
@@ -233,12 +229,15 @@ public class SendMessageService extends Service {
                             structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID(), Status.STOPED);
                             if (structureMessageQueueDBS.size() > 0) {
                                 SendMessage(structureMessageQueueDBS);
+                            } else {
+                                startMessageQueueTimer();
                             }
                         }
                     }
 
 
                 } catch (Exception e) {
+                    startMessageQueueTimer();
                     e.printStackTrace();
                 }
 
