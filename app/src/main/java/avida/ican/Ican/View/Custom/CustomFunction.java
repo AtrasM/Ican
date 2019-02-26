@@ -6,13 +6,13 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -32,28 +32,23 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -64,15 +59,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
-import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
-import avida.ican.Ican.Model.Interface.ListenerWorkWithFile;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.ActivityImageViewer;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
@@ -292,8 +286,12 @@ public class CustomFunction {
     public File OpenFile(StructureAttach structureAttach) {
         String fileName = structureAttach.getName();
         String fileExtension = structureAttach.getFileExtension();
+        fileExtension = fileExtension.replace("waw", "wav");
         Log.i("OpenFile", "file path = " + structureAttach.getFilePath());
         byte[] fileAsBytes = new byte[0];
+        if (!anDisplayFile(activity, fileExtension)) {
+            return null;
+        }
         if (structureAttach.getFilePath() != null && !structureAttach.getFilePath().isEmpty()) {
             fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
         } else {
@@ -307,7 +305,6 @@ public class CustomFunction {
                 goToActivity(ActivityImageViewer.class);
                 return file;
             } else {
-                fileExtension = fileExtension.replace("waw", "wav");
                 boolean b = new CheckPermission().writeExternalStorage(1, activity);
 
                 if (b) {
@@ -343,6 +340,7 @@ public class CustomFunction {
                         }
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                         activity.startActivity(intent);
+
                     } catch (
                             IOException e) {
                         e.printStackTrace();
@@ -365,6 +363,28 @@ public class CustomFunction {
     private boolean UnSupportMediaFormat(String fileExtension) {
         String format = ".tiff";
         return format.contains(fileExtension);
+    }
+
+    private boolean anDisplayFile(Activity activity, String extention) {
+        PackageManager pm = activity.getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        String type = mime.getMimeTypeFromExtension(extention.replace(".", ""));
+        intent.setType(type);
+        List list = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (list.size() > 0) {
+            // There is something installed that can VIEW this file)
+            return true;
+        } else {
+            // Offer to download a viewer here
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_open_file_as_this_extention), ToastEnum.TOAST_LONG_TIME);
+                }
+            });
+            return false;
+        }
     }
 
 
@@ -455,7 +475,7 @@ public class CustomFunction {
         }
         String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
         long megabyte = 1024 * 1024;
-        int buferSize = 8 * 1024;
+        int buferSize =3*1024;
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(filePath);

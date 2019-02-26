@@ -68,7 +68,6 @@ public class GetRecieveMessageService extends Service {
     private long tempDelay = LOWDELAY;
     private boolean canShowNotification = true;
 
-
     @Override
     public void onCreate() {
         context = App.getServiceContext();
@@ -86,7 +85,6 @@ public class GetRecieveMessageService extends Service {
         }
 
         pageNumber = 1;
-
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
         farzinMessageQuery = new FarzinMessageQuery();
         messageListListener = new MessageListListener() {
@@ -226,7 +224,7 @@ public class GetRecieveMessageService extends Service {
 
             @Override
             public void onFailed(String message) {
-               handler.postDelayed(new Runnable() {
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -262,7 +260,7 @@ public class GetRecieveMessageService extends Service {
 
     private void CallMulltiMessageNotification() {
         if (!getFarzinPrefrences().isDataForFirstTimeSync()) {
-            newCount=0;
+            newCount = 0;
             return;
         }
         if (!canShowNotification) {

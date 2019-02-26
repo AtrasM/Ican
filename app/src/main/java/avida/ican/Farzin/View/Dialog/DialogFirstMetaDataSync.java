@@ -17,7 +17,10 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 
 /**
@@ -53,14 +56,28 @@ public class DialogFirstMetaDataSync {
             if (serviceCounter >= SERVICECOUNT) {
                 endTime = System.nanoTime();
                 long elapsedTime = endTime - startTime;
-                double seconds = (double) elapsedTime / 1_000_000_000.0;
+                final double seconds = (double) elapsedTime / 1_000_000_000.0;
                 Log.i("SyncTime", "endSyncTime= " + elapsedTime);
                 Log.i("SyncTime", "elapsedTime as Seconds= " + seconds);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Message().ShowSnackBar("elapsedTime as Seconds= " + seconds, SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }
+                });
                 farzinPrefrences.putDataForFirstTimeSync(true);
-                if (BaseActivity.dialogMataDataSync != null) {
+                try {
+                    App.canBack = true;
+                    dismiss();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+              /*  if (BaseActivity.dialogMataDataSync != null) {
                     dismiss();
                     App.canBack = true;
-                }
+                } */
+
+
             }
         } catch (Exception e) {
             e.printStackTrace();

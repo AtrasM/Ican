@@ -181,7 +181,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             }
         });
 
-        //if (!farzinPrefrences.isDataForFirstTimeSync()) {
         if (!farzinPrefrences.isDataForFirstTimeSync()) {
             container.setVisibility(View.GONE);
 
@@ -189,6 +188,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 @Override
                 public void onFinish() {
                     if (staticbottomNavigation != null) {
+                        staticbottomNavigation.setCurrentItem(0);
                         staticbottomNavigation.setCurrentItem(1);
                         container.setVisibility(View.VISIBLE);
                     }

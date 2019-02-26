@@ -244,7 +244,7 @@ public class FarzinMessageQuery {
         List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
         try {
             queryBuilder.where().eq("sender_user_id", user_id).and().eq("sender_role_id", role_id).and().eq("status", status);
-            structureMessageQueueDBS = queryBuilder.query();
+            structureMessageQueueDBS = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -296,7 +296,7 @@ public class FarzinMessageQuery {
                 messageQB.offset(start).limit(count);
             }
 
-            structureMessageDBS = messageQB.orderBy("sent_date", false).query();
+            structureMessageDBS = messageQB.distinct().orderBy("sent_date", false).query();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -318,8 +318,6 @@ public class FarzinMessageQuery {
                     receiverQB.where().eq("is_read", false);
                 }
                 messageQB.join(receiverQB);
-                //where.eq("sender_user_id", user_id);
-
             }
             //where.and(where.eq("sender_user_id", user_id), where.or(where.ne("status", Status.STOPED), where.ne("status", Status.WAITING)));
             where.eq("sender_user_id", user_id).and().eq("type", Type.SENDED).and().ne("status", Status.STOPED).and().ne("status", Status.WAITING);
@@ -328,7 +326,8 @@ public class FarzinMessageQuery {
             if (count > 0) {
                 messageQB.offset(start).limit(count);
             }
-            structureMessageDBS = messageQB.orderBy("sent_date", false).query();
+            structureMessageDBS = messageQB.distinct().orderBy("sent_date", false).query();
+            //structureMessageDBS = messageQB.orderBy("sent_date", false).query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -511,7 +510,7 @@ public class FarzinMessageQuery {
         try {
             queryBuilder.setWhere(queryBuilder.where().eq("main_id", ID).and().eq("type", type));
             queryBuilder.setCountOf(true);
-            long count = messageDao.countOf(queryBuilder.prepare());
+            long count = messageDao.countOf(queryBuilder.distinct().prepare());
             // long count = queryBuilder.countOf();
             if (count > 0) existing = true;
         } catch (SQLException e) {

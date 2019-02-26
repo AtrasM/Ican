@@ -354,7 +354,7 @@ public class WebService {
         IcanHttpTransportSE androidHttpTransport = new IcanHttpTransportSE(URL, TimeOut);
         androidHttpTransport.debug = true;
         webServiceResponse.setHeaderList(androidHttpTransport.call(SOAP_ACTION, envelope, null));
-        return WebServiceResponse( androidHttpTransport, webServiceResponse.getHeaderList());
+        return WebServiceResponse(androidHttpTransport, webServiceResponse.getHeaderList());
     }
 
     private WebServiceResponse CallApi() throws IOException, XmlPullParserException {
@@ -380,10 +380,10 @@ public class WebService {
             e.printStackTrace();
         }
 
-        return WebServiceResponse( androidHttpTransport, webServiceResponse.getHeaderList());
+        return WebServiceResponse(androidHttpTransport, webServiceResponse.getHeaderList());
     }
 
-    private WebServiceResponse WebServiceResponse( IcanHttpTransportSE androidHttpTransport, List headerList) {
+    private WebServiceResponse WebServiceResponse(IcanHttpTransportSE androidHttpTransport, List headerList) {
         //webServiceResponse.setEnvelope(envelope);
         webServiceResponse.setHttpTransportSE(androidHttpTransport);
         webServiceResponse.setHeaderList(headerList);

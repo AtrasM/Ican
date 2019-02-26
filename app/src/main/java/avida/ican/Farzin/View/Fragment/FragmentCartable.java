@@ -165,6 +165,7 @@ public class FragmentCartable extends BaseFragment {
     private void initData() {
         structureCartableActions = new FarzinCartableQuery().getCartableAction(false, null);
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
+        checkData();
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
         } else {

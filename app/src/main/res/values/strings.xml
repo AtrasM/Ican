@@ -131,6 +131,7 @@
     <string name="error_null_image">مشکل در پردازش تصویر!</string>
     <string name="shouldAllowexternalStoragePermision">برنامه نیاز به دسترسی به حافظه دستگاه را دارد تا شما بتوانید عکس، ویدئو و دیگر رسانه ها را دریافت و ارسال کنید.</string>
     <string name="noName">بی نام</string>
+    <string name="error_open_file_as_this_extention">برنامه ای برای نمایش این فایل یافت نشد!</string>
 
 
 </resources>

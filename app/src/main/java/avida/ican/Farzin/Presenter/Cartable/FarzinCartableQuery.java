@@ -599,7 +599,7 @@ public class FarzinCartableQuery {
         try {
             queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC).and().eq("hameshType", "Image");
 
-            structureHameshsDB = queryBuilder.orderBy("CreationDate", true).query();
+            structureHameshsDB = queryBuilder.distinct().orderBy("CreationDate", true).query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -615,7 +615,7 @@ public class FarzinCartableQuery {
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
-            structureHameshsDB = queryBuilder.orderBy("CreationDate", true).query();
+            structureHameshsDB = queryBuilder.distinct().orderBy("CreationDate", true).query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -639,7 +639,7 @@ public class FarzinCartableQuery {
         List<StructureCartableDocumentActionsDB> documentActionsDB = new ArrayList<>();
         try {
             queryBuilder.where().eq("ETC", ETC);
-            documentActionsDB = queryBuilder.query();
+            documentActionsDB = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -655,7 +655,7 @@ public class FarzinCartableQuery {
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
-            structureCartableHistoryDBS = queryBuilder.query();
+            structureCartableHistoryDBS = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -668,7 +668,7 @@ public class FarzinCartableQuery {
         try {
             queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC).and().eq("fileTypeEnum", fileTypeEnum);
 
-            structureZanjireMadrakFileDBS = queryBuilder.query();
+            structureZanjireMadrakFileDBS = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -681,7 +681,7 @@ public class FarzinCartableQuery {
         try {
             queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
 
-            structureZanjireMadrakFileDBS = queryBuilder.query();
+            structureZanjireMadrakFileDBS = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -724,7 +724,7 @@ public class FarzinCartableQuery {
                 queryBuilder.offset(start).limit(count);
             }
             queryBuilder.setWhere(where);
-            structureInboxDocumentsDB = queryBuilder.orderBy("ReceiveDate", false).query();
+            structureInboxDocumentsDB = queryBuilder.distinct().orderBy("ReceiveDate", false).query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -820,7 +820,7 @@ public class FarzinCartableQuery {
             }
             queryBuilder.setWhere(where);
             queryBuilder.setCountOf(true);
-            count = cartableDocumentDao.countOf(queryBuilder.prepare());
+            count = cartableDocumentDao.countOf(queryBuilder.distinct().prepare());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -833,7 +833,7 @@ public class FarzinCartableQuery {
         try {
             queryBuilder.setCountOf(true);
             queryBuilder.where().eq("isTaeed", false);
-            count = cartableDocumentDao.countOf(queryBuilder.prepare());
+            count = cartableDocumentDao.countOf(queryBuilder.distinct().prepare());
         } catch (SQLException e) {
             e.printStackTrace();
         }

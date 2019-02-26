@@ -96,7 +96,7 @@ public class ChangeXml {
     }
 
     public String charSpaceDecoder(String xml) {
-        xml = xml.replaceAll("&amp;nbsp;+", " ");/*
+        xml = xml.replaceAll("&amp;nbsp;", " ");/*
                 .replaceAll("\u0020+", " ");*/
         return xml;
     }
@@ -105,8 +105,8 @@ public class ChangeXml {
        /* Pattern  p = Pattern.compile("[\\s ]+");
         xml = p.matcher(xml).replaceAll("%20");*/
 
-        xml = xml.replaceAll("&+", "&amp;")
-                .replaceAll("&amp;amp;+", "&amp;");
+        xml = xml.replaceAll("&", "&amp;")
+                .replaceAll("&amp;amp;", "&amp;");
                 /*replaceAll("\\s+", "\u0020")
                 .replaceAll(" ", "\u0020");*/
 
