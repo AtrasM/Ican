@@ -52,6 +52,8 @@
                             style="@style/custom_Txt_Normal_style"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:ellipsize="end"
                             android:gravity="center|right"
                             android:paddingBottom="0dp"
                             android:text="نام" />

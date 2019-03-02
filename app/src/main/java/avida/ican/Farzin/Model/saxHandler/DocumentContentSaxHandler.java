@@ -70,11 +70,11 @@ public class DocumentContentSaxHandler extends DefaultHandler {
         } else {
             sb.append(new String(buffer, start, length));
         }
-        try {
+   /*     try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
 
 
     }

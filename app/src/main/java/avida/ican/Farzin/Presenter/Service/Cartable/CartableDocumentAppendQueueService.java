@@ -29,8 +29,8 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentAppendQueueService extends Service {
-    private final long DELAY = TimeValue.MinutesInMilli();
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 5;
     private SendListener sendListener;
     private Context context;
     private Handler handler = new Handler();
@@ -100,7 +100,6 @@ public class CartableDocumentAppendQueueService extends Service {
 
 
         };
-
         StructureAppendREQ structureAppendREQ = new CustomFunction().ConvertStringToObject(structureCartableSendQueueDB.getStrStructureAppendREQ(), StructureAppendREQ.class);
         cartableDocumentAppendToServerPresenter.AppendDocument(structureAppendREQ, sendListener);
 

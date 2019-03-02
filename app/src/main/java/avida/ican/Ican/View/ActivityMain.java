@@ -143,11 +143,10 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-                String data="xml data 12/98 10:02  ";
-                 data="xml data 12/98 10:02 ";
-                data = new ChangeXml().saxCharEncoder(data);
-                data=data.trim();
-                data = new ChangeXml().viewCharDecoder(data);
+                String data="[{\"EC\":4,\"ETC\":824,\"structurePersonsREQ\":[{\"PriorityID_Send\":1,\"action\":5,\"description\":\"یادآوری  ،توضیح شخصی\",\"fullName\":\"حميـــدرضا بلورچيان\",\"hameshContent\":\"یادآوری،دستور ارجاع\",\"hameshTitle\":\"حميـــدرضا بلورچيان[ مدير توسعه فرزين ] \",\"responseUntilDate\":\"\",\"roleId\":425}],\"structureSenderREQ\":{\"description\":\"\",\"isLocked\":false,\"roleId\":425,\"sendParentCode\":126359,\"viewInOutbox\":1}}]";
+                StructureAppendREQ structureAppendREQ = new CustomFunction().ConvertStringToObject(data, StructureAppendREQ.class);
+                structureAppendREQ.getEC();
+
                 //String filePath = App/.RESPONSEPATH + "/c07b94026ba2495cbcf1d2604605db73.ican";
               /*  String filePath = "/storage/emulated/0/IcanData/File/2019_2_12/c07b94026ba2495cbcf1d2604605db73.ican";
                 //String filePath2=    CustomFunction.reNameFile(filePath,"atras.txt");

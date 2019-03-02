@@ -29,7 +29,7 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
 
 public class OpticalPenQueueService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 5;
     private OpticalPenListener opticalPenListener;
     private Context context;
     private Handler handler = new Handler();

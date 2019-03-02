@@ -143,7 +143,6 @@ public class GetCartableHameshFromServerPresenter {
 
     }
 
-
     private class processData {
         processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {
             if (!webServiceResponse.isResponse()) {

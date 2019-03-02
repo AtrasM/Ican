@@ -27,8 +27,8 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
  */
 
 public class CartableDocumentTaeedQueueService extends Service {
-    private final long DELAY = TimeValue.MinutesInMilli();
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long DELAY = TimeValue.SecondsInMilli() * 30;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 5;
     private TaeedListener taeedListener;
     private Context context;
     private Handler handler = new Handler();

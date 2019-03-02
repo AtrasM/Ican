@@ -104,7 +104,6 @@ public class ChangeXml {
     public String saxCharEncoder(String xml) {
        /* Pattern  p = Pattern.compile("[\\s ]+");
         xml = p.matcher(xml).replaceAll("%20");*/
-
         xml = xml.replaceAll("&", "&amp;")
                 .replaceAll("&amp;amp;", "&amp;");
                 /*replaceAll("\\s+", "\u0020")

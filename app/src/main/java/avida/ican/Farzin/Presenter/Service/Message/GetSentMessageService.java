@@ -117,24 +117,32 @@ public class GetSentMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        Log.i("pageNumber", "GetSentMessage pageNumber= " + pageNumber);
-        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-            getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
-            reGetMessage();
-        } else {
-            if (!getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
-                getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
-            } else {
-                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageSentLastCheckDate(), tempDelay);
+        if (!canGetData()) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                   reGetMessage();
+                }
+            }, DELAY);
+        }else {
+            Log.i("pageNumber", "GetSentMessage pageNumber= " + pageNumber);
+            if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                 getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
-                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                reGetMessage();
+            } else {
+                if (!getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
                     getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
                 } else {
-                    reGetMessage();
+                    CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageSentLastCheckDate(), tempDelay);
+                    getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                    if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                        getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+                    } else {
+                        reGetMessage();
+                    }
                 }
             }
         }
-
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -264,7 +272,15 @@ public class GetSentMessageService extends Service {
             BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
         }
     }
-
+    private boolean canGetData() {
+        boolean can = false;
+        if (getFarzinPrefrences().isSendMessageForFirstTimeSync() && !getFarzinPrefrences().isDataForFirstTimeSync()) {
+            can = false;
+        } else {
+            can = true;
+        }
+        return can;
+    }
     private void ShowToast(final String s) {
         handler.post(new Runnable() {
             @Override

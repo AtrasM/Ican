@@ -134,25 +134,34 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void GetMessage(int pageNumber, int count) {
-        Log.i("pageNumber", "GetRecieveMessage pageNumber= " + pageNumber);
-        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-            getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
-            reGetMessage();
-        } else {
-            if (!getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
-                getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
-            } else {
-                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageRecieveLastCheckDate(), tempDelay);
-                getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
-                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
-                    getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
-                } else {
+
+        if (!canGetData()) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
                     reGetMessage();
                 }
+            }, DELAY);
+        } else {
+            Log.i("pageNumber", "GetRecieveMessage pageNumber= " + pageNumber);
+            if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                reGetMessage();
+            } else {
+                if (!getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
+                    getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+                } else {
+                    CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageRecieveLastCheckDate(), tempDelay);
+                    getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                    if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                        getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+                    } else {
+                        reGetMessage();
+                    }
+                }
+
             }
-
         }
-
     }
 
 
@@ -306,6 +315,15 @@ public class GetRecieveMessageService extends Service {
         }
     }
 
+    private boolean canGetData() {
+        boolean can = false;
+        if (getFarzinPrefrences().isReceiveMessageForFirstTimeSync() && !getFarzinPrefrences().isDataForFirstTimeSync()) {
+            can = false;
+        } else {
+            can = true;
+        }
+        return can;
+    }
 
     private void ShowToast(final String s) {
         handler.post(new Runnable() {

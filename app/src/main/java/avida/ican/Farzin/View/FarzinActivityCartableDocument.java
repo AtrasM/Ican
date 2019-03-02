@@ -451,8 +451,14 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
                 @Override
                 public void onFinish() {
-                    App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_send_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
-                    lnLoading.setVisibility(View.GONE);
+                    App.getHandlerMainThread().post(new Runnable() {
+                        @Override
+                        public void run() {
+                            App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.document_send_successfull), SnackBarEnum.SNACKBAR_LONG_TIME);
+                            lnLoading.setVisibility(View.GONE);
+                        }
+                    });
+
 
                 }
             });
@@ -465,15 +471,28 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
 
             @Override
             public void onSuccess() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    }
+                });
 
             }
 
             @Override
             public void onExisting() {
-                lnLoading.setVisibility(View.GONE);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+                App.getHandlerMainThread().post(new Runnable() {
+                    @Override
+                    public void run() {
+                        lnLoading.setVisibility(View.GONE);
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.the_command_was_placed_in_the_queue), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    }
+                });
+
             }
 
             @Override

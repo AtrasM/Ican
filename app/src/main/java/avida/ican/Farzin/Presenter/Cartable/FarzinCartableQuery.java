@@ -936,7 +936,7 @@ public class FarzinCartableQuery {
         boolean isDelet = false;
         try {
             DeleteBuilder<StructureCartableSendQueueDB, Integer> deleteBuilder = mCartableSendQueueDao.deleteBuilder();
-            deleteBuilder.where().eq("id", id).and();
+            deleteBuilder.where().eq("id", id);
             deleteBuilder.delete();
             isDelet = true;
         } catch (SQLException e) {

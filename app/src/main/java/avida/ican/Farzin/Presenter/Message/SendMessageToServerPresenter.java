@@ -70,6 +70,7 @@ public class SendMessageToServerPresenter {
     private SoapObject getSoapObject(String subject, String content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         soapObject.addProperty("Subject", subject);
+        content=CustomFunction.AddXmlCData(content);
         soapObject.addProperty("Content", content);
 
         //*******____________________________  AttachList  ____________________________********

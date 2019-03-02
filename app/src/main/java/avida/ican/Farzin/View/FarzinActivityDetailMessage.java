@@ -22,6 +22,8 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
+import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
+import avida.ican.Farzin.View.Dialog.DialogShowMore;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
@@ -30,6 +32,7 @@ import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
 import avida.ican.R;
 import butterknife.BindString;
@@ -140,6 +143,16 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
             receiveNames = structureDetailMessageBND.getReceiverFullName();
         }
         txtName.setText(receiveNames);
+        txtName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (structureDetailMessageBND.getStructureReceiverDBS().size() > 1) {
+                    DialogShowMore dialogShowMore = new DialogShowMore(App.CurentActivity);
+                    dialogShowMore.setData(Resorse.getString(R.string.receivers), receiveNames);
+                    dialogShowMore.Creat();
+                }
+            }
+        });
         lnMain.setVisibility(View.VISIBLE);
         lnLoading.setVisibility(View.GONE);
     }

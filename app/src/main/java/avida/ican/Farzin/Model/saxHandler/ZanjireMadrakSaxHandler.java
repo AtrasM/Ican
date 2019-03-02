@@ -128,11 +128,11 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
         } else {
             sb.append(buffer, start, length);
         }
-        try {
+      /*  try {
             Thread.sleep(10);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void endElement(String uri, String localName, String qName)

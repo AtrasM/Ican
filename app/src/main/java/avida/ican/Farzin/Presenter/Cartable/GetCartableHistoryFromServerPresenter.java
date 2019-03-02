@@ -122,7 +122,7 @@ public class GetCartableHistoryFromServerPresenter {
             try {
                 //Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
-                if (!Xml.isEmpty()) {
+                    if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {
                     dataProcessListener.onFailed();

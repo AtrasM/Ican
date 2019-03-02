@@ -45,7 +45,8 @@ import avida.ican.R;
 public class GetCartableDocumentService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 30;
     private final long LOWDELAY = TimeValue.SecondsInMilli() * 2;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 10;
+
     private CartableDocumentListListener cartableDocumentListListener;
     private Context context;
     private Handler handler = new Handler();
@@ -71,6 +72,7 @@ public class GetCartableDocumentService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         context = this;
+
         if (getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
             Count = MinCount;
             callDataFinish();
@@ -123,23 +125,33 @@ public class GetCartableDocumentService extends Service {
         };
         GetCartableDocument(Count);
 
+
         return Service.START_STICKY;
     }
 
     private void GetCartableDocument(int count) {
-        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-            getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
-            reGetData(Count);
+        if (!canGetData()) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    reGetData(Count);
+                }
+            }, DELAY);
         } else {
-            if (!getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
-                getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
-            } else {
-                CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), tempDelay);
+            if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                 getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
-                if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                reGetData(Count);
+            } else {
+                if (!getFarzinPrefrences().isCartableDocumentForFirstTimeSync()) {
                     getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
                 } else {
-                    reGetData(Count);
+                    CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), tempDelay);
+                    getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                    if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
+                        getCartableDocumentFromServerPresenter.GetCartableDocumentList(count, cartableDocumentListListener);
+                    } else {
+                        reGetData(Count);
+                    }
                 }
             }
         }
@@ -166,9 +178,9 @@ public class GetCartableDocumentService extends Service {
 
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
-                if(structureInboxDocumentDB==null || structureInboxDocumentDB.getId()<=0){
+                if (structureInboxDocumentDB == null || structureInboxDocumentDB.getId() <= 0) {
                     existCont++;
-                }else{
+                } else {
                     newCount++;
                 }
 
@@ -276,6 +288,16 @@ public class GetCartableDocumentService extends Service {
         if (BaseActivity.dialogMataDataSync != null) {
             BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
         }
+    }
+
+    private boolean canGetData() {
+        boolean can = false;
+        if (getFarzinPrefrences().isCartableDocumentForFirstTimeSync() && !getFarzinPrefrences().isDataForFirstTimeSync()) {
+            can = false;
+        } else {
+            can = true;
+        }
+        return can;
     }
 
     private void CallMulltiMessageNotification() {

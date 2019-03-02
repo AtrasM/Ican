@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
+import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 
@@ -168,14 +169,21 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                                 String desc = Resorse.getString(R.string.page) + " " + (page + 1) + " " + Resorse.getString(R.string.of) + " " + pageCount;
                                 txtPdfPageNumber.setText(desc);
                             }
-                        })
+                        }).onError(new OnErrorListener() {
+                    @Override
+                    public void onError(Throwable t) {
+                        reGetData();
+                    }
+                })
                         .load();
             } else {
-                txtNoData.setVisibility(View.VISIBLE);
+                reGetData();
+                //txtNoData.setVisibility(View.VISIBLE);
             }
 
         } else {
-            txtNoData.setVisibility(View.VISIBLE);
+            reGetData();
+            //txtNoData.setVisibility(View.VISIBLE);
         }
 
     }

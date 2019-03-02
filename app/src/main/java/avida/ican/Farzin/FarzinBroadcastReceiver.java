@@ -35,23 +35,24 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         intents.clear();
         //context.startService(new Intent(context, NetWorkCheckingService.class));
         context.startService(new Intent(context, CheckServerAviableService.class));
-        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
-        context.startService(putIntent(new Intent(context, SendMessageService.class)));
-        context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
-        context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
-        context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                context.startService(putIntent(new Intent(context, GetRecieveMessageService.class), true));
+                context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
             }
-        }, (TimeValue.SecondsInMilli()*3));
+        }, (TimeValue.SecondsInMilli() * 2));
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                context.startService(putIntent(new Intent(context, GetSentMessageService.class), true));
+                context.startService(putIntent(new Intent(context, SendMessageService.class)));
+                context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
+                context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
+                context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
             }
-        }, (TimeValue.SecondsInMilli()*5));
+        }, (TimeValue.SecondsInMilli() * 5));
+
+        context.startService(putIntent(new Intent(context, GetRecieveMessageService.class), true));
+        context.startService(putIntent(new Intent(context, GetSentMessageService.class), true));
     }
 
     private Intent putIntent(Intent intent) {

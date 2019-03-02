@@ -295,7 +295,9 @@ public class CustomFunction {
         if (structureAttach.getFilePath() != null && !structureAttach.getFilePath().isEmpty()) {
             fileAsBytes = getFileFromStorageAsByte(structureAttach.getFilePath());
         } else {
-            fileAsBytes = android.util.Base64.decode(structureAttach.getFileAsStringBuilder().toString(), android.util.Base64.NO_WRAP);
+            if (structureAttach.getFileAsStringBuilder() != null && structureAttach.getFileAsStringBuilder().length() > 0) {
+                fileAsBytes = android.util.Base64.decode(structureAttach.getFileAsStringBuilder().toString(), android.util.Base64.NO_WRAP);
+            }
         }
         Log.i("OpenFile", "fileAsBytes.length = " + fileAsBytes.length);
         File file = null;
@@ -475,7 +477,7 @@ public class CustomFunction {
         }
         String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
         long megabyte = 1024 * 1024;
-        int buferSize =3*1024;
+        int buferSize = 1024;
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(filePath);
@@ -483,12 +485,10 @@ public class CustomFunction {
             byte[] buffer = new byte[buferSize]; // or other buffer size
             int read = 0;
             while ((read = is.read(buffer)) != -1) {
-                //String data = new String(buffer, "UTF-8");
                 String data = new String(buffer, 0, read, "UTF-8");
                 buffer = new byte[buferSize];
                 data = new ChangeXml().saxCharEncoder(data);
                 myOutWriter.append(data);
-                //Thread.sleep(50);
             }
 
             myOutWriter.close();
@@ -997,6 +997,11 @@ public class CustomFunction {
     public <T> T ConvertStringToObject(String data, Class<T> mObj) {
         Gson gson = new Gson();
         try {
+            if (data != null && !data.isEmpty()) {
+                if (data.substring(0, 1).equals("[") && !isArray(mObj)) {
+                    data = data.substring(1, data.length() - 1);
+                }
+            }
             return (T) gson.fromJson(data, mObj);
 
         } catch (Exception e) {
@@ -1004,6 +1009,10 @@ public class CustomFunction {
 
             return (T) mObj;
         }
+    }
+
+    public <T> boolean isArray(Class<T> obj) {
+        return obj != null && obj.getClass().isArray();
     }
 
     public static byte[] BitmapToByteArray(Bitmap bmp) {
