@@ -3,6 +3,8 @@ package avida.ican.Ican.View;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -23,12 +25,17 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CheckPermission;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogReCheckPermision;
 import avida.ican.Ican.View.Enum.RequestCode;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindView;
+import me.aflak.libraries.callback.FingerprintDialogCallback;
+import me.aflak.libraries.dialog.DialogAnimation;
+import me.aflak.libraries.dialog.FingerprintDialog;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class ActivitySplash extends BaseActivity {
@@ -53,10 +60,50 @@ public class ActivitySplash extends BaseActivity {
         boolean b = new CheckPermission().writeExternalStorage(1, App.CurentActivity);
 
         if (b) {
-            continueProcess();
+            isRemember = farzinPrefrences.isRemember();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                continueProcess();
+                //Fingerprint API only available on from Android 6.0 (M)
+                FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(Context.FINGERPRINT_SERVICE);
+                if (!fingerprintManager.isHardwareDetected()) {
+                    continueProcess();
+                    // Device doesn't support fingerprint authentication
+                } else if (!fingerprintManager.hasEnrolledFingerprints()) {
+                    continueProcess();
+                    // User hasn't enrolled any fingerprints to authenticate with
+                } else {
+
+                    continueProcess();
+                    //showDialogFingerPrint();
+                    // Everything is ready for fingerprint authentication
+                }
+            }
+
         }
 
 
+    }
+
+    private void showDialogFingerPrint() {
+        FingerprintDialog.initialize(this)
+                .title(Resorse.getString(R.string.app_name))
+                .message(Resorse.getString(R.string.fingerPrintMessage))
+                .enterAnimation(DialogAnimation.Enter.BOTTOM)
+                .exitAnimation(DialogAnimation.Exit.BOTTOM)
+                .circleScanningColor(R.color.colorAccent)
+                .callback(new FingerprintDialogCallback() {
+                    @Override
+                    public void onAuthenticationSucceeded() {
+                        new Message().ShowSnackBar("valid:)", SnackBarEnum.SNACKBAR_SHORT_TIME);
+                        continueProcess();
+                    }
+
+                    @Override
+                    public void onAuthenticationCancel() {
+                        new Message().ShowSnackBar("invalid(:", SnackBarEnum.SNACKBAR_SHORT_TIME);
+                    }
+                })
+                .show();
     }
 
     private void showDialog() {
@@ -87,7 +134,7 @@ public class ActivitySplash extends BaseActivity {
             filepath = filepath.substring(0, index);
         }*/
         //isRemember = false;
-        isRemember = farzinPrefrences.isRemember();
+
         if (!isRemember) {
             goToActivity(FarzinActivityLogin.class);
             avLoadingIndicatorView.setVisibility(View.GONE);

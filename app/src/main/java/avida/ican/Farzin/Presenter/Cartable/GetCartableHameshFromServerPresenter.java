@@ -117,10 +117,8 @@ public class GetCartableHameshFromServerPresenter {
         soapObject.addProperty("ETC", EntityTypeCode);
         soapObject.addProperty("EC", EntityCode);
         return soapObject;
-
     }
-
-
+    
     private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
@@ -140,7 +138,6 @@ public class GetCartableHameshFromServerPresenter {
                         dataProcessListener.onFailed();
                     }
                 }).execute();
-
     }
 
     private class processData {

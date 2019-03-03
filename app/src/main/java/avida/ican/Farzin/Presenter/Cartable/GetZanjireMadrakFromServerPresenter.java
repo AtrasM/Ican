@@ -36,6 +36,7 @@ public class GetZanjireMadrakFromServerPresenter {
     private String Tag = "GetZanjireMadrakFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
     private AsyncTask<Void, Void, Void> task;
+
     public GetZanjireMadrakFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
@@ -69,7 +70,7 @@ public class GetZanjireMadrakFromServerPresenter {
     private void initStructure(final String data, final ZanjireMadrakListener zanjireMadrakListener) {
         final StructureZanjireMadrakListRES[] structureZanjireMadrakListRES = new StructureZanjireMadrakListRES[1];
 
-         task = new AsyncTask<Void, Void, Void>() {
+        task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 if (data.contains(App.RESPONSEPATH)) {
@@ -109,6 +110,7 @@ public class GetZanjireMadrakFromServerPresenter {
             e.printStackTrace();
         }
     }
+
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
@@ -118,7 +120,6 @@ public class GetZanjireMadrakFromServerPresenter {
         return soapObject;
 
     }
-
 
     private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
@@ -141,7 +142,6 @@ public class GetZanjireMadrakFromServerPresenter {
                 }).execute();
 
     }
-
 
     private class processData {
         processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {

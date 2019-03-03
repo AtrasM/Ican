@@ -133,5 +133,6 @@
     <string name="noName">بی نام</string>
     <string name="receivers">دریافت کنندگان</string>
     <string name="error_open_file_as_this_extention">برنامه ای برای نمایش این فایل یافت نشد!</string>
+    <string name="fingerPrintMessage">برای ادامه اثر انشگت را تایید کنید</string>
 
 </resources>

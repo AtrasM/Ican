@@ -125,5 +125,9 @@ dependencies {
 
     implementation 'com.byox.drawview:drawview:1.0.3'
 
-    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    implementation 'com.github.barteksc:android-pdf-viewer:3.1.0-beta.1'
+
+    //implementation 'com.kevalpatel2106:fingerprint-dialog-compat:1.0'
+
+    implementation 'me.aflak.libraries:fingerprint:2.5.3'
 }

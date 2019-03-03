@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -284,12 +285,15 @@ public class CustomFunction {
 
 
     public File OpenFile(StructureAttach structureAttach) {
+        if (structureAttach == null || structureAttach.getName() == null || structureAttach.getName().equals("null")) {
+            return null;
+        }
         String fileName = structureAttach.getName();
         String fileExtension = structureAttach.getFileExtension();
         fileExtension = fileExtension.replace("waw", "wav");
         Log.i("OpenFile", "file path = " + structureAttach.getFilePath());
         byte[] fileAsBytes = new byte[0];
-        if (!anDisplayFile(activity, fileExtension)) {
+        if (!canDisplayFile(activity, fileExtension)) {
             return null;
         }
         if (structureAttach.getFilePath() != null && !structureAttach.getFilePath().isEmpty()) {
@@ -367,17 +371,26 @@ public class CustomFunction {
         return format.contains(fileExtension);
     }
 
-    private boolean anDisplayFile(Activity activity, String extention) {
+    private boolean canDisplayFile(Activity activity, String extention) {
         PackageManager pm = activity.getPackageManager();
         Intent intent = new Intent(Intent.ACTION_VIEW);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(extention.replace(".", ""));
+        if(type.startsWith("audio")){
+            return true;
+        }
         intent.setType(type);
-        List list = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        List list = pm.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY | PackageManager.GET_RESOLVED_FILTER);
         if (list.size() > 0) {
             // There is something installed that can VIEW this file)
             return true;
         } else {
+        /*ResolveInfo info = pm.resolveActivity(intent, 0);
+
+        if (info != null) {
+            // There is something installed that can VIEW this file)
+            return true;
+        } else {*/
             // Offer to download a viewer here
             activity.runOnUiThread(new Runnable() {
                 @Override

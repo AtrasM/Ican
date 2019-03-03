@@ -5,6 +5,7 @@ import java.util.TimerTask;
 
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
@@ -84,6 +85,9 @@ public class FarzinMetaDataSync {
                                     App.getHandlerMainThread().post(new Runnable() {
                                         @Override
                                         public void run() {
+                                            String userName = farzinPrefrences.getUserName();
+                                            StructureUserAndRoleDB UserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(userName);
+                                            farzinPrefrences.putUserBaseInfo(UserAndRoleDB.getUser_ID(), UserAndRoleDB.getRole_ID());
                                             metaDataSyncListener.onFinish();
                                         }
                                     });

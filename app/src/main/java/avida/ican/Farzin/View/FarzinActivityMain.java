@@ -105,8 +105,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         farzinPrefrences = getFarzinPrefrences();
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
-        initFarzinMetaDataSyncClass();
         initFragmentStack();
+        initFarzinMetaDataSyncClass();
         //bottomNavigation.setSelectedItemId(R.id.navigation_home);
 
     }
