@@ -3,8 +3,9 @@ package avida.ican.Ican.View.Custom;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import avida.ican.Ican.App;
 
@@ -23,7 +24,12 @@ public class Resorse {
 
     @NonNull
     public static String getString(int resorseString) {
-        return App.CurentActivity.getResources().getString(resorseString);
+      /*  Context context = App.CurentActivity;
+        if (App.CurentActivity == null) {
+
+            context = App.getServiceContext();
+        }*/
+            return App.getAppContext().getResources().getString(resorseString);
     }
 
     @NonNull

@@ -3,9 +3,12 @@ package avida.ican.Farzin.View.Dialog;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -205,7 +208,7 @@ public class DialogUserAndRole {
 
                             @Override
                             public void unValid() {
-
+                                viewHolder.viewPager.setCurrentItem(1);
                             }
                         });
 
@@ -420,7 +423,7 @@ public class DialogUserAndRole {
     }
 
     private void clearFragment() {
-        android.support.v4.app.FragmentTransaction transaction = mfragmentManager.beginTransaction();
+        FragmentTransaction transaction = mfragmentManager.beginTransaction();
         transaction.remove(fragmentUserAndRoleMain);
         transaction.remove(fragmentUserAndRoleSelect);
         transaction.commitAllowingStateLoss();

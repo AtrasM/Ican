@@ -8,6 +8,7 @@ public enum ZanjireMadrakFileTypeEnum {
     PEIRO,
     PEYVAST,
     DARERTEBAT,
+    IndicatorScanedFile,
     ATF
 
 }

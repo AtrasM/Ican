@@ -2,9 +2,13 @@ package avida.ican.Farzin.Presenter;
 
 import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.StructureLoginRES;
 import avida.ican.Farzin.View.Interface.LoginViewListener;
+import avida.ican.Farzin.View.Interface.SetLicenseKeyListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
@@ -14,9 +18,13 @@ import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
+
 
 /**
  * Created by AtrasVida on 2018-03-17 at 2:21 PM
@@ -37,9 +45,15 @@ public class LoginPresenter {
     private FarzinPrefrences farzinPrefrences;
     private boolean IsPasswordEncript = false;
     private boolean isRemember = false;
+    private Loading dialog;
 
     public LoginPresenter() {
         farzinPrefrences = getFarzinPrefrences();
+    }
+
+    public LoginPresenter(Loading dialog) {
+        farzinPrefrences = getFarzinPrefrences();
+        this.dialog = dialog;
     }
 
     public void AutoAuthentiocation(final LoginViewListener loginViewListener) {
@@ -71,7 +85,6 @@ public class LoginPresenter {
 
                 }
             });
-
 
 
         } else {
@@ -133,7 +146,7 @@ public class LoginPresenter {
 
     }
 
-    private void processData(WebServiceResponse webServiceResponse) {
+    private void processData(final WebServiceResponse webServiceResponse) {
         if (!webServiceResponse.isResponse()) {
             loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
             return;
@@ -145,13 +158,39 @@ public class LoginPresenter {
             Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
             StructureLoginRES structureLoginRES = xmlToObject.DeserializationGsonXml(Xml, StructureLoginRES.class);
             if (structureLoginRES.isLoginResult()) {
-                if (!IsPasswordEncript) {
-                    Password = WebService.EncriptToSHA1(Password);
+                String lastUserName = getFarzinPrefrences().getUserName();
+                if (!lastUserName.isEmpty() && !lastUserName.equals("-1") && !lastUserName.equals(UserName)) {
+                    if (dialog != null) {
+                        dialog.Hide();
+                    }
+                  App.getHandlerMainThread().postDelayed(new Runnable() {
+                      @Override
+                      public void run() {
+                          CustomFunction.resetApp(App.CurentActivity, new ListenerQuestion() {
+                              @Override
+                              public void onSuccess() {
+                                  try {
+                                      countinueProcessData(webServiceResponse);
+                                  } catch (UnsupportedEncodingException e) {
+                                      e.printStackTrace();
+                                      loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
+                                  } catch (NoSuchAlgorithmException e) {
+                                      e.printStackTrace();
+                                      loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
+                                  }
+                              }
+
+                              @Override
+                              public void onCancel() {
+
+                              }
+                          });
+                      }
+                  }, TimeValue.SecondsInMilli());
+                } else {
+                    countinueProcessData(webServiceResponse);
                 }
-                farzinPrefrences.putUserAuthenticationInfo(UserName, Password, webServiceResponse.getHeaderList());
-                farzinPrefrences.putIsRemember(isRemember);
-                farzinPrefrences.putServerUrl(ServerUrl);
-                loginViewListener.onSuccess();
+
             } else {
                 loginViewListener.onFailed(structureLoginRES.getStrErrorMsg());
             }
@@ -161,6 +200,32 @@ public class LoginPresenter {
         }
     }
 
+    private void countinueProcessData(WebServiceResponse webServiceResponse) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        if (!IsPasswordEncript) {
+            Password = WebService.EncriptToSHA1(Password);
+        }
+        farzinPrefrences.putUserAuthenticationInfo(UserName, Password, webServiceResponse.getHeaderList());
+        farzinPrefrences.putIsRemember(isRemember);
+        farzinPrefrences.putServerUrl(ServerUrl);
+        setLicenseKey(new SetLicenseKeyListener() {
+            @Override
+            public void onSuccess() {
+                loginViewListener.onSuccess();
+            }
+
+            @Override
+            public void onFailed(String error) {
+                loginViewListener.onAccessDenied();
+            }
+        });
+
+    }
+    public void setLicenseKey(final SetLicenseKeyListener setLicenseKeyListener) {
+        setLicenseKeyListener.onSuccess();
+     /*   SetLicenseKeyPresenter setLicenseKeyPresenter = new SetLicenseKeyPresenter();
+        setLicenseKeyPresenter.CallRequest(setLicenseKeyListener);*/
+
+    }
     private void CheckNetwork(final ListenerNetwork listenerNetwork) {
         new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
             @Override

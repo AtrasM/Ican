@@ -76,18 +76,16 @@ public class StructureHameshDB implements Serializable {
 
             }
             FileExtension = structureHameshRES.getHameshImage().getFileExtension();
-            FileName = "HAMESH_" + structureHameshRES.getHameshImage().getFileName() + CustomFunction.getRandomUUID();
-            FileName = FileName.replace(" ", "");
-            Log.i("largeFile","getFileAsStringBuilder().length() = " +stringBuilder.length());
+            FileName = "HAMESH_" + structureHameshRES.getHameshImage().getFileName();
+            //FileName = FileName.replace(" ", "");
+            Log.i("largeFile", "getFileAsStringBuilder().length() = " + stringBuilder.length());
             if (stringBuilder.length() < 256) {
-                //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
-                    //FilePath = CustomFunction.reNameFile(stringBuilder.toString(), FileName);
-                Log.i("largeFile","getFileAsStringBuilder().length() in if= " +stringBuilder.length());
-                    FilePath = stringBuilder.toString();
-                    FileName = CustomFunction.getFileName(FilePath);
-                //}
+                FilePath = stringBuilder.toString();
+                //FileName = CustomFunction.getFileName(FilePath);
+
             } else {
-                FilePath = new CustomFunction().saveFileToStorage(stringBuilder, FileName);
+                FilePath = new CustomFunction().saveFileToStorage(stringBuilder, FileName +
+                        CustomFunction.getRandomUUID());
             }
         }
     }

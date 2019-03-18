@@ -1,7 +1,7 @@
 package avida.ican.Farzin.View.Adapter;
 
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,15 +78,15 @@ public class AdapteZanjireMadrak extends RecyclerView.Adapter<AdapteZanjireMadra
 
 
         final StructureZanjireMadrakFileDB item = itemList.get(position);
-
-        viewHolder.txtName.setText(item.getFile_name());
+        String fullName = item.getFile_name() + "" + item.getFile_extension();
+        viewHolder.txtName.setText(fullName);
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(item.getFile_path()!=null){
+                if (item.getFile_path() != null) {
                     final StructureAttach file = new StructureAttach(item.getFile_path(), item.getFile_name(), item.getFile_extension());
                     listenerAdapterZanjireMadrak.onOpenFile(file);
-                }else{
+                } else {
                     listenerAdapterZanjireMadrak.FileNotExist();
                 }
 

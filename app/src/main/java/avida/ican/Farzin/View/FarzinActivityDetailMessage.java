@@ -2,8 +2,8 @@ package avida.ican.Farzin.View;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,14 +22,12 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
-import avida.ican.Farzin.View.Dialog.DialogCartableHamesh;
 import avida.ican.Farzin.View.Dialog.DialogShowMore;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Adapter.AdapterAttach;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
@@ -65,6 +63,8 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     LinearLayout lnMain;
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
+    @BindView(R.id.ln_divider)
+    LinearLayout lnDivider;
 
     @BindString(R.string.TitleDetailMessage)
     String Title;
@@ -167,24 +167,29 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     }
 
     private void initRcvAndAdapter() {
-        for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
-            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
-            structureAttaches.add(structureAttach);
-        }
-        GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
-        rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
-        adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
-            @Override
-            public void onOpenFile(StructureAttach structureAttach) {
-                file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
+        if(structureDetailMessageBND.getMessage_files()==null||structureDetailMessageBND.getMessage_files().size()<=0){
+            lnDivider.setVisibility(View.GONE);
+        }else{
+            for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
+                StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
+                structureAttaches.add(structureAttach);
             }
+            GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
+            rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
+            adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
+                @Override
+                public void onOpenFile(StructureAttach structureAttach) {
+                    file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
+                }
 
-            @Override
-            public void onDeletFile(StructureAttach structureAttach) {
-                structureAttaches.remove(structureAttach);
-            }
-        });
-        rcvAttach.setAdapter(adapterAttach);
+                @Override
+                public void onDeletFile(StructureAttach structureAttach) {
+                    structureAttaches.remove(structureAttach);
+                }
+            });
+            rcvAttach.setAdapter(adapterAttach);
+        }
+
 
         // adapterAttach.addAll(structureAttaches);
     }

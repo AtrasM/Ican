@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+
+import androidx.core.app.NotificationCompat;
+
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,7 +30,7 @@ import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Cartable.GetCartableDocumentFromServerPresenter;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.FarzinNotificationClickManager;
+import avida.ican.Farzin.View.FarzinNotificationManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -314,7 +316,8 @@ public class GetCartableDocumentService extends Service {
         // long cartableDocumentCount = new FarzinCartableQuery().getCartableDocumentCount();
         String title = Resorse.getString(context, R.string.Cartable);
         String message = newCount + " " + Resorse.getString(context, R.string.NewCartableDocument);
-        callNotification(title, "" + message, GetNotificationPendingIntent(GetMultiCartableDocumentIntent()));
+        callNotification(title, "" + message, GetNotificationPendingIntent(GetNotificationManagerIntent()));
+
     }
 
     private void ShowToast(final String s) {
@@ -394,8 +397,8 @@ public class GetCartableDocumentService extends Service {
         return pendingIntentCancell;
     }
 
-    private Intent GetMultiCartableDocumentIntent() {
-        NotificationIntent = new Intent(context, FarzinNotificationClickManager.class);
+    private Intent GetNotificationManagerIntent() {
+        NotificationIntent = new Intent(context, FarzinNotificationManager.class);
         NotificationIntent.putExtra(PutExtraEnum.Notification.getValue(), PutExtraEnum.MultyCartableDocument.getValue());
         NotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return NotificationIntent;

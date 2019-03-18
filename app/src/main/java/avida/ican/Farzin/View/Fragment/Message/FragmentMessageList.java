@@ -3,13 +3,14 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import android.view.View;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
@@ -22,7 +23,6 @@ import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
-import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
 import avida.ican.Farzin.View.Adapter.AdapterSentMessage;
@@ -386,7 +386,7 @@ public class FragmentMessageList extends BaseFragment {
     }
 
     private void clearFragment() {
-        android.support.v4.app.FragmentTransaction transaction = mfragmentManager.beginTransaction();
+        FragmentTransaction transaction = mfragmentManager.beginTransaction();
         transaction.remove(fragmentReceiveMessageList);
         transaction.remove(fragmentSentMessageList);
         transaction.commitAllowingStateLoss();
@@ -406,7 +406,7 @@ public class FragmentMessageList extends BaseFragment {
             mListener = (OnFragmentInteractionListener) getActivity();
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " mustplement OnFragmentInteractionListener");
         }*/
     }
 

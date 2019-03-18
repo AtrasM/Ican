@@ -1,9 +1,10 @@
 package avida.ican.Farzin.View.Dialog;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,6 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHistoryList;
-import avida.ican.Farzin.View.Fragment.Cartable.FragmentZanjireMadrak;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
@@ -116,7 +116,7 @@ public class DialogCartableHistoryList {
     }
 
     private void clearFragment() {
-        android.support.v4.app.FragmentTransaction transaction = mfragmentManager.beginTransaction();
+        FragmentTransaction transaction = mfragmentManager.beginTransaction();
         transaction.remove(fragmentCartableHistoryList);
         transaction.commitAllowingStateLoss();
     }

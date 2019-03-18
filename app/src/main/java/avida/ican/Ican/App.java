@@ -7,8 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Environment;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.multidex.MultiDexApplication;
-import android.support.v4.app.Fragment;
+import androidx.multidex.MultiDexApplication;
+import androidx.fragment.app.Fragment;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -58,9 +58,9 @@ public class App extends MultiDexApplication {
     @SuppressLint("StaticFieldLeak")
     private static Context serviceContext;
     public static String DEFAULTPATH = Environment.getExternalStorageDirectory().getAbsolutePath() + "/IcanData/File";
-    public static String DEFAULTPATHTEMP =DEFAULTPATH+"/tempFile";
-    public static String RESPONSEPATH =DEFAULTPATH+"/Data/Response/";
-    public static String RESPONSEFILENAME="responseData.xml";
+    public static String DEFAULTPATHTEMP = DEFAULTPATH + "/tempFile";
+    public static String RESPONSEPATH = DEFAULTPATH + "/Data/Response/";
+    public static String RESPONSEFILENAME = "responseData.xml";
     public static FragmentMessageList fragmentMessageList = null;
     public static FragmentCartable fragmentCartable = null;
     public static HashMap<String, Stack<Fragment>> fragmentStacks;
@@ -172,6 +172,8 @@ public class App extends MultiDexApplication {
         imageLoader.init(ImageLoaderConfiguration.createDefault(getAppContext()));
         return imageLoader;
     }
+
+
 
 
 }

@@ -32,16 +32,19 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
     private List<StructureFileRES> Peyvast;
     private List<StructureFileRES> DarErtebat;
     private List<StructureFileRES> Atf;
+    private List<StructureFileRES> IndicatorScanedFile;
 
     private boolean bPeyro;
     private boolean bPeyvast;
     private boolean bDarErtebat;
     private boolean bAtf;
+    private boolean bIndicatorScanedFile;
 
     private StructureFileRES PeyroContent;
     private StructureFileRES PeyvastContent;
     private StructureFileRES DarErtebatContent;
     private StructureFileRES AtfContent;
+    private StructureFileRES IndicatorScanedFileContent;
 
     private StructureZanjireMadrakRES structureZanjireMadrakRES = new StructureZanjireMadrakRES();
     private String tempVal;
@@ -58,6 +61,7 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
         Peyvast = new ArrayList<>();
         DarErtebat = new ArrayList<>();
         Atf = new ArrayList<>();
+        IndicatorScanedFile = new ArrayList<>();
     }
 
     public <T> T getObject() {
@@ -91,6 +95,10 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
             // create a new instance of address
             AtfContent = new StructureFileRES();
             setBooleanTrue("Atf");
+        } else if (qName.equalsIgnoreCase("IndicatorScanedFile")) {
+            // create a new instance of address
+            IndicatorScanedFileContent = new StructureFileRES();
+            setBooleanTrue("IndicatorScanedFile");
         } else if (qName.equalsIgnoreCase("anyType")) {
 
             if (bPeyro) {
@@ -109,6 +117,10 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                 AtfContent = new StructureFileRES();
                 Atf.add(AtfContent);
                 structureZanjireMadrakRES.setAtf(Atf);
+            } else if (bIndicatorScanedFile) {
+                IndicatorScanedFileContent = new StructureFileRES();
+                IndicatorScanedFile.add(IndicatorScanedFileContent);
+                structureZanjireMadrakRES.setIndicatorScanedFile(IndicatorScanedFile);
             }
         } else if (qName.equalsIgnoreCase("FileBinary")) {
             initStream();
@@ -156,6 +168,8 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                 DarErtebatContent.setFileAsStringBuilder(getFilePath());
             } else if (bAtf) {
                 AtfContent.setFileAsStringBuilder(getFilePath());
+            } else if (bIndicatorScanedFile) {
+                IndicatorScanedFileContent.setFileAsStringBuilder(getFilePath());
             }
         } else {
             tempVal = sb.toString();
@@ -170,6 +184,8 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                     DarErtebatContent.setFileName(tempVal);
                 } else if (bAtf) {
                     AtfContent.setFileName(tempVal);
+                } else if (bIndicatorScanedFile) {
+                    IndicatorScanedFileContent.setFileName(tempVal);
                 }
             }
 
@@ -183,6 +199,8 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                     DarErtebatContent.setFileExtension(tempVal);
                 } else if (bAtf) {
                     AtfContent.setFileExtension(tempVal);
+                } else if (bIndicatorScanedFile) {
+                    IndicatorScanedFileContent.setFileExtension(tempVal);
                 }
             }
         }
@@ -217,6 +235,7 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                 bPeyvast = false;
                 bDarErtebat = false;
                 bAtf = false;
+                bIndicatorScanedFile = false;
                 break;
             }
             case "Peyvast": {
@@ -224,6 +243,7 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                 bPeyro = false;
                 bDarErtebat = false;
                 bAtf = false;
+                bIndicatorScanedFile = false;
                 break;
             }
             case "DarErtebat": {
@@ -231,10 +251,20 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                 bPeyro = false;
                 bPeyvast = false;
                 bAtf = false;
+                bIndicatorScanedFile = false;
                 break;
             }
             case "Atf": {
                 bAtf = true;
+                bDarErtebat = false;
+                bPeyro = false;
+                bPeyvast = false;
+                bIndicatorScanedFile = false;
+                break;
+            }
+            case "IndicatorScanedFile": {
+                bIndicatorScanedFile = true;
+                bAtf = false;
                 bDarErtebat = false;
                 bPeyro = false;
                 bPeyvast = false;

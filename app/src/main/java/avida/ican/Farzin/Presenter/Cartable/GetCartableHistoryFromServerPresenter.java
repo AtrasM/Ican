@@ -62,19 +62,19 @@ public class GetCartableHistoryFromServerPresenter {
 
     private void initStructure(String xml, CartableHistoryListListener cartableHistoryListListener) {
         StructureHistoryListRES structureHistoryListRES = xmlToObject.DeserializationGsonXml(xml, StructureHistoryListRES.class);
-        if (structureHistoryListRES.getStrErrorMsg() == null || structureHistoryListRES.getStrErrorMsg().isEmpty()) {
+        //if (structureHistoryListRES.getStrErrorMsg() == null || structureHistoryListRES.getStrErrorMsg().isEmpty()) {
 
-            if (structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph().size() <= 0) {
-                cartableHistoryListListener.onSuccess(new ArrayList<StructureGraphRES>(), "");
-            } else {
-                ArrayList<StructureGraphRES> structureGraphRES = new ArrayList<>(structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph());
-                // changeXml.CharDecoder(structureMessageList.get())
-                cartableHistoryListListener.onSuccess(structureGraphRES, xml);
-            }
+        if (structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph().size() <= 0) {
+            cartableHistoryListListener.onSuccess(new ArrayList<StructureGraphRES>(), "");
         } else {
-            cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
-
+            ArrayList<StructureGraphRES> structureGraphRES = new ArrayList<>(structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph());
+            // changeXml.CharDecoder(structureMessageList.get())
+            cartableHistoryListListener.onSuccess(structureGraphRES, xml);
         }
+    /*    } else {
+        cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
+
+    }*/
     }
 
 
@@ -122,7 +122,7 @@ public class GetCartableHistoryFromServerPresenter {
             try {
                 //Xml = changeXml.CharDecoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MetodName);
-                    if (!Xml.isEmpty()) {
+                if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {
                     dataProcessListener.onFailed();

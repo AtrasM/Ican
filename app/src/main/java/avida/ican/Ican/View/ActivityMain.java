@@ -3,7 +3,9 @@ package avida.ican.Ican.View;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.widget.CardView;
+
+import androidx.cardview.widget.CardView;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,18 +33,16 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocu
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshListRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakListRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
-import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
 import avida.ican.Farzin.Model.saxHandler.DocumentContentSaxHandler;
 import avida.ican.Farzin.Model.saxHandler.HameshSaxHandler;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
-import avida.ican.Farzin.Model.saxHandler.MessageSaxHandler;
 import avida.ican.Farzin.Model.saxHandler.ZanjireMadrakSaxHandler;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentAppendToServerPresenter;
-import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
+import avida.ican.Farzin.Presenter.SetLicenseKeyPresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
@@ -66,8 +66,6 @@ import avida.ican.Ican.View.Interface.FilePickerListener;
 import avida.ican.Ican.View.Interface.MediaPickerListener;
 import avida.ican.R;
 import butterknife.BindView;
-
-import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRole;
 
 public class ActivityMain extends BaseActivity implements View.OnClickListener {
     @BindView(R.id.cv_farzin)
@@ -143,24 +141,10 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-                String data="[{\"EC\":4,\"ETC\":824,\"structurePersonsREQ\":[{\"PriorityID_Send\":1,\"action\":5,\"description\":\"یادآوری  ،توضیح شخصی\",\"fullName\":\"حميـــدرضا بلورچيان\",\"hameshContent\":\"یادآوری،دستور ارجاع\",\"hameshTitle\":\"حميـــدرضا بلورچيان[ مدير توسعه فرزين ] \",\"responseUntilDate\":\"\",\"roleId\":425}],\"structureSenderREQ\":{\"description\":\"\",\"isLocked\":false,\"roleId\":425,\"sendParentCode\":126359,\"viewInOutbox\":1}}]";
-                StructureAppendREQ structureAppendREQ = new CustomFunction().ConvertStringToObject(data, StructureAppendREQ.class);
-                structureAppendREQ.getEC();
 
-                //String filePath = App/.RESPONSEPATH + "/c07b94026ba2495cbcf1d2604605db73.ican";
-              /*  String filePath = "/storage/emulated/0/IcanData/File/2019_2_12/c07b94026ba2495cbcf1d2604605db73.ican";
-                //String filePath2=    CustomFunction.reNameFile(filePath,"atras.txt");
-                StructureAttach structureAttach = new StructureAttach(filePath, "file", ".jpg");
-                new CustomFunction(this).OpenFile(structureAttach);*/
-/*
-                String filePath = App.RESPONSEPATH + "/data.xml";
-                String filePath2 = App.RESPONSEPATH + "/response_data.xml";
-                CustomFunction.reNameFile(filePath,filePath2);*/
-                //getUserAndRoile();
-                //getReceiveMessage();
-                //getDocumentContent();
-                //getZanjireMadrak();
-                //getHamesh();
+                SetLicenseKeyPresenter setLicenseKeyPresenter=new SetLicenseKeyPresenter();
+                setLicenseKeyPresenter.getSoapObject();
+
                 break;
             }
 

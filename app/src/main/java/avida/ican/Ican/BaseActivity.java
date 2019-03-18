@@ -1,14 +1,14 @@
 package avida.ican.Ican;
 
 import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,7 +20,6 @@ import com.orhanobut.dialogplus.DialogPlus;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Stack;
 
 import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
@@ -45,6 +44,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public static AudioRecorder audioRecorder;
     public static FilePicker filePicker;
     public static MediaPicker mediaPicker;
+    public static Activity baseActivity;
 
 
     @Override
@@ -69,6 +69,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.CurentActivity = this;
+        baseActivity = this;
 
         if (App.activityStacks != null) {
             String tag = App.CurentActivity.getClass().getSimpleName();
@@ -152,7 +153,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return true;
     }
 
-    public void CloseActivitys(ListenerCloseActivitys listenerCloseActivitys) {
+    public static void CloseActivitys(ListenerCloseActivitys listenerCloseActivitys) {
 
         if (App.activityStacks == null) {
             listenerCloseActivitys.onCancel();
@@ -162,10 +163,11 @@ public abstract class BaseActivity extends AppCompatActivity {
             while (mIterator.hasNext()) {
                 String key = (String) mIterator.next();
                 Activity activity = App.activityStacks.get(key).lastElement();
-                if (!activity.getClass().getSimpleName().equals(this.getClass().getSimpleName()) && !activity.getClass().getSimpleName().equals(ActivityMain.class.getSimpleName())) {
-                    activity.finish();
-                    App.activityStacks.values().remove(key);
-                }
+                if (!activity.getClass().getSimpleName().equals(baseActivity.getClass().getSimpleName()))
+                    if (!activity.getClass().getSimpleName().equals(ActivityMain.class.getSimpleName())) {
+                        activity.finish();
+                        App.activityStacks.values().remove(key);
+                    }
 
             }
             listenerCloseActivitys.onFinish();

@@ -3,11 +3,16 @@ package avida.ican.Farzin.View;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 
+import static avida.ican.Ican.BaseActivity.CloseActivitys;
 import static avida.ican.Ican.BaseActivity.getActivityFromStackMap;
 import static avida.ican.Ican.BaseActivity.goToActivity;
 
@@ -15,7 +20,7 @@ import static avida.ican.Ican.BaseActivity.goToActivity;
  * Created by AtrasVida on 2018-09-01 at 5:12 PM
  */
 
-public class FarzinNotificationClickManager extends AppCompatActivity {
+public class FarzinNotificationManager extends AppCompatActivity {
     private FarzinActivityMain activityMain;
     private Activity activity;
 
@@ -42,6 +47,7 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
                     public void run() {
                         activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
                         if (activity != null) {
+                            closeActivity();
                             activityMain = (FarzinActivityMain) activity;
                             activityMain.selectMessageFragment();
                         }
@@ -53,6 +59,7 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
             activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
             if (App.activityStacks != null) {
                 if (activity != null) {
+                    closeActivity();
                     activityMain = (FarzinActivityMain) activity;
                     activityMain.selectCartableDocumentFragment();
                 }
@@ -71,10 +78,28 @@ public class FarzinNotificationClickManager extends AppCompatActivity {
                 }, 500);
             }
 
+        } else if (Extra.equals(PutExtraEnum.LogOut.getValue())) {
+            Intent intent = new Intent(this, FarzinActivityLogin.class);
+            intent.putExtra("LogOut", true);
+            goToActivity(intent);
+
         }
 
         finish();
 
+    }
+
+    void closeActivity() {
+
+        BaseActivity.CloseActivitys(new ListenerCloseActivitys() {
+            @Override
+            public void onFinish() {
+            }
+
+            @Override
+            public void onCancel() {
+            }
+        });
     }
 
 }

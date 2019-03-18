@@ -1,16 +1,14 @@
 package avida.ican.Farzin.Model.saxHandler;
 
 import android.annotation.SuppressLint;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,8 +17,6 @@ import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
 
 
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageAttachRES;

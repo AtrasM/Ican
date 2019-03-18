@@ -2,7 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
-    <uses-sdk tools:overrideLibrary="me.aflak.libraries"/>
+
+    <uses-sdk tools:overrideLibrary="me.aflak.libraries" />
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,6 +20,7 @@
     <application
         android:name=".Ican.App"
         android:allowBackup="true"
+        android:appComponentFactory="androidx"
         android:fullBackupContent="true"
         android:hardwareAccelerated="false"
         android:icon="@mipmap/ic_launcher"
@@ -26,13 +29,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator"
-        tools:replace="theme, allowBackup">
+        tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator,UnusedAttribute"
+        tools:replace="theme, allowBackup,android:appComponentFactory">
         <receiver
             android:name=".Farzin.FarzinBroadcastReceiver"
-            tools:ignore="ExtraText">
             android:enabled="true"
             android:exported="true"
+            tools:ignore="ExtraText">
             <intent-filter>
                 <action
                     android:name="android.net.conn.CONNECTIVITY_CHANGE"
@@ -41,9 +44,9 @@
         </receiver>
         <receiver
             android:name=".Farzin.FarzinMessageNotificationReceiver"
-            tools:ignore="ExtraText">
             android:enabled="true"
             android:exported="true"
+            tools:ignore="ExtraText">
             <intent-filter>
                 <action
                     android:name="android.net.conn.CONNECTIVITY_CHANGE"
@@ -52,9 +55,9 @@
         </receiver>
         <receiver
             android:name=".Farzin.FarzinCartableNotificationReceiver"
-            tools:ignore="ExtraText">
             android:enabled="true"
             android:exported="true"
+            tools:ignore="ExtraText">
             <intent-filter>
                 <action
                     android:name="android.net.conn.CONNECTIVITY_CHANGE"
@@ -98,7 +101,7 @@
             android:enabled="true" />
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="avida.ican.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
@@ -108,19 +111,19 @@
         </provider>
 
         <activity android:name=".Ican.View.ActivitySplash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityLogin"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
+            android:windowSoftInputMode="stateHidden|adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
@@ -138,7 +141,7 @@
         <activity
             android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".Farzin.View.FarzinNotificationClickManager" />
+        <activity android:name=".Farzin.View.FarzinNotificationManager" />
         <activity android:name=".Ican.View.ActivityImageViewer" />
     </application>
 

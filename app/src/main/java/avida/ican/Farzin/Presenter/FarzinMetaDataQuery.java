@@ -148,9 +148,12 @@ public class FarzinMetaDataQuery {
         new CallApi(MetodeName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
+
                 StructureUserAndRoleRowsRES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(Xml, StructureUserAndRoleRowsRES.class);
                 List<StructureUserAndRoleRES> structureUserAndRoleRES = structureUserAndRoleRowsRES.getGetUserAndRoleListResult().getRows().getRowList();
                 new SaveUserAndRoleList().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, structureUserAndRoleRES);
+
+
             }
 
             @Override

@@ -1,6 +1,6 @@
 package avida.ican.Farzin.View.Interface;
 
-import android.support.v4.widget.SwipeRefreshLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 /**
  * Created by AtrasVida on 2018-08-20 at 16:45 PM

@@ -192,6 +192,7 @@ public class IcanHttpTransportSE extends Transport {
         //Log.i("readDebug", "fileSizeAsKB2= " + fileSizeAsKB + " freeMemorySpaceAsKB2= " + freeMemorySpaceAsKB);
         if (fileSizeAsKB <= limitSize && fileSizeAsKB <= (freeMemorySpaceAsKB)) {
             this.responseDump = new ChangeXml().charSpaceDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
+            Log.i("responseDump", "responseDump= " + responseDump);
         } else {
             responseDump = filePath;
         }

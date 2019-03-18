@@ -3,15 +3,13 @@ package avida.ican.Farzin.View.Fragment.Cartable;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.text.Editable;
-import android.text.InputFilter;
-import android.text.TextWatcher;
+
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,21 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
 import avida.ican.Farzin.Presenter.Cartable.FarzinZanjireMadrakPresenter;
 import avida.ican.Farzin.View.Adapter.AdapteZanjireMadrak;
-import avida.ican.Farzin.View.Adapter.AdapterUserAndRoleMain;
-import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
+import avida.ican.Farzin.View.Fragment.FragmentHome;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterZanjireMadrak;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerZanjireMadrak;
 import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.Model.Structure.StructureAttach;
-import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 import butterknife.BindView;
@@ -208,6 +202,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
                     adapteDarErtebatBa.updateData(structureDarErtebat);
                     lnDarErtebat.setVisibility(View.VISIBLE);
                 }
+
                 lnLoading.setVisibility(View.GONE);
                 srlRefresh.setRefreshing(false);
             }

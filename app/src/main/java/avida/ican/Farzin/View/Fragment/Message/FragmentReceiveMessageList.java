@@ -3,12 +3,13 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
@@ -27,6 +28,8 @@ public class FragmentReceiveMessageList extends BaseFragment {
     RecyclerView rcvMain;
     @BindView(R.id.img_move_up)
     ImageView imgMoveUp;
+    @BindView(R.id.txt_no_data)
+    TextView txtNoData;
     @BindView(R.id.srl_new_message)
     SwipeRefreshLayout srlNewMessage;
 
@@ -41,6 +44,12 @@ public class FragmentReceiveMessageList extends BaseFragment {
     private boolean isshow = false;
     private Animator animator = null;
     private boolean canLoading = true;
+
+    @Override
+    public int getLayoutResId() {
+        return R.layout.fragment_receive_message_list;
+    }
+
 
     public static AdapterReceiveMessage getAdapterReceiveMessage() {
         return adapterReceiveMessage;
@@ -152,10 +161,6 @@ public class FragmentReceiveMessageList extends BaseFragment {
         this.canLoading = canLoading;
     }
 
-    @Override
-    public int getLayoutResId() {
-        return R.layout.fragment_receive_message_list;
-    }
 
     @Override
     public void onAttach(Context context) {

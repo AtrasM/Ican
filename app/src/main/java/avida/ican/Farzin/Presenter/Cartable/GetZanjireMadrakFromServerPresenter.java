@@ -73,30 +73,43 @@ public class GetZanjireMadrakFromServerPresenter {
         task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (data.contains(App.RESPONSEPATH)) {
-                    ZanjireMadrakSaxHandler zanjireMadrakSaxHandler = xmlToObject.parseXmlWithSax(data, new ZanjireMadrakSaxHandler());
-                    structureZanjireMadrakListRES[0] = zanjireMadrakSaxHandler.getObject();
-                    sleep();
-                } else {
-                    String xml = data.replaceAll("xsi:type=\"FarzinFile\"", "");
-                    structureZanjireMadrakListRES[0] = xmlToObject.DeserializationSimpleXml(xml, StructureZanjireMadrakListRES.class);
+                try {
+                    if (data.contains(App.RESPONSEPATH)) {
+                        ZanjireMadrakSaxHandler zanjireMadrakSaxHandler = xmlToObject.parseXmlWithSax(data, new ZanjireMadrakSaxHandler());
+                        structureZanjireMadrakListRES[0] = zanjireMadrakSaxHandler.getObject();
+                        sleep();
+                    } else {
+                        String xml = data.replaceAll("xsi:type=\"FarzinFile\"", "");
+                        structureZanjireMadrakListRES[0] = xmlToObject.DeserializationSimpleXml(xml, StructureZanjireMadrakListRES.class);
+                    }
+                } catch (Exception e) {
+
+                    e.printStackTrace();
                 }
+
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                if (structureZanjireMadrakListRES[0].getStrErrorMsg() == null || structureZanjireMadrakListRES[0].getStrErrorMsg().isEmpty()) {
-                    if (structureZanjireMadrakListRES[0].getGetFileDependencyResult() == null) {
-                        zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
+                try {
+                    if (structureZanjireMadrakListRES[0].getStrErrorMsg() == null || structureZanjireMadrakListRES[0].getStrErrorMsg().isEmpty()) {
+                        if (structureZanjireMadrakListRES[0].getGetFileDependencyResult() == null) {
+                            zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
+                        } else {
+                            StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES[0].getGetFileDependencyResult();
+                            // changeXml.charDecoder(structureMessageList.get())
+                            zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+                        }
                     } else {
-                        StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES[0].getGetFileDependencyResult();
-                        // changeXml.charDecoder(structureMessageList.get())
-                        zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+                        zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES[0].getStrErrorMsg());
                     }
-                } else {
-                    zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES[0].getStrErrorMsg());
+                }catch (Exception e){
+                    zanjireMadrakListener.onFailed("" );
+
+                    e.printStackTrace();
                 }
+
             }
         };
 

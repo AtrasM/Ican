@@ -295,4 +295,21 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void ClearDocumentContent() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentContentDB.class);
     }
+
+    public void ClearAllTable() throws SQLException {
+        ClearCartableDocumentTaeedQueue();
+        ClearOpticalPenQueue();
+        ClearDocumentActions();
+        ClearCartableSendQueue();
+        ClearDocumentContent();
+        ClearMessageQueue();
+        ClearCartableDocument();
+        ClearHamesh();
+        ClearCartableHistory();
+        ClearZanjireMadrak();
+        ClearUserAndRole();
+        ClearMessage();
+        ClearMessageFile();
+        ClearReceiver();
+    }
 }

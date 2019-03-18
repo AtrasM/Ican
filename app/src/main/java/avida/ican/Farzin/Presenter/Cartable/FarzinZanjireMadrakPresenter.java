@@ -49,7 +49,7 @@ public class FarzinZanjireMadrakPresenter {
         zanjireMadrakListener = new ZanjireMadrakListener() {
             @Override
             public void onSuccess(StructureZanjireMadrakRES structureZanjireMadrakRES) {
-                if (structureZanjireMadrakRES.getPeyro().size() == 0 && structureZanjireMadrakRES.getDarErtebat().size() == 0 && structureZanjireMadrakRES.getAtf().size() == 0 && structureZanjireMadrakRES.getPeyvast().size() == 0) {
+                if (structureZanjireMadrakRES.getPeyro().size() == 0 && structureZanjireMadrakRES.getDarErtebat().size() == 0 && structureZanjireMadrakRES.getAtf().size() == 0 && structureZanjireMadrakRES.getPeyvast().size() == 0&& structureZanjireMadrakRES.getIndicatorScanedFile().size() == 0) {
                     listenerZanjireMadrak.noData();
                 } else {
                     SaveData(structureZanjireMadrakRES);

@@ -184,17 +184,16 @@ public class FarzinMessageQuery {
                 for (int i = 0; i < structureAttaches.size(); i++) {
                     StructureAttach Attach = structureAttaches.get(i);
                     String fileName = CustomFunction.deletExtentionAsFileName(Attach.getName());
-                    fileName = "ATTACH_" + fileName + CustomFunction.getRandomUUID();
-                    fileName = fileName.replace(" ", "");
+                    //fileName = fileName.replace(" ", "");
                     String filePath = "";
 
                     if (Attach.getFileAsStringBuilder().length() < 256) {
                         //filePath = CustomFunction.reNameFile(Attach.getFileAsStringBuilder().toString(), fileName);
                         filePath = Attach.getFileAsStringBuilder().toString();
-                        fileName = CustomFunction.getFileName(filePath);
+                        //fileName = CustomFunction.getFileName(filePath);
 
                     } else {
-                        filePath = new CustomFunction().saveFileToStorage(Attach.getFileAsStringBuilder(), fileName);
+                        filePath = new CustomFunction().saveFileToStorage(Attach.getFileAsStringBuilder(), fileName + CustomFunction.getRandomUUID());
                     }
                     StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, fileName, filePath, Attach.getFileExtension());
                     messageFileDao.create(structureMessageFileDB);

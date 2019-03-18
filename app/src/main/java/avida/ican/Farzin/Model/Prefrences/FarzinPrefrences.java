@@ -8,6 +8,7 @@ import org.ksoap2.HeaderProperty;
 import java.util.List;
 
 import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-03-13 at 1:27 PM
@@ -60,15 +61,18 @@ public class FarzinPrefrences {
 
     private void putCookie(List headerList) {
         String SESSION_ID = "";
-        for (Object header : headerList) {
-            HeaderProperty headerProperty = (HeaderProperty) header;
-            String headerKey = headerProperty.getKey();
-            String headerValue = headerProperty.getValue();
-            if (headerKey != null && headerKey.equalsIgnoreCase("set-cookie")) {
-                SESSION_ID = headerValue.trim();
-                break;
+        if (headerList != null) {
+            for (Object header : headerList) {
+                HeaderProperty headerProperty = (HeaderProperty) header;
+                String headerKey = headerProperty.getKey();
+                String headerValue = headerProperty.getValue();
+                if (headerKey != null && headerKey.equalsIgnoreCase("set-cookie")) {
+                    SESSION_ID = headerValue.trim();
+                    break;
+                }
             }
         }
+
         sharedPreferencesValue.edit().putString(TAG + "cookie", SESSION_ID).apply();
     }
 
@@ -131,7 +135,8 @@ public class FarzinPrefrences {
     }
 
     public String getCartableDocumentDataSyncDate() {
-        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", "");
+        String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
+        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", defDate);
     }
 
     public void putCartableDocumentForFirstTimeSync(boolean isDataForFirstTimeSync) {
@@ -190,4 +195,18 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "MessageSendLastCheckDate", "");
     }
 
+    public void clearCatch() {
+        putUserAuthenticationInfo("", "", null);
+        putUserBaseInfo(-1, -1);
+        putDataForFirstTimeSync(false);
+        putMetaDataSyncDate("");
+        putCartableDocumentForFirstTimeSync(false);
+        putSendMessageForFirstTimeSync(false);
+        putReceiveMessageForFirstTimeSync(false);
+        putCartableLastCheckDate("");
+        putMessageRecieveLastCheckDate("");
+        putMessageSentLastCheckDate("");
+        putMessageViewSyncDate("");
+        putCartableDocumentDataSyncDate("");
+    }
 }

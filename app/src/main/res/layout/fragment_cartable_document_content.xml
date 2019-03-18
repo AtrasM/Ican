@@ -1,4 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -10,7 +11,35 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="@dimen/margin_maximum">
+            android:layout_margin="@dimen/margin_maximum"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/ln_document_content_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:padding="@dimen/padding"
+                android:visibility="gone">
+
+                <TextView
+                    style="@style/custom_Txt_Title_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|left"
+                    android:padding="0dp"
+                    android:text="@string/document_content_number_title"
+                    android:textColor="@color/color_txt_Normal" />
+
+                <Spinner
+                    android:id="@+id/sp_document_content_number"
+                    style="@style/custom_spinner_style"
+                    android:layout_width="90dp"
+                    android:layout_height="wrap_content"
+                    android:gravity="center|right" />
+            </LinearLayout>
 
             <com.github.barteksc.pdfviewer.PDFView
                 android:id="@+id/pdf_viewer"
@@ -29,8 +58,28 @@
             android:layout_gravity="center|bottom"
             android:textStyle="bold" />
 
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <include layout="@layout/item_txt_nodata" />
+            <include layout="@layout/item_txt_nodata" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_48"
+                android:gravity="center">
+
+                <ImageView
+                    android:id="@+id/img_refresh"
+                    style="@style/custom_image_button_transparent_style"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/ic_refresh" />
+            </LinearLayout>
+        </FrameLayout>
 
 
         <include layout="@layout/ln_loading" />

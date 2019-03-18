@@ -6,7 +6,8 @@ package avida.ican.Farzin.View.Enum;
 
 public enum NotificationChanelEnum {
     Message(1),
-    Cartable(2);
+    Cartable(2),
+    LogOut(3);
     private int value;
 
     private NotificationChanelEnum(int value) {

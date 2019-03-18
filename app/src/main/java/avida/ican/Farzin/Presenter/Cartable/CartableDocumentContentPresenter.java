@@ -2,6 +2,9 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import android.os.Handler;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentContentBND;
@@ -29,10 +32,10 @@ public class CartableDocumentContentPresenter {
         this.Etc = Etc;
         this.Ec = Ec;
         this.listenerCartableDocumentContent = listenerCartableDocumentContent;
-        initCartableHameshListListener();
+        initCartableDocumentContenthListListener();
     }
 
-    private void initCartableHameshListListener() {
+    private void initCartableDocumentContenthListListener() {
         getCartableDocumentContentFromServerPresenter = new GetCartableDocumentContentFromServerPresenter();
         farzinCartableQuery = new FarzinCartableQuery();
         cartableDocumentContentListener = new CartableDocumentContentListener() {
@@ -45,16 +48,17 @@ public class CartableDocumentContentPresenter {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                listenerCartableDocumentContent.noData();
+                /*if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                     App.getHandler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onFailed("");
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
-                }
+                }*/
             }
 
             @Override
@@ -65,7 +69,7 @@ public class CartableDocumentContentPresenter {
                         public void run() {
                             onCancel();
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
                 }
@@ -77,8 +81,8 @@ public class CartableDocumentContentPresenter {
         getCartableDocumentContentFromServerPresenter.GetContent(Etc, Ec, cartableDocumentContentListener);
     }
 
-    public StructureCartableDocumentContentDB GetFromLocal() {
-        StructureCartableDocumentContentDB cartableDocumentContentDB = new StructureCartableDocumentContentDB();
+    public List<StructureCartableDocumentContentDB> GetFromLocal() {
+        List<StructureCartableDocumentContentDB> cartableDocumentContentDB = new ArrayList<>();
         if (farzinCartableQuery.IsDocumentContentExist(Etc, Ec)) {
             cartableDocumentContentDB = farzinCartableQuery.getDocumentContent(Etc, Ec);
         }
@@ -92,9 +96,11 @@ public class CartableDocumentContentPresenter {
         StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(fileBinaryAsStringBuilder, Etc, Ec);
         farzinCartableQuery.saveCartableDocumentContent(cartableDocumentContentBND, new CartableDocumentContentQuerySaveListener() {
 
+
             @Override
-            public void onSuccess(StructureCartableDocumentContentDB structureCartableDocumentContentDB) {
-                listenerCartableDocumentContent.newData(structureCartableDocumentContentDB.getFile_path());
+            public void onSuccess(List<StructureCartableDocumentContentDB> structureCartableDocumentContentsDB) {
+                listenerCartableDocumentContent.newData(structureCartableDocumentContentsDB);
+
             }
 
             @Override
@@ -110,7 +116,7 @@ public class CartableDocumentContentPresenter {
                         public void run() {
                             onFailed("");
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
                 }
@@ -125,7 +131,7 @@ public class CartableDocumentContentPresenter {
                         public void run() {
                             onCancel();
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
                 }

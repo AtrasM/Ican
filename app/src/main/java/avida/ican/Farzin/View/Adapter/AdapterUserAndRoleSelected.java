@@ -3,7 +3,7 @@ package avida.ican.Farzin.View.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.security.cert.Extension;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +28,6 @@ import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
 import avida.ican.Farzin.View.Enum.UserAndRoleEnum;
 import avida.ican.Farzin.View.Interface.ListenerAdapterUserAndRole;
 import avida.ican.Ican.App;
-import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;

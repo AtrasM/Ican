@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -34,7 +34,7 @@ import avida.ican.Farzin.Presenter.Message.GetMessageFromServerPresenter;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityWriteMessage;
-import avida.ican.Farzin.View.FarzinNotificationClickManager;
+import avida.ican.Farzin.View.FarzinNotificationManager;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -60,7 +60,7 @@ public class GetRecieveMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.IsNew;
     private int Count = 1;
-    private final int MaxCount = 50;
+    private final int MaxCount = 10;
     private final int MinCount = 1;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
@@ -213,6 +213,7 @@ public class GetRecieveMessageService extends Service {
                 }
 
                 if (messageList.size() == 0) {
+                    callDataFinish();
                     pageNumber = pageNumber + 1;
                     GetMessage(pageNumber, Count);
                     CallMulltiMessageNotification();
@@ -308,6 +309,7 @@ public class GetRecieveMessageService extends Service {
     }
 
     private void callDataFinish() {
+        Count = MinCount;
         getFarzinPrefrences().putReceiveMessageForFirstTimeSync(true);
         if (BaseActivity.dialogMataDataSync != null) {
             canShowNotification = false;
@@ -416,7 +418,7 @@ public class GetRecieveMessageService extends Service {
 
         Intent intentCancell = new Intent(context, FarzinMessageNotificationReceiver.class);
         intentCancell.putExtra(PutExtraEnum.ID.name(), notifyID);
-        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(context.getApplicationContext(), 0, intentCancell, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(App.getAppContext(), 0, intentCancell, PendingIntent.FLAG_UPDATE_CURRENT);
         return pendingIntentCancell;
     }
 
@@ -427,7 +429,7 @@ public class GetRecieveMessageService extends Service {
     }
 
     private Intent GetMultiMessageIntent() {
-        NotificationIntent = new Intent(context, FarzinNotificationClickManager.class);
+        NotificationIntent = new Intent(context, FarzinNotificationManager.class);
         NotificationIntent.putExtra(PutExtraEnum.Notification.getValue(), PutExtraEnum.MultyMessage.getValue());
         NotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         return NotificationIntent;

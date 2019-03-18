@@ -23,10 +23,10 @@ import butterknife.ButterKnife;
 
 public class DialogQuestion {
     private final Activity context;
+    private ListenerQuestion listenerQuestion;
     private Binding viewHolder;
     private DialogPlus dialogQuestion;
-    private ListenerQuestion listenerQuestion;
-    private String Title = "";
+    private String mTitle = "";
 
     public class Binding {
 
@@ -53,7 +53,7 @@ public class DialogQuestion {
     }
 
     public DialogQuestion setTitle(String Title) {
-        this.Title = Title;
+        this.mTitle = Title;
         return this;
     }
 
@@ -80,7 +80,7 @@ public class DialogQuestion {
                         .create();
                 viewHolder = new Binding(dialogQuestion.getHolderView());
 
-                viewHolder.txtTitleDialogQuestion.setText(Title);
+                viewHolder.txtTitleDialogQuestion.setText(mTitle);
                 viewHolder.btnDialogQuestionOk.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -106,3 +106,4 @@ public class DialogQuestion {
     }
 
 }
+

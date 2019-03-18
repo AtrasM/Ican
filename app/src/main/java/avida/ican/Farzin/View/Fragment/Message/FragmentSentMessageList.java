@@ -3,10 +3,10 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
+import androidx.annotation.Nullable;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -40,6 +40,12 @@ public class FragmentSentMessageList extends BaseFragment {
     private boolean isshow = false;
     private Animator animator = null;
     private boolean canLoading = true;
+
+
+    @Override
+    public int getLayoutResId() {
+        return R.layout.fragment_sent_message_list;
+    }
 
     public FragmentSentMessageList newInstance(Activity context, AdapterSentMessage adapterSentMessage, ListenerRcv listenerRcv) {
 
@@ -143,10 +149,6 @@ public class FragmentSentMessageList extends BaseFragment {
         this.canLoading = canLoading;
     }
 
-    @Override
-    public int getLayoutResId() {
-        return R.layout.fragment_sent_message_list;
-    }
 
 
     @Override

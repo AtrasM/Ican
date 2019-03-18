@@ -2,7 +2,9 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
+
 import android.util.Log;
 
 import com.j256.ormlite.dao.Dao;
@@ -50,13 +52,12 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 import avida.ican.Farzin.Model.Structure.StructureCartableAction;
-import avida.ican.Farzin.View.Interface.ListenerFile;
+import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableDocumentContent;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.ListenerDelet;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Enum.ToastEnum;
-import avida.ican.Ican.View.Interface.ListenerValidate;
 
 
 /**
@@ -164,15 +165,35 @@ public class FarzinCartableQuery {
     public void saveCartableDocumentContent(StructureCartableDocumentContentBND cartableDocumentContentBND, final CartableDocumentContentQuerySaveListener documentContentQuerySaveListener) {
         this.documentContentQuerySaveListener = documentContentQuerySaveListener;
         if (IsDocumentContentExist(cartableDocumentContentBND.getETC(), cartableDocumentContentBND.getEC())) {
-            if (cartableDocumentContentBND.getFileAsStringBuilder().length() < 256) {
-                File file = new File(cartableDocumentContentBND.getFileAsStringBuilder().toString());
-                if (file.exists()) {
-                    file.delete();
-                }
-            }
+
             deletCartableDocumentContent(cartableDocumentContentBND.getETC(), cartableDocumentContentBND.getEC());
         }
+
         new saveCartableDocumentContent().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cartableDocumentContentBND);
+
+    }
+
+    public void saveCartableDocumentContent(ArrayList<StructureCartableDocumentContentBND> cartableDocumentContentBNDS, final CartableDocumentContentQuerySaveListener documentContentQuerySaveListener) {
+
+        this.documentContentQuerySaveListener = documentContentQuerySaveListener;
+        if (IsDocumentContentExist(cartableDocumentContentBNDS.get(0).getETC(), cartableDocumentContentBNDS.get(0).getEC())) {
+
+            deletCartableDocumentContent(cartableDocumentContentBNDS.get(0).getETC(), cartableDocumentContentBNDS.get(0).getEC());
+        }
+        for (StructureCartableDocumentContentBND cartableDocumentContentBND : cartableDocumentContentBNDS) {
+            new saveCartableDocumentContent().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, cartableDocumentContentBND);
+        }
+        try {
+            if (App.fragmentStacks != null && App.fragmentStacks.size() > 0) {
+                FragmentCartableDocumentContent fragmentCartableDocumentContent = (FragmentCartableDocumentContent) App.fragmentStacks.get("documentContent").lastElement();
+                if (fragmentCartableDocumentContent != null) {
+                    fragmentCartableDocumentContent.reGetData();
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -336,13 +357,10 @@ public class FarzinCartableQuery {
         @Override
         protected Void doInBackground(StructureCartableDocumentContentBND... cartableDocumentContentBND) {
             String fileName = "CDC" + cartableDocumentContentBND[0].getETC() + "" + cartableDocumentContentBND[0].getEC() + CustomFunction.getRandomUUID();
-            fileName = fileName.replace(" ", "");
+            //fileName = fileName.replace(" ", "");
             String filePath = "";
             Log.i("largeFile", "getFileAsStringBuilder().length()= " + cartableDocumentContentBND[0].getFileAsStringBuilder().length());
             if (cartableDocumentContentBND[0].getFileAsStringBuilder().length() < 256) {
-                //if (cartableDocumentContentBND[0].getFileAsStringBuilder().indexOf(App.DEFAULTPATH) > 0) {
-                //filePath = CustomFunction.reNameFile(cartableDocumentContentBND[0].getFileAsStringBuilder().toString(), fileName);
-                Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + cartableDocumentContentBND[0].getFileAsStringBuilder().length());
                 filePath = cartableDocumentContentBND[0].getFileAsStringBuilder().toString();
                 fileName = CustomFunction.getFileName(filePath);
 
@@ -483,13 +501,13 @@ public class FarzinCartableQuery {
 
                     }
 
-                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
-                    fileName = fileName.replace(" ", "");
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName());
+                    //fileName = fileName.replace(" ", "");
                     if (stringBuilder.length() < 256) {
                         //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
                         //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
                         filePath = stringBuilder.toString();
-                        fileName = CustomFunction.getFileName(filePath);
+                        //fileName = CustomFunction.getFileName(filePath);
                         //}
                     } else {
                         filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
@@ -507,13 +525,13 @@ public class FarzinCartableQuery {
 
                     }
 
-                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
-                    fileName = fileName.replace(" ", "");
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName());
+                    //fileName = fileName.replace(" ", "");
                     if (stringBuilder.length() < 256) {
                         //if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
                         //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
                         filePath = stringBuilder.toString();
-                        fileName = CustomFunction.getFileName(filePath);
+                        //fileName = CustomFunction.getFileName(filePath);
                         //}
                     } else {
                         filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
@@ -529,16 +547,13 @@ public class FarzinCartableQuery {
                         stringBuilder.append(structureFileRES.getFileBinary());
 
                     }
-
-                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
-                    fileName = fileName.replace(" ", "");
-                    Log.i("largeFile", "getFileAsStringBuilder().length() = " + stringBuilder.length());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName());
+                    //fileName = fileName.replace(" ", "");
                     if (stringBuilder.length() < 256) {
                         // if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
                         // filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
-                        Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + stringBuilder.length());
                         filePath = stringBuilder.toString();
-                        fileName = CustomFunction.getFileName(filePath);
+                        //fileName = CustomFunction.getFileName(filePath);
                         // }
                     } else {
                         filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
@@ -554,16 +569,13 @@ public class FarzinCartableQuery {
                         stringBuilder.append(structureFileRES.getFileBinary());
 
                     }
-
-                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName()) + CustomFunction.getRandomUUID();
-                    fileName = fileName.replace(" ", "");
-                    Log.i("largeFile", "getFileAsStringBuilder().length()= " + stringBuilder.length());
+                    fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName());
+                   // fileName = fileName.replace(" ", "");
                     if (stringBuilder.length() < 256) {
                         // if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
                         //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
-                        Log.i("largeFile", "getFileAsStringBuilder().length() in if= " + stringBuilder.length());
                         filePath = stringBuilder.toString();
-                        fileName = CustomFunction.getFileName(filePath);
+                        //fileName = CustomFunction.getFileName(filePath);
                         // }
                     } else {
                         filePath = new CustomFunction().saveFileToStorage(stringBuilder, fileName);
@@ -571,6 +583,42 @@ public class FarzinCartableQuery {
                     StructureZanjireMadrakFileDB structureZanjireMadrakFileDB = new StructureZanjireMadrakFileDB(fileName, filePath, structureFileRES.getFileExtension(), ZanjireMadrakFileTypeEnum.PEIRO, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
                     zanjireMadrakFileDao.create(structureZanjireMadrakFileDB);
                 }
+                if (zanjireMadrakRES[0].getIndicatorScanedFile() != null && zanjireMadrakRES[0].getIndicatorScanedFile().size() > 0) {
+                    ArrayList<StructureCartableDocumentContentBND> structureCartableDocumentContentBNDS = new ArrayList<>();
+                    for (StructureFileRES structureFileRES : zanjireMadrakRES[0].getIndicatorScanedFile()) {
+                        StringBuilder stringBuilder = new StringBuilder();
+                        if (structureFileRES.getFileAsStringBuilder() != null && structureFileRES.getFileAsStringBuilder().length() > 0) {
+                            stringBuilder = structureFileRES.getFileAsStringBuilder();
+                        } else {
+                            stringBuilder.append(structureFileRES.getFileBinary());
+
+                        }
+                        StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(stringBuilder, zanjireMadrakRES[0].getETC(), zanjireMadrakRES[0].getEC());
+                        structureCartableDocumentContentBNDS.add(cartableDocumentContentBND);
+                    }
+                    saveCartableDocumentContent(structureCartableDocumentContentBNDS, new CartableDocumentContentQuerySaveListener() {
+                        @Override
+                        public void onSuccess(List<StructureCartableDocumentContentDB> structureCartableDocumentContentsDB) {
+
+                        }
+
+                        @Override
+                        public void onExisting() {
+
+                        }
+
+                        @Override
+                        public void onFailed(String message) {
+
+                        }
+
+                        @Override
+                        public void onCancel() {
+
+                        }
+                    });
+                }
+
                 zanjireMadrakQuerySaveListener.onSuccess();
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -622,16 +670,16 @@ public class FarzinCartableQuery {
         return structureHameshsDB;
     }
 
-    public StructureCartableDocumentContentDB getDocumentContent(int ETC, int EC) {
-        StructureCartableDocumentContentDB structureCartableDocumentContentDB = new StructureCartableDocumentContentDB();
+    public List<StructureCartableDocumentContentDB> getDocumentContent(int ETC, int EC) {
         QueryBuilder<StructureCartableDocumentContentDB, Integer> queryBuilder = mDocumentContentDao.queryBuilder();
+        List<StructureCartableDocumentContentDB> structureCartableDocumentContentsDB = new ArrayList<>();
         try {
             queryBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
-            structureCartableDocumentContentDB = queryBuilder.queryForFirst();
+            structureCartableDocumentContentsDB = queryBuilder.query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return structureCartableDocumentContentDB;
+        return structureCartableDocumentContentsDB;
     }
 
     public List<StructureCartableDocumentActionsDB> getDocumentActions(int ETC) {
@@ -887,10 +935,19 @@ public class FarzinCartableQuery {
 
     public boolean deletCartableDocumentContent(int ETC, int EC) {
         boolean isDelet = false;
+        List<StructureCartableDocumentContentDB> cartableDocumentContentsDB = getDocumentContent(ETC, EC);
+
         try {
             DeleteBuilder<StructureCartableDocumentContentDB, Integer> deleteBuilder = mDocumentContentDao.deleteBuilder();
             deleteBuilder.where().eq("ETC", ETC).and().eq("EC", EC);
             deleteBuilder.delete();
+            for (StructureCartableDocumentContentDB cartableDocumentContentDB : cartableDocumentContentsDB) {
+                File file = new File(cartableDocumentContentDB.getFile_path());
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+
             isDelet = true;
         } catch (SQLException e) {
             e.printStackTrace();

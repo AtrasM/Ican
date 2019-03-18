@@ -36,8 +36,8 @@
                     android:layout_height="match_parent"
                     android:baselineAligned="false"
                     android:gravity="center"
-                    android:padding="@dimen/padding"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:padding="@dimen/padding">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -52,9 +52,9 @@
                             style="@style/custom_Txt_Normal_style"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:lines="1"
                             android:ellipsize="end"
                             android:gravity="center|right"
+                            android:lines="1"
                             android:paddingBottom="0dp"
                             android:text="نام" />
 
@@ -102,20 +102,20 @@
                 <LinearLayout
                     style="@style/custom_divider_style"
                     android:layout_width="match_parent"
+                    android:layout_height="1dp"
                     android:layout_marginLeft="0dp"
-                    android:layout_marginRight="@dimen/margin"
-                    android:layout_height="1dp" />
+                    android:layout_marginRight="@dimen/margin" />
 
                 <TextView
                     android:id="@+id/txt_subject"
                     style="@style/custom_Txt_Normal_style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:gravity="center|right"
-                    android:text="موضوع"
                     android:layout_marginLeft="@dimen/margin"
                     android:layout_marginRight="@dimen/margin"
+                    android:gravity="center|right"
                     android:padding="@dimen/padding"
+                    android:text="موضوع"
                     android:textColor="@color/color_txt_SubTitle"
                     tools:ignore="RtlHardcoded" />
 
@@ -140,7 +140,7 @@
                     android:padding="@dimen/padding">
 
 
-                    <android.support.v4.widget.NestedScrollView
+                    <androidx.core.widget.NestedScrollView
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
@@ -169,7 +169,7 @@
                         </com.ms.square.android.expandabletextview.ExpandableTextView>
 
 
-                    </android.support.v4.widget.NestedScrollView>
+                    </androidx.core.widget.NestedScrollView>
 
 
                 </LinearLayout>
@@ -179,6 +179,13 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <LinearLayout
+                        android:id="@+id/ln_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:background="@color/color_Divider"
+                        android:orientation="vertical" />
 
                     <avida.ican.Ican.View.Custom.MaxHeightLinearLayout
                         android:id="@+id/ln_rcv_attach"
@@ -189,7 +196,7 @@
                         android:paddingBottom="@dimen/padding_minimum"
                         app:maxHeightDp="180">
 
-                        <android.support.v7.widget.RecyclerView
+                        <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rcv_attach"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />

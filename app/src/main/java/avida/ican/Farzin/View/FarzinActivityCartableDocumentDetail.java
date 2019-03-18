@@ -3,9 +3,12 @@ package avida.ican.Farzin.View;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +19,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableSendQuerySaveListener;
@@ -45,7 +49,6 @@ import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.Structure.StructureOpticalPen;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
-import avida.ican.Ican.View.Custom.Base64EncodeDecodeFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
@@ -139,7 +142,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
     private void initView() {
         Etc = cartableDocumentDetailBND.getETC();
         Ec = cartableDocumentDetailBND.getEC();
-        sendCode = cartableDocumentDetailBND.getEC();
+        sendCode = cartableDocumentDetailBND.getSendCode();
         txtName.setText(cartableDocumentDetailBND.getSenderName());
         txtRoleName.setText("[ " + cartableDocumentDetailBND.getSenderRoleName() + " ]");
         String[] splitDateTime = CustomFunction.MiladyToJalaly(cartableDocumentDetailBND.getReceiveDate().toString()).split(" ");
@@ -306,7 +309,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
     //_________________________________*****___Send___*****__________________________________
     private void Send(final StructureAppendREQ structureAppendREQ, final boolean TaeedAndSend) {
-       if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             SendAddToQueue(structureAppendREQ);
             if (TaeedAndSend) {
                 Taeed();
@@ -501,6 +504,10 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         smartTabLayout.setCustomTabView(R.layout.layout_txt_tab, R.id.txt_title_tab);
         ViewPagerAdapter adapter = new ViewPagerAdapter(mfragmentManager);
         adapter.addFrag(fragmentCartableDocumentContent, R.string.title_document_content);
+        App.fragmentStacks.remove("documentContent");
+        Fragment fragment = fragmentCartableDocumentContent;
+        App.fragmentStacks.put("documentContent", new Stack<Fragment>());
+        App.fragmentStacks.get("documentContent").push(fragment);
         adapter.addFrag(fragmentCartableHameshList, R.string.title_list_hamesh);
         adapter.addFrag(fragmentCartableHistoryList, R.string.title_gardesh_madrak);
         adapter.addFrag(fragmentZanjireMadrak, R.string.title_zanjireh_madrak);

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -35,12 +36,9 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         intents.clear();
         //context.startService(new Intent(context, NetWorkCheckingService.class));
         context.startService(new Intent(context, CheckServerAviableService.class));
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
-            }
-        }, (TimeValue.SecondsInMilli() * 2));
+
+        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
+
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {

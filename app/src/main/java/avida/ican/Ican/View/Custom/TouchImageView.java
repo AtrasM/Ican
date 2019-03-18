@@ -29,7 +29,7 @@ import android.widget.Scroller;
 /**
  * Created by AtrasVida on 12/20/2016 at 12:26 PM
  */
-public class TouchImageView extends android.support.v7.widget.AppCompatImageView {
+public class TouchImageView extends androidx.appcompat.widget.AppCompatImageView {
 
 
     private static final String DEBUG = "DEBUG";

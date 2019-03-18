@@ -3,11 +3,16 @@ package avida.ican.Farzin.View.Fragment.Cartable;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
+
+import androidx.annotation.Nullable;
+
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -15,7 +20,8 @@ import com.github.barteksc.pdfviewer.listener.OnErrorListener;
 import com.github.barteksc.pdfviewer.listener.OnPageChangeListener;
 import com.github.barteksc.pdfviewer.listener.OnPageScrollListener;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentContentPresenter;
@@ -39,6 +45,12 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     LinearLayout lnLoading;
     @BindView(R.id.txt_pdf_page_number)
     TextView txtPdfPageNumber;
+    @BindView(R.id.ln_document_content_number)
+    LinearLayout lnDocumentContentNumber;
+    @BindView(R.id.sp_document_content_number)
+    Spinner spDocumentContentNumber;
+    @BindView(R.id.img_refresh)
+    ImageView imgRefresh;
     /*    @BindView(R.id.srl_refresh)
         SwipeRefreshLayout srlRefresh;*/
     private Activity context;
@@ -76,6 +88,13 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                 reGetData();
             }
         });*/
+        imgRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                reGetData();
+            }
+        });
         initPresenter();
     }
 
@@ -83,14 +102,14 @@ public class FragmentCartableDocumentContent extends BaseFragment {
     private void initPresenter() {
         cartableDocumentContentPresenter = new CartableDocumentContentPresenter(Etc, Ec, new ListenerCartableDocumentContent() {
 
+
             @Override
-            public void newData(final String filePath) {
+            public void newData(List<StructureCartableDocumentContentDB> structureCartableDocumentContentDBS) {
                 App.CurentActivity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        lnLoading.setVisibility(View.GONE);
-                        //srlRefresh.setRefreshing(false);
-                        initPdfViewer(filePath);
+                        initSpiner(structureCartableDocumentContentDBS);
+
                     }
                 });
             }
@@ -104,6 +123,7 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                         // srlRefresh.setRefreshing(false);
                         if (FileAsBytes == null) {
                             txtNoData.setVisibility(View.VISIBLE);
+                            imgRefresh.setVisibility(View.VISIBLE);
                         }
                     }
                 });
@@ -114,40 +134,92 @@ public class FragmentCartableDocumentContent extends BaseFragment {
 
     }
 
-
-    private void reGetData() {
-        txtNoData.setVisibility(View.GONE);
-        StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
-        if (cartableDocumentContentDB.getETC() > 0 && !cartableDocumentContentDB.getFile_path().isEmpty()) {
-            initPdfViewer(cartableDocumentContentDB.getFile_path());
+    private void initSpiner(List<StructureCartableDocumentContentDB> cartableDocumentContentsDB) {
+        lnLoading.setVisibility(View.VISIBLE);
+        if (cartableDocumentContentsDB == null || cartableDocumentContentsDB.size() <= 0) {
+            txtNoData.setVisibility(View.VISIBLE);
+            imgRefresh.setVisibility(View.VISIBLE);
         } else {
-            if (App.networkStatus == NetworkStatus.Connected) {
-                cartableDocumentContentPresenter.GetFromServer();
-            } else {
-                lnLoading.setVisibility(View.GONE);
-                txtNoData.setVisibility(View.VISIBLE);
-                //srlRefresh.setRefreshing(false);
+            imgRefresh.setVisibility(View.GONE);
+            txtNoData.setVisibility(View.GONE);
+            ArrayList<String> item = new ArrayList<>();
+            for (int i = 1; i <= cartableDocumentContentsDB.size(); i++) {
+                item.add("شماره " + i);
             }
+            initPdfViewer(cartableDocumentContentsDB.get(0).getFile_path());
+            if (item.size() <= 1) {
+                lnDocumentContentNumber.setVisibility(View.GONE);
+            } else {
+                lnDocumentContentNumber.setVisibility(View.VISIBLE);
+            }
+            ArrayAdapter<String> adapterSpinner = new CustomFunction(App.CurentActivity).getSpinnerAdapter(item);
+            spDocumentContentNumber.setAdapter(adapterSpinner);
+            spDocumentContentNumber.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    initPdfViewer(cartableDocumentContentsDB.get(i).getFile_path());
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
         }
+
+
     }
+
 
     private void initData() {
-        StructureCartableDocumentContentDB cartableDocumentContentDB = cartableDocumentContentPresenter.GetFromLocal();
-        if (cartableDocumentContentDB.getETC() > 0 && !cartableDocumentContentDB.getFile_path().isEmpty()) {
-            initPdfViewer(cartableDocumentContentDB.getFile_path());
+        imgRefresh.setVisibility(View.GONE);
+        List<StructureCartableDocumentContentDB> cartableDocumentContentsDB = cartableDocumentContentPresenter.GetFromLocal();
+        if (cartableDocumentContentsDB == null || cartableDocumentContentsDB.size() <= 0) {
+            checkData(cartableDocumentContentsDB);
         } else {
-            if (App.networkStatus == NetworkStatus.Connected) {
-                lnLoading.setVisibility(View.VISIBLE);
-                cartableDocumentContentPresenter.GetFromServer();
-            } else {
-                lnLoading.setVisibility(View.GONE);
-                txtNoData.setVisibility(View.VISIBLE);
+            initSpiner(cartableDocumentContentsDB);
+        }
+
+    }
+
+    public void reGetData() {
+        imgRefresh.setVisibility(View.GONE);
+        List<StructureCartableDocumentContentDB> cartableDocumentContentsDB = cartableDocumentContentPresenter.GetFromLocal();
+        if (cartableDocumentContentsDB == null || cartableDocumentContentsDB.size() <= 0) {
+            checkData(cartableDocumentContentsDB);
+        } else {
+            int counter = cartableDocumentContentsDB.size();
+            for (StructureCartableDocumentContentDB cartableDocumentContentDB : cartableDocumentContentsDB) {
+                if (cartableDocumentContentDB.getFile_path() == null || cartableDocumentContentDB.getFile_path().isEmpty()) {
+                    counter--;
+                }
             }
+            if (counter <= 0) {
+                checkData(cartableDocumentContentsDB);
+            } else {
+                initSpiner(cartableDocumentContentsDB);
+            }
+
+        }
+
+
+    }
+
+    private void checkData(List<StructureCartableDocumentContentDB> cartableDocumentContentsDB) {
+        if (App.networkStatus == NetworkStatus.Connected) {
+            lnLoading.setVisibility(View.VISIBLE);
+            txtNoData.setVisibility(View.GONE);
+            cartableDocumentContentPresenter.GetFromServer();
+        } else {
+            initSpiner(cartableDocumentContentsDB);
         }
     }
 
+
     private void initPdfViewer(String filePath) {
-        //srlRefresh.setRefreshing(false);
+        lnLoading.setVisibility(View.GONE);
+        txtNoData.setVisibility(View.GONE);
+
         if (filePath != null && !filePath.isEmpty()) {
             byte[] fileAsbytes = new CustomFunction().getFileFromStorageAsByte(filePath);
             Log.i("PdfViewer", "initPdfViewer fileAsbytes.length = " + fileAsbytes.length);
@@ -172,18 +244,21 @@ public class FragmentCartableDocumentContent extends BaseFragment {
                         }).onError(new OnErrorListener() {
                     @Override
                     public void onError(Throwable t) {
-                        reGetData();
+                        txtNoData.setVisibility(View.VISIBLE);
+                        imgRefresh.setVisibility(View.VISIBLE);
                     }
                 })
                         .load();
             } else {
-                reGetData();
-                //txtNoData.setVisibility(View.VISIBLE);
+                txtNoData.setVisibility(View.VISIBLE);
+                imgRefresh.setVisibility(View.VISIBLE);
+                //reGetData();
             }
 
         } else {
-            reGetData();
-            //txtNoData.setVisibility(View.VISIBLE);
+            txtNoData.setVisibility(View.VISIBLE);
+            imgRefresh.setVisibility(View.VISIBLE);
+
         }
 
     }

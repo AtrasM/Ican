@@ -7,7 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
@@ -15,9 +14,11 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.ViewCompat;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+import androidx.core.view.ViewCompat;
+
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -53,16 +54,21 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
@@ -72,8 +78,11 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.ActivityImageViewer;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
+import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
+import avida.ican.Ican.View.Dialog.DialogQuestion;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
@@ -218,6 +227,10 @@ public class CustomFunction {
     }
 
     public ExtensionEnum getExtensionCategory(String fileExtension) {
+        if (fileExtension == null || fileExtension.isEmpty()) {
+            return ExtensionEnum.UNNOWN;
+        }
+        fileExtension = fileExtension.toLowerCase();
         fileExtension = fileExtension.replace("waw", "wav");
 
         MimeTypeMap mime = MimeTypeMap.getSingleton();
@@ -376,7 +389,7 @@ public class CustomFunction {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(extention.replace(".", ""));
-        if(type.startsWith("audio")){
+        if (type.startsWith("audio")) {
             return true;
         }
         intent.setType(type);
@@ -395,7 +408,7 @@ public class CustomFunction {
             activity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_open_file_as_this_extention), ToastEnum.TOAST_LONG_TIME);
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_can_not_display_file), ToastEnum.TOAST_LONG_TIME);
                 }
             });
             return false;
@@ -563,7 +576,7 @@ public class CustomFunction {
             BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(filePath));
             bufferedWriter.write(stringBuilder.toString());
             bufferedWriter.close();
-            Log.e("Log", "The file was successfully saved");
+            //Log.e("Log", "The file was successfully saved");
         } catch (IOException e) {
             Log.e("Log", "saveFileToStorage File write failed: " + e.toString());
         }
@@ -736,7 +749,7 @@ public class CustomFunction {
         long lastTime = timeInMili + deficultTimeInMili;
 
         CompareTimeEnum compareTimeEnum;
-        if (lastTime >= curentTime) {
+        if (lastTime > curentTime) {
             compareTimeEnum = CompareTimeEnum.isAfter;
         } else if (lastTime < curentTime) {
             compareTimeEnum = CompareTimeEnum.isBefore;
@@ -784,6 +797,29 @@ public class CustomFunction {
     public static Date getCurentDateTime() {
         Calendar c = Calendar.getInstance();
         return c.getTime();
+    }
+
+    public static Date getLastMonthDateTime() {
+/*        YearMonth thisMonth    = YearMonth.now();
+        YearMonth lastMonth    = thisMonth.minusMonths(1);
+        YearMonth twoMonthsAgo = thisMonth.minusMonths(2);
+
+        DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue());
+
+        System.out.printf("         Today: %s\n", thisMonth.format(monthYearFormatter));
+        System.out.printf("    Last Month: %s\n", lastMonth.format(monthYearFormatter));
+        System.out.printf("Two Months Ago: %s\n", twoMonthsAgo.format(monthYearFormatter));*/
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, -1);
+        return c.getTime();//Sat Feb 16 10:25:43 GMT+03:30 2019
+    }
+
+    public static String getLastMonthDateTimeAsFormat() {
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, -1);
+        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), Locale.UK);
+        Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
+        return format.format(c.getTime());
     }
 
     public static String StandardizeTheDateFormat(String date) {
@@ -1042,6 +1078,14 @@ public class CustomFunction {
         System.gc();
     }
 
+    public static void deletDirectory(File dirPath) {
+        try {
+            FileUtils.deleteDirectory(dirPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static String reNameFile(String filePath, String newFileName) {
         String filrDir = getFileDir(filePath);
         File from = new File(filrDir, getFileName(filePath));
@@ -1052,5 +1096,30 @@ public class CustomFunction {
         } else {
             return filePath;
         }
+    }
+
+    public static void resetApp(final Activity context, final ListenerQuestion mlistenerQuestion) {
+        final FarzinPrefrences farzinPrefrences = new FarzinPrefrences().init();
+        new DialogQuestion(context).setOnListener(new ListenerQuestion() {
+            @Override
+            public void onSuccess() {
+                farzinPrefrences.clearCatch();
+                try {
+                    App.getFarzinDatabaseHelper().ClearAllTable();
+                    CustomFunction.deletDirectory(new File(App.DEFAULTPATH));
+                    mlistenerQuestion.onSuccess();
+                } catch (SQLException e) {
+                    mlistenerQuestion.onCancel();
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                mlistenerQuestion.onCancel();
+            }
+        }).setTitle(Resorse.getString(R.string.resetApp)).Show();
+
+
     }
 }

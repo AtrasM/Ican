@@ -1,18 +1,26 @@
 package avida.ican.Ican.Model;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import android.os.Build;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.NotificationCompat;
+
 import android.text.TextUtils;
 import android.util.Log;
 
 import org.ksoap2.HeaderProperty;
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
-import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
-import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
@@ -23,16 +31,26 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.FarzinCartableNotificationReceiver;
+import avida.ican.Farzin.Presenter.LoginPresenter;
+import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
+import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Farzin.View.FarzinActivityMain;
+import avida.ican.Farzin.View.FarzinNotificationManager;
+import avida.ican.Farzin.View.Interface.LoginViewListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.IcanHttpTransportSE;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
+import avida.ican.R;
+
+import static avida.ican.Ican.BaseActivity.getActivityFromStackMap;
 
 /**
  * Created by AtrasVida on 2018-03-13 at 1:14 PM
@@ -62,6 +80,9 @@ public class WebService {
     private String Tag = "WebService";
     private boolean IsPasswordEncript;
     private boolean isNetworkCheking;
+    private LoginPresenter loginPresenter = new LoginPresenter();
+    private Intent NotificationIntent;
+    private int notifyID = NotificationChanelEnum.LogOut.getValue();
 
     public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl, String endPoint) {
         this.NAME_SPACE = NameSpace;
@@ -213,15 +234,17 @@ public class WebService {
                 if (isNetworkCheking) {
                     webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
                 } else {
-                    CheckNetwork(false, webServiceResponse);
+                    CheckNetwork(false, true, webServiceResponse);
                 }
             } else {
                 if (webserviceResponseListener != null) {
                     boolean invalidLogin = false;
+                    boolean invalidUserOrPass = false;
                     if (webServiceResponse.isResponse()) {
                         String xml = webServiceResponse.getHttpTransportSE().responseDump;
                         if (xml != null) {
-                            invalidLogin = xml.contains("Invalid Login");
+                            invalidLogin = xml.contains(Resorse.getString(R.string.invalidLoginError));
+                            invalidUserOrPass = xml.contains(Resorse.getString(R.string.loginUserOrPassInvalidError));
                         }
 
                     }
@@ -231,9 +254,10 @@ public class WebService {
                         webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
                     } else {
                         if (App.networkStatus == NetworkStatus.NoAction) {
-                            CheckNetwork(invalidLogin, webServiceResponse);
+                            CheckNetwork(invalidLogin, invalidUserOrPass, webServiceResponse);
                         } else {
                             final boolean finalInvalidLogin = invalidLogin;
+                            final boolean finalInvalidUserOrPass = invalidUserOrPass;
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -244,19 +268,12 @@ public class WebService {
                                         }
                                         webserviceResponseListener.NetworkAccessDenied();
                                     } else {
-                                        if (finalInvalidLogin && App.CurentActivity != null) {
-                                            gotoActivityLogin();
-                                        } else {
-                                            webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
-                                        }
+                                        checkValidationLogin(finalInvalidLogin, finalInvalidUserOrPass, webServiceResponse);
                                     }
                                 }
                             });
-
-
                         }
                     }
-
                 }
             }
 
@@ -266,7 +283,7 @@ public class WebService {
 
     }
 
-    private void CheckNetwork(final boolean invalidLogin, final WebServiceResponse webServiceResponse) {
+    private void CheckNetwork(final boolean invalidLogin, final boolean invalidUserOrPass, final WebServiceResponse webServiceResponse) {
         new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
             @Override
             public void onConnected() {
@@ -277,11 +294,9 @@ public class WebService {
                         if (App.netWorkStatusListener != null) {
                             App.netWorkStatusListener.Connected();
                         }
-                        if (invalidLogin && App.CurentActivity != null) {
-                            gotoActivityLogin();
-                        } else {
-                            webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
-                        }
+
+                        checkValidationLogin(invalidLogin, invalidUserOrPass, webServiceResponse);
+
                     }
                 });
 
@@ -309,6 +324,127 @@ public class WebService {
         });
     }
 
+    private void checkValidationLogin(boolean invalidLogin, boolean invalidUserOrPass, WebServiceResponse webServiceResponse) {
+        if (invalidUserOrPass && App.CurentActivity != null) {
+            if (App.activityStacks == null) {
+                callNotificationLogOut();
+            } else {
+                Activity activity = getActivityFromStackMap(FarzinActivityLogin.class.getSimpleName());
+                if (activity != null) {
+                    webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                } else {
+                    gotoActivityLogin();
+                }
+            }
+
+        } else {
+            if (invalidLogin && App.CurentActivity != null) {
+                webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+                loginPresenter.AutoAuthentiocation(new LoginViewListener() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onAccessDenied() {
+
+                    }
+
+                    @Override
+                    public void onFailed(String error) {
+
+                    }
+                });
+            } else {
+                webserviceResponseListener.WebserviceResponseListener(webServiceResponse);
+            }
+        }
+    }
+
+    private void callNotificationLogOut() {
+        String title = Resorse.getString(App.getServiceContext(), R.string.app_name);
+        String message = Resorse.getString(App.getServiceContext(), R.string.session_time_out_message);
+        callNotification(title, "" + message, GetNotificationPendingIntent(GetNotificationManagerIntent()));
+        if (App.getFarzinBroadCastReceiver() != null) {
+            App.getFarzinBroadCastReceiver().stopServices();
+        }
+    }
+
+    void callNotification(final String title, final String message, final PendingIntent pendingIntent) {
+        try {
+            String CHANNEL_ID = "Ican_Notification_CHID";// The id of the channel.
+            CharSequence name = "Ican_Farzin";// The user-visible name of the channel.
+            int importance = NotificationManager.IMPORTANCE_HIGH;
+
+
+            Notification notification =
+                    new NotificationCompat.Builder(App.getServiceContext())
+                            .setContentIntent(pendingIntent)
+                            .setDeleteIntent(getDeleteIntent())
+                            .setSmallIcon(R.drawable.ic_log_out)
+                            .setContentTitle(title)
+                            .setContentText(message)
+                            .setAutoCancel(true)
+                            .setChannelId(CHANNEL_ID).build();
+
+            NotificationManager mNotificationManager =
+                    (NotificationManager) App.getServiceContext().getSystemService(Context.NOTIFICATION_SERVICE);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel mChannel = null;
+                mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+                // Sets whether notifications posted to this channel should display notification lights
+                mChannel.enableLights(true);
+                // Sets whether notification posted to this channel should vibrate.
+                mChannel.enableVibration(true);
+                // Sets the notification light color for notifications posted to this channel
+                mChannel.setLightColor(R.color.colorPrimaryDark);
+                // Sets whether notifications posted to this channel appear on the lockscreen or not
+                mChannel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+
+                assert mNotificationManager != null;
+                mNotificationManager.createNotificationChannel(mChannel);
+            }
+
+            // Issue the notification.
+            mNotificationManager.notify(notifyID, notification);
+          /*  if (App.fragmentCartable != null && !App.fragmentCartable.isHidden()) {
+                new FarzinCartableQuery().UpdateAllNewCartableDocumentStatusToUnreadStatus();
+            }*/
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public PendingIntent getDeleteIntent() {
+
+        Intent intentCancell = new Intent(App.getServiceContext(), FarzinCartableNotificationReceiver.class);
+        intentCancell.putExtra(PutExtraEnum.ID.name(), notifyID);
+        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(App.getAppContext(), 0, intentCancell, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntentCancell;
+    }
+
+    private Intent GetNotificationManagerIntent() {
+        NotificationIntent = new Intent(App.getServiceContext(), FarzinNotificationManager.class);
+        NotificationIntent.putExtra(PutExtraEnum.Notification.getValue(), PutExtraEnum.LogOut.getValue());
+        NotificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        return NotificationIntent;
+    }
+
+    private PendingIntent GetNotificationPendingIntent(Intent intent) {
+        PendingIntent pendingIntent =
+                PendingIntent.getActivity(
+                        App.getServiceContext(),
+                        0,
+                        intent,
+                        PendingIntent.FLAG_CANCEL_CURRENT
+                );
+        return pendingIntent;
+    }
 
     private void runOnUiThread(Runnable r) {
         App.getHandlerMainThread().post(r);

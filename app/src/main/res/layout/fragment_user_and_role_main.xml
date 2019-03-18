@@ -12,11 +12,12 @@
         android:layout_margin="@dimen/margin"
         android:padding="@dimen/padding"
         android:maxLines="1"
+        android:lines="1"
         android:drawableLeft="@drawable/ic_search"
         android:hint="@string/search_hint"
         tools:ignore="RtlHardcoded" />
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_main"
         style="@style/custom_item_rcv_style"
         android:layout_width="match_parent"

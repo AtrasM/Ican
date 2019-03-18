@@ -1,24 +1,21 @@
 package avida.ican.Farzin.View.Dialog;
 
 import android.app.Activity;
-import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import avida.ican.Farzin.View.Fragment.Cartable.FragmentCartableHameshList;
-import avida.ican.Farzin.View.Fragment.Cartable.FragmentZanjireMadrak;
 import avida.ican.Farzin.View.Interface.ListenerFile;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
@@ -125,7 +122,7 @@ public class DialogCartableHameshList {
     }
 
     private void clearFragment() {
-        android.support.v4.app.FragmentTransaction transaction = mfragmentManager.beginTransaction();
+        FragmentTransaction transaction = mfragmentManager.beginTransaction();
         transaction.remove(fragmentCartableHameshList);
         transaction.commitAllowingStateLoss();
     }

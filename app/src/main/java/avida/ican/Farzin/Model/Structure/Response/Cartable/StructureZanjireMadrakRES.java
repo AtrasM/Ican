@@ -19,6 +19,8 @@ public class StructureZanjireMadrakRES {
     private List<StructureFileRES> DarErtebat = new ArrayList<>();
     @ElementList(required = false)
     private List<StructureFileRES> Atf = new ArrayList<>();
+    @ElementList(required = false)
+    private List<StructureFileRES> IndicatorScanedFile = new ArrayList<>();
     private int ETC;
     private int EC;
 
@@ -52,6 +54,14 @@ public class StructureZanjireMadrakRES {
 
     public void setAtf(List<StructureFileRES> atf) {
         Atf = atf;
+    }
+
+    public List<StructureFileRES> getIndicatorScanedFile() {
+        return IndicatorScanedFile;
+    }
+
+    public void setIndicatorScanedFile(List<StructureFileRES> indicatorScanedFile) {
+        IndicatorScanedFile = indicatorScanedFile;
     }
 
     public int getETC() {

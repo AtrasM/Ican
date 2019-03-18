@@ -132,7 +132,13 @@
     <string name="shouldAllowexternalStoragePermision">برنامه نیاز به دسترسی به حافظه دستگاه را دارد تا شما بتوانید عکس، ویدئو و دیگر رسانه ها را دریافت و ارسال کنید.</string>
     <string name="noName">بی نام</string>
     <string name="receivers">دریافت کنندگان</string>
-    <string name="error_open_file_as_this_extention">برنامه ای برای نمایش این فایل یافت نشد!</string>
+    <string name="error_can_not_display_file">برنامه ای برای نمایش این فایل یافت نشد!</string>
     <string name="fingerPrintMessage">برای ادامه اثر انشگت را تایید کنید</string>
+    <string name="loginUserOrPassInvalidError">Access Denied[3] !!!</string>
+    <string name="invalidLoginError">Invalid Login</string>
+    <string name="resetApp">برای ورود با این نام کاربری پایگاه داده محلی شما پاک می شود آیا مایل به ادامه کار هستید؟</string>
+    <string name="session_time_out_message">نشست شما به پایان رسیده است.لطفا مجدد ورود نمایید!</string>
+    <string name="document_content_number_title">نامه :</string>
+    <string name="cartable_history_number_title">گردش :</string>
 
 </resources>

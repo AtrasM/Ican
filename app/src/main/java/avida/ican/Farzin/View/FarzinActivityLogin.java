@@ -67,13 +67,17 @@ public class FarzinActivityLogin extends BaseActivity {
         super.onCreate(savedInstanceState);
         loading = new Loading(this).Creat();
         loading.Show();
+        loginPresenter = new LoginPresenter(loading);
         App.networkStatus = NetworkStatus.NoAction;
         App.setCurentProject(CurentProject.Ican);
         farzinPrefrences = getFarzinPrefrences();
         isLogOut = getIntent().getBooleanExtra("LogOut", false);
         farzinPrefrences.putIsRemember(false);
         //initImgProfile();
-        //if (isLogOut) {
+        if (isLogOut) {
+            edtUserName.setText(farzinPrefrences.getUserName());
+            edtServerUrl.setText(farzinPrefrences.getServerUrl());
+        }
         if (App.getFarzinBroadCastReceiver() != null) {
             App.getFarzinBroadCastReceiver().stopServices();
         }

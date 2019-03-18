@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_audio_recorder"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -45,9 +45,9 @@
                 android:text="ضبط صدا"
                 android:textColor="@color/color_White" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_file_picker"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -66,7 +66,7 @@
                 android:text="انتخاب فایل"
                 android:textColor="@color/color_White" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
     </LinearLayout>
 
@@ -78,7 +78,7 @@
         android:gravity="center"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_farzin"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -96,10 +96,10 @@
                 android:gravity="center"
                 android:text="@string/TitleFarzin"
                 android:textColor="@color/color_White" />
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_media_picker"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -119,7 +119,7 @@
                 android:text="انتخاب مدیا"
                 android:textColor="@color/color_White" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
     <TextView
@@ -146,7 +146,7 @@
         android:orientation="horizontal">
 
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/cv_user_and_role"
             android:layout_width="100dp"
             android:layout_height="100dp"
@@ -166,7 +166,7 @@
                 android:text="گیرندگان"
                 android:textColor="@color/color_White" />
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
     </LinearLayout>
 
 </LinearLayout>

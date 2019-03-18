@@ -1,16 +1,18 @@
 package avida.ican.Ican.View.Custom;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.PointF;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.LinearSmoothScroller;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by AtrasVida on 95/11/26
  */
 public class LinearLayoutManagerWithSmoothScroller extends LinearLayoutManager {
 
+    @SuppressLint("WrongConstant")
     public LinearLayoutManagerWithSmoothScroller(Context context) {
         super(context, VERTICAL, false);
     }

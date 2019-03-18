@@ -1,20 +1,15 @@
 package avida.ican.Ican.View;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.util.Log;
+import androidx.annotation.NonNull;
+
 import android.view.View;
 
 import com.wang.avi.AVLoadingIndicatorView;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Presenter.LoginPresenter;
@@ -24,7 +19,6 @@ import avida.ican.Farzin.View.Interface.LoginViewListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CheckPermission;
-import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogReCheckPermision;
@@ -77,6 +71,8 @@ public class ActivitySplash extends BaseActivity {
                     //showDialogFingerPrint();
                     // Everything is ready for fingerprint authentication
                 }
+            }else{
+                continueProcess();
             }
 
         }

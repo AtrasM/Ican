@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Model.Interface.Cartable;
 
+import java.util.List;
+
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
 
 /**
@@ -7,7 +9,7 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocu
  */
 
 public interface CartableDocumentContentQuerySaveListener {
-    void onSuccess(StructureCartableDocumentContentDB structureCartableDocumentContentDB );
+    void onSuccess(List<StructureCartableDocumentContentDB> structureCartableDocumentContentsDB);
 
     void onExisting();
 

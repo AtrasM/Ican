@@ -15,6 +15,7 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 public class StructureCartableDocumentDetailBND implements Serializable {
     private int ETC;
     private int EC;
+    private int SendCode;
     private int ReceiverCode;
     private Date ReceiveDate;
     private String Title;
@@ -25,9 +26,10 @@ public class StructureCartableDocumentDetailBND implements Serializable {
     public StructureCartableDocumentDetailBND() {
     }
 
-    public StructureCartableDocumentDetailBND(int ETC, int EC, int receiverCode, Date receiveDate, String title, String senderName, String senderRoleName, String entityNumber) {
+    public StructureCartableDocumentDetailBND(int ETC, int EC,int SendCode, int receiverCode, Date receiveDate, String title, String senderName, String senderRoleName, String entityNumber) {
         this.ETC = ETC;
         this.EC = EC;
+        this.SendCode = SendCode;
         ReceiverCode = receiverCode;
         ReceiveDate = receiveDate;
         Title = title;
@@ -100,5 +102,11 @@ public class StructureCartableDocumentDetailBND implements Serializable {
         ReceiverCode = receiverCode;
     }
 
+    public int getSendCode() {
+        return SendCode;
+    }
 
+    public void setSendCode(int sendCode) {
+        SendCode = sendCode;
+    }
 }

@@ -48,7 +48,7 @@ public class GetSentMessageService extends Service {
     private int pageNumber = 1;
     private Status status = Status.UnRead;
     private int Count = 1;
-    private final int MaxCount = 50;
+    private final int MaxCount = 10;
     private final int MinCount = 1;
     private long tempDelay = LOWDELAY;
 
@@ -121,10 +121,10 @@ public class GetSentMessageService extends Service {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                   reGetMessage();
+                    reGetMessage();
                 }
             }, DELAY);
-        }else {
+        } else {
             Log.i("pageNumber", "GetSentMessage pageNumber= " + pageNumber);
             if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                 getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
@@ -192,6 +192,8 @@ public class GetSentMessageService extends Service {
                 }
 
                 if (messageList.size() == 0) {
+
+                    callDataFinish();
                     pageNumber = pageNumber + 1;
                     GetMessage(pageNumber, Count);
                 } else {
@@ -267,11 +269,13 @@ public class GetSentMessageService extends Service {
     }
 
     private void callDataFinish() {
+        Count = MinCount;
         getFarzinPrefrences().putSendMessageForFirstTimeSync(true);
         if (BaseActivity.dialogMataDataSync != null) {
             BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
         }
     }
+
     private boolean canGetData() {
         boolean can = false;
         if (getFarzinPrefrences().isSendMessageForFirstTimeSync() && !getFarzinPrefrences().isDataForFirstTimeSync()) {
@@ -281,6 +285,7 @@ public class GetSentMessageService extends Service {
         }
         return can;
     }
+
     private void ShowToast(final String s) {
         handler.post(new Runnable() {
             @Override

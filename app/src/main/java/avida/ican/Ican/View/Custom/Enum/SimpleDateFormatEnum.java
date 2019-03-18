@@ -6,6 +6,7 @@ package avida.ican.Ican.View.Custom.Enum;
 
 public enum SimpleDateFormatEnum {
     DateTime_yyyy_MM_dd_hh_mm_ss("yyyy-MM-dd hh:mm:ss"),
+    DateTime_as_iso_8601("yyyy-MM-dd'T'HH:mm:ss"),
     Date_yyyy_MM_dd("yyyy-MM-dd"),
     Time_hh_mm_ss("hh:mm:ss"),
     Time_hh_mm("hh:mm");
