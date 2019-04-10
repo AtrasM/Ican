@@ -477,20 +477,10 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
 
     private void initViewPagerFragment() {
 
-        fragmentCartableHistoryList = new FragmentCartableHistoryList().newInstance(App.CurentActivity, Etc, Ec);
         fragmentCartableDocumentContent = new FragmentCartableDocumentContent().newInstance(App.CurentActivity, Etc, Ec);
-        fragmentZanjireMadrak = new FragmentZanjireMadrak().newInstance(App.CurentActivity, Etc, Ec, new ListenerFile() {
-            @Override
-            public void onOpenFile(StructureAttach structureAttach) {
-                checkFile(structureAttach);
-            }
-        });
-        fragmentCartableHameshList = new FragmentCartableHameshList().newInstance(App.CurentActivity, Etc, Ec, new ListenerFile() {
-            @Override
-            public void onOpenFile(StructureAttach structureAttach) {
-                checkFile(structureAttach);
-            }
-        });
+        fragmentZanjireMadrak = new FragmentZanjireMadrak().newInstance(App.CurentActivity, Etc, Ec, structureAttach -> checkFile(structureAttach));
+        fragmentCartableHameshList = new FragmentCartableHameshList().newInstance(App.CurentActivity, Etc, Ec, structureAttach -> checkFile(structureAttach));
+        fragmentCartableHistoryList = new FragmentCartableHistoryList().newInstance(App.CurentActivity, Etc, Ec);
 
         initTab();
     }
@@ -512,6 +502,7 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         adapter.addFrag(fragmentCartableHistoryList, R.string.title_gardesh_madrak);
         adapter.addFrag(fragmentZanjireMadrak, R.string.title_zanjireh_madrak);
         mViewPager.setAdapter(adapter);
+        mViewPager.setOffscreenPageLimit(3);//where 3 is the amount of pages to keep in memory on either side of the current page.
         smartTabLayout.setViewPager(mViewPager);
     }
 

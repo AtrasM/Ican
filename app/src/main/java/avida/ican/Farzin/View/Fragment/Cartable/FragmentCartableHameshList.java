@@ -3,10 +3,12 @@ package avida.ican.Farzin.View.Fragment.Cartable;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -88,6 +90,7 @@ public class FragmentCartableHameshList extends BaseFragment {
         initHameshPresenter();
     }
 
+
     private void initHameshPresenter() {
         farzinHameshListPresenter = new FarzinHameshListPresenter(Etc, Ec, new ListenerHamesh() {
             @Override
@@ -123,6 +126,31 @@ public class FragmentCartableHameshList extends BaseFragment {
     }
 
 
+    /*    @Override
+        public void setUserVisibleHint(boolean isVisibleToUser) {
+            super.setUserVisibleHint(isVisibleToUser);
+            if (!isVisibleToUser) {
+                initData();
+                //do sth..
+            }
+        }*/
+    private void initData() {
+        lnLoading.setVisibility(View.VISIBLE);
+        List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
+
+        if (App.networkStatus == NetworkStatus.Connected) {
+            farzinHameshListPresenter.GetHameshFromServer();
+        } else {
+            lnLoading.setVisibility(View.GONE);
+            if (structureHameshDBS.size() <= 0) {
+                txtNoData.setVisibility(View.VISIBLE);
+            }
+        }
+        start = structureHameshDBS.size();
+        initAdapter(new ArrayList<>(structureHameshDBS));
+    }
+
+
     public void reGetData() {
         start = 0;
         txtNoData.setVisibility(View.GONE);
@@ -142,22 +170,6 @@ public class FragmentCartableHameshList extends BaseFragment {
         }
         start = structureHameshDBS.size();
         adapterHamesh.updateData(structureHameshDBS);
-    }
-
-    private void initData() {
-        lnLoading.setVisibility(View.VISIBLE);
-        List<StructureHameshDB> structureHameshDBS = farzinHameshListPresenter.GetHameshList(start, COUNT);
-
-        if (App.networkStatus == NetworkStatus.Connected) {
-            farzinHameshListPresenter.GetHameshFromServer();
-        } else {
-            lnLoading.setVisibility(View.GONE);
-            if (structureHameshDBS.size() <= 0) {
-                txtNoData.setVisibility(View.VISIBLE);
-            }
-        }
-        start = structureHameshDBS.size();
-        initAdapter(new ArrayList<>(structureHameshDBS));
     }
 
     private void initAdapter(ArrayList<StructureHameshDB> structureHameshDBS) {

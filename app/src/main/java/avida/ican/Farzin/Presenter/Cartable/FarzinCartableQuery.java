@@ -273,7 +273,7 @@ public class FarzinCartableQuery {
             receiveDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getReceiveDate()));
             expireDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getExpireDate()));
             LastChangeViewStatesDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getLastChangeViewStatesDate()));
-            getFarzinPrefrences().putCartableDocumentDataSyncDate(structureInboxDocumentRES[0].getReceiveDate().toString());
+            getFarzinPrefrences().putCartableDocumentDataSyncDate(structureInboxDocumentRES[0].getReceiveDate());
             final StructureInboxDocumentDB structureInboxDocumentDB = new StructureInboxDocumentDB(structureInboxDocumentRES[0], importDate, exportDate, receiveDate, expireDate, LastChangeViewStatesDate, status, false);
             try {
                 cartableDocumentDao.create(structureInboxDocumentDB);
@@ -570,7 +570,7 @@ public class FarzinCartableQuery {
 
                     }
                     fileName = CustomFunction.deletExtentionAsFileName(structureFileRES.getFileName());
-                   // fileName = fileName.replace(" ", "");
+                    // fileName = fileName.replace(" ", "");
                     if (stringBuilder.length() < 256) {
                         // if (stringBuilder.indexOf(App.DEFAULTPATH) > 0) {
                         //filePath = CustomFunction.reNameFile(stringBuilder.toString(), fileName);
@@ -687,6 +687,17 @@ public class FarzinCartableQuery {
         List<StructureCartableDocumentActionsDB> documentActionsDB = new ArrayList<>();
         try {
             queryBuilder.where().eq("ETC", ETC);
+            documentActionsDB = queryBuilder.distinct().query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return documentActionsDB;
+    }
+
+    public List<StructureCartableDocumentActionsDB> getAllDocumentActions() {
+        QueryBuilder<StructureCartableDocumentActionsDB, Integer> queryBuilder = mCartableDocumentActionsDao.queryBuilder();
+        List<StructureCartableDocumentActionsDB> documentActionsDB = new ArrayList<>();
+        try {
             documentActionsDB = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();

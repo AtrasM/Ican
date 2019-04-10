@@ -27,6 +27,8 @@ public class CartableDocumentContentPresenter {
     private Handler handler = new Handler();
     private GetCartableDocumentContentFromServerPresenter getCartableDocumentContentFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
+    private static int counterFailed = 0;
+    private int MaxTry = 2;
 
     public CartableDocumentContentPresenter(int Etc, int Ec, ListenerCartableDocumentContent listenerCartableDocumentContent) {
         this.Etc = Etc;
@@ -49,30 +51,11 @@ public class CartableDocumentContentPresenter {
             @Override
             public void onFailed(String message) {
                 listenerCartableDocumentContent.noData();
-                /*if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onFailed("");
-                        }
-                    }, 300);
-                } else {
-                    reGetData();
-                }*/
             }
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    }, 300);
-                } else {
-                    reGetData();
-                }
+                listenerCartableDocumentContent.noData();
             }
         };
     }
@@ -110,31 +93,13 @@ public class CartableDocumentContentPresenter {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onFailed("");
-                        }
-                    }, 300);
-                } else {
-                    reGetData();
-                }
+                listenerCartableDocumentContent.noData();
 
             }
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected || App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    }, 300);
-                } else {
-                    reGetData();
-                }
+                listenerCartableDocumentContent.noData();
             }
         });
 
@@ -142,13 +107,17 @@ public class CartableDocumentContentPresenter {
 
 
     private void reGetData() {
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GetFromServer();
-            }
-        }, DELAY);
+        counterFailed++;
+        if (counterFailed > MaxTry) {
+            listenerCartableDocumentContent.noData();
+        } else {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    GetFromServer();
+                }
+            }, DELAY);
+        }
     }
 
 

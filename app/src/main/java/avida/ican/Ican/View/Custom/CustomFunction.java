@@ -42,18 +42,23 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
@@ -88,6 +93,7 @@ import saman.zamani.persiandate.PersianDate;
 import saman.zamani.persiandate.PersianDateFormat;
 
 import static avida.ican.Ican.BaseActivity.goToActivity;
+import static java.nio.charset.StandardCharsets.*;
 
 
 /**
@@ -507,12 +513,22 @@ public class CustomFunction {
         FileOutputStream fOut = null;
         try {
             fOut = new FileOutputStream(filePath);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            byte[] buffer = new byte[buferSize]; // or other buffer size
+            OutputStreamWriter myOutWriter = null;
+            char[] buffer = new char[buferSize]; // or other buffer size
+            InputStreamReader reader = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                reader = new InputStreamReader(is, UTF_8);
+                myOutWriter = new OutputStreamWriter(fOut, UTF_8);
+            } else {
+                reader = new InputStreamReader(is, "UTF8");
+                myOutWriter = new OutputStreamWriter(fOut, "utf-8");
+            }
+
             int read = 0;
-            while ((read = is.read(buffer)) != -1) {
-                String data = new String(buffer, 0, read, "UTF-8");
-                buffer = new byte[buferSize];
+            while ((read = reader.read(buffer)) != -1) {
+                String data = "";
+                data = new String(buffer, 0, read);
+                buffer = new char[buferSize];
                 data = new ChangeXml().saxCharEncoder(data);
                 myOutWriter.append(data);
             }
@@ -553,7 +569,13 @@ public class CustomFunction {
         StringBuilder text = new StringBuilder();
 
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            /*BufferedReader br = new BufferedReader(new FileReader(file));*/
+            BufferedReader br = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(file), UTF_8));
+            } else {
+                br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "utf-8"));
+            }
             String line;
 
             while ((line = br.readLine()) != null) {

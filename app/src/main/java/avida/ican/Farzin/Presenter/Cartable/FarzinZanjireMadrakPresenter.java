@@ -35,6 +35,8 @@ public class FarzinZanjireMadrakPresenter {
     private Handler handler = new Handler();
     private GetZanjireMadrakFromServerPresenter getZanjireMadrakFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
+    private static int counterFailed=0;
+    private int MaxTry=2;
 
     public FarzinZanjireMadrakPresenter(int Etc, int Ec, ListenerZanjireMadrak listenerZanjireMadrak) {
         this.Etc = Etc;
@@ -51,6 +53,7 @@ public class FarzinZanjireMadrakPresenter {
             public void onSuccess(StructureZanjireMadrakRES structureZanjireMadrakRES) {
                 if (structureZanjireMadrakRES.getPeyro().size() == 0 && structureZanjireMadrakRES.getDarErtebat().size() == 0 && structureZanjireMadrakRES.getAtf().size() == 0 && structureZanjireMadrakRES.getPeyvast().size() == 0&& structureZanjireMadrakRES.getIndicatorScanedFile().size() == 0) {
                     listenerZanjireMadrak.noData();
+                    counterFailed=0;
                 } else {
                     SaveData(structureZanjireMadrakRES);
                 }
@@ -101,11 +104,13 @@ public class FarzinZanjireMadrakPresenter {
             public void onSuccess() {
 
                 listenerZanjireMadrak.newData();
+                counterFailed=0;
             }
 
             @Override
             public void onExisting() {
                 listenerZanjireMadrak.noData();
+                counterFailed=0;
             }
 
             @Override
@@ -142,13 +147,19 @@ public class FarzinZanjireMadrakPresenter {
 
 
     private void reGetData() {
+        counterFailed++;
+        if(counterFailed>=MaxTry){
+            listenerZanjireMadrak.noData();
+            counterFailed=0;
+        }else{
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    GetZanjireMadrakFromServer();
+                }
+            }, DELAY);
+        }
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GetZanjireMadrakFromServer();
-            }
-        }, DELAY);
     }
 
 

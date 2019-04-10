@@ -1,6 +1,7 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
 import android.os.Handler;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ public class FarzinHistoryListPresenter {
     private Handler handler = new Handler();
     private GetCartableHistoryFromServerPresenter getCartableHistoryFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
+    private int counterFailed=0;
+    private int MaxTry=2;
 
     public FarzinHistoryListPresenter(int Etc, int Ec, ListenerGraf listenerGraf) {
         this.Etc = Etc;
@@ -48,6 +51,7 @@ public class FarzinHistoryListPresenter {
             public void onSuccess(ArrayList<StructureGraphRES> structureGraphRES, String xml) {
                 if (structureGraphRES.size() == 0) {
                     listenerGraf.noData();
+                    counterFailed=0;
                 } else {
                     SaveData(xml);
                 }
@@ -104,11 +108,13 @@ public class FarzinHistoryListPresenter {
                 ArrayList<StructureHistoryListRES> HistoryListRES = new ArrayList<>();
                 HistoryListRES.add(structureHistoryListRES);
                 listenerGraf.newData(HistoryListRES);
+                counterFailed=0;
             }
 
             @Override
             public void onExisting() {
                 listenerGraf.noData();
+                counterFailed=0;
             }
 
             @Override
@@ -145,13 +151,20 @@ public class FarzinHistoryListPresenter {
 
 
     private void reGetData() {
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GetCartableHistoryFromServer();
-            }
-        }, DELAY);
+        counterFailed++;
+        Log.i("Log","HistoryRegetcounterFailed= "+counterFailed);
+        if(counterFailed>=MaxTry){
+            Log.i("Log","HistoryRegetcounterFailed= counterFailed>=MaxTry");
+            listenerGraf.noData();
+            counterFailed=0;
+        }else {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    GetCartableHistoryFromServer();
+                }
+            }, DELAY);
+        }
     }
 
 

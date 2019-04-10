@@ -3,7 +3,9 @@ package avida.ican.Farzin.View.Adapter;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -141,8 +143,6 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             structurePersons.get(position).setRoleId(item.getRole_ID());
             structurePersons.get(position).setFullName(item.getFirstName() + " " + item.getLastName());
-            String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + "[ " + item.getRoleName() + " ] ";
-            structurePersons.get(position).setHameshTitle(hameshTitle);
             ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
             viewHolder.spActions.setAdapter(adapterSize);
             viewHolder.spActions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -173,7 +173,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
                 }
             });
-
+            String hameshTitle = "" + item.getFirstName() + " " + item.getLastName() + "[ " + item.getRoleName() + " ] ";
             viewHolder.edtReferralOrder.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -183,6 +183,11 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
                 @Override
                 public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                     structurePersons.get(position).setHameshContent(charSequence.toString());
+                    if (!charSequence.toString().isEmpty()) {
+                        structurePersons.get(position).setHameshTitle(hameshTitle);
+                    } else {
+                        structurePersons.get(position).setHameshTitle("");
+                    }
                 }
 
                 @Override
@@ -263,7 +268,7 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
                         structurePersons.remove(position);
                         notifyItemRemoved(position);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 

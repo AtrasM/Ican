@@ -227,6 +227,19 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     }
 
 
+
+    private void initData(int actionCode) {
+        if (isFilter) {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, Status.UnRead, start, COUNT);
+        } else {
+            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
+        }
+        start = structureInboxDocumentDB.size();
+        initRcv();
+    }
+
     private void reGetData() {
         start = 0;
         canLoading = false;
@@ -250,19 +263,6 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
         adapteCartableDocument.updateData(structureInboxDocumentDB);
 
     }
-
-    private void initData(int actionCode) {
-        if (isFilter) {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
-            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, Status.UnRead, start, COUNT);
-        } else {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
-            structureInboxDocumentDB = farzinCartableDocumentListPresenter.GetFromLocal(actionCode, start, COUNT);
-        }
-        start = structureInboxDocumentDB.size();
-        initRcv();
-    }
-
     private void initRcv() {
         gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         rcvMain.setLayoutManager(gridLayoutManager);

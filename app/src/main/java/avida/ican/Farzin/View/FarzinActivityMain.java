@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.fragment.app.Fragment;
+
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -167,7 +171,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             @Override
             public void onFinish() {
-
                 if (BaseActivity.dialogMataDataSync != null) {
                     BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncUserAndRole);
                 }
@@ -183,7 +186,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
         if (!farzinPrefrences.isDataForFirstTimeSync()) {
             container.setVisibility(View.GONE);
-
+            // TODO: 2019-04-09 show activity setting
             BaseActivity.dialogMataDataSync = new DialogFirstMetaDataSync(App.CurentActivity, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
                 @Override
                 public void onFinish() {
@@ -249,11 +252,11 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 changeDrawerMenu(drawer);
             }*/
 
-      /*
-       *    First time this tab is selected. So add first fragment of that tab.
-       *    Dont need animation, so that argument is false.
-       *    We are adding a new fragment which is not present in stack. So add to stack is true.
-       */
+            /*
+             *    First time this tab is selected. So add first fragment of that tab.
+             *    Dont need animation, so that argument is false.
+             *    We are adding a new fragment which is not present in stack. So add to stack is true.
+             */
 
             switch (tabId) {
                 case TAB_DASHBOARD: {
@@ -277,10 +280,10 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             }
 
         } else {
-      /*
-       *    We are switching tabs, and target tab is already has atleast one fragment.
-       *    No need of animation, no need of stack pushing. Just show the target fragment
-       */
+            /*
+             *    We are switching tabs, and target tab is already has atleast one fragment.
+             *    No need of animation, no need of stack pushing. Just show the target fragment
+             */
             pushFragments(tabId, App.fragmentStacks.get(tabId).lastElement(), false);
         }
         setTollbarTitle(title);
@@ -332,16 +335,16 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     public void popFragments() {
-  /*
-   *    Select the second last fragment in current tab's stack..
-   *    which will be shown after the fragment transaction given below
-   */
+        /*
+         *    Select the second last fragment in current tab's stack..
+         *    which will be shown after the fragment transaction given below
+         */
         Fragment fragment = App.fragmentStacks.get(mCurrentTab).elementAt(App.fragmentStacks.get(mCurrentTab).size() - 2);
 
-  /*pop current fragment from stack.. */
+        /*pop current fragment from stack.. */
         // fragment=   App.fragmentStacks.get(mCurrentTab).pop();
 
-  /* We have the target fragment in hand.. Just show it.. Show a standard navigation animation*/
+        /* We have the target fragment in hand.. Just show it.. Show a standard navigation animation*/
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.frm_main, fragment)
@@ -498,7 +501,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             return;
         }
 
-    /* Goto previous fragment in navigation stack of this tab */
+        /* Goto previous fragment in navigation stack of this tab */
         popFragments();
     }
 
@@ -516,7 +519,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 }
 
             }
-            return true;
+            return false;
         }
 
         return super.onKeyDown(keyCode, event);

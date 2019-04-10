@@ -23,12 +23,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_new_msg"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|left"
         android:layout_margin="@dimen/margin_maximum"
         android:scaleType="center"
         app:backgroundTint="@color/color_fab"
+        app:fabSize="mini"
         app:srcCompat="@drawable/ic_write_message"
         tools:ignore="RtlHardcoded" />
 </FrameLayout>

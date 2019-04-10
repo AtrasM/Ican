@@ -37,20 +37,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         //context.startService(new Intent(context, NetWorkCheckingService.class));
         context.startService(new Intent(context, CheckServerAviableService.class));
 
-        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                context.startService(putIntent(new Intent(context, SendMessageService.class)));
-                context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
-                context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
-                context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
-            }
-        }, (TimeValue.SecondsInMilli() * 5));
-
-        context.startService(putIntent(new Intent(context, GetRecieveMessageService.class), true));
-        context.startService(putIntent(new Intent(context, GetSentMessageService.class), true));
     }
 
     private Intent putIntent(Intent intent) {
@@ -68,6 +55,42 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
         for (Intent intent : intents) {
             App.getServiceContext().stopService(intent);
         }
+    }
+
+    public void runGetCartableDocumentService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, GetCartableDocumentService.class), true));
+    }
+
+    public void runGetRecieveMessageService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, GetRecieveMessageService.class), true));
+    }
+
+    public void runGetSentMessageService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, GetSentMessageService.class), true));
+    }
+
+    public void runSendMessageService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, SendMessageService.class)));
+    }
+
+
+    public void runCartableDocumentAppendQueueService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, CartableDocumentAppendQueueService.class)));
+    }
+
+    public void runCartableDocumentTaeedQueueService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, CartableDocumentTaeedQueueService.class)));
+    }
+
+    public void runOpticalPenQueueService() {
+        Context context = App.getServiceContext();
+        context.startService(putIntent(new Intent(context, OpticalPenQueueService.class)));
     }
 
     public int getServiceSyncCount() {

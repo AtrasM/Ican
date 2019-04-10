@@ -20,7 +20,6 @@ import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
 import avida.ican.Farzin.Presenter.Cartable.FarzinZanjireMadrakPresenter;
 import avida.ican.Farzin.View.Adapter.AdapteZanjireMadrak;
-import avida.ican.Farzin.View.Fragment.FragmentHome;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterZanjireMadrak;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerZanjireMadrak;
 import avida.ican.Farzin.View.Interface.ListenerFile;
@@ -70,6 +69,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
     private ListenerFile listenerFile;
     private int counter = 0;
     private FarzinZanjireMadrakPresenter farzinZanjireMadrakPresenter;
+    public boolean initialized = false;
     public static String Tag = "FragmentZanjireMadrak";
 
     public FragmentZanjireMadrak newInstance(Activity context, int Etc, int Ec, ListenerFile listenerFile) {
@@ -100,7 +100,10 @@ public class FragmentZanjireMadrak extends BaseFragment {
                 reGetData();
             }
         });
-        initRcv();
+        if (!initialized) {
+            initRcv();
+        }
+
     }
 
 
@@ -152,8 +155,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
 
             }
         });
-
-        getData();
+            getData();
 
     }
 
@@ -212,7 +214,7 @@ public class FragmentZanjireMadrak extends BaseFragment {
 
 
     private void getData() {
-
+        initialized = true;
 
         if (App.networkStatus == NetworkStatus.Connected) {
             lnLoading.setVisibility(View.VISIBLE);

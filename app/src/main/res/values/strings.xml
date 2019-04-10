@@ -140,5 +140,10 @@
     <string name="session_time_out_message">نشست شما به پایان رسیده است.لطفا مجدد ورود نمایید!</string>
     <string name="document_content_number_title">نامه :</string>
     <string name="cartable_history_number_title">گردش :</string>
+    <string name="title_cartable_setting">دریافت کارتابل و مدارک</string>
+    <string name="title_message_setting">دریافت پیام</string>
+    <string name="title_start_date">تاریخ شروع</string>
+    <string name="title_action">نوع عمل</string>
+    <string name="title_count_of_get_document">تعداد مدرک دریافتی</string>
 
 </resources>

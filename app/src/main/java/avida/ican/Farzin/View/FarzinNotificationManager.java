@@ -12,7 +12,6 @@ import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 
-import static avida.ican.Ican.BaseActivity.CloseActivitys;
 import static avida.ican.Ican.BaseActivity.getActivityFromStackMap;
 import static avida.ican.Ican.BaseActivity.goToActivity;
 

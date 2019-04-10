@@ -106,8 +106,11 @@ public class ChangeXml {
         xml = p.matcher(xml).replaceAll("%20");*/
         xml = xml.replaceAll("&", "&amp;")
                 .replaceAll("&amp;amp;", "&amp;");
+             /*   .replaceAll("<br/>", "\n")
+                .replaceAll("<br>", "\n");*/
                 /*replaceAll("\\s+", "\u0020")
                 .replaceAll(" ", "\u0020");*/
+
 
         return xml;
     }

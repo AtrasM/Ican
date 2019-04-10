@@ -67,6 +67,6 @@ public class ActivityImageViewer extends BaseActivity {
         byteArray = null;
         finish();
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        App.activityStacks.values().remove(App.CurentActivity.getClass().getSimpleName());
+        App.activityStacks.keySet().remove(App.CurentActivity.getClass().getSimpleName());
     }
 }

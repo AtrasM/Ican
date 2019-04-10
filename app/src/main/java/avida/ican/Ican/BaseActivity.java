@@ -71,6 +71,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         App.CurentActivity = this;
         baseActivity = this;
 
+        setContentView(getLayoutResource());
+        ButterKnife.bind(this);
         if (App.activityStacks != null) {
             String tag = App.CurentActivity.getClass().getSimpleName();
             if (App.activityStacks.get(tag) == null) {
@@ -84,8 +86,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             App.activityStacks.get(tag).push(App.CurentActivity);
         }
 
-        setContentView(getLayoutResource());
-        ButterKnife.bind(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         }
@@ -149,7 +149,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (!App.canBack) return false;
         activity.finish();
         activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        App.activityStacks.values().remove(activity.getClass().getSimpleName());
+        App.activityStacks.keySet().remove(activity.getClass().getSimpleName());
         return true;
     }
 
@@ -166,7 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 if (!activity.getClass().getSimpleName().equals(baseActivity.getClass().getSimpleName()))
                     if (!activity.getClass().getSimpleName().equals(ActivityMain.class.getSimpleName())) {
                         activity.finish();
-                        App.activityStacks.values().remove(key);
+                        App.activityStacks.keySet().remove(key);
                     }
 
             }

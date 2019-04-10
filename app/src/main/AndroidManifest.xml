@@ -11,12 +11,11 @@
     <uses-permission android:name="android.permission.Read_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.checkPermission.INTERNET" />
     <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
-    <!-- ______________________________________________________________________________________ -->
+    <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" /> <!-- ______________________________________________________________________________________ -->
     <uses-permission android:name="android.checkPermission.RECORD_AUDIO" />
     <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.checkPermission.WAKE_LOCK" />
-    <!-- ______________________________________________________________________________________ -->
+
     <application
         android:name=".Ican.App"
         android:allowBackup="true"
@@ -31,6 +30,9 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator,UnusedAttribute"
         tools:replace="theme, allowBackup,android:appComponentFactory">
+        <activity android:name=".Farzin.View.ActivityDocumentSetting"></activity>
+        <activity android:name=".Farzin.View.ActivitySetting" />
+
         <receiver
             android:name=".Farzin.FarzinBroadcastReceiver"
             android:enabled="true"
@@ -64,7 +66,6 @@
                     tools:ignore="BatteryLife" />
             </intent-filter>
         </receiver>
-
         <!--
               <service
               android:name=".Ican.View.Custom.NetWorkCheckingService"
@@ -111,20 +112,18 @@
         </provider>
 
         <activity android:name=".Ican.View.ActivitySplash">
-
-        </activity>
-        <activity
-            android:name=".Farzin.View.FarzinActivityLogin"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Farzin.View.FarzinActivityLogin"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Ican.View.ActivityMain"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
             android:label="@string/title_activity_farzin_main"

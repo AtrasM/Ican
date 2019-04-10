@@ -30,6 +30,8 @@ public class FarzinHameshListPresenter {
     private Handler handler = new Handler();
     private GetCartableHameshFromServerPresenter getCartableHameshFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
+    private static int counterFailed=0;
+    private int MaxTry=2;
 
     public FarzinHameshListPresenter(int Etc, int Ec, ListenerHamesh listenerHamesh) {
         this.Etc = Etc;
@@ -47,6 +49,7 @@ public class FarzinHameshListPresenter {
             public void onSuccess(ArrayList<StructureHameshRES> structureHameshRES) {
                 if (structureHameshRES.size() == 0) {
                     listenerHamesh.noData();
+                    counterFailed=0;
                 } else {
                     List<StructureHameshDB> structureHameshDBS = farzinCartableQuery.getImageHamesh(Etc, Ec);
                     for (StructureHameshDB structureHameshDB : structureHameshDBS) {
@@ -114,12 +117,14 @@ public class FarzinHameshListPresenter {
                     SaveData(structureHameshsRES);
                 } else {
                     listenerHamesh.newData(structureHameshDB);
+                    counterFailed=0;
                 }
             }
 
             @Override
             public void onExisting() {
                 listenerHamesh.noData();
+                counterFailed=0;
             }
 
             @Override
@@ -156,13 +161,18 @@ public class FarzinHameshListPresenter {
 
 
     private void reGetData() {
-
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GetHameshFromServer();
-            }
-        }, DELAY);
+        counterFailed++;
+        if(counterFailed>=MaxTry){
+            listenerHamesh.noData();
+            counterFailed=0;
+        }else {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    GetHameshFromServer();
+                }
+            }, DELAY);
+        }
     }
 
 
