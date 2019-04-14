@@ -29,10 +29,10 @@ public class CartableDocumentActionsPresenter {
 
     public CartableDocumentActionsPresenter(int Etc) {
         this.Etc = Etc;
-        initCartableHameshListListener();
+        initCartableActionListListener();
     }
 
-    private void initCartableHameshListListener() {
+    private void initCartableActionListListener() {
         getListOfDocumentActionsFromServerPresenter = new GetListOfDocumentActionsFromServerPresenter();
         farzinCartableQuery = new FarzinCartableQuery();
         cartableDocumentActionsListListener = new CartableDocumentActionsListListener() {
@@ -86,6 +86,9 @@ public class CartableDocumentActionsPresenter {
 
     public List<StructureCartableDocumentActionsDB> GetDocumentActions() {
         return farzinCartableQuery.getDocumentActions(Etc);
+    }
+    public List<StructureCartableDocumentActionsDB> GetAllDocumentActions() {
+        return farzinCartableQuery.getAllDocumentActions();
     }
 
 

@@ -81,7 +81,7 @@
                     android:text="@string/title_action"
                     android:textColor="@color/color_Black" />
 
-                <Spinner
+                    <Spinner
                     android:id="@+id/sp_actions"
                     style="@style/custom_spinner_style"
                     android:layout_width="wrap_content"

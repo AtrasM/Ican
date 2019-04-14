@@ -143,8 +143,8 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             structurePersons.get(position).setRoleId(item.getRole_ID());
             structurePersons.get(position).setFullName(item.getFirstName() + " " + item.getLastName());
-            ArrayAdapter<String> adapterSize = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
-            viewHolder.spActions.setAdapter(adapterSize);
+            ArrayAdapter<String> adapterActions = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
+            viewHolder.spActions.setAdapter(adapterActions);
             viewHolder.spActions.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

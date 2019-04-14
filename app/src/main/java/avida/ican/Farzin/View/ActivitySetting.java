@@ -26,7 +26,7 @@ public class ActivitySetting extends BaseToolbarActivity {
 
     private void initView() {
         lnDocumentSetting.setOnClickListener(view -> {
-            goToActivity(ActivitySetting.class);
+            goToActivity(ActivityDocumentSetting.class);
         });
     }
 

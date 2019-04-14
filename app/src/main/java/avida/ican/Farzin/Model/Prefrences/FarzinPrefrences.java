@@ -118,10 +118,6 @@ public class FarzinPrefrences {
         sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
     }
 
-    public void putCartableDocumentDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDate", DateTime).apply();
-    }
-
     public void putMessageViewSyncDate(String DateTime) {
         sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
     }
@@ -134,9 +130,29 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
     }
 
+    public void putCartableDocumentDataSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDate", DateTime).apply();
+    }
+
     public String getCartableDocumentDataSyncDate() {
         String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
         return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", defDate);
+    }
+
+    public void putDefultActionCode(int code) {
+        sharedPreferencesValue.edit().putInt(TAG + "DefultActionCode", code).apply();
+    }
+
+    public int getDefultActionCode() {
+        return sharedPreferencesValue.getInt(TAG + "DefultActionCode", -1);
+    }
+
+    public void putDefultCountOfGetDocument(int count) {
+        sharedPreferencesValue.edit().putInt(TAG + "DefultCountOfGetDocument", count).apply();
+    }
+
+    public int getDefultCountOfGetDocument() {
+        return sharedPreferencesValue.getInt(TAG + "DefultCountOfGetDocument", 10);
     }
 
     public void putCartableDocumentForFirstTimeSync(boolean isDataForFirstTimeSync) {
@@ -209,4 +225,6 @@ public class FarzinPrefrences {
         putMessageViewSyncDate("");
         putCartableDocumentDataSyncDate("");
     }
+
+
 }

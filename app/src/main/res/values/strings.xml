@@ -145,5 +145,6 @@
     <string name="title_start_date">تاریخ شروع</string>
     <string name="title_action">نوع عمل</string>
     <string name="title_count_of_get_document">تعداد مدرک دریافتی</string>
+    <string name="title_all_data">همه</string>
 
 </resources>

@@ -822,15 +822,6 @@ public class CustomFunction {
     }
 
     public static Date getLastMonthDateTime() {
-/*        YearMonth thisMonth    = YearMonth.now();
-        YearMonth lastMonth    = thisMonth.minusMonths(1);
-        YearMonth twoMonthsAgo = thisMonth.minusMonths(2);
-
-        DateTimeFormatter monthYearFormatter = DateTimeFormatter.ofPattern(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue());
-
-        System.out.printf("         Today: %s\n", thisMonth.format(monthYearFormatter));
-        System.out.printf("    Last Month: %s\n", lastMonth.format(monthYearFormatter));
-        System.out.printf("Two Months Ago: %s\n", twoMonthsAgo.format(monthYearFormatter));*/
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
         return c.getTime();//Sat Feb 16 10:25:43 GMT+03:30 2019
@@ -839,6 +830,13 @@ public class CustomFunction {
     public static String getLastMonthDateTimeAsFormat() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
+        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), Locale.UK);
+        Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
+        return format.format(c.getTime());
+    }
+    public static String convertDateToIso8601Format(int year, int monthOfYear, int dayOfMonth) {
+        Calendar c = Calendar.getInstance();
+        c.set(year,monthOfYear,dayOfMonth);
         SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), Locale.UK);
         Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
         return format.format(c.getTime());

@@ -30,8 +30,7 @@
         android:theme="@style/AppTheme.NoActionBar"
         tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator,UnusedAttribute"
         tools:replace="theme, allowBackup,android:appComponentFactory">
-        <activity android:name=".Farzin.View.ActivityDocumentSetting"></activity>
-        <activity android:name=".Farzin.View.ActivitySetting" />
+
 
         <receiver
             android:name=".Farzin.FarzinBroadcastReceiver"
@@ -112,11 +111,7 @@
         </provider>
 
         <activity android:name=".Ican.View.ActivitySplash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityLogin"
@@ -127,6 +122,16 @@
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
             android:label="@string/title_activity_farzin_main"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity android:name=".Farzin.View.ActivityDocumentSetting"
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Farzin.View.ActivitySetting"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityWriteMessage"

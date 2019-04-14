@@ -86,7 +86,7 @@ public class GetCartableDocumentFromServerPresenter {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         SoapObject Filter = new SoapObject(NameSpace, "filter");
         Filter.addProperty("ETC", -1);
-        Filter.addProperty("ActionCode", -1);
+        Filter.addProperty("ActionCode", getFarzinPrefrences().getDefultActionCode());
         if (!LastDate.isEmpty()) {
             LastDate = CustomFunction.arabicToDecimal(LastDate);
             Filter.addProperty("StartDateTime", LastDate);
