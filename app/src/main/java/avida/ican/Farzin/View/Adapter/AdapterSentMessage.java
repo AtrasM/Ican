@@ -159,9 +159,9 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
                 viewHolder.lnMessageDate.setVisibility(View.VISIBLE);
                 viewHolder.imgStatus.setVisibility(View.VISIBLE);
                 if (structureReceiverDBS.get(0).Is_read()) {
-                    viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_d_tick));
+                    viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_d_success));
                 } else {
-                    viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_tick));
+                    viewHolder.imgStatus.setBackground(Resorse.getDrawable(R.drawable.ic_success));
                 }
 
             }

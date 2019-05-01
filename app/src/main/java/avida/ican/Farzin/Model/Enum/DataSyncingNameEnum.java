@@ -4,8 +4,9 @@ package avida.ican.Farzin.Model.Enum;
  * Created by AtrasVida on 2018-04-24 at 1:39 PM
  */
 
-public enum MetaDataNameEnum {
+public enum DataSyncingNameEnum {
     SyncUserAndRole("SyncUserAndRole"),
+    SyncDocumentActions("SyncDocumentActions"),
     SyncCartableDocument("SyncCartableDocument"),
     SyncSendMessage("SyncSendMessage"),
     SyncReceiveMessage("SyncReceiveMessage");
@@ -13,11 +14,11 @@ public enum MetaDataNameEnum {
     private int intValue;
 
 
-    MetaDataNameEnum(int value) {
+    DataSyncingNameEnum(int value) {
         intValue = value;
     }
 
-    MetaDataNameEnum(String value) {
+    DataSyncingNameEnum(String value) {
         strValue = value;
     }
 
@@ -27,7 +28,15 @@ public enum MetaDataNameEnum {
     }
 
     public static int getMetaDataCount() {
-        return 4;
+        return 2;
+    }
+
+    public static int getDataSyncingCount() {
+        return (getAllCount() - getMetaDataCount());
+    }
+
+    private static int getAllCount() {
+        return 5;
     }
 
     public String getStringValue() {

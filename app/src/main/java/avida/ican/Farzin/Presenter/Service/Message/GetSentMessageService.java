@@ -13,7 +13,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
@@ -271,8 +271,8 @@ public class GetSentMessageService extends Service {
     private void callDataFinish() {
         Count = MinCount;
         getFarzinPrefrences().putSendMessageForFirstTimeSync(true);
-        if (BaseActivity.dialogMataDataSync != null) {
-            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncSendMessage);
+        if (BaseActivity.dialogDataSyncing != null) {
+            BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncSendMessage);
         }
     }
 

@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianDateParser;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
 import org.apache.commons.io.FileUtils;
@@ -63,12 +64,14 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -766,6 +769,20 @@ public class CustomFunction {
         return date;
     }
 
+    public static Date ChangeDateTimeAsDateFormat(String strDate, String df) {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat(df);
+        strDate= arabicToDecimal(strDate);
+        Date date = null;
+        try {
+            date = format.parse(strDate);
+        } catch (ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return date;
+    }
+
     public static CompareTimeEnum compareTimeInMiliWithCurentSystemTime(long timeInMili, long deficultTimeInMili) {
         long curentTime = System.currentTimeMillis();
         long lastTime = timeInMili + deficultTimeInMili;
@@ -783,6 +800,7 @@ public class CustomFunction {
 
     public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long delay) {
         try {
+            strLastDate= arabicToDecimal(strLastDate);
             Date lastDate = new Date(strLastDate);
             Date curentDate = getCurentDateTime();
             //int a = curentDate.compareTo(lastDate);
@@ -802,6 +820,8 @@ public class CustomFunction {
     }
 
     public static CompareDateTimeEnum compareDates(String DateTime1, String DateTime2) {
+        DateTime1= arabicToDecimal(DateTime1);
+        DateTime2= arabicToDecimal(DateTime2);
         long a = System.currentTimeMillis();
         Date d1 = new Date(DateTime1);
         Date d2 = new Date(DateTime2);
@@ -830,28 +850,39 @@ public class CustomFunction {
     public static String getLastMonthDateTimeAsFormat() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
-        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), Locale.UK);
-        Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
-        return format.format(c.getTime());
-    }
-    public static String convertDateToIso8601Format(int year, int monthOfYear, int dayOfMonth) {
-        Calendar c = Calendar.getInstance();
-        c.set(year,monthOfYear,dayOfMonth);
-        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), Locale.UK);
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
         Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
         return format.format(c.getTime());
     }
 
-    public static String StandardizeTheDateFormat(String date) {
+    public static String convertDateToCustomFormat(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minute, int second, String dateFormat) {
+        Calendar c = Calendar.getInstance();
+        c.set(year, monthOfYear, dayOfMonth, hourOfDay, minute, second);
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        return format.format(c.getTime());
+    }
+
+    public static String convertDateToCustomFormat(int year, int monthOfYear, int dayOfMonth, String dateFormat) {
+        Calendar c = Calendar.getInstance();
+        c.set(year, monthOfYear, dayOfMonth);
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+        return format.format(c.getTime());
+    }
+
+    public static String StandardizeTheDateFormat(String strDate) {
         //String dateDefault = "0001/01/01 00:00:00";
+        strDate= arabicToDecimal(strDate);
         String dateDefault = "";
-        if (date != null && !date.isEmpty()) {
+        if (strDate != null && !strDate.isEmpty()) {
             try {
-                date = date.replace("T", " ");
-                date = date.replace("-", "/");
-                int dotPos = date.indexOf(".");
+                strDate = strDate.replace("T", " ");
+                strDate = strDate.replace("-", "/");
+                int dotPos = strDate.indexOf(".");
                 if (dotPos > 0) {
-                    date = date.substring(0, dotPos);
+                    strDate = strDate.substring(0, dotPos);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -861,21 +892,54 @@ public class CustomFunction {
             return dateDefault;
         }
 
-        return date;
+        return strDate;
     }
 
-
-    public static String MiladyToJalaly(String DateTime) {
-        String JalalyDate = "";
-        Date d = new Date(DateTime);
-      /*  GregorianCalendar calendar=new GregorianCalendar(date.getYear(),);
-        Date d=new Date(DateTime);*/
-        PersianDate pdate = new PersianDate(d);
-        PersianDateFormat pdformater = new PersianDateFormat("Y/m/d H:i:s");
-        JalalyDate = pdformater.format(pdate);
-        return JalalyDate;
+    public static boolean ValidationDateFormat(String strDate, String dateFormat) {
+        strDate= arabicToDecimal(strDate);
+        boolean valid = true;
+        try {
+            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+            Date date = format.parse(strDate);
+        } catch (Exception e) {
+            valid = false;
+        }
+        return valid;
     }
 
+    public static String MiladyToJalaly(String strDate) {
+        strDate= arabicToDecimal(strDate);
+        if (ValidationDateFormat(strDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue())) {
+            strDate = CustomFunction.StandardizeTheDateFormat(strDate);
+        }
+        Date date = new Date(strDate);
+        PersianDate pdate = new PersianDate(date);
+        int year = pdate.getShYear();
+        int month = pdate.getShMonth();
+        int day = pdate.getShDay();
+        int hour = pdate.getHour();
+        int minute = pdate.getMinute();
+        int second = pdate.getSecond();
+        return convertDateToCustomFormat(year, month, day, hour, minute, second, SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue());
+    }
+
+    public static String JalalyToMilady(String strDate) {
+        strDate= arabicToDecimal(strDate);
+        if (ValidationDateFormat(strDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue())) {
+            strDate = CustomFunction.StandardizeTheDateFormat(strDate);
+        }
+        Date date = new Date(strDate);
+        PersianDate pdate = new PersianDate(date);
+
+        int[] grDate = new PersianDate().toGregorian(pdate.getGrgYear(), pdate.getGrgMonth(), pdate.getGrgDay());
+        int year = grDate[0];
+        int month = grDate[1];
+        int day = grDate[2];
+        int hour = pdate.getHour();
+        int minute = pdate.getMinute();
+        int second = pdate.getSecond();
+        return convertDateToCustomFormat(year, month, day, hour, minute, second, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+    }
 
     public void setHtmlText(TextView myTextView, String myText) {
         ChangeXml changeXml = new ChangeXml();
@@ -899,7 +963,6 @@ public class CustomFunction {
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myExTextView.setText(htmlSpan);
     }
-
 
     public int getWidthOrHeightColums(int MOD, boolean isWhidth) {
         Display display = activity.getWindowManager().getDefaultDisplay();

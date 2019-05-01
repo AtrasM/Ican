@@ -18,7 +18,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinCartableNotificationReceiver;
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
@@ -287,8 +287,8 @@ public class GetCartableDocumentService extends Service {
 
     private void callDataFinish() {
         getFarzinPrefrences().putCartableDocumentForFirstTimeSync(true);
-        if (BaseActivity.dialogMataDataSync != null) {
-            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncCartableDocument);
+        if (BaseActivity.dialogDataSyncing != null) {
+            BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncCartableDocument);
         }
     }
 

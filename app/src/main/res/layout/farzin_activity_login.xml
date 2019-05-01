@@ -84,7 +84,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textPersonName"
                     android:maxLines="1"
-                    android:text="" />
+                    android:text="900b" />
 
                 <EditText
                     android:id="@+id/edt_paasword"
@@ -99,7 +99,7 @@
                     android:imeOptions="actionNext"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:text="" />
+                    android:text="11111" />
 
 
                 <EditText
@@ -116,7 +116,7 @@
                     android:imeOptions="actionDone"
                     android:inputType="textUri"
                     android:maxLines="1"
-                    android:text="" />
+                    android:text="192.168.3.233" />
 
                 <CheckBox
                     android:id="@+id/chk_remember"

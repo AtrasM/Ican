@@ -141,9 +141,12 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
+             String milady=   CustomFunction.JalalyToMilady("1397-06-13T12:43:16");
+             //2018-09-04T09:17:32
 
-                SetLicenseKeyPresenter setLicenseKeyPresenter=new SetLicenseKeyPresenter();
-                setLicenseKeyPresenter.getSoapObject();
+              milady.toCharArray();
+              /*  SetLicenseKeyPresenter setLicenseKeyPresenter=new SetLicenseKeyPresenter();
+                setLicenseKeyPresenter.getSoapObject();*/
 
                 break;
             }

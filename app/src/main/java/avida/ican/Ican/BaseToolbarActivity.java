@@ -158,13 +158,16 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     }
 
     private void SetNetworkStatus(String NetWorkStatusTitle, int NetworkStatusVisibility) {
+        runOnUiThread(() -> {
+            try {
+                txtNetworkStatus.setText(NetWorkStatusTitle);
+                txtNetworkStatus.setVisibility(NetworkStatusVisibility);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
+        });
         Activity activity = App.CurentActivity;
-        try {
-            txtNetworkStatus.setText(NetWorkStatusTitle);
-            txtNetworkStatus.setVisibility(NetworkStatusVisibility);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+
 
     }
     @SuppressWarnings("SameParameterValue")

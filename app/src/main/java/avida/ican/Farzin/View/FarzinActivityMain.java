@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
@@ -33,7 +33,7 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
-import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
+import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
@@ -45,11 +45,15 @@ import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
+
+import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
+import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
 
 public class FarzinActivityMain extends BaseNavigationDrawerActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
@@ -78,6 +82,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private boolean isFilter = false;
     private boolean filtering = false;
     private String curentTab = "";
+    private int ACTIVITYSETTING = 200;
 
     @Override
     protected int getLayoutResource() {
@@ -105,22 +110,23 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         isFilter = getIntent().getBooleanExtra(PutExtraEnum.IsFilter.getValue(), false);
+        container.setVisibility(View.GONE);
         CheckNetWork();
         farzinPrefrences = getFarzinPrefrences();
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
+        initBroadcastReceiver();
         initFragmentStack();
-        initFarzinMetaDataSyncClass();
+        App.getHandlerMainThread().postDelayed(() -> initFarzinMetaDataSyncClass(), TimeValue.SecondsInMilli());
+
         //bottomNavigation.setSelectedItemId(R.id.navigation_home);
-
     }
-
 
     private void initFragmentStack() {
         App.fragmentStacks = new HashMap<>();
-        App.fragmentStacks.put(TAB_DASHBOARD, new Stack<Fragment>());
-        App.fragmentStacks.put(TAB_Message, new Stack<Fragment>());
-        App.fragmentStacks.put(TAB_CARTABLE, new Stack<Fragment>());
+        App.fragmentStacks.put(TAB_DASHBOARD, new Stack<>());
+        App.fragmentStacks.put(TAB_Message, new Stack<>());
+        App.fragmentStacks.put(TAB_CARTABLE, new Stack<>());
         CurentFragment = new FragmentHome();
      /*   Title = "خانه";
         selectedTab(Title, R.menu.main_drawer, TAB_HOME);*/
@@ -131,6 +137,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         bottomNavigation.setOnNavigationItemSelectedListener(this);
         bottomNavigation.setTextVisibility(false);
         bottomNavigation.setCurrentItem(1);
+        bottomNavigation.setCurrentItem(0);
         staticbottomNavigation = bottomNavigation;
     }
 
@@ -147,80 +154,63 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void initFarzinMetaDataSyncClass() {
-
         farzinMetaDataSync = new FarzinMetaDataSync().RunONschedule(new MetaDataSyncListener() {
             @Override
-            public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
-                if (BaseActivity.dialogMataDataSync != null) {
-                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(metaDataNameEnum);
-                }
-                if (!isMyServiceRunning(GetCartableDocumentService.class)) {
-                    initBroadcastReceiver();
+            public void onSuccess(DataSyncingNameEnum dataSyncingNameEnum) {
+                if (BaseActivity.dialogDataSyncing != null) {
+                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(dataSyncingNameEnum);
                 }
             }
 
             @Override
-            public void onFailed(MetaDataNameEnum metaDataNameEnum) {
+            public void onFailed(DataSyncingNameEnum dataSyncingNameEnum) {
 
             }
 
             @Override
-            public void onCancel(MetaDataNameEnum metaDataNameEnum) {
+            public void onCancel(DataSyncingNameEnum dataSyncingNameEnum) {
 
             }
 
             @Override
             public void onFinish() {
-                if (BaseActivity.dialogMataDataSync != null) {
-                    BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncUserAndRole);
-                }
-                if (!isMyServiceRunning(GetCartableDocumentService.class)) {
-                    initBroadcastReceiver();
-                }
+
                 StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
                 structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID(), farzinPrefrences.getRoleID());
                 String title = structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
                 setNavHeadeViewTitle(title);
+                checkAppSynced();
             }
         });
 
-        if (!farzinPrefrences.isDataForFirstTimeSync()) {
-            container.setVisibility(View.GONE);
-            // TODO: 2019-04-09 show activity setting
-            BaseActivity.dialogMataDataSync = new DialogFirstMetaDataSync(App.CurentActivity, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
-                @Override
-                public void onFinish() {
-                    if (staticbottomNavigation != null) {
-                        staticbottomNavigation.setCurrentItem(0);
-                        staticbottomNavigation.setCurrentItem(1);
-                        container.setVisibility(View.VISIBLE);
-                    }
-                }
-
-                @Override
-                public void onFailed() {
-
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            });
-            BaseActivity.dialogMataDataSync.Creat();
-        } else {
-            if (staticbottomNavigation != null) {
-                staticbottomNavigation.setCurrentItem(1);
-            }
+        if (!farzinPrefrences.isMetaDataForFirstTimeSync()) {
+            callDialogDataSyncing(DataSyncingNameEnum.getMetaDataCount(), true);
         }
 
     }
 
+    private void checkAppSynced() {
+        App.getHandlerMainThread().postDelayed(() -> {
+            if (!farzinPrefrences.isDataForFirstTimeSync()) {
+                App.canBack = true;
+                Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
+                intent.putExtra(PutExtraEnum.Settingtype.getValue(), SYNC.getValue());
+                goToActivityForResult(intent, ACTIVITYSETTING);
+            } else {
+                runBaseService();
+                container.setVisibility(View.VISIBLE);
+                if (staticbottomNavigation != null) {
+                    staticbottomNavigation.setCurrentItem(1);
+                }
+            }
+        }, 100);
+    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         String Title = "";
         switch (item.getItemId()) {
+
 
             case R.id.navigation_home: {
                 Title = "خانه";
@@ -286,7 +276,13 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
              */
             pushFragments(tabId, App.fragmentStacks.get(tabId).lastElement(), false);
         }
-        setTollbarTitle(title);
+        App.getHandlerMainThread().post(new Runnable() {
+            @Override
+            public void run() {
+                setTollbarTitle(title);
+            }
+        });
+
     }
 
     public void pushFragments(String tab, Fragment fragment, boolean shouldAdd) {
@@ -361,6 +357,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             }
         }
         Log.i("isMyServiceRunning?", false + "");
+
         return false;
     }
 
@@ -382,7 +379,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 filterReceiveMessage();
             }
         }
-
     }
 
 
@@ -459,6 +455,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 }
             }
         };
+
         if (isFilter) {
             actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
             fragmentMessageList.filterMessage(Status.UnRead, isFilter, listenerFilter);
@@ -466,13 +463,71 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
             fragmentMessageList.filterMessage(null, isFilter, listenerFilter);
         }
-        App.getHandler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                filtering = false;
-            }
-        }, 1000);
+        App.getHandler().postDelayed(() -> filtering = false, 1000);
+    }
 
+    private void callDialogDataSyncing(int ServiceCount, boolean isMetaData) {
+        runOnUiThread(() -> {
+            if (!isMetaData) {
+                runBaseService();
+            }
+       /*     try {
+                if (BaseActivity.dialogDataSyncing != null) {
+                    BaseActivity.dialogDataSyncing.dismiss();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }*/
+
+            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, ServiceCount, isMetaData, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
+                @Override
+                public void onFinish() {
+                    runOnUiThread(() -> {
+                        Log.i("Log", "onFinish isMetaData= " + isMetaData);
+                        if (!isMetaData) {
+                            container.setVisibility(View.VISIBLE);
+                            Log.i("Log", "onFinish in if isMetaData= " + isMetaData);
+                            if (staticbottomNavigation != null) {
+                                staticbottomNavigation.setCurrentItem(1);
+                            }
+                        }
+                    });
+
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+
+            });
+            BaseActivity.dialogDataSyncing.Creat();
+        });
+
+    }
+
+    private void runBaseService() {
+        broadcastReceiver.runGetCartableDocumentService();
+        broadcastReceiver.runGetSentMessageService();
+        broadcastReceiver.runGetRecieveMessageService();
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == ACTIVITYSETTING) {
+            if (resultCode == SYNC.getValue()) {
+                callDialogDataSyncing(DataSyncingNameEnum.getDataSyncingCount(), false);
+            } else if (resultCode == CUSTOM.getValue()) {
+
+            }
+        }
     }
 
 
@@ -519,7 +574,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                 }
 
             }
-            return false;
+            return true;
         }
 
         return super.onKeyDown(keyCode, event);

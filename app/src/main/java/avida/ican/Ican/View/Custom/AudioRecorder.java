@@ -135,13 +135,14 @@ public class AudioRecorder extends AppCompatActivity {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == mRequestCode) {
             if (resultCode == RESULT_OK) {
 
                 String Base64 = new Base64EncodeDecodeFile().EncodeFileToBase64(filePath);
                 if (Base64.length() > 0) {
-                   String FileName= new CustomFunction().getFileName(filePath);
-                    audioRecorderListener.onSuccess(Base64,FileName);
+                    String FileName = new CustomFunction().getFileName(filePath);
+                    audioRecorderListener.onSuccess(Base64, FileName);
                 } else {
                     audioRecorderListener.onFaild();
                 }

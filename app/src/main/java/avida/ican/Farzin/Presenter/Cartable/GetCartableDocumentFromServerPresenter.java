@@ -33,7 +33,6 @@ public class GetCartableDocumentFromServerPresenter {
     private String Tag = "GetCartableDocumentFromServerPresenter";
     private FarzinPrefrences farzinPrefrences;
 
-
     public GetCartableDocumentFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
@@ -81,7 +80,6 @@ public class GetCartableDocumentFromServerPresenter {
         getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
     }
 
-
     private SoapObject getSoapObject(String LastDate, int count) {
         SoapObject soapObject = new SoapObject(NameSpace, MetodName);
         SoapObject Filter = new SoapObject(NameSpace, "filter");
@@ -91,14 +89,12 @@ public class GetCartableDocumentFromServerPresenter {
             LastDate = CustomFunction.arabicToDecimal(LastDate);
             Filter.addProperty("StartDateTime", LastDate);
         }
-
         Filter.addProperty("CountOfRecord", count);
         Filter.addProperty("SortType", "ASC");
         soapObject.addSoapObject(Filter);
         return soapObject;
 
     }
-
 
     private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();

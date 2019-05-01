@@ -270,7 +270,9 @@ public class FarzinCartableQuery {
 
             importDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getImportDate()));
             exportDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getExportDate()));
+            Log.i("LogDate","structureInboxDocumentRES[0].getReceiveDate()= "+structureInboxDocumentRES[0].getReceiveDate());
             receiveDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getReceiveDate()));
+            Log.i("LogDate","structureInboxDocumentRES[0].getReceiveDate()= "+receiveDate.toString());
             expireDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getExpireDate()));
             LastChangeViewStatesDate = new Date(CustomFunction.StandardizeTheDateFormat(structureInboxDocumentRES[0].getLastChangeViewStatesDate()));
             getFarzinPrefrences().putCartableDocumentDataSyncDate(structureInboxDocumentRES[0].getReceiveDate());

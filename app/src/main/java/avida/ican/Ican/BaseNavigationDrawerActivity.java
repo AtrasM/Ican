@@ -5,23 +5,31 @@ import android.graphics.PorterDuff;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.navigation.NavigationView;
+
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import avida.ican.Farzin.View.ActivitySetting;
+import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
+import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
 
 /**
  * Created by AtrasVida on 2018-04-09 at 10:14 AM
@@ -73,7 +81,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         setUpNavigationItemSelectedListener(menuRes);
-       /*  navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.color_BG_Light)));*/
+        /*  navigationView.setItemIconTintList(ColorStateList.valueOf(getResources().getColor(R.color.color_BG_Light)));*/
         headerLayout = navigationView.getHeaderView(0);
         initNavHeadeView();
 
@@ -130,6 +138,12 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
     private void checkInFirstMenu(int itemId) {
         switch (itemId) {
+            case R.id.nav_setting: {
+                Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
+                intent.putExtra(PutExtraEnum.Settingtype.getValue(), CUSTOM.getValue());
+                goToActivity(intent);
+                break;
+            }
             case R.id.nav_about: {
                 App.ShowMessage().ShowToast("درباره ما", ToastEnum.TOAST_SHORT_TIME);
                 break;

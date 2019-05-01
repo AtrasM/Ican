@@ -9,70 +9,74 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
-import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Message;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
-import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 
 /**
  * Created by AtrasVida on 2018-04-28 at 11:00 AM
  */
 
-public class DialogFirstMetaDataSync {
+public class DialogDataSyncing {
     private final Activity context;
-    private static int SERVICECOUNT = MetaDataNameEnum.getMetaDataCount();
-    private static int serviceCounter = 0;
+    private int ServiceCount = -1;
+    private int serviceCounter = 0;
+    private boolean isMetaData = false;
     private FarzinPrefrences farzinPrefrences;
-    private static ArrayList<String> dataFinish = new ArrayList<>();
-    private static MetaDataSyncListener metaDataSyncListener;
+    private ArrayList<String> dataFinish = new ArrayList<>();
+    private MetaDataSyncListener metaDataSyncListener;
     private long startTime;
     private long endTime;
 
-    public DialogFirstMetaDataSync(Activity context, MetaDataSyncListener metaDataSyncListener) {
+    public DialogDataSyncing(Activity context, int ServiceCount, boolean isMetaData, MetaDataSyncListener metaDataSyncListener) {
+        this.isMetaData = isMetaData;
         this.context = context;
+        this.ServiceCount = ServiceCount;
         this.metaDataSyncListener = metaDataSyncListener;
         farzinPrefrences = new FarzinPrefrences().init();
         startTime = System.nanoTime();
         Log.i("SyncTime", "StartSyncTime= " + startTime);
     }
 
-    public void serviceGetDataFinish(MetaDataNameEnum metaDataNameEnum) {
-        Log.i("MetaDataNameEnum", "" + metaDataNameEnum.getStringValue());
-        if (!dataFinish.contains(metaDataNameEnum.getStringValue())) {
+    public void serviceGetDataFinish(DataSyncingNameEnum dataSyncingNameEnum) {
+        Log.i("DataSyncingNameEnum", "" + dataSyncingNameEnum.getStringValue());
+        if (!dataFinish.contains(dataSyncingNameEnum.getStringValue())) {
             serviceCounter++;
-            dataFinish.add(metaDataNameEnum.getStringValue());
+            dataFinish.add(dataSyncingNameEnum.getStringValue());
         }
 
         try {
-            if (serviceCounter >= SERVICECOUNT) {
+            if (serviceCounter >= ServiceCount) {
+                Log.i("count", "serviceCounter= " + serviceCounter);
+                Log.i("count", "ServiceCount= " + ServiceCount);
                 endTime = System.nanoTime();
                 long elapsedTime = endTime - startTime;
                 final double seconds = (double) elapsedTime / 1_000_000_000.0;
                 Log.i("SyncTime", "endSyncTime= " + elapsedTime);
                 Log.i("SyncTime", "elapsedTime as Seconds= " + seconds);
-                App.getHandlerMainThread().post(new Runnable() {
-                    @Override
-                    public void run() {
-                        new Message().ShowSnackBar("elapsedTime as Seconds= " + seconds, SnackBarEnum.SNACKBAR_LONG_TIME);
-                    }
-                });
-                farzinPrefrences.putDataForFirstTimeSync(true);
+
+                if (isMetaData) {
+                    farzinPrefrences.putMetaDataForFirstTimeSync(true);
+                } else {
+                    App.getHandlerMainThread().post(() -> new Message().ShowSnackBar("elapsedTime as Seconds= " + seconds, SnackBarEnum.SNACKBAR_LONG_TIME));
+                    farzinPrefrences.putDataForFirstTimeSync(true);
+                }
+
                 try {
                     App.canBack = true;
-                    dismiss();
+                    context.runOnUiThread(() -> dismiss());
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-              /*  if (BaseActivity.dialogMataDataSync != null) {
+              /*  if (BaseActivity.dialogDataSyncing != null) {
                     dismiss();
                     App.canBack = true;
                 } */
@@ -85,6 +89,12 @@ public class DialogFirstMetaDataSync {
     }
 
     public void dismiss() {
+        Log.i("count", "dismiss" );
+        App.canBack = true;
+        Log.i("count", "dismiss serviceCounter= " + serviceCounter);
+        Log.i("count", "dismiss ServiceCount= " + ServiceCount);
+        ServiceCount = 0;
+        serviceCounter = 0;
         if (metaDataSyncListener != null) {
             metaDataSyncListener.onFinish();
         }
@@ -92,9 +102,8 @@ public class DialogFirstMetaDataSync {
         if (App.netWorkStatusListener != null) {
             App.netWorkStatusListener.Connected();
         }
-        BaseActivity.dialogMataDataSync = null;
-        App.canBack = true;
         BaseActivity.dialog.dismiss();
+        BaseActivity.dialogDataSyncing = null;
         BaseActivity.dialog = null;
     }
 
@@ -104,18 +113,17 @@ public class DialogFirstMetaDataSync {
         }*/
         BaseActivity.closeKeboard();
         App.canBack = false;
-        App.getHandlerMainThread().post(new Runnable() {
-            @Override
-            public void run() {
-                BaseActivity.dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_first_meta_data_sync))
-                        .setGravity(Gravity.CENTER)
-                        .setContentHeight(ViewGroup.LayoutParams.MATCH_PARENT)
-                        .setCancelable(false)
-                        .setContentBackgroundResource(R.drawable.border_dialog)
-                        .create();
-                BaseActivity.dialog.show();
-            }
+        context.runOnUiThread(() -> {
+            BaseActivity.dialog = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.dialog_first_meta_data_sync))
+                    .setGravity(Gravity.CENTER)
+                    .setContentHeight(ViewGroup.LayoutParams.MATCH_PARENT)
+                    .setCancelable(false)
+                    .setContentBackgroundResource(R.drawable.border_dialog)
+                    .create();
+            Log.i("count", "BaseActivity.dialog.isShowing();= " + BaseActivity.dialog.isShowing());
+
+            BaseActivity.dialog.show();
         });
         App.networkStatus = NetworkStatus.Syncing;
         if (App.netWorkStatusListener != null) {

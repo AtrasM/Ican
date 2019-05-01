@@ -16,7 +16,8 @@ public enum PutExtraEnum {
     ISFwdReplyMessage("ISFwdReplyMessage"),
     IsFilter("IsFilter"),
     ComeFromNotificationManager("ComeFromNotificationManager"),
-    Datepickerdialog("Datepickerdialog");
+    Datepickerdialog("Datepickerdialog"),
+    Settingtype("Settingtype");
 
 
     private final String name;

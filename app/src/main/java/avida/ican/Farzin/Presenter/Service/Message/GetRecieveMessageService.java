@@ -17,7 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import avida.ican.Farzin.FarzinMessageNotificationReceiver;
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
@@ -300,20 +300,15 @@ public class GetRecieveMessageService extends Service {
             }
         }
 
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                GetMessage(pageNumber, Count);
-            }
-        }, tempDelay);
+        handler.postDelayed(() -> GetMessage(pageNumber, Count), tempDelay);
     }
 
     private void callDataFinish() {
         Count = MinCount;
         getFarzinPrefrences().putReceiveMessageForFirstTimeSync(true);
-        if (BaseActivity.dialogMataDataSync != null) {
+        if (BaseActivity.dialogDataSyncing != null) {
             canShowNotification = false;
-            BaseActivity.dialogMataDataSync.serviceGetDataFinish(MetaDataNameEnum.SyncReceiveMessage);
+            BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncReceiveMessage);
         }
     }
 

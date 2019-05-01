@@ -6,7 +6,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
@@ -45,17 +45,17 @@ public class UserAndRolePresenter {
             if (structuresMain.isEmpty()) {
                 new FarzinMetaDataQuery(App.CurentActivity).Sync(new MetaDataSyncListener() {
                     @Override
-                    public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
+                    public void onSuccess(DataSyncingNameEnum dataSyncingNameEnum) {
 
                     }
 
                     @Override
-                    public void onFailed(MetaDataNameEnum metaDataNameEnum) {
+                    public void onFailed(DataSyncingNameEnum dataSyncingNameEnum) {
 
                     }
 
                     @Override
-                    public void onCancel(MetaDataNameEnum metaDataNameEnum) {
+                    public void onCancel(DataSyncingNameEnum dataSyncingNameEnum) {
 
                     }
 

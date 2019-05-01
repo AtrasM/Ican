@@ -72,7 +72,6 @@ public class FarzinPrefrences {
                 }
             }
         }
-
         sharedPreferencesValue.edit().putString(TAG + "cookie", SESSION_ID).apply();
     }
 
@@ -114,16 +113,16 @@ public class FarzinPrefrences {
     }
 
 
-    public void putMetaDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
-    }
-
     public void putMessageViewSyncDate(String DateTime) {
         sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
     }
 
     public String getMessageViewLastSyncDate() {
         return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
+    }
+
+    public void putMetaDataLastSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
     }
 
     public String getMetaDataLastSyncDate() {
@@ -179,6 +178,14 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getBoolean(TAG + "isSendMessageForFirstTimeSync", false);
     }
 
+    public void putMetaDataForFirstTimeSync(boolean isMetaDataForFirstTimeSync) {
+        sharedPreferencesValue.edit().putBoolean(TAG + "MetaDataForFirstTimeSync", isMetaDataForFirstTimeSync).apply();
+    }
+
+    public boolean isMetaDataForFirstTimeSync() {
+        return sharedPreferencesValue.getBoolean(TAG + "MetaDataForFirstTimeSync", false);
+    }
+
     public void putDataForFirstTimeSync(boolean isDataForFirstTimeSync) {
         sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();
     }
@@ -215,7 +222,7 @@ public class FarzinPrefrences {
         putUserAuthenticationInfo("", "", null);
         putUserBaseInfo(-1, -1);
         putDataForFirstTimeSync(false);
-        putMetaDataSyncDate("");
+        putMetaDataLastSyncDate("");
         putCartableDocumentForFirstTimeSync(false);
         putSendMessageForFirstTimeSync(false);
         putReceiveMessageForFirstTimeSync(false);

@@ -146,5 +146,8 @@
     <string name="title_action">نوع عمل</string>
     <string name="title_count_of_get_document">تعداد مدرک دریافتی</string>
     <string name="title_all_data">همه</string>
+    <string name="TitleActivityDocumentSetting">تنظیمات دریافت داده ها</string>
+    <string name="title_document_setting">تنظیمات مدرک</string>
+    <string name="title_end_date">تاریخ پایان</string>
 
 </resources>

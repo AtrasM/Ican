@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.View.Dialog.DialogFirstMetaDataSync;
+import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -30,11 +30,11 @@ public class FarzinMetaDataSync {
     private String Tag = "FarzinMetaDataSync";
     private Timer timerAsync;
     private TimerTask timerTaskAsync;
-    private DialogFirstMetaDataSync dialogFirstMetaDataSync;
+    private DialogDataSyncing dialogDataSyncing;
 
     public FarzinMetaDataSync() {
         farzinPrefrences = getFarzinPrefrences();
-        //farzinPrefrences.putMetaDataSyncDate("");
+        //farzinPrefrences.putMetaDataLastSyncDate("");
     }
 
     public FarzinMetaDataSync RunONschedule(final MetaDataSyncListener metaDataSyncListener) {
@@ -59,12 +59,7 @@ public class FarzinMetaDataSync {
                             public void disConnected() {
                                 App.networkStatus = NetworkStatus.WatingForNetwork;
                                 onDestory();
-                                App.getHandlerMainThread().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        RunONschedule(metaDataSyncListener);
-                                    }
-                                }, LONGDELAY);
+                                App.getHandlerMainThread().postDelayed(() -> RunONschedule(metaDataSyncListener), LONGDELAY);
                             }
 
                             @Override

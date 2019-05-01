@@ -176,11 +176,13 @@ public class FragmentCartable extends BaseFragment {
     public void reGetDataFromLocal() {
         structureCartableActions = new FarzinCartableQuery().getCartableAction(false, null);
         structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, null);
+        checkData();
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
         } else {
             frmRcvPin.setVisibility(View.GONE);
         }
+
         adapterCartableAction.addAll(structureCartableActions);
         adapterCartableActionPin.addAll(structureCartableActionsPin);
         srlRefresh.setRefreshing(false);
@@ -192,6 +194,9 @@ public class FragmentCartable extends BaseFragment {
             txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
             txtNoData.setVisibility(View.VISIBLE);
             lnMain.setVisibility(View.GONE);
+        }else{
+            txtNoData.setVisibility(View.GONE);
+            lnMain.setVisibility(View.VISIBLE);
         }
     }
 

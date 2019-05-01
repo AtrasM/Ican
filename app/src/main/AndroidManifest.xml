@@ -111,25 +111,27 @@
         </provider>
 
         <activity android:name=".Ican.View.ActivitySplash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityLogin"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
+            android:windowSoftInputMode="stateHidden|adjustResize" >
+
+        </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
             android:label="@string/title_activity_farzin_main"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity android:name=".Farzin.View.ActivityDocumentSetting"
             android:windowSoftInputMode="stateHidden|adjustResize" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".Farzin.View.ActivitySetting"
             android:windowSoftInputMode="stateHidden|adjustResize" />

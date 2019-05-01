@@ -13,13 +13,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Enum.MetaDataNameEnum;
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
+import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserAndRoleRowsRES;
+import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
@@ -32,7 +34,8 @@ import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 
-import static avida.ican.Farzin.Model.Enum.MetaDataNameEnum.SyncUserAndRole;
+import static avida.ican.Farzin.Model.Enum.DataSyncingNameEnum.SyncDocumentActions;
+import static avida.ican.Farzin.Model.Enum.DataSyncingNameEnum.SyncUserAndRole;
 
 /**
  * Created by AtrasVida on 2018-04-24 at 9:59 AM
@@ -82,18 +85,19 @@ public class FarzinMetaDataQuery {
         SyncUserAndRoleList();
         mainMetaDataSyncListener = new MetaDataSyncListener() {
             @Override
-            public void onSuccess(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getIntValue() + 1);
+            public void onSuccess(DataSyncingNameEnum dataSyncingNameEnum) {
+                metaDataSyncListener.onSuccess(dataSyncingNameEnum);
+                SyncTable(dataSyncingNameEnum.ordinal() + 1);
             }
 
             @Override
-            public void onFailed(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getIntValue());
+            public void onFailed(DataSyncingNameEnum dataSyncingNameEnum) {
+                SyncTable(dataSyncingNameEnum.ordinal());
             }
 
             @Override
-            public void onCancel(MetaDataNameEnum metaDataNameEnum) {
-                SyncTable(metaDataNameEnum.getIntValue());
+            public void onCancel(DataSyncingNameEnum dataSyncingNameEnum) {
+                SyncTable(dataSyncingNameEnum.ordinal());
             }
 
             @Override
@@ -107,17 +111,12 @@ public class FarzinMetaDataQuery {
                         }
                     });*/
                     String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
-                    farzinPrefrences.putMetaDataSyncDate(CurentDateTime);
+                    farzinPrefrences.putMetaDataLastSyncDate(CurentDateTime);
                     FarzinPrefrences farzinPrefrences = new FarzinPrefrences().init();
                     String userName = farzinPrefrences.getUserName();
                     StructureUserAndRoleDB UserAndRoleDB = getUserInfo(userName);
                     farzinPrefrences.putUserBaseInfo(UserAndRoleDB.getUser_ID(), UserAndRoleDB.getRole_ID());
-                    App.CurentActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            metaDataSyncListener.onFinish();
-                        }
-                    });
+                    App.CurentActivity.runOnUiThread(() -> metaDataSyncListener.onFinish());
 
 
                 } catch (Exception e) {
@@ -131,8 +130,11 @@ public class FarzinMetaDataQuery {
     }
 
     private void SyncTable(int i) {
-        if (i == SyncUserAndRole.getIntValue()) {
+        if (i == SyncUserAndRole.ordinal()) {
             SyncUserAndRoleList();
+        } else if (i == SyncDocumentActions.ordinal()) {
+            SyncDocumentActionList();
+
         } else {
             mainMetaDataSyncListener.onFinish();
         }
@@ -140,6 +142,30 @@ public class FarzinMetaDataQuery {
     }
 
     //*******____________________________  UserAndRoleList  ____________________________********
+
+    private void SyncDocumentActionList() {
+        App.getHandlerMainThread().post(() -> {
+            new CartableDocumentActionsPresenter(-1).GetDocumentActionsFromServer(new GetDocumentActionsFromServerListener() {
+                @Override
+                public void onSuccess() {
+                    mainMetaDataSyncListener.onSuccess(SyncDocumentActions);
+                }
+
+                @Override
+                public void onFailed(String message) {
+                    mainMetaDataSyncListener.onFailed(SyncDocumentActions);
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
+                }
+
+                @Override
+                public void onCancel() {
+                    mainMetaDataSyncListener.onCancel(SyncDocumentActions);
+                    App.ShowMessage().ShowToast(Resorse.getString(R.string.rule_cancel), ToastEnum.TOAST_LONG_TIME);
+                }
+            });
+        });
+
+    }
 
     private void SyncUserAndRoleList() {
         EndPoint = "UserManagment";
