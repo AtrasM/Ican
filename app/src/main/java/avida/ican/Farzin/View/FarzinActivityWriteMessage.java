@@ -618,7 +618,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                         @Override
                         public void run() {
                             loading.Hide();
-                            App.fragmentMessageList.UpdateSendMessageData();
+                            App.fragmentMessageList.UpdateMessageData();
                             App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
                             Finish(App.CurentActivity);
                         }

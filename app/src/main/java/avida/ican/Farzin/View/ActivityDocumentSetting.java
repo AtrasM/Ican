@@ -1,14 +1,21 @@
 package avida.ican.Farzin.View;
 
+import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentDataListener;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
+import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -30,7 +37,8 @@ import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 
 import java.util.ArrayList;
 
-import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
+import static avida.ican.Farzin.View.Enum.SettingEnum.AUTOMATIC;
+import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
 
 public class ActivityDocumentSetting extends BaseToolbarActivity {
@@ -64,6 +72,7 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
     private int actionCodeDefPos = 0;
     private int countOfGetDocumentDefPos = 0;
     private int settingType = -1;
+    private FarzinCartableDocumentListPresenter farzinCartableDocumentListPresenter;
 
     @Override
     protected int getLayoutResource() {
@@ -83,8 +92,17 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
     }
 
     private void initView() {
+        if (settingType == MANUALLY.getValue()) {
+            lnEndDate.setVisibility(View.VISIBLE);
+        } else if (settingType == AUTOMATIC.getValue()) {
+            lnEndDate.setVisibility(View.GONE);
+            lnStartDate.setVisibility(View.GONE);
+        }
         strStartDate = farzinPrefrences.getCartableDocumentDataSyncDate();
+        strEndDate = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+
         txtStartDate.setText(CustomFunction.MiladyToJalaly(strStartDate));
+        txtEndDate.setText(CustomFunction.MiladyToJalaly(strEndDate));
         initDateView();
         initSpActions();
 
@@ -188,6 +206,68 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
         }
     }
 
+    private void getData() {
+        App.canBack = false;
+        callDialogDataSyncing();
+        strStartDate = CustomFunction.JalalyToMilady(strStartDate);
+        strEndDate = CustomFunction.JalalyToMilady(strEndDate);
+        farzinPrefrences.putDefultActionCode(actionCode);
+
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentDataListener() {
+            @Override
+            public void newData() {
+                String date = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+                getFarzinPrefrences().putCartableDocumentDataSyncDate(date);
+                farzinPrefrences.putDefultActionCode(-1);
+                BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncCartableDocument);
+
+            }
+
+            @Override
+            public void noData() {
+                String date = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+                getFarzinPrefrences().putCartableDocumentDataSyncDate(date);
+                farzinPrefrences.putDefultActionCode(-1);
+                BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncCartableDocument);
+
+            }
+
+            @Override
+            public void onFailed(String message) {
+                BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncFailed);
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_faild),SnackBarEnum.SNACKBAR_LONG_TIME);
+            }
+        });
+        farzinCartableDocumentListPresenter.GetFromServer(strStartDate, strEndDate);
+
+    }
+
+    private void callDialogDataSyncing() {
+
+        runOnUiThread(() -> {
+
+            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, 1, false, new MetaDataSyncListener() {
+                @Override
+                public void onFinish() {
+                    runOnUiThread(() -> {
+                        Finish(App.CurentActivity);
+                    });
+                }
+
+                @Override
+                public void onFailed() {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+
+            });
+            BaseActivity.dialogDataSyncing.Creat();
+        });
+    }
 
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
@@ -202,7 +282,6 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
         getMenuInflater().inflate(R.menu.setting_toolbar_menu, menu);
         return true;
     }
@@ -223,8 +302,11 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
                 farzinPrefrences.putDefultActionCode(actionCode);
                 Finish(App.CurentActivity);
 
-            } else if (settingType == CUSTOM.getValue()) {
-
+            } else if (settingType == MANUALLY.getValue()) {
+                getData();
+            } else if (settingType == AUTOMATIC.getValue()) {
+                farzinPrefrences.putDefultActionCode(actionCode);
+                Finish(App.CurentActivity);
             }
 
             return true;
@@ -236,6 +318,7 @@ public class ActivityDocumentSetting extends BaseToolbarActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            Finish(App.CurentActivity);
             return true;
         }
 

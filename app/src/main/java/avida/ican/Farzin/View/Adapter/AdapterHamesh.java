@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,13 +35,11 @@ public class AdapterHamesh extends RecyclerView.Adapter<AdapterHamesh.ViewHolder
     private ArrayList<StructureHameshDB> itemList;
     private int layout = R.layout.item_hamesh_list;
     private ListenerAdapterHameshList listenerAdapterHameshList;
-    private ViewBinderHelper binderHelper;
     private boolean isLnMoreVisible = false;
 
     public AdapterHamesh(ArrayList<StructureHameshDB> itemList, ListenerAdapterHameshList listenerAdapterHameshList) {
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterHameshList = listenerAdapterHameshList;
-        binderHelper = new ViewBinderHelper();
     }
 
     // inner class to hold a reference to each item of RecyclerView

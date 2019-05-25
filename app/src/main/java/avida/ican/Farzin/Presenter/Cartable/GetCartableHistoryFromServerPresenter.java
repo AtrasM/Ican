@@ -25,7 +25,7 @@ public class GetCartableHistoryFromServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "eFormManagment";
-    private String MetodName = "GetHistoryList";
+    private String MethodName = "GetHistoryList";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetCartableHistoryFromServerPresenter";
@@ -41,7 +41,7 @@ public class GetCartableHistoryFromServerPresenter {
 
     private void CallRequest(SoapObject soapObject, final CartableHistoryListListener cartableHistoryListListener) {
 
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, cartableHistoryListListener);
@@ -79,7 +79,7 @@ public class GetCartableHistoryFromServerPresenter {
 
 
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("ETC", EntityTypeCode);
         soapObject.addProperty("EC", EntityCode);
@@ -89,11 +89,11 @@ public class GetCartableHistoryFromServerPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -121,7 +121,7 @@ public class GetCartableHistoryFromServerPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 //Xml = changeXml.CharDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

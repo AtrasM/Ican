@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,10 @@ public class AdapterCartableHistory extends RecyclerView.Adapter<AdapterCartable
 
     private ArrayList<StructureNodeRES> itemList;
     private int layout = R.layout.item_cartable_history_list;
-    private ViewBinderHelper binderHelper;
     private boolean isLnMoreVisible = false;
 
     public AdapterCartableHistory(ArrayList<StructureNodeRES> itemList) {
         this.itemList = new ArrayList<>(itemList);
-        binderHelper = new ViewBinderHelper();
     }
 
     public int getDataSize() {

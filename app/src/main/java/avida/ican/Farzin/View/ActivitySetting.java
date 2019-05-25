@@ -14,9 +14,11 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
 
-import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
+import static avida.ican.Farzin.View.Enum.SettingEnum.AUTOMATIC;
+import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
 
 public class ActivitySetting extends BaseToolbarActivity {
@@ -40,12 +42,21 @@ public class ActivitySetting extends BaseToolbarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
         settingType = getIntent().getIntExtra(PutExtraEnum.Settingtype.getValue(), -1);
+        App.getFarzinBroadCastReceiver().stopServices();
         initView();
     }
 
     private void initView() {
+        if (settingType == AUTOMATIC.getValue()) {
+            lnMessageSetting.setVisibility(View.GONE);
+        }
         lnDocumentSetting.setOnClickListener(view -> {
             Intent intent = new Intent(App.CurentActivity, ActivityDocumentSetting.class);
+            intent.putExtra(PutExtraEnum.Settingtype.getValue(), settingType);
+            goToActivity(intent);
+        });
+        lnMessageSetting.setOnClickListener(view -> {
+            Intent intent = new Intent(App.CurentActivity, ActivityMessageSetting.class);
             intent.putExtra(PutExtraEnum.Settingtype.getValue(), settingType);
             goToActivity(intent);
         });
@@ -67,16 +78,22 @@ public class ActivitySetting extends BaseToolbarActivity {
         Drawable drawable = customFunction.ChengeDrawableColor(R.drawable.ic_success, R.color.color_White);
         actionSuccess.setIcon(drawable);
         actionSuccess.setOnMenuItemClickListener(menuItem -> {
-
-            if (settingType == SYNC.getValue()) {
+            Intent returnIntent = new Intent();
+            setResult(settingType, returnIntent);
+            Finish(App.CurentActivity);
+           /* if (settingType == SYNC.getValue()) {
                 Intent returnIntent = new Intent();
                 setResult(settingType, returnIntent);
                 Finish(App.CurentActivity);
-            } else if (settingType == CUSTOM.getValue()) {
+            } else if (settingType == MANUALLY.getValue()) {
                 Intent returnIntent = new Intent();
                 setResult(settingType, returnIntent);
                 Finish(App.CurentActivity);
-            }
+            } else if (settingType == AUTOMATIC.getValue()) {
+                Intent returnIntent = new Intent();
+                setResult(settingType, returnIntent);
+                Finish(App.CurentActivity);
+            }*/
 
             return true;
         });

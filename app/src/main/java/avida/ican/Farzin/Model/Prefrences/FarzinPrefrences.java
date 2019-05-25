@@ -7,6 +7,7 @@ import org.ksoap2.HeaderProperty;
 
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
@@ -138,6 +139,24 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", defDate);
     }
 
+    public void putReceiveMessageDataSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "ReceiveMessageDataSyncDate", DateTime).apply();
+    }
+
+    public String getReceiveMessageDataSyncDate() {
+        String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
+        return sharedPreferencesValue.getString(TAG + "ReceiveMessageDataSyncDate", defDate);
+    }
+
+    public void putSendMessageDataSyncDate(String DateTime) {
+        sharedPreferencesValue.edit().putString(TAG + "SendMessageDataSyncDate", DateTime).apply();
+    }
+
+    public String getSendMessageDataSyncDate() {
+        String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
+        return sharedPreferencesValue.getString(TAG + "SendMessageDataSyncDate", defDate);
+    }
+
     public void putDefultActionCode(int code) {
         sharedPreferencesValue.edit().putInt(TAG + "DefultActionCode", code).apply();
     }
@@ -218,6 +237,7 @@ public class FarzinPrefrences {
         return sharedPreferencesValue.getString(TAG + "MessageSendLastCheckDate", "");
     }
 
+
     public void clearCatch() {
         putUserAuthenticationInfo("", "", null);
         putUserBaseInfo(-1, -1);
@@ -232,6 +252,5 @@ public class FarzinPrefrences {
         putMessageViewSyncDate("");
         putCartableDocumentDataSyncDate("");
     }
-
 
 }

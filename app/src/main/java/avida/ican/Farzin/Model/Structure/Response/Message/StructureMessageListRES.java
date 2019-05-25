@@ -10,24 +10,25 @@ import java.util.List;
 import avida.ican.Ican.Model.ChangeXml;
 
 /**
- * Created by AtrasVida on 2018-07-16 at 3:35 AM
+ * Created by AtrasVida on 2018-07-03 at 9:36 AM
+ * Edit by AtrasVida on 2018-07-16 at 3:25 AM
  */
 
-@Root(name = "GetRecieveMessageListResponse")
-public class StructureRecieveMessageListRES {
+@Root(name = "GetMessageListResponse")
+public class StructureMessageListRES {
 
     @ElementList(required = false)
-    private List<StructureMessageRES> GetRecieveMessageListResult=new ArrayList<>();
+    private List<StructureMessageRES> GetMessageListResult =new ArrayList<>();
 
     @Element(required = false)
     private String strErrorMsg;
 
-    public List<StructureMessageRES> getGetRecieveMessageListResult() {
-        return GetRecieveMessageListResult;
+    public List<StructureMessageRES> getGetMessageListResult() {
+        return GetMessageListResult;
     }
 
-    public void setGetRecieveMessageListResult(List<StructureMessageRES> getRecieveMessageListResult) {
-        GetRecieveMessageListResult = getRecieveMessageListResult;
+    public void setGetMessageListResult(List<StructureMessageRES> getMessageListResult) {
+        GetMessageListResult = getMessageListResult;
     }
 
     public String getStrErrorMsg() {

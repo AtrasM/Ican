@@ -32,7 +32,6 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
-import avida.ican.Farzin.Presenter.Service.Cartable.GetCartableDocumentService;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
@@ -52,7 +51,7 @@ import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
 
-import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
+import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
 
 public class FarzinActivityMain extends BaseNavigationDrawerActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
@@ -62,6 +61,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     BottomNavigationViewEx bottomNavigation;
     @BindView(R.id.container)
     LinearLayout container;
+    @BindView(R.id.ln_loading)
+    LinearLayout lnLoading;
 
     private static BottomNavigationViewEx staticbottomNavigation;
     @BindString(R.string.title_farzin_login)
@@ -111,6 +112,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         super.onCreate(savedInstanceState);
         isFilter = getIntent().getBooleanExtra(PutExtraEnum.IsFilter.getValue(), false);
         container.setVisibility(View.GONE);
+        lnLoading.setVisibility(View.VISIBLE);
         CheckNetWork();
         farzinPrefrences = getFarzinPrefrences();
         initNavigationBar(Title, R.menu.main_drawer);
@@ -136,8 +138,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private void initBottomNavigation() {
         bottomNavigation.setOnNavigationItemSelectedListener(this);
         bottomNavigation.setTextVisibility(false);
-        bottomNavigation.setCurrentItem(1);
         bottomNavigation.setCurrentItem(0);
+        bottomNavigation.setCurrentItem(1);
         staticbottomNavigation = bottomNavigation;
     }
 
@@ -199,6 +201,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             } else {
                 runBaseService();
                 container.setVisibility(View.VISIBLE);
+                lnLoading.setVisibility(View.GONE);
+
                 if (staticbottomNavigation != null) {
                     staticbottomNavigation.setCurrentItem(1);
                 }
@@ -486,6 +490,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
                         Log.i("Log", "onFinish isMetaData= " + isMetaData);
                         if (!isMetaData) {
                             container.setVisibility(View.VISIBLE);
+                            lnLoading.setVisibility(View.GONE);
                             Log.i("Log", "onFinish in if isMetaData= " + isMetaData);
                             if (staticbottomNavigation != null) {
                                 staticbottomNavigation.setCurrentItem(1);
@@ -517,15 +522,26 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         broadcastReceiver.runGetRecieveMessageService();
     }
 
+    private void stopServices() {
+        broadcastReceiver.stopServices();
+    }
+
+    private void runServices() {
+        broadcastReceiver.stopServices();
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ACTIVITYSETTING) {
             if (resultCode == SYNC.getValue()) {
-                callDialogDataSyncing(DataSyncingNameEnum.getDataSyncingCount(), false);
-            } else if (resultCode == CUSTOM.getValue()) {
+                App.getHandler().postDelayed(() -> {
+                    callDialogDataSyncing(DataSyncingNameEnum.getDataSyncingCount(), false);
+                }, TimeValue.SecondsInMilli());
 
+            } else if (resultCode == MANUALLY.getValue()) {
+                runServices();
             }
         }
     }
@@ -544,7 +560,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @Override
     public void onBackPressed() {
         if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
-            // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
+            // We are already showing firstf fragment of current tab, so when back pressed, we will finish this activity..
             if (mCurrentTab == TAB_DASHBOARD) {
                 FinishNavigationActivity();
             } else {

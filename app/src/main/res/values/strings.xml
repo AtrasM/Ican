@@ -149,5 +149,12 @@
     <string name="TitleActivityDocumentSetting">تنظیمات دریافت داده ها</string>
     <string name="title_document_setting">تنظیمات مدرک</string>
     <string name="title_end_date">تاریخ پایان</string>
+    <string name="title_frm_queue_message">صف ارسال پیام</string>
+    <string name="title_manual_setting">تنظیمات دستی</string>
+    <string name="title_queue">صف های ارسال</string>
+    <string name="title_automatic_setting">تنظیمات اتوماتیک</string>
+    <string name="title_frm_queue_optical_pen">صف ارسال قلم نوری</string>
+    <string name="title_message_type">نوع پیام:</string>
+    <string name="hint_subject">موضوع</string>
 
 </resources>

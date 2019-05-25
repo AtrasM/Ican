@@ -37,6 +37,8 @@ public class StructureMessageRES {
     private List<StructureMessageAttachRES> MessageFiles = new ArrayList<>();
     @Element(required = false)
     private StructureSenderRES Sender;
+    @Element(required = false)
+    private int AttachmentCount;
 
     public String getSubject() {
         return new ChangeXml().viewCharDecoder(Subject);
@@ -63,14 +65,11 @@ public class StructureMessageRES {
     }
 
     public String getSentDate() {
-        Log.i("SentDate", "befor getSentDate= " + SentDate);
-        Log.i("SentDate", "after getSentDate= " + new ChangeXml().viewCharDecoder(SentDate));
 
         return new ChangeXml().viewCharDecoder(SentDate);
     }
 
     public void setSentDate(String sentDate) {
-        Log.i("SentDate", "setSentDate= " + sentDate);
         SentDate = sentDate;
     }
 
@@ -112,5 +111,13 @@ public class StructureMessageRES {
 
     public void setViewDate(String viewDate) {
         ViewDate = viewDate;
+    }
+
+    public int getAttachmentCount() {
+        return AttachmentCount;
+    }
+
+    public void setAttachmentCount(int attachmentCount) {
+        AttachmentCount = attachmentCount;
     }
 }

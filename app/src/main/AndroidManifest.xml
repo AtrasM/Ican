@@ -122,18 +122,25 @@
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
+            android:windowSoftInputMode="stateHidden|adjustResize">
 
         </activity>
         <activity
             android:name=".Farzin.View.FarzinActivityMain"
             android:label="@string/title_activity_farzin_main"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity android:name=".Farzin.View.ActivityDocumentSetting"
-            android:windowSoftInputMode="stateHidden|adjustResize" >
+        <activity
+            android:name=".Farzin.View.ActivityDocumentSetting"
+            android:windowSoftInputMode="stateHidden|adjustResize">
 
         </activity>
-        <activity android:name=".Farzin.View.ActivitySetting"
+        <activity
+            android:name=".Farzin.View.ActivityMessageSetting"
+            android:windowSoftInputMode="stateHidden|adjustResize">
+
+        </activity>
+        <activity
+            android:name=".Farzin.View.ActivitySetting"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".Farzin.View.FarzinActivityWriteMessage"
@@ -147,7 +154,12 @@
         <activity
             android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+        <activity
+            android:name=".Farzin.View.FarzinActivityQueue"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
         <activity android:name=".Farzin.View.FarzinNotificationManager" />
+
         <activity android:name=".Ican.View.ActivityImageViewer" />
     </application>
 

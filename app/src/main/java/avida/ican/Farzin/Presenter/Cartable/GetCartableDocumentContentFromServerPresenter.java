@@ -33,7 +33,7 @@ public class GetCartableDocumentContentFromServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "eFormManagment";
-    private String MetodName = "GetContentFormAs";
+    private String MethodName = "GetContentFormAs";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetCartableDocumentContentFromServerPresenter";
@@ -50,7 +50,7 @@ public class GetCartableDocumentContentFromServerPresenter {
 
     private void CallRequest(SoapObject soapObject, final CartableDocumentContentListener documentContentListener) {
 
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, documentContentListener);
@@ -104,7 +104,7 @@ public class GetCartableDocumentContentFromServerPresenter {
     }
 
     private SoapObject getSoapObject(int EntityTypeCode, int EntityCode) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         soapObject.addProperty("ETC", EntityTypeCode);
         soapObject.addProperty("EC", EntityCode);
         soapObject.addProperty("LayoutID", -1);
@@ -113,11 +113,11 @@ public class GetCartableDocumentContentFromServerPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -144,8 +144,8 @@ public class GetCartableDocumentContentFromServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                if (Xml.contains(MetodName)) {
-                    Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                if (Xml.contains(MethodName)) {
+                    Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 }
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

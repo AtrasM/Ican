@@ -26,7 +26,7 @@ import avida.ican.R;
 
 public class DialogDataSyncing {
     private final Activity context;
-    private int ServiceCount = -1;
+    private int ServiceCount = 4;
     private int serviceCounter = 0;
     private boolean isMetaData = false;
     private FarzinPrefrences farzinPrefrences;
@@ -39,6 +39,10 @@ public class DialogDataSyncing {
         this.isMetaData = isMetaData;
         this.context = context;
         this.ServiceCount = ServiceCount;
+        this.serviceCounter = 0;
+
+        Log.i("count", "serviceCounter= " + serviceCounter);
+        Log.i("count", "serviceCount= " + ServiceCount);
         this.metaDataSyncListener = metaDataSyncListener;
         farzinPrefrences = new FarzinPrefrences().init();
         startTime = System.nanoTime();
@@ -55,7 +59,7 @@ public class DialogDataSyncing {
         try {
             if (serviceCounter >= ServiceCount) {
                 Log.i("count", "serviceCounter= " + serviceCounter);
-                Log.i("count", "ServiceCount= " + ServiceCount);
+                Log.i("count", "serviceCount= " + ServiceCount);
                 endTime = System.nanoTime();
                 long elapsedTime = endTime - startTime;
                 final double seconds = (double) elapsedTime / 1_000_000_000.0;
@@ -92,7 +96,7 @@ public class DialogDataSyncing {
         Log.i("count", "dismiss" );
         App.canBack = true;
         Log.i("count", "dismiss serviceCounter= " + serviceCounter);
-        Log.i("count", "dismiss ServiceCount= " + ServiceCount);
+        Log.i("count", "dismiss serviceCount= " + ServiceCount);
         ServiceCount = 0;
         serviceCounter = 0;
         if (metaDataSyncListener != null) {
@@ -111,6 +115,7 @@ public class DialogDataSyncing {
       /*  if (farzinPrefrences.isDataForFirstTimeSync()) {
             return;
         }*/
+        BaseActivity.dialog=null;
         BaseActivity.closeKeboard();
         App.canBack = false;
         context.runOnUiThread(() -> {

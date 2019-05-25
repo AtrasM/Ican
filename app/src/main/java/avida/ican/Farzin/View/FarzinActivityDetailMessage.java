@@ -2,8 +2,10 @@ package avida.ican.Farzin.View;
 
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,8 +24,10 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
+import avida.ican.Farzin.Presenter.Message.FarzinGetMessageAttachmentPresenter;
 import avida.ican.Farzin.View.Dialog.DialogShowMore;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Interface.Message.MessageQueryAttachmentListListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.Model.Structure.StructureAttach;
@@ -76,6 +80,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     private File file;
     private Bundle bundleObject = new Bundle();
     private String receiveNames = "";
+    private FarzinGetMessageAttachmentPresenter farzinGetMessageAttachmentPresenter;
 
     @Override
     protected void onResume() {
@@ -97,11 +102,12 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-/*        Bundle bundleObject = getIntent().getExtras();
+    /*  Bundle bundleObject = getIntent().getExtras();
         structureDetailMessageBND = (StructureDetailMessageBND) bundleObject.getSerializable(PutExtraEnum.BundleMessage.getValue());
        */
         lnMain.setVisibility(View.GONE);
         lnLoading.setVisibility(View.VISIBLE);
+        farzinGetMessageAttachmentPresenter = new FarzinGetMessageAttachmentPresenter(intPresenterListener());
         if (structureDetailMessageBND.getMessageType() == Type.SENDED) {
             lnReply.setVisibility(View.GONE);
         }
@@ -142,6 +148,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
         } else {
             receiveNames = structureDetailMessageBND.getReceiverFullName();
         }
+
         txtName.setText(receiveNames);
         txtName.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -153,8 +160,46 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
                 }
             }
         });
-        lnMain.setVisibility(View.VISIBLE);
-        lnLoading.setVisibility(View.GONE);
+    }
+
+    private MessageQueryAttachmentListListener intPresenterListener() {
+        MessageQueryAttachmentListListener messageQueryAttachmentListListener = new MessageQueryAttachmentListListener() {
+            @Override
+            public void newData(ArrayList<StructureMessageFileDB> structureMessageFilesDB) {
+                runOnUiThread(() -> {
+                    initAttachment(structureMessageFilesDB);
+                    structureDetailMessageBND.setFilesDownloaded(true);
+                    App.fragmentMessageList.UpdateLastMessageShowData();
+                    lnMain.setVisibility(View.VISIBLE);
+                    lnLoading.setVisibility(View.GONE);
+                });
+            }
+
+            @Override
+            public void noData() {
+                runOnUiThread(() -> {
+                    structureDetailMessageBND.setFilesDownloaded(true);
+                    lnMain.setVisibility(View.VISIBLE);
+                    lnLoading.setVisibility(View.GONE);
+                });
+            }
+
+            @Override
+            public void onFailed(String message) {
+                runOnUiThread(() -> {
+                    lnMain.setVisibility(View.VISIBLE);
+                    lnLoading.setVisibility(View.GONE);
+                });
+            }
+
+            @Override
+            public void onCancel() {
+                runOnUiThread(() ->
+                        lnLoading.setVisibility(View.GONE)
+                );
+            }
+        };
+        return messageQueryAttachmentListListener;
     }
 
     private void gotoActivityWriteMessage(boolean isReply) {
@@ -167,31 +212,48 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     }
 
     private void initRcvAndAdapter() {
-        if(structureDetailMessageBND.getMessage_files()==null||structureDetailMessageBND.getMessage_files().size()<=0){
-            lnDivider.setVisibility(View.GONE);
-        }else{
-            for (StructureMessageFileDB MessageFileDB : structureDetailMessageBND.getMessage_files()) {
-                StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
-                structureAttaches.add(structureAttach);
-            }
-            GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
-            rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
-            adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
-                @Override
-                public void onOpenFile(StructureAttach structureAttach) {
-                    file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
-                }
 
-                @Override
-                public void onDeletFile(StructureAttach structureAttach) {
-                    structureAttaches.remove(structureAttach);
-                }
-            });
-            rcvAttach.setAdapter(adapterAttach);
+        if (structureDetailMessageBND.getAttachmentCount() > 0) {
+            if (structureDetailMessageBND.isFilesDownloaded()) {
+                initAttachment(structureDetailMessageBND.getMessage_files());
+                lnMain.setVisibility(View.VISIBLE);
+                lnLoading.setVisibility(View.GONE);
+            } else {
+                // TODO: 2019-05-20 main structure message isFilesDownloaded shold refresh
+                farzinGetMessageAttachmentPresenter.getData(structureDetailMessageBND.getMain_id());
+            }
+        } else {
+            lnDivider.setVisibility(View.GONE);
+            lnMain.setVisibility(View.VISIBLE);
+            lnLoading.setVisibility(View.GONE);
         }
 
+        /* if (structureDetailMessageBND.getMessage_files() == null || structureDetailMessageBND.getMessage_files().size() <= 0) {
+            lnDivider.setVisibility(View.GONE);
+        } else {
+        }*/
 
-        // adapterAttach.addAll(structureAttaches);
+    }
+
+    private void initAttachment(ArrayList<StructureMessageFileDB> message_files) {
+        for (StructureMessageFileDB MessageFileDB : message_files) {
+            StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
+            structureAttaches.add(structureAttach);
+        }
+        GridLayoutManagerWithSmoothScroller linearLayoutManagerWithSmoothScroller = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
+        rcvAttach.setLayoutManager(linearLayoutManagerWithSmoothScroller);
+        adapterAttach = new AdapterAttach(App.CurentActivity, structureAttaches, false, new ListenerAdapterAttach() {
+            @Override
+            public void onOpenFile(StructureAttach structureAttach) {
+                file = new CustomFunction(App.CurentActivity).OpenFile(structureAttach);
+            }
+
+            @Override
+            public void onDeletFile(StructureAttach structureAttach) {
+                structureAttaches.remove(structureAttach);
+            }
+        });
+        rcvAttach.setAdapter(adapterAttach);
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

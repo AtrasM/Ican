@@ -22,9 +22,8 @@ import java.util.Stack;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageAttachRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureReceiverRES;
-import avida.ican.Farzin.Model.Structure.Response.Message.StructureRecieveMessageListRES;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureSenderRES;
-import avida.ican.Farzin.Model.Structure.Response.Message.StructureSentMessageListRES;
+import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageListRES;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
@@ -55,18 +54,12 @@ public class MessageSaxHandler extends DefaultHandler {
         MessageFiles = new ArrayList<>();
     }
 
-    public <T> T getObject(boolean isReciverMessage) {
-        if (isReciverMessage) {
-            StructureRecieveMessageListRES structureRecieveMessageListRES = new StructureRecieveMessageListRES();
-            structureRecieveMessageListRES.setGetRecieveMessageListResult(Messages);
-            structureRecieveMessageListRES.setStrErrorMsg("");
-            return (T) structureRecieveMessageListRES;
-        } else {
-            StructureSentMessageListRES structureSentMessageListRES = new StructureSentMessageListRES();
-            structureSentMessageListRES.setGetSentMessageListResult(Messages);
-            structureSentMessageListRES.setStrErrorMsg("");
-            return (T) structureSentMessageListRES;
-        }
+    public <T> T getObject() {
+            StructureMessageListRES structureMessageListRES = new StructureMessageListRES();
+            structureMessageListRES.setGetMessageListResult(Messages);
+            structureMessageListRES.setStrErrorMsg("");
+            return (T) structureMessageListRES;
+
     }
 
 

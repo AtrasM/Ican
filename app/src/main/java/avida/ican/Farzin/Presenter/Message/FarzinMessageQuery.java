@@ -53,6 +53,7 @@ public class FarzinMessageQuery {
     private Status status = Status.WAITING;
     private int MessageID = -1;
     private boolean SendFromApp = false;
+    private int AttachmentCount = 0;
     private List<StructureReceiverRES> structureReceiverRES;
 
     //_______________________***Dao***______________________________
@@ -61,6 +62,7 @@ public class FarzinMessageQuery {
     private Dao<StructureMessageFileDB, Integer> messageFileDao = null;
     private Dao<StructureReceiverDB, Integer> receiverDao = null;
     private Dao<StructureMessageQueueDB, Integer> messageQueueDao = null;
+
 
     //_______________________***Dao***______________________________
 
@@ -93,6 +95,7 @@ public class FarzinMessageQuery {
         this.status = Status.WAITING;
         this.tempstrDate = CustomFunction.getCurentDateTime().toString();
         this.SendFromApp = true;
+        this.AttachmentCount = structureAttaches.size();
         new SaveMessage().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, Type.SENDED);
     }
 
@@ -110,13 +113,17 @@ public class FarzinMessageQuery {
                 }
             }
             UpdateMessageView(structureMessageRES, type);
+
             if (type == Type.RECEIVED) {
+                getFarzinPrefrences().putReceiveMessageDataSyncDate(structureMessageRES.getSentDate());
+
                 if (!getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
                     messageQuerySaveListener.onSuccess(new StructureMessageDB());
                 } else {
                     messageQuerySaveListener.onExisting();
                 }
             } else if (type == Type.SENDED) {
+                getFarzinPrefrences().putSendMessageDataSyncDate(structureMessageRES.getSentDate());
                 if (!getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
                     messageQuerySaveListener.onSuccess(new StructureMessageDB());
                 } else {
@@ -130,6 +137,12 @@ public class FarzinMessageQuery {
             this.sender_role_id = structureMessageRES.getSender().getRoleID();
             this.subject = structureMessageRES.getSubject();
             this.tempstrDate = structureMessageRES.getSentDate();
+            if (type == Type.RECEIVED) {
+                getFarzinPrefrences().putReceiveMessageDataSyncDate(structureMessageRES.getSentDate());
+            } else if (type == Type.SENDED) {
+                getFarzinPrefrences().putSendMessageDataSyncDate(structureMessageRES.getSentDate());
+            }
+
             if (structureMessageRES.getDescription() == null) {
                 content = "";
             } else {
@@ -138,7 +151,7 @@ public class FarzinMessageQuery {
 
             this.status = status;
 
-            for (int i = 0; i < structureMessageRES.getMessageFiles().size(); i++) {
+        /*    for (int i = 0; i < structureMessageRES.getMessageFiles().size(); i++) {
                 StructureMessageAttachRES MessageAttachRES = structureMessageRES.getMessageFiles().get(i);
                 if (MessageAttachRES.getFileAsStringBuilder() != null && MessageAttachRES.getFileAsStringBuilder().length() > 0) {
                     this.structureAttaches.add(new StructureAttach(MessageAttachRES.getFileAsStringBuilder(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
@@ -149,8 +162,8 @@ public class FarzinMessageQuery {
                     this.structureAttaches.add(new StructureAttach(stringBuilder, MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
 
                 }
-            }
-
+            }*/
+            this.AttachmentCount = structureMessageRES.getAttachmentCount();
             for (int i = 0; i < structureMessageRES.getReceivers().size(); i++) {
                 StructureReceiverRES receiverRES = structureMessageRES.getReceivers().get(i);
                 this.structureUserAndRole.add(new StructureUserAndRoleDB(receiverRES.getUserName(), receiverRES.getUserID(), receiverRES.getRoleID()));
@@ -163,6 +176,22 @@ public class FarzinMessageQuery {
 
     }
 
+    public void SaveMessageAttachment(int id, ArrayList<StructureMessageAttachRES> structureMessageAttachRES, MessageQuerySaveListener messageQuerySaveListener) {
+        this.messageQuerySaveListener = messageQuerySaveListener;
+        for (int i = 0; i < structureMessageAttachRES.size(); i++) {
+            StructureMessageAttachRES MessageAttachRES = structureMessageAttachRES.get(i);
+            if (MessageAttachRES.getFileAsStringBuilder() != null && MessageAttachRES.getFileAsStringBuilder().length() > 0) {
+                this.structureAttaches.add(new StructureAttach(MessageAttachRES.getFileAsStringBuilder(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
+
+            } else {
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append(MessageAttachRES.getFileBinary());
+                this.structureAttaches.add(new StructureAttach(stringBuilder, MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
+
+            }
+        }
+        new SaveMessageFile().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, id);
+    }
 
     @SuppressLint("StaticFieldLeak")
     private class SaveMessage extends AsyncTask<Type, Void, Void> {
@@ -173,32 +202,21 @@ public class FarzinMessageQuery {
             //content = CustomFunction.AddXmlCData(content);
             //String mDate = CustomFunction.StandardizeTheDateFormat(tempstrDate);
             Date date = new Date();
+            Log.i("Log", "Message Last Date of Type : " + types[0].getValue() + " is = " + tempstrDate);
             if (tempstrDate != null && !tempstrDate.isEmpty()) {
-                int index = tempstrDate.lastIndexOf("/");
-                date = new Date(tempstrDate);
+                if (types[0] == Type.SENDED) {
+                    getFarzinPrefrences().putSendMessageDataSyncDate(tempstrDate);
+                } else if (types[0] == Type.RECEIVED) {
+                    getFarzinPrefrences().putReceiveMessageDataSyncDate(tempstrDate);
+                }
+
+                date = new Date(CustomFunction.StandardizeTheDateFormat(tempstrDate));
             }
 
-            structureMessageDB = new StructureMessageDB(MessageID, sender_user_id, sender_role_id, subject, content, date, status, types[0]);
+            structureMessageDB = new StructureMessageDB(MessageID, sender_user_id, sender_role_id, subject, content, date, status, types[0], AttachmentCount, false);
             try {
                 messageDao.create(structureMessageDB);
-                for (int i = 0; i < structureAttaches.size(); i++) {
-                    StructureAttach Attach = structureAttaches.get(i);
-                    String fileName = CustomFunction.deletExtentionAsFileName(Attach.getName());
-                    //fileName = fileName.replace(" ", "");
-                    String filePath = "";
 
-                    if (Attach.getFileAsStringBuilder().length() < 256) {
-                        //filePath = CustomFunction.reNameFile(Attach.getFileAsStringBuilder().toString(), fileName);
-                        filePath = Attach.getFileAsStringBuilder().toString();
-                        //fileName = CustomFunction.getFileName(filePath);
-
-                    } else {
-                        filePath = new CustomFunction().saveFileToStorage(Attach.getFileAsStringBuilder(), fileName + CustomFunction.getRandomUUID());
-                    }
-                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, fileName, filePath, Attach.getFileExtension());
-                    messageFileDao.create(structureMessageFileDB);
-                    threadSleep();
-                }
                 if (SendFromApp) {
                     for (int i = 0; i < structureUserAndRole.size(); i++) {
                         StructureReceiverDB structureReceiverDB = new StructureReceiverDB(structureMessageDB, structureUserAndRole.get(i).getUser_ID(), structureUserAndRole.get(i).getRole_ID(), structureUserAndRole.get(i).getUserName(), "", true, "");
@@ -222,10 +240,46 @@ public class FarzinMessageQuery {
                 App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
                 return null;
             }
-
             return null;
         }
+    }
 
+    @SuppressLint("StaticFieldLeak")
+    private class SaveMessageFile extends AsyncTask<Integer, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Integer... id) {
+            StructureMessageDB structureMessageDB;
+
+            structureMessageDB = GetMessage(id[0]);
+            structureMessageDB.setFilesDownloaded(true);
+            structureMessageDB.setAttachmentCount(structureAttaches.size());
+            UpdateMessageFileds(structureMessageDB);
+            try {
+                for (int i = 0; i < structureAttaches.size(); i++) {
+                    StructureAttach Attach = structureAttaches.get(i);
+                    String fileName = CustomFunction.deletExtentionAsFileName(Attach.getName());
+                    String filePath = "";
+                    if (Attach.getFileAsStringBuilder().length() < 256) {
+                        filePath = Attach.getFileAsStringBuilder().toString();
+                    } else {
+                        filePath = new CustomFunction().saveFileToStorage(Attach.getFileAsStringBuilder(), fileName + CustomFunction.getRandomUUID());
+                    }
+                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(structureMessageDB, fileName, filePath, Attach.getFileExtension());
+                    messageFileDao.create(structureMessageFileDB);
+                    threadSleep();
+                }
+                //UpdateMessageFileDownloaded(id[0], true);
+
+                messageQuerySaveListener.onSuccess(GetMessage(structureMessageDB.getMain_id()));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                messageQuerySaveListener.onFailed(e.toString());
+                App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+                return null;
+            }
+            return null;
+        }
     }
 
     private void threadSleep() {
@@ -243,6 +297,18 @@ public class FarzinMessageQuery {
         List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
         try {
             queryBuilder.where().eq("sender_user_id", user_id).and().eq("sender_role_id", role_id).and().eq("status", status);
+            structureMessageQueueDBS = queryBuilder.distinct().query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureMessageQueueDBS;
+    }
+
+    public List<StructureMessageQueueDB> getMessageQueue(int user_id, int role_id) {
+        QueryBuilder<StructureMessageQueueDB, Integer> queryBuilder = messageQueueDao.queryBuilder();
+        List<StructureMessageQueueDB> structureMessageQueueDBS = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("sender_user_id", user_id).and().eq("sender_role_id", role_id);
             structureMessageQueueDBS = queryBuilder.distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -450,6 +516,29 @@ public class FarzinMessageQuery {
         }
     }
 
+    public void UpdateMessageFileDownloaded(int id, boolean isFilesDownloaded) {
+        try {
+            UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
+            updateBuilder.where().eq("id", id);
+            updateBuilder.updateColumnValue("isFilesDownloaded", isFilesDownloaded);
+            updateBuilder.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void UpdateMessageFileds(StructureMessageDB structureMessageDB) {
+        try {
+            UpdateBuilder<StructureMessageDB, Integer> updateBuilder = messageDao.updateBuilder();
+            updateBuilder.where().eq("id", structureMessageDB.getId());
+            updateBuilder.updateColumnValue("isFilesDownloaded", structureMessageDB.isFilesDownloaded());
+            updateBuilder.updateColumnValue("AttachmentCount", structureMessageDB.getAttachmentCount());
+            updateBuilder.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void UpdateMessageView(StructureMessageRES MessageRES, Type type) {
         try {
             ArrayList<StructureAttach> tempStructureAttaches = new ArrayList<>();
@@ -465,26 +554,6 @@ public class FarzinMessageQuery {
             if (type != Type.RECEIVED) {
                 StructureMessageDB MessageDB = GetMessage(MessageRES.getID());
                 boolean isDelet = DeletMessageReceiver(MessageDB);
-            /*    for (int i = 0; i < MessageRES.getMessageFiles().size(); i++) {
-                    StructureMessageAttachRES MessageAttachRES = MessageRES.getMessageFiles().get(i);
-
-                    if (MessageAttachRES.getFileAsStringBuilder() != null && MessageAttachRES.getFileAsStringBuilder().length() > 0) {
-                        tempStructureAttaches.add(new StructureAttach(MessageAttachRES.getFileAsStringBuilder(), MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
-
-                    } else {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append(MessageAttachRES.getFileBinary());
-                        tempStructureAttaches.add(new StructureAttach(stringBuilder, MessageAttachRES.getFileName(), MessageAttachRES.getFileExtension(), MessageAttachRES.getDescription()));
-
-                    }
-
-                }*/
-               /* for (int i = 0; i < tempStructureAttaches.size(); i++) {
-                    StructureAttach Attach = tempStructureAttaches.get(i);
-                    StructureMessageFileDB structureMessageFileDB = new StructureMessageFileDB(MessageDB, Attach.getName(), Attach.getFilePath(), Attach.getFileExtension());
-                    messageFileDao.create(structureMessageFileDB);
-                    threadSleep();
-                }*/
                 for (StructureReceiverRES receiverRES : MessageRES.getReceivers()) {
                     String ViewDate = "";
                     if (receiverRES.getViewDate() != null) {
@@ -521,6 +590,7 @@ public class FarzinMessageQuery {
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
+
 }
 
 

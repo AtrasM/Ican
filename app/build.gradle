@@ -109,8 +109,8 @@ dependencies {
     //textdrawable
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
-    //swipelayout
-    implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'
+/*    //swipelayout
+    implementation 'com.chauthai.swipereveallayout:swipe-reveal-layout:1.4.0'*/
 
     //swipelayout
     implementation 'com.daimajia.swipelayout:library:1.2.0@aar'

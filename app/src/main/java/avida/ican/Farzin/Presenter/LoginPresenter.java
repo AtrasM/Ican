@@ -38,7 +38,7 @@ public class LoginPresenter {
     private String Password = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "Authentication";
-    private String MetodeName = "Login";
+    private String MethodName = "Login";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "Farzin";
@@ -59,7 +59,7 @@ public class LoginPresenter {
     public void AutoAuthentiocation(final LoginViewListener loginViewListener) {
         this.loginViewListener = loginViewListener;
         this.isRemember = farzinPrefrences.isRemember();
-        if (!farzinPrefrences.getUserName().equals("-1")) {
+        if (!farzinPrefrences.getUserName().isEmpty() || !farzinPrefrences.getUserName().equals("-1")) {
 
             CheckNetwork(new ListenerNetwork() {
                 @Override
@@ -70,12 +70,14 @@ public class LoginPresenter {
 
                 @Override
                 public void disConnected() {
-                    App.CurentActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            App.networkStatus = NetworkStatus.WatingForNetwork;
+                    App.CurentActivity.runOnUiThread(() -> {
+                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                        if (!getFarzinPrefrences().isMetaDataForFirstTimeSync() || !getFarzinPrefrences().isDataForFirstTimeSync()) {
+                            loginViewListener.onAccessDenied();
+                        } else {
                             loginViewListener.onSuccess();
                         }
+
                     });
 
                 }
@@ -129,7 +131,7 @@ public class LoginPresenter {
         this.ServerUrl = ServerUrl;
         this.BaseUrl = BaseUrl;
         this.IsPasswordEncript = IsPasswordEncript;
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .Authentication(UserName, Password, IsPasswordEncript)
                 .setOnListener(new WebserviceResponseListener() {
 
@@ -154,7 +156,7 @@ public class LoginPresenter {
         String Xml = webServiceResponse.getHttpTransportSE().responseDump;
         //String Xml = new CustomFunction().readXmlResponseFromStorage();
         try {
-            Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+            Xml = changeXml.CropAsResponseTag(Xml, MethodName);
             Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
             StructureLoginRES structureLoginRES = xmlToObject.DeserializationGsonXml(Xml, StructureLoginRES.class);
             if (structureLoginRES.isLoginResult()) {
@@ -163,30 +165,25 @@ public class LoginPresenter {
                     if (dialog != null) {
                         dialog.Hide();
                     }
-                  App.getHandlerMainThread().postDelayed(new Runnable() {
-                      @Override
-                      public void run() {
-                          CustomFunction.resetApp(App.CurentActivity, new ListenerQuestion() {
-                              @Override
-                              public void onSuccess() {
-                                  try {
-                                      countinueProcessData(webServiceResponse);
-                                  } catch (UnsupportedEncodingException e) {
-                                      e.printStackTrace();
-                                      loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
-                                  } catch (NoSuchAlgorithmException e) {
-                                      e.printStackTrace();
-                                      loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
-                                  }
-                              }
+                    App.getHandlerMainThread().postDelayed(() -> CustomFunction.resetApp(App.CurentActivity, new ListenerQuestion() {
+                        @Override
+                        public void onSuccess() {
+                            try {
+                                countinueProcessData(webServiceResponse);
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                                loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
+                            } catch (NoSuchAlgorithmException e) {
+                                e.printStackTrace();
+                                loginViewListener.onFailed(Resorse.getString(R.string.error_faild));
+                            }
+                        }
 
-                              @Override
-                              public void onCancel() {
+                        @Override
+                        public void onCancel() {
 
-                              }
-                          });
-                      }
-                  }, TimeValue.SecondsInMilli());
+                        }
+                    }), TimeValue.SecondsInMilli());
                 } else {
                     countinueProcessData(webServiceResponse);
                 }
@@ -207,6 +204,11 @@ public class LoginPresenter {
         farzinPrefrences.putUserAuthenticationInfo(UserName, Password, webServiceResponse.getHeaderList());
         farzinPrefrences.putIsRemember(isRemember);
         farzinPrefrences.putServerUrl(ServerUrl);
+        checkLicenseKey();
+
+    }
+
+    private void checkLicenseKey() {
         setLicenseKey(new SetLicenseKeyListener() {
             @Override
             public void onSuccess() {
@@ -214,18 +216,29 @@ public class LoginPresenter {
             }
 
             @Override
-            public void onFailed(String error) {
-                loginViewListener.onAccessDenied();
+
+            public void onFailed(String errorCode) {
+                if (errorCode.equals("2")) {
+                    checkLicenseKey();
+                } else if (errorCode.equals("3")) {
+
+                } else if (errorCode.equals("4")) {
+
+                } else if (errorCode.equals("5")) {
+                    checkLicenseKey();
+                }
+                //loginViewListener.onAccessDenied();
             }
         });
-
     }
+
     public void setLicenseKey(final SetLicenseKeyListener setLicenseKeyListener) {
-        setLicenseKeyListener.onSuccess();
-     /*   SetLicenseKeyPresenter setLicenseKeyPresenter = new SetLicenseKeyPresenter();
-        setLicenseKeyPresenter.CallRequest(setLicenseKeyListener);*/
+        //setLicenseKeyListener.onSuccess();
+        SetLicenseKeyPresenter setLicenseKeyPresenter = new SetLicenseKeyPresenter();
+        setLicenseKeyPresenter.CallRequest(setLicenseKeyListener);
 
     }
+
     private void CheckNetwork(final ListenerNetwork listenerNetwork) {
         new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
             @Override

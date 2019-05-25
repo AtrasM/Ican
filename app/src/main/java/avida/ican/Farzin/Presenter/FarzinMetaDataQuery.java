@@ -45,7 +45,7 @@ public class FarzinMetaDataQuery {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "";
-    private String MetodeName = "";
+    private String MethodName = "";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "FarzinMetaDataQuery";
@@ -169,9 +169,9 @@ public class FarzinMetaDataQuery {
 
     private void SyncUserAndRoleList() {
         EndPoint = "UserManagment";
-        MetodeName = "GetUserAndRoleList";
-        SoapObject soapObject = new SoapObject(NameSpace, MetodeName);
-        new CallApi(MetodeName, EndPoint, soapObject, new DataProcessListener() {
+        MethodName = "GetUserAndRoleList";
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
+        new CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
 
@@ -303,11 +303,11 @@ public class FarzinMetaDataQuery {
     //*******____________________________  UserAndRoleList  ____________________________********
 
     private class CallApi {
-        CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+        CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
             String ServerUrl = farzinPrefrences.getServerUrl();
             String BaseUrl = farzinPrefrences.getBaseUrl();
             String SessionId = farzinPrefrences.getCookie();
-            new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+            new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                     .setSoapObject(soapObject)
                     .setSessionId(SessionId)
                     .setOnListener(new WebserviceResponseListener() {
@@ -326,11 +326,11 @@ public class FarzinMetaDataQuery {
         }
 
 
-        CallApi(String MetodeName, String EndPoint, SoapObject soapObject, String MappingNameSpace, String MappingName, Class MappingClass, final DataProcessListener dataProcessListener) {
+        CallApi(String MethodName, String EndPoint, SoapObject soapObject, String MappingNameSpace, String MappingName, Class MappingClass, final DataProcessListener dataProcessListener) {
             String ServerUrl = farzinPrefrences.getServerUrl();
             String BaseUrl = farzinPrefrences.getBaseUrl();
             String SessionId = farzinPrefrences.getCookie();
-            new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+            new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                     .setSoapObject(soapObject)
                     .setSessionId(SessionId)
                     .addMapping(MappingNameSpace, MappingName, MappingClass)
@@ -359,7 +359,7 @@ public class FarzinMetaDataQuery {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

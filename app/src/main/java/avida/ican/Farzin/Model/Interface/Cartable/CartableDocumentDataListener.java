@@ -9,7 +9,7 @@ import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumen
  * Created by AtrasVida on 2018-12-26 5:20 PM
  */
 
-public interface CartableDocumentRefreshListener {
+public interface CartableDocumentDataListener {
     void newData();
 
     void noData();

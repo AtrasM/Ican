@@ -27,7 +27,7 @@ public class GetCartableDocumentFromServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "CartableManagment";
-    private String MetodName = "GetCartableDocument";
+    private String MethodName = "GetCartableDocument";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetCartableDocumentFromServerPresenter";
@@ -38,14 +38,17 @@ public class GetCartableDocumentFromServerPresenter {
     }
 
     public void GetCartableDocumentList(int count, CartableDocumentListListener cartableDocumentListListener) {
+        String startDateTime = getFarzinPrefrences().getCartableDocumentDataSyncDate();
+        GetCartableDocument(getSoapObject(startDateTime, count), cartableDocumentListListener);
+    }
 
-        String LastDate = getFarzinPrefrences().getCartableDocumentDataSyncDate();
-        GetCartableDocument(getSoapObject(LastDate, count), cartableDocumentListListener);
+    public void GetCartableDocumentList(String startDateTime, String finishDateTime, CartableDocumentListListener cartableDocumentListListener) {
+        GetCartableDocument(getSoapObject(startDateTime, finishDateTime), cartableDocumentListListener);
     }
 
     private void GetCartableDocument(SoapObject soapObject, final CartableDocumentListListener cartableDocumentListListener) {
 
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, cartableDocumentListListener);
@@ -80,14 +83,14 @@ public class GetCartableDocumentFromServerPresenter {
         getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
     }
 
-    private SoapObject getSoapObject(String LastDate, int count) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+    private SoapObject getSoapObject(String startDateTime, int count) {
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         SoapObject Filter = new SoapObject(NameSpace, "filter");
         Filter.addProperty("ETC", -1);
         Filter.addProperty("ActionCode", getFarzinPrefrences().getDefultActionCode());
-        if (!LastDate.isEmpty()) {
-            LastDate = CustomFunction.arabicToDecimal(LastDate);
-            Filter.addProperty("StartDateTime", LastDate);
+        if (!startDateTime.isEmpty()) {
+            startDateTime = CustomFunction.arabicToDecimal(startDateTime);
+            Filter.addProperty("StartDateTime", startDateTime);
         }
         Filter.addProperty("CountOfRecord", count);
         Filter.addProperty("SortType", "ASC");
@@ -96,11 +99,31 @@ public class GetCartableDocumentFromServerPresenter {
 
     }
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private SoapObject getSoapObject(String startDateTime, String finishDateTime) {
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
+        SoapObject Filter = new SoapObject(NameSpace, "filter");
+        Filter.addProperty("ETC", -1);
+        Filter.addProperty("ActionCode", getFarzinPrefrences().getDefultActionCode());
+        if (!startDateTime.isEmpty()) {
+            startDateTime = CustomFunction.arabicToDecimal(startDateTime);
+            Filter.addProperty("StartDateTime", startDateTime);
+        }
+        if (!finishDateTime.isEmpty()) {
+            finishDateTime = CustomFunction.arabicToDecimal(finishDateTime);
+            Filter.addProperty("FinishDateTime", finishDateTime);
+        }
+        Filter.addProperty("CountOfRecord", -1);
+        Filter.addProperty("SortType", "ASC");
+        soapObject.addSoapObject(Filter);
+        return soapObject;
+
+    }
+
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -129,7 +152,7 @@ public class GetCartableDocumentFromServerPresenter {
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 //Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

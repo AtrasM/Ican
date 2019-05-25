@@ -19,7 +19,7 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentListListener;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentRefreshListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentDataListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentTaeedQueueQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableSendQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
@@ -184,7 +184,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
     }
 
     private void initCartableDocumentListPresenter() {
-        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentRefreshListener() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentDataListener() {
             @Override
             public void newData() {
                 App.CurentActivity.runOnUiThread(new Runnable() {

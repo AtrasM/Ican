@@ -28,7 +28,7 @@ public class SendMessageToServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "MessageSystemManagment";
-    private String MetodName = "SendMessage";
+    private String MethodName = "SendMessage";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "SendMessageToServerPresenter";
@@ -41,7 +41,7 @@ public class SendMessageToServerPresenter {
 
     public void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final MessageListener messageListener) {
 
-        CallApi(MetodName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
+        CallApi(MethodName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 StructureSendMessageRES structureSendMessageRES = xmlToObject.DeserializationGsonXml(Xml, StructureSendMessageRES.class);
@@ -68,7 +68,7 @@ public class SendMessageToServerPresenter {
     }
 
     private SoapObject getSoapObject(String subject, String content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         soapObject.addProperty("Subject", subject);
         content=CustomFunction.AddXmlCData(content);
         soapObject.addProperty("Content", content);
@@ -100,11 +100,11 @@ public class SendMessageToServerPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -133,7 +133,7 @@ public class SendMessageToServerPresenter {
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

@@ -18,7 +18,7 @@ extern "C" JNIEXPORT jstring JNICALL
 Java_avida_ican_Farzin_Presenter_SetLicenseKeyPresenter_GetApplicationName(
         JNIEnv *env,
         jobject /* this */) {
-    string applicationName = "IcanApp";
+    string applicationName = "IcanMobile";
 
     return env->NewStringUTF(applicationName.c_str());
 }

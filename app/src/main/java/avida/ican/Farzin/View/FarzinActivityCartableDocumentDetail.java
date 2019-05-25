@@ -155,30 +155,27 @@ public class FarzinActivityCartableDocumentDetail extends BaseToolbarActivity {
         } else {
             txtSubject.setVisibility(View.GONE);
         }
-        imgOpticalPen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dialogOpticalPen = new DialogOpticalPen(App.CurentActivity);
-                dialogOpticalPen.setOnListener(new OpticalPenDialogListener() {
-                    @Override
-                    public void onSuccess(StructureOpticalPen structureOpticalPen) {
-                        StructureOpticalPenREQ structureOpticalPenREQ = new StructureOpticalPenREQ(Etc, Ec, structureOpticalPen.getbFile(), structureOpticalPen.getFileExtension(), structureOpticalPen.getTitle(), false);
-                        saveDrawable(structureOpticalPenREQ);
-                        fragmentCartableHameshList.reGetData();
-                        dialogOpticalPen.dismiss();
-                    }
+        imgOpticalPen.setOnClickListener(view -> {
+            dialogOpticalPen = new DialogOpticalPen(App.CurentActivity);
+            dialogOpticalPen.setOnListener(new OpticalPenDialogListener() {
+                @Override
+                public void onSuccess(StructureOpticalPen structureOpticalPen) {
+                    StructureOpticalPenREQ structureOpticalPenREQ = new StructureOpticalPenREQ(Etc, Ec, structureOpticalPen.getbFile(), structureOpticalPen.getFileExtension(), structureOpticalPen.getTitle(), false);
+                    saveDrawable(structureOpticalPenREQ);
+                    fragmentCartableHameshList.reGetData();
+                    dialogOpticalPen.dismiss();
+                }
 
-                    @Override
-                    public void onFaild() {
-                        dialogOpticalPen.dismiss();
-                    }
+                @Override
+                public void onFaild() {
+                    dialogOpticalPen.dismiss();
+                }
 
-                    @Override
-                    public void onCancel() {
-                        dialogOpticalPen.dismiss();
-                    }
-                }).Show();
-            }
+                @Override
+                public void onCancel() {
+                    dialogOpticalPen.dismiss();
+                }
+            }).Show();
         });
         imgErja.setOnClickListener(new View.OnClickListener() {
             @Override

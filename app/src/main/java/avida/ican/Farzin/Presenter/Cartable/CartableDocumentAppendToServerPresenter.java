@@ -23,7 +23,7 @@ import avida.ican.Ican.Model.XmlToObject;
 public class CartableDocumentAppendToServerPresenter {
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "CartableManagment";
-    private String MetodName = "Append";
+    private String MethodName = "Append";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "CartableDocumentAppendToServerPresenter";
@@ -39,7 +39,7 @@ public class CartableDocumentAppendToServerPresenter {
 
     private void CallRequest(SoapObject soapObject, final SendListener listener) {
 
-        CallApi(MetodName, EndPoint, soapObject, new DataProcessListener() {
+        CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, listener);
@@ -74,7 +74,7 @@ public class CartableDocumentAppendToServerPresenter {
     private SoapObject getSoapObject(StructureAppendREQ structureAppendREQ) {
    /*     String strObj ="{\"EC\":1517,\"ETC\":979,\"structurePersonsREQ\":[{\"PriorityID_Send\":1,\"action\":5,\"description\":\"t_sh 1\",\"hameshContent\":\"d_e 1\",\"hameshTitle\":\"كاربر 25 [ مدير استقرار 25 ] \",\"responseUntilDate\":\"\",\"roleId\":936},{\"PriorityID_Send\":1,\"action\":9,\"description\":\"t_sh 2\",\"hameshContent\":\"d_e 2\",\"hameshTitle\":\"حميـــدرضا بلورچيان [ مدير توسعه فرزين ] \",\"responseUntilDate\":\"\",\"roleId\":425}],\"structureSenderREQ\":{\"description\":\"\",\"isLocked\":false,\"roleId\":425,\"sendParentCode\":-1,\"viewInOutbox\":1}}";
         structureAppendREQ=new CustomFunction().ConvertStringToObject(strObj,StructureAppendREQ.class);*/
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         soapObject.addProperty("EntityTypeCode", structureAppendREQ.getETC());
         soapObject.addProperty("EntityCode", structureAppendREQ.getEC());
         String DocumentTag = "<Document><Workflow><Sender roleId=\"" + structureAppendREQ.getStructureSenderREQ().getRoleId() + "\" sendParentCode=\"" + structureAppendREQ.getStructureSenderREQ().getSendParentCode() + "\" description=\"\" isLocked=\"0\" viewInOutbox=\"1\" /><Receivers>";
@@ -89,11 +89,11 @@ public class CartableDocumentAppendToServerPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .addMapping(NameSpace, "Sender", new StructureSenderREQ().getClass())
@@ -122,7 +122,7 @@ public class CartableDocumentAppendToServerPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 //Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

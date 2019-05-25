@@ -30,7 +30,7 @@ public class SetLicenseKeyPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "Authentication";
-    private String MetodeName = "SetLicenseKey";
+    private String MethodName = "SetLicenseKey";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "SetLicenseKeyPresenter";
@@ -43,7 +43,7 @@ public class SetLicenseKeyPresenter {
 
     public void CallRequest(final SetLicenseKeyListener setLicenseKeyListener) {
 
-        CallApi(MetodeName, EndPoint, getSoapObject(), new DataProcessListener() {
+        CallApi(MethodName, EndPoint, getSoapObject(), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, setLicenseKeyListener);
@@ -89,10 +89,10 @@ public class SetLicenseKeyPresenter {
 
     public native String GetRandom(String data);
 
-    public  SoapObject getSoapObject() {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodeName);
+    public SoapObject getSoapObject() {
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         String uuid = CustomFunction.getRandomUUID();
-        StructureSetLicenseKeyBND structureSetLicenseKeyBND = new StructureSetLicenseKeyBND(GetApplicationName(), uuid, GetRandom(uuid));
+        StructureSetLicenseKeyBND structureSetLicenseKeyBND = new StructureSetLicenseKeyBND(GetApplicationName(), GetRandom(uuid),uuid);
         soapObject.addProperty("ApplicationName", structureSetLicenseKeyBND.getApplicationName());
         soapObject.addProperty("Challenge", structureSetLicenseKeyBND.getChallenge());
         soapObject.addProperty("Random", structureSetLicenseKeyBND.getRandom());
@@ -100,13 +100,17 @@ public class SetLicenseKeyPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+
+
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        String SessionId = farzinPrefrences.getCookie();
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setTimeOut((int) TimeValue.SecondsInMilli() * 3)
                 .setNetworkCheking(true)
+                .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
 
                     @Override
@@ -135,7 +139,7 @@ public class SetLicenseKeyPresenter {
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 //Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

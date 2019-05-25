@@ -3,7 +3,6 @@ package avida.ican.Ican;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.material.navigation.NavigationView;
@@ -22,14 +21,15 @@ import android.widget.TextView;
 import avida.ican.Farzin.View.ActivitySetting;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Farzin.View.FarzinActivityQueue;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import static avida.ican.Farzin.View.Enum.SettingEnum.CUSTOM;
-import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
+import static avida.ican.Farzin.View.Enum.SettingEnum.AUTOMATIC;
+import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 
 /**
  * Created by AtrasVida on 2018-04-09 at 10:14 AM
@@ -108,40 +108,47 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
 
     private void setUpNavigationItemSelectedListener(final int menuRes) {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                if (drawer != null) {
-                    if (drawer.isDrawerOpen(GravityCompat.START)) {
-                        drawer.closeDrawer(GravityCompat.START);
-                        App.canBack = true;
-                    }
-
+        navigationView.setNavigationItemSelectedListener(item -> {
+            if (drawer != null) {
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    drawer.closeDrawer(GravityCompat.START);
+                    App.canBack = true;
                 }
 
-                switch (menuRes) {
-                    case R.menu.main_drawer: {
-                        checkInFirstMenu(item.getItemId());
-                        break;
-                    }
-                    case R.menu.main_drawer2: {
-                        checkInSecoundMenu(item.getItemId());
-                        break;
-                    }
-                }
-
-
-                return true;
             }
+
+            switch (menuRes) {
+                case R.menu.main_drawer: {
+                    checkInFirstMenu(item.getItemId());
+                    break;
+                }
+                case R.menu.main_drawer2: {
+                    checkInSecoundMenu(item.getItemId());
+                    break;
+                }
+            }
+
+
+            return true;
         });
     }
 
     private void checkInFirstMenu(int itemId) {
         switch (itemId) {
-            case R.id.nav_setting: {
+            case R.id.nav_manual_setting: {
                 Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
-                intent.putExtra(PutExtraEnum.Settingtype.getValue(), CUSTOM.getValue());
+                intent.putExtra(PutExtraEnum.Settingtype.getValue(), MANUALLY.getValue());
                 goToActivity(intent);
+                break;
+            }
+            case R.id.nav_automatic_setting: {
+                Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
+                intent.putExtra(PutExtraEnum.Settingtype.getValue(), AUTOMATIC.getValue());
+                goToActivity(intent);
+                break;
+            }
+            case R.id.nav_queue: {
+                goToActivity(FarzinActivityQueue.class);
                 break;
             }
             case R.id.nav_about: {

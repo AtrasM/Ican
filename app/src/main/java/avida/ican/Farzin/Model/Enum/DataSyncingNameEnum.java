@@ -9,7 +9,8 @@ public enum DataSyncingNameEnum {
     SyncDocumentActions("SyncDocumentActions"),
     SyncCartableDocument("SyncCartableDocument"),
     SyncSendMessage("SyncSendMessage"),
-    SyncReceiveMessage("SyncReceiveMessage");
+    SyncReceiveMessage("SyncReceiveMessage"),
+    SyncFailed("SyncFailed");
     private String strValue;
     private int intValue;
 

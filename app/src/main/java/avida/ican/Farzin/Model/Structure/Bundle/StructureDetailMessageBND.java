@@ -12,7 +12,7 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
  */
 
 public class StructureDetailMessageBND implements Serializable {
-    private  ArrayList<StructureReceiverDB> structureReceiverDBS=new ArrayList<>();
+    private ArrayList<StructureReceiverDB> structureReceiverDBS = new ArrayList<>();
     private int id;
     private int main_id;
     private int sender_user_id;
@@ -24,12 +24,14 @@ public class StructureDetailMessageBND implements Serializable {
     private String sent_date;
     private String sent_time;
     private Type messageType;
-    private ArrayList<StructureMessageFileDB> message_files=new ArrayList<>();
+    private boolean isFilesDownloaded;
+    private int AttachmentCount;
+    private ArrayList<StructureMessageFileDB> message_files = new ArrayList<>();
 
     public StructureDetailMessageBND() {
     }
 
-    public StructureDetailMessageBND(int id, int main_id, int sender_user_id, int sender_role_id, String receiverFullName, String receiverRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files, ArrayList<StructureReceiverDB> structureReceiverDBS, Type type) {
+    public StructureDetailMessageBND(int id, int main_id, int sender_user_id, int sender_role_id, String receiverFullName, String receiverRoleName, String subject, String content, String sent_date, String sent_time, ArrayList<StructureMessageFileDB> message_files,int AttachmentCount,boolean isFilesDownloaded, ArrayList<StructureReceiverDB> structureReceiverDBS, Type type) {
         this.id = id;
         this.main_id = main_id;
         this.sender_user_id = sender_user_id;
@@ -41,6 +43,8 @@ public class StructureDetailMessageBND implements Serializable {
         this.sent_date = sent_date;
         this.sent_time = sent_time;
         this.message_files = message_files;
+        this.AttachmentCount = AttachmentCount;
+        this.isFilesDownloaded = isFilesDownloaded;
         this.structureReceiverDBS = structureReceiverDBS;
         this.messageType = type;
     }
@@ -107,6 +111,22 @@ public class StructureDetailMessageBND implements Serializable {
 
     public void setMessage_files(ArrayList<StructureMessageFileDB> message_files) {
         this.message_files = message_files;
+    }
+
+    public boolean isFilesDownloaded() {
+        return isFilesDownloaded;
+    }
+
+    public void setFilesDownloaded(boolean filesDownloaded) {
+        isFilesDownloaded = filesDownloaded;
+    }
+
+    public int getAttachmentCount() {
+        return AttachmentCount;
+    }
+
+    public void setAttachmentCount(int attachmentCount) {
+        AttachmentCount = attachmentCount;
     }
 
     public String getReceiverFullName() {

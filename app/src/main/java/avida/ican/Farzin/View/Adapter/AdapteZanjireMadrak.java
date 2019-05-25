@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +32,10 @@ public class AdapteZanjireMadrak extends RecyclerView.Adapter<AdapteZanjireMadra
     private ArrayList<StructureZanjireMadrakFileDB> itemList;
     private int layout = R.layout.item_zanjire_madrak;
     private ListenerAdapterZanjireMadrak listenerAdapterZanjireMadrak;
-    private ViewBinderHelper binderHelper;
 
     public AdapteZanjireMadrak(ArrayList<StructureZanjireMadrakFileDB> itemList, ListenerAdapterZanjireMadrak listenerAdapterZanjireMadrak) {
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterZanjireMadrak = listenerAdapterZanjireMadrak;
-        binderHelper = new ViewBinderHelper();
     }
 
     // inner class to hold a reference to each item of RecyclerView

@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+
 import androidx.core.app.NotificationCompat;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -51,17 +53,16 @@ import avida.ican.R;
 public class GetRecieveMessageService extends Service {
     private final long DELAY = TimeValue.SecondsInMilli() * 40;
     private final long LOWDELAY = TimeValue.SecondsInMilli() * 2;
-    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 20;
+    private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 2;
     private MessageListListener messageListListener;
     private Context context;
     private Handler handler = new Handler();
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private FarzinMessageQuery farzinMessageQuery;
-    private int pageNumber = 1;
     private Status status = Status.IsNew;
     private int Count = 1;
-    private final int MaxCount = 10;
-    private final int MinCount = 1;
+    private final int MaxCount = 50;
+    private final int MinCount = 50;
     private int notifyID = NotificationChanelEnum.Message.getValue();
     private Intent NotificationIntent;
     private static int newCount = 0;
@@ -84,7 +85,6 @@ public class GetRecieveMessageService extends Service {
             Count = MaxCount;
         }
 
-        pageNumber = 1;
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
         farzinMessageQuery = new FarzinMessageQuery();
         messageListListener = new MessageListListener() {
@@ -128,12 +128,12 @@ public class GetRecieveMessageService extends Service {
                 }
             }
         };
-        GetMessage(pageNumber, Count);
+        GetMessage(Count);
 
         return Service.START_STICKY;
     }
 
-    private void GetMessage(int pageNumber, int count) {
+    private void GetMessage(int count) {
 
         if (!canGetData()) {
             handler.postDelayed(new Runnable() {
@@ -143,18 +143,17 @@ public class GetRecieveMessageService extends Service {
                 }
             }, DELAY);
         } else {
-            Log.i("pageNumber", "GetRecieveMessage pageNumber= " + pageNumber);
             if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                 getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
                 reGetMessage();
             } else {
                 if (!getFarzinPrefrences().isReceiveMessageForFirstTimeSync()) {
-                    getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+                    getMessageFromServerPresenter.GetReceiveMessageList(count, messageListListener);
                 } else {
                     CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageRecieveLastCheckDate(), tempDelay);
                     getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentDateTime().toString());
                     if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
-                        getMessageFromServerPresenter.GetRecieveMessageList(pageNumber, count, messageListListener);
+                        getMessageFromServerPresenter.GetReceiveMessageList(count, messageListListener);
                     } else {
                         reGetMessage();
                     }
@@ -213,10 +212,8 @@ public class GetRecieveMessageService extends Service {
                 }
 
                 if (messageList.size() == 0) {
-                    callDataFinish();
-                    pageNumber = pageNumber + 1;
-                    GetMessage(pageNumber, Count);
-                    CallMulltiMessageNotification();
+                    //callDataFinish();
+                    GetMessage(Count);
                 } else {
                     SaveMessage(messageList);
                 }
@@ -288,7 +285,7 @@ public class GetRecieveMessageService extends Service {
     private void reGetMessage() {
         ShowToast("re Get Message");
         callDataFinish();
-        pageNumber = 1;
+        CallMulltiMessageNotification();
         Count = MinCount;
         if (App.activityStacks == null) {
             tempDelay = App.DELAYWhenAppClose;
@@ -300,7 +297,7 @@ public class GetRecieveMessageService extends Service {
             }
         }
 
-        handler.postDelayed(() -> GetMessage(pageNumber, Count), tempDelay);
+        handler.postDelayed(() -> GetMessage(Count), tempDelay);
     }
 
     private void callDataFinish() {

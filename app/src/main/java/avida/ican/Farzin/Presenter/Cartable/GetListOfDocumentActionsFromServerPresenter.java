@@ -24,7 +24,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "eFormManagment";
-    private String MetodName = "GetListOfActions";
+    private String MethodName = "GetListOfActions";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "GetListOfDocumentActionsFromServerPresenter";
@@ -36,7 +36,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
 
     public void CallRequest(int ETC, final CartableDocumentActionsListListener listener) {
 
-        CallApi(MetodName, EndPoint, getSoapObject(ETC), new DataProcessListener() {
+        CallApi(MethodName, EndPoint, getSoapObject(ETC), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, listener);
@@ -70,17 +70,17 @@ public class GetListOfDocumentActionsFromServerPresenter {
     }
 
     private SoapObject getSoapObject(int ETC) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("ETC", ETC);
         return soapObject;
     }
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -106,7 +106,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 //Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 Xml = changeXml.charDecoder(Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

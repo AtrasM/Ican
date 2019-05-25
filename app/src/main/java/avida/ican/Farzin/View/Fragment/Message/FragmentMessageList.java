@@ -3,9 +3,12 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
@@ -22,6 +25,7 @@ import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureLastShowMessageBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
@@ -53,6 +57,7 @@ public class FragmentMessageList extends BaseFragment {
     private static FragmentManager mfragmentManager;
     private static boolean isFilter = false;
     private static ListenerFilter listenerFilter;
+    private StructureLastShowMessageBND structureLastShowMessageBND = new StructureLastShowMessageBND();
 
     public FloatingActionButton getFabNewMsg() {
         return fabNewMsg;
@@ -133,8 +138,8 @@ public class FragmentMessageList extends BaseFragment {
             }
 
             @Override
-            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND,int position) {
-                goToMessageDetail(structureDetailMessageBND);
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND, int position) {
+                goToMessageDetail(structureDetailMessageBND, position, Type.RECEIVED);
             }
         });
 
@@ -152,8 +157,8 @@ public class FragmentMessageList extends BaseFragment {
             }
 
             @Override
-            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND,int position) {
-                goToMessageDetail(structureDetailMessageBND);
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND, int position) {
+                goToMessageDetail(structureDetailMessageBND, position, Type.SENDED);
             }
         });
         if (fragmentReceiveMessageList == null && fragmentSentMessageList == null) {
@@ -162,7 +167,8 @@ public class FragmentMessageList extends BaseFragment {
 
     }
 
-    private void goToMessageDetail(StructureDetailMessageBND structureDetailMessageBND) {
+    private void goToMessageDetail(StructureDetailMessageBND structureDetailMessageBND, int position, Type type) {
+        structureLastShowMessageBND = new StructureLastShowMessageBND(structureDetailMessageBND.getId(), structureDetailMessageBND.getMain_id(), position, type);
         FarzinActivityDetailMessage.structureDetailMessageBND = structureDetailMessageBND;
         // bundleObject.putSerializable(PutExtraEnum.BundleMessage.getValue(), structureDetailMessageBND);
         intent = new Intent(App.CurentActivity, FarzinActivityDetailMessage.class);
@@ -198,7 +204,7 @@ public class FragmentMessageList extends BaseFragment {
             initSendMessageAdapter(mstructuresSentMessages);
         } else {
             adapterReceiveMessage.updateData(mstructuresReceiveMessages);
-            adapterSentMessage.updateData(mstructuresSentMessages);
+            adapterSentMessage.AddNewData(mstructuresSentMessages);
         }
     }
 
@@ -219,7 +225,19 @@ public class FragmentMessageList extends BaseFragment {
 
     }
 
-    public void UpdateSendMessageData() {
+    public void UpdateLastMessageShowData() {
+        StructureMessageDB structureMessageDB = new FarzinMessageQuery().GetMessage(structureLastShowMessageBND.getMain_id());
+        if (structureMessageDB.getId() > 0) {
+            if (structureLastShowMessageBND.getType() == Type.RECEIVED) {
+                adapterReceiveMessage.updateData(structureLastShowMessageBND.getPosition(), structureMessageDB);
+            } else if (structureLastShowMessageBND.getType() == Type.SENDED) {
+                adapterSentMessage.updateData(structureLastShowMessageBND.getPosition(), structureMessageDB);
+            }
+        }
+
+    }
+
+    public void UpdateMessageData() {
         if (isFilter) {
             reGetSendMessage(Status.UnRead, null);
             reGetReceiveMessage(Status.UnRead, null);
@@ -230,12 +248,12 @@ public class FragmentMessageList extends BaseFragment {
        /* SentMessageStart = SentMessageStart + 1;
         mstructuresSentMessages.add(0, SendMessages);
 
-        adapterSentMessage.updateData(0, SendMessages);*/
+        adapterSentMessage.AddNewData(0, SendMessages);*/
 
     }
 
     public void UpdateSendMessageStatus(StructureMessageDB SendMessages) {
-        adapterSentMessage.updateData(0, SendMessages);
+        adapterSentMessage.AddNewData(0, SendMessages);
     }
 
     public void reGetReceiveMessage(Status status, final SwipeRefreshLayout swipeRefreshLayout) {
@@ -261,8 +279,8 @@ public class FragmentMessageList extends BaseFragment {
         SentMessages = new FarzinMessageQuery().GetSendMessages(UserId, status, SentMessageStart, Count);
         mstructuresSentMessages = new ArrayList<>(SentMessages);
         SentMessageStart = SentMessages.size();
-        adapterSentMessage.updateData(mstructuresSentMessages);
-        if (swipeRefreshLayout != null){
+        adapterSentMessage.AddNewData(mstructuresSentMessages);
+        if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setRefreshing(false);
         }
 
@@ -286,7 +304,7 @@ public class FragmentMessageList extends BaseFragment {
             ReceiveMessageStart = ReceiveMessages.size();
             SentMessageStart = SendMessages.size();
             adapterReceiveMessage.updateData(mstructuresReceiveMessages);
-            adapterSentMessage.updateData(mstructuresSentMessages);
+            adapterSentMessage.AddNewData(mstructuresSentMessages);
             fragmentReceiveMessageList.setCanLoading(true);
 
         }
@@ -326,6 +344,7 @@ public class FragmentMessageList extends BaseFragment {
 
             }
         });
+
         fragmentSentMessageList = new FragmentSentMessageList().newInstance(App.CurentActivity, adapterSentMessage, new ListenerRcv() {
             @Override
             public void onLoadData() {
@@ -351,7 +370,6 @@ public class FragmentMessageList extends BaseFragment {
             }
         });
 
-
     }
 
     private void continueGetMessage(Status status, Type type) {
@@ -375,7 +393,7 @@ public class FragmentMessageList extends BaseFragment {
             if (sentMessages.size() > 0) {
                 SentMessageStart = SentMessageStart + sentMessages.size();
                 mstructuresSentMessages.addAll(sentMessages);
-                adapterSentMessage.updateData(-1, sentMessages);
+                adapterSentMessage.AddNewData(-1, sentMessages);
                 adapterSentMessage.notifyDataSetChanged();
                 fragmentSentMessageList.setCanLoading(true);
             } else {
@@ -423,8 +441,8 @@ public class FragmentMessageList extends BaseFragment {
         clearFragment();
         super.onDetach();
     }
-/*
-    *//**
+    /*
+     *//**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that

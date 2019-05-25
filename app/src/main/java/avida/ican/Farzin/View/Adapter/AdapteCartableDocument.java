@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.RecyclerSwipeAdapter;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -52,7 +51,6 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
     private int layout = R.layout.item_cartable_document_list;
     private ImageLoader imageLoader;
     private ListenerAdapterCartableDocumentList listenerAdapterCartableDocumentList;
-    private ViewBinderHelper binderHelper;
     private Animator animator;
     private boolean isLongClick;
 
@@ -61,7 +59,6 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         animator = new Animator(App.CurentActivity);
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterCartableDocumentList = listenerAdapterCartableDocumentList;
-        binderHelper = new ViewBinderHelper();
     }
 
 
@@ -293,7 +290,6 @@ public class AdapteCartableDocument extends RecyclerSwipeAdapter<AdapteCartableD
         });
 
 
-        //binderHelper.bind(viewHolder.swipeLayout, "" + position);
 
     }
 

@@ -26,7 +26,7 @@ public class OpticalPenPresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "eFormManagment";
-    private String MetodName = "AddHameshOpticalPen";
+    private String MethodName = "AddHameshOpticalPen";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "OpticalPenPresenter";
@@ -39,7 +39,7 @@ public class OpticalPenPresenter {
 
     public void CallRequest(StructureOpticalPenREQ opticalPenREQ, final OpticalPenListener listener) {
 
-        CallApi(MetodName, EndPoint, getSoapObject(opticalPenREQ), new DataProcessListener() {
+        CallApi(MethodName, EndPoint, getSoapObject(opticalPenREQ), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, listener);
@@ -74,7 +74,7 @@ public class OpticalPenPresenter {
     }
 
     private SoapObject getSoapObject(StructureOpticalPenREQ opticalPenREQ) {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("bfile", opticalPenREQ.getBfile());
         soapObject.addProperty("strExtention", opticalPenREQ.getStrExtention());
@@ -87,11 +87,11 @@ public class OpticalPenPresenter {
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setSessionId(SessionId)
                 .setOnListener(new WebserviceResponseListener() {
@@ -120,7 +120,7 @@ public class OpticalPenPresenter {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 //Xml = changeXml.CharDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

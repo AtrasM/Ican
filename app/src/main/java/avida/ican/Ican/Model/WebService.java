@@ -84,10 +84,10 @@ public class WebService {
     private Intent NotificationIntent;
     private int notifyID = NotificationChanelEnum.LogOut.getValue();
 
-    public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl, String endPoint) {
+    public WebService(String NameSpace, String MethodName, String ServerUrl, String BaseUrl, String endPoint) {
         this.NAME_SPACE = NameSpace;
-        this.METODE_NAME = MetodeName;
-        this.SOAP_ACTION = NameSpace + MetodeName;
+        this.METODE_NAME = MethodName;
+        this.SOAP_ACTION = NameSpace + MethodName;
         this.SERVER_URL = ServerUrl;
         this.BASE_URL = BaseUrl;
         this.EndPoint = endPoint + ".asmx?wsdl";
@@ -95,10 +95,10 @@ public class WebService {
         Log.i(Tag, "Request is: " + this.URL);
     }
 
-    public WebService(String NameSpace, String MetodeName, String ServerUrl, String BaseUrl) {
+    public WebService(String NameSpace, String MethodName, String ServerUrl, String BaseUrl) {
         this.NAME_SPACE = NameSpace;
-        this.METODE_NAME = MetodeName;
-        this.SOAP_ACTION = NameSpace + MetodeName;
+        this.METODE_NAME = MethodName;
+        this.SOAP_ACTION = NameSpace + MethodName;
         this.SERVER_URL = ServerUrl;
         this.BASE_URL = BaseUrl;
         this.URL = SERVER_URL + BASE_URL;
@@ -149,8 +149,8 @@ public class WebService {
         return this;
     }
 
-    public WebService setMetodeName(String MetodeName) {
-        this.METODE_NAME = MetodeName;
+    public WebService setMethodName(String MethodName) {
+        this.METODE_NAME = MethodName;
         return this;
     }
 

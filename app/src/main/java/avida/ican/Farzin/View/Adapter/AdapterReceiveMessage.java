@@ -1,8 +1,6 @@
 package avida.ican.Farzin.View.Adapter;
 
 import android.annotation.SuppressLint;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +8,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
@@ -47,14 +46,12 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
     private int layout = R.layout.item_message_list;
     private ImageLoader imageLoader;
     private ListenerAdapterMessageList listenerAdapterMessageList;
-    private ViewBinderHelper binderHelper;
     private StructureUserAndRoleDB structureUserAndRoleDB;
 
     public AdapterReceiveMessage(List<StructureMessageDB> itemList, ListenerAdapterMessageList listenerAdapterMessageList) {
         imageLoader = App.getImageLoader();
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterMessageList = listenerAdapterMessageList;
-        binderHelper = new ViewBinderHelper();
         FarzinPrefrences farzinPrefrences = new FarzinPrefrences().init();
         structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID(), farzinPrefrences.getRoleID());
     }
@@ -134,7 +131,7 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
             viewHolder.imgProfile.setImageDrawable(TextDrawableProvider.getDrawable(Char));
         }
 
-        viewHolder.txtRoleName.setText("[ " + structureUserAndRoleDB.getRoleName() + " ] ");
+        viewHolder.txtRoleName.setText("[ " + structureUserAndRoleDB.getRoleName() + " ]");
         String[] splitDateTime = CustomFunction.MiladyToJalaly(item.getSent_date().toString()).split(" ");
         final String date = splitDateTime[0];
         final String time = splitDateTime[1];
@@ -143,7 +140,7 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
 
         if (item.getMessage_files() != null) {
             structureMessageFileDBS = new ArrayList<>(item.getMessage_files());
-            if (structureMessageFileDBS.size() > 0) {
+            if (item.getAttachmentCount() > 0) {
                 viewHolder.imgAttach.setVisibility(View.VISIBLE);
             } else {
                 viewHolder.imgAttach.setVisibility(View.GONE);
@@ -156,17 +153,16 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
         } else {
             viewHolder.imgSeen.setVisibility(View.VISIBLE);
         }
-        viewHolder.txtSubject.setText(item.getSubject());
+
+        new CustomFunction(App.CurentActivity).setHtmlText(viewHolder.txtSubject, item.getSubject());
         final ArrayList<StructureMessageFileDB> finalStructureMessageFileDBS = structureMessageFileDBS;
-        viewHolder.lnMain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                itemList.get(position).setStatus(Status.READ);
-                StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS,new ArrayList<StructureReceiverDB>(), Type.RECEIVED);
-                listenerAdapterMessageList.onItemClick(structureDetailMessageBND,position);
-                notifyDataSetChanged();
-            }
+        viewHolder.lnMain.setOnClickListener(v -> {
+            itemList.get(position).setStatus(Status.READ);
+            StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, finalStructureMessageFileDBS, item.getAttachmentCount(), item.isFilesDownloaded(), new ArrayList<StructureReceiverDB>(), Type.RECEIVED);
+            listenerAdapterMessageList.onItemClick(structureDetailMessageBND, position);
+            notifyDataSetChanged();
         });
+
  /*       viewHolder.lnDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -192,6 +188,16 @@ public class AdapterReceiveMessage extends RecyclerView.Adapter<AdapterReceiveMe
         } else {
             itemList.addAll(pos, mstructuresSentMessages);
             notifyItemRangeInserted(pos, mstructuresSentMessages.size());
+        }
+        notifyDataSetChanged();
+    }
+
+    public void updateData(int pos, StructureMessageDB structureMessageDB) {
+        if (pos >= 0) {
+            itemList.remove(pos);
+            notifyItemRemoved(pos);
+            itemList.add(pos, structureMessageDB);
+            notifyItemRangeInserted(pos, 1);
         }
         notifyDataSetChanged();
     }

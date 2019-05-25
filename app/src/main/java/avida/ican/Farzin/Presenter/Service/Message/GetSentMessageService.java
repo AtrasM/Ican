@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -45,11 +44,10 @@ public class GetSentMessageService extends Service {
     private Handler handler = new Handler();
     private GetMessageFromServerPresenter getMessageFromServerPresenter;
     private FarzinMessageQuery farzinMessageQuery;
-    private int pageNumber = 1;
     private Status status = Status.UnRead;
     private int Count = 1;
-    private final int MaxCount = 10;
-    private final int MinCount = 1;
+    private final int MaxCount = 50;
+    private final int MinCount = 50;
     private long tempDelay = LOWDELAY;
 
 
@@ -68,7 +66,6 @@ public class GetSentMessageService extends Service {
         } else {
             Count = MaxCount;
         }
-        pageNumber = 1;
         getMessageFromServerPresenter = new GetMessageFromServerPresenter();
         farzinMessageQuery = new FarzinMessageQuery();
         messageListListener = new MessageListListener() {
@@ -111,32 +108,26 @@ public class GetSentMessageService extends Service {
                 }
             }
         };
-        GetMessage(pageNumber, Count);
+        GetMessage(Count);
 
         return Service.START_STICKY;
     }
 
-    private void GetMessage(int pageNumber, int count) {
+    private void GetMessage( int count) {
         if (!canGetData()) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    reGetMessage();
-                }
-            }, DELAY);
+            handler.postDelayed(() -> reGetMessage(), DELAY);
         } else {
-            Log.i("pageNumber", "GetSentMessage pageNumber= " + pageNumber);
             if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
                 getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
                 reGetMessage();
             } else {
                 if (!getFarzinPrefrences().isSendMessageForFirstTimeSync()) {
-                    getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+                    getMessageFromServerPresenter.GetSentMessageList( count, messageListListener);
                 } else {
                     CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getMessageSentLastCheckDate(), tempDelay);
                     getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
                     if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
-                        getMessageFromServerPresenter.GetSentMessageList(pageNumber, count, messageListListener);
+                        getMessageFromServerPresenter.GetSentMessageList( count, messageListListener);
                     } else {
                         reGetMessage();
                     }
@@ -175,12 +166,9 @@ public class GetSentMessageService extends Service {
                 if (structureMessageDB.getId() > 0) {
                     if (App.fragmentMessageList != null) {
                         if (App.CurentActivity != null) {
-                            App.CurentActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    App.fragmentMessageList.UpdateSendMessageData();
-                                    // UpdateAllNewMessageStatusToUnreadStatus();
-                                }
+                            App.CurentActivity.runOnUiThread(() -> {
+                                App.fragmentMessageList.UpdateMessageData();
+                                // UpdateAllNewMessageStatusToUnreadStatus();
                             });
                         }
                     }
@@ -192,10 +180,8 @@ public class GetSentMessageService extends Service {
                 }
 
                 if (messageList.size() == 0) {
-
-                    callDataFinish();
-                    pageNumber = pageNumber + 1;
-                    GetMessage(pageNumber, Count);
+                    //callDataFinish();
+                    GetMessage(Count);
                 } else {
                     SaveMessage(messageList);
                 }
@@ -247,7 +233,6 @@ public class GetSentMessageService extends Service {
     private void reGetMessage() {
         ShowToast("re Get Message");
         callDataFinish();
-        pageNumber = 1;
         Count = MinCount;
         if (App.activityStacks == null) {
             tempDelay = App.DELAYWhenAppClose;
@@ -263,7 +248,7 @@ public class GetSentMessageService extends Service {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                GetMessage(pageNumber, Count);
+                GetMessage( Count);
             }
         }, tempDelay);
     }

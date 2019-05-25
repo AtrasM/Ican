@@ -158,8 +158,6 @@ public class SendMessageService extends Service {
         //___________________-----------------------------_____________end block StructureReceiverDB____________--------------------------------------_____________________
 
         sendMessageToServerPresenter.SendMessage(structureMessageDBS.getSubject(), structureMessageDBS.getContent(), structureAttaches, structureUserAndRole, new MessageListener() {
-
-
             @Override
             public void onSuccess(int MessageID) {
                 FarzinMessageQuery farzinMessageQuery = new FarzinMessageQuery();

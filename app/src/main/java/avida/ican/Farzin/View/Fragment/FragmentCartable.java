@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentRefreshListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentDataListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
@@ -108,7 +108,7 @@ public class FragmentCartable extends BaseFragment {
 
 
     private void initCartableDocumentListPresenter() {
-        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentRefreshListener() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentDataListener() {
             @Override
             public void newData() {
                 App.CurentActivity.runOnUiThread(new Runnable() {

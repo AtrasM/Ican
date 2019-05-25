@@ -28,7 +28,7 @@ public class CheckServerAviablePresenter {
     private String strSimpleDateFormat = "";
     private String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     private String EndPoint = "Authentication";
-    private String MetodeName = "Hello";
+    private String MethodName = "Hello";
     private ChangeXml changeXml = new ChangeXml();
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "CheckServerAviablePresenter";
@@ -41,7 +41,7 @@ public class CheckServerAviablePresenter {
 
     public void CallRequest(final ListenerNetwork listenerNetwork) {
 
-        CallApi(MetodeName, EndPoint, getSoapObject(), new DataProcessListener() {
+        CallApi(MethodName, EndPoint, getSoapObject(), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 initStructure(Xml, listenerNetwork);
@@ -79,16 +79,16 @@ public class CheckServerAviablePresenter {
     }
 
     private SoapObject getSoapObject() {
-        SoapObject soapObject = new SoapObject(NameSpace, MetodeName);
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
 
         return soapObject;
     }
 
 
-    private void CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+    private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
-        new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+        new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                 .setSoapObject(soapObject)
                 .setTimeOut((int) TimeValue.SecondsInMilli() * 3)
                 .setNetworkCheking(true)
@@ -120,7 +120,7 @@ public class CheckServerAviablePresenter {
             //String Xml = new CustomFunction().readXmlResponseFromStorage();
             try {
                 //Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);
                 } else {

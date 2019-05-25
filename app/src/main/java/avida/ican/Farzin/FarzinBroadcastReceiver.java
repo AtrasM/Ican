@@ -56,6 +56,15 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
             App.getServiceContext().stopService(intent);
         }
     }
+    public void runServices() {
+        runGetCartableDocumentService();
+        runGetRecieveMessageService();
+        runGetSentMessageService();
+        runSendMessageService();
+        runCartableDocumentAppendQueueService();
+        runCartableDocumentTaeedQueueService();
+        runOpticalPenQueueService();
+    }
 
     public void runGetCartableDocumentService() {
         Context context = App.getServiceContext();

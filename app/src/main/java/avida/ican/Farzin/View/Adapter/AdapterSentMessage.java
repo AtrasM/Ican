@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.chauthai.swipereveallayout.ViewBinderHelper;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
@@ -46,13 +45,11 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
     private int layout = R.layout.item_message_list;
     private ImageLoader imageLoader;
     private ListenerAdapterMessageList listenerAdapterMessageList;
-    private ViewBinderHelper binderHelper;
 
     public AdapterSentMessage(List<StructureMessageDB> itemList, ListenerAdapterMessageList listenerAdapterMessageList) {
         imageLoader = App.getImageLoader();
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterMessageList = listenerAdapterMessageList;
-        binderHelper = new ViewBinderHelper();
     }
 
 
@@ -129,7 +126,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
         viewHolder.txtDate.setText(date);
         viewHolder.txtTime.setText(time);
         final ArrayList<StructureMessageFileDB> structureMessageFileDBS = new ArrayList<>(item.getMessage_files());
-        if (structureMessageFileDBS != null && structureMessageFileDBS.size() > 0) {
+        if (item.getAttachmentCount() > 0) {
             viewHolder.imgAttach.setVisibility(View.VISIBLE);
         } else {
             viewHolder.imgAttach.setVisibility(View.GONE);
@@ -188,7 +185,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
             public void onClick(View v) {
                 if (item.getStatus() != Status.WAITING && item.getStatus() != Status.STOPED) {
                     itemList.get(position).setStatus(Status.READ);
-                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS, structureReceiverDBS, Type.SENDED);
+                    StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), viewHolder.txtName.getText().toString(), viewHolder.txtRoleName.getText().toString(), item.getSubject(), item.getContent(), date, time, structureMessageFileDBS,item.getAttachmentCount(),item.isFilesDownloaded(), structureReceiverDBS, Type.SENDED);
                     listenerAdapterMessageList.onItemClick(structureDetailMessageBND,position);
                     notifyDataSetChanged();
                 }
@@ -220,13 +217,13 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
         }
     }
 
-    public void updateData(List<StructureMessageDB> mstructuresSentMessages) {
+    public void AddNewData(List<StructureMessageDB> mstructuresSentMessages) {
         itemList = new ArrayList<>();
         itemList.addAll(mstructuresSentMessages);
         notifyDataSetChanged();
     }
 
-    public void updateData(int pos, List<StructureMessageDB> mstructuresSentMessages) {
+    public void AddNewData(int pos, List<StructureMessageDB> mstructuresSentMessages) {
         //itemList.clear();
         if (pos == -1) {
             int start = itemList.size();
@@ -239,7 +236,7 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
         notifyDataSetChanged();
     }
 
-    public void updateData(int pos, StructureMessageDB mstructuresSentMessage) {
+    public void AddNewData(int pos, StructureMessageDB mstructuresSentMessage) {
         //itemList.clear();
         if (pos == -1) {
             int start = itemList.size();
@@ -252,7 +249,15 @@ public class AdapterSentMessage extends RecyclerView.Adapter<AdapterSentMessage.
 
         notifyDataSetChanged();
     }
-
+    public void updateData(int pos, StructureMessageDB structureMessageDB) {
+        if (pos >= 0) {
+            itemList.remove(pos);
+            notifyItemRemoved(pos);
+            itemList.add(pos, structureMessageDB);
+            notifyItemRangeInserted(pos,1);
+        }
+        notifyDataSetChanged();
+    }
     public void itemRangeChanged(int start, int count) {
         notifyItemRangeChanged(start, count);
     }

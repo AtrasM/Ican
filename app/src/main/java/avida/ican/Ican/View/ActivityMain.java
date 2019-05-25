@@ -97,7 +97,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     private ChangeXml changeXml = new ChangeXml();
     String NameSpace = "http://ICAN.ir/Farzin/WebServices/";
     String EndPoint = "";
-    String MetodeName = "";
+    String MethodName = "";
     private FarzinPrefrences farzinPrefrences;
 
     @Override
@@ -141,12 +141,12 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
         switch (view.getId()) {
             case R.id.cv_farzin: {
-             String milady=   CustomFunction.JalalyToMilady("1397-06-13T12:43:16");
+            /* String milady=   CustomFunction.JalalyToMilady("1397-06-13T12:43:16");
              //2018-09-04T09:17:32
 
-              milady.toCharArray();
-              /*  SetLicenseKeyPresenter setLicenseKeyPresenter=new SetLicenseKeyPresenter();
-                setLicenseKeyPresenter.getSoapObject();*/
+              milady.toCharArray();*/
+                SetLicenseKeyPresenter setLicenseKeyPresenter = new SetLicenseKeyPresenter();
+                //setLicenseKeyPresenter.getSoapObject("fa15e8817ef44855adfb8cd07b9119e0");
 
                 break;
             }
@@ -227,7 +227,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 */
 
         GetMessageFromServerPresenter getMessageFromServerPresenter = new GetMessageFromServerPresenter();
-        getMessageFromServerPresenter.GetRecieveMessageList(1, 7, new MessageListListener() {
+        getMessageFromServerPresenter.GetReceiveMessageList(7, new MessageListListener() {
             @Override
             public void onSuccess(ArrayList<StructureMessageRES> messageList) {
 
@@ -263,13 +263,13 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
 
 
         EndPoint = "UserManagment";
-        MetodeName = "GetUserAndRoleList";
-        SoapObject soapObject = new SoapObject(NameSpace, MetodeName);
+        MethodName = "GetUserAndRoleList";
+        SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         farzinPrefrences = new FarzinPrefrences().init();
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
         String SessionId = farzinPrefrences.getCookie();
-        new CallApi(MetodeName, EndPoint, soapObject, new DataProcessListener() {
+        new CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
                 StructureUserAndRoleRowsRES structureUserAndRoleRowsRES = xmlToObject.DeserializationGsonXml(Xml, StructureUserAndRoleRowsRES.class);
@@ -290,11 +290,11 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
     }
 
     private class CallApi {
-        CallApi(String MetodeName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
+        CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
             String ServerUrl = farzinPrefrences.getServerUrl();
             String BaseUrl = farzinPrefrences.getBaseUrl();
             String SessionId = farzinPrefrences.getCookie();
-            new WebService(NameSpace, MetodeName, ServerUrl, BaseUrl, EndPoint)
+            new WebService(NameSpace, MethodName, ServerUrl, BaseUrl, EndPoint)
                     .setSoapObject(soapObject)
                     .setSessionId(SessionId)
                     .setOnListener(new WebserviceResponseListener() {
@@ -523,7 +523,7 @@ public class ActivityMain extends BaseActivity implements View.OnClickListener {
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
                 Xml = changeXml.charDecoder(Xml);
-                Xml = changeXml.CropAsResponseTag(Xml, MetodeName);
+                Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 //Log.i(Tag, "XmlCropAsResponseTag= " + Xml);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

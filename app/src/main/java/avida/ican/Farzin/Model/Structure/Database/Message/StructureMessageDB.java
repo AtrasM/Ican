@@ -32,11 +32,14 @@ public class StructureMessageDB implements Serializable {
     private String content;
     @DatabaseField()
     private Date sent_date;
+    @DatabaseField()
+    private boolean isFilesDownloaded;
+    @DatabaseField()
+    private int AttachmentCount=0;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<StructureMessageFileDB> message_files;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<StructureReceiverDB> receivers;
-
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
@@ -45,7 +48,7 @@ public class StructureMessageDB implements Serializable {
     public StructureMessageDB() {
     }
 
-    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String subject, String content, Date sent_date, Status status,Type type) {
+    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String subject, String content, Date sent_date, Status status, Type type,int AttachmentCount,boolean isFilesDownloaded) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
         this.subject = subject;
@@ -53,6 +56,8 @@ public class StructureMessageDB implements Serializable {
         this.sent_date = sent_date;
         this.status = status;
         this.type = type;
+        this.isFilesDownloaded = isFilesDownloaded;
+        this.AttachmentCount = AttachmentCount;
         this.main_id = main_id;
     }
 
@@ -110,5 +115,21 @@ public class StructureMessageDB implements Serializable {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public boolean isFilesDownloaded() {
+        return isFilesDownloaded;
+    }
+
+    public void setFilesDownloaded(boolean filesDownloaded) {
+        isFilesDownloaded = filesDownloaded;
+    }
+
+    public int getAttachmentCount() {
+        return AttachmentCount;
+    }
+
+    public void setAttachmentCount(int attachmentCount) {
+        AttachmentCount = attachmentCount;
     }
 }

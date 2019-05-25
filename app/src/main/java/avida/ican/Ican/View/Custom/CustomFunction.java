@@ -800,6 +800,7 @@ public class CustomFunction {
 
     public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long delay) {
         try {
+            strLastDate=StandardizeTheDateFormat(strLastDate);
             strLastDate= arabicToDecimal(strLastDate);
             Date lastDate = new Date(strLastDate);
             Date curentDate = getCurentDateTime();
