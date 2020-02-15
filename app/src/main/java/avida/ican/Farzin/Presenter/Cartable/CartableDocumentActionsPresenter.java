@@ -5,9 +5,9 @@ import android.os.Handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionListListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsQuerySaveListener;
-import avida.ican.Farzin.Model.Interface.Cartable.GetDocumentActionsFromServerListener;
+import avida.ican.Farzin.Model.Interface.Cartable.DocumentActionsListener;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentActionRES;
 import avida.ican.Ican.App;
@@ -21,11 +21,10 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 public class CartableDocumentActionsPresenter {
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final int Etc;
-    private CartableDocumentActionsListListener cartableDocumentActionsListListener;
-    private Handler handler = new Handler();
+    private CartableDocumentActionListListener cartableDocumentActionListListener;
     private GetListOfDocumentActionsFromServerPresenter getListOfDocumentActionsFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
-    private GetDocumentActionsFromServerListener documentActionsFromServerListener;
+    private DocumentActionsListener documentActionsFromServerListener;
 
     public CartableDocumentActionsPresenter(int Etc) {
         this.Etc = Etc;
@@ -35,28 +34,30 @@ public class CartableDocumentActionsPresenter {
     private void initCartableActionListListener() {
         getListOfDocumentActionsFromServerPresenter = new GetListOfDocumentActionsFromServerPresenter();
         farzinCartableQuery = new FarzinCartableQuery();
-        cartableDocumentActionsListListener = new CartableDocumentActionsListListener() {
+        cartableDocumentActionListListener = new CartableDocumentActionListListener() {
 
             @Override
             public void onSuccess(ArrayList<StructureCartableDocumentActionRES> cartableDocumentActionsRES) {
                 if (cartableDocumentActionsRES.size() > 0) {
                     if (!farzinCartableQuery.IsDocumentActionsExist(Etc)) {
                         SaveData(cartableDocumentActionsRES);
+                    } else {
+                        documentActionsFromServerListener.onSuccess();
                     }
                 } else {
-                    documentActionsFromServerListener.onFailed("No Data");
+                    documentActionsFromServerListener.onSuccess();
                 }
             }
 
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onFailed("");
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
                 }
@@ -65,12 +66,12 @@ public class CartableDocumentActionsPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onCancel();
                         }
-                    },300);
+                    }, 300);
                 } else {
                     reGetData();
                 }
@@ -78,31 +79,37 @@ public class CartableDocumentActionsPresenter {
         };
     }
 
-    public void GetDocumentActionsFromServer(GetDocumentActionsFromServerListener documentActionsFromServerListener) {
+    public void GetDocumentActionsFromServer(DocumentActionsListener documentActionsFromServerListener) {
         this.documentActionsFromServerListener = documentActionsFromServerListener;
-        getListOfDocumentActionsFromServerPresenter.CallRequest(Etc, cartableDocumentActionsListListener);
+        getListOfDocumentActionsFromServerPresenter.CallRequest(Etc, cartableDocumentActionListListener);
 
     }
 
-    public List<StructureCartableDocumentActionsDB> GetDocumentActions() {
+    public List<StructureCartableDocumentActionsDB> getDocumentActions() {
         return farzinCartableQuery.getDocumentActions(Etc);
     }
-    public List<StructureCartableDocumentActionsDB> GetAllDocumentActions() {
+
+
+    public List<StructureCartableDocumentActionsDB> getAllDocumentActions() {
         return farzinCartableQuery.getAllDocumentActions();
+    }
+
+    public List<StructureCartableDocumentActionsDB> getAllDocumentActionsForSend(boolean isActiveForSend) {
+        return farzinCartableQuery.getAllDocumentActionsForSend(isActiveForSend);
     }
 
 
     private void SaveData(final ArrayList<StructureCartableDocumentActionRES> cartableDocumentActionsRES) {
 
-        final StructureCartableDocumentActionRES StructureCartableDocumentActionRES = cartableDocumentActionsRES.get(0);
+        final StructureCartableDocumentActionRES structureCartableDocumentActionRES = cartableDocumentActionsRES.get(0);
 
-        farzinCartableQuery.saveDocumentAction(StructureCartableDocumentActionRES, Etc, new CartableDocumentActionsQuerySaveListener() {
+        farzinCartableQuery.saveDocumentAction(structureCartableDocumentActionRES, Etc, new CartableDocumentActionsQuerySaveListener() {
             @Override
             public void onSuccess(StructureCartableDocumentActionsDB structureCartableDocumentActionsDB) {
                 cartableDocumentActionsRES.remove(0);
                 if (cartableDocumentActionsRES.size() > 0) {
                     SaveData(cartableDocumentActionsRES);
-                }else{
+                } else {
                     documentActionsFromServerListener.onSuccess();
                 }
             }
@@ -138,7 +145,7 @@ public class CartableDocumentActionsPresenter {
 
     private void reGetData() {
 
-        handler.postDelayed(new Runnable() {
+        App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetDocumentActionsFromServer(documentActionsFromServerListener);

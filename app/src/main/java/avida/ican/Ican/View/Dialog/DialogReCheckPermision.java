@@ -63,7 +63,7 @@ public class DialogReCheckPermision {
 
     public void Show() {
 
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override

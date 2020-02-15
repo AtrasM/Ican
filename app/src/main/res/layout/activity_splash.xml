@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -13,41 +14,56 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="fitXY"
-        android:src="@drawable/img_splash" />
-
-
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|center"
-        android:scaleType="fitCenter"
-        android:src="@drawable/img_logo" />
+        app:srcCompat="@drawable/img_bg_splash" />
 
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_gravity="center|bottom"
-        android:gravity="center">
-
-        <TextView
-            style="@style/custom_Txt_Title_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/margin_maximum"
-            android:textColor="@color/color_txt_SubTitle"
-            android:text="@string/ican_url"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:paddingTop="@dimen/margin_maximum">
+        android:orientation="vertical">
 
-        <include layout="@layout/item_loading" />
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/ic_ican_logo_splash" />
+
+
+
+        <ImageView
+            android:layout_width="220dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            app:srcCompat="@drawable/ic_line" />
+
+        <TextView
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_maximum"
+            android:text="@string/ican_url"
+            android:textColor="@color/color_White" />
+
+
+        <com.wang.avi.AVLoadingIndicatorView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/av_loading_indicator_view"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_gravity="center"
+            android:visibility="invisible"
+            app:indicatorColor="@color/color_White"
+            app:indicatorName="BallSpinFadeLoaderIndicator" />
+
+
     </LinearLayout>
+
 
 </FrameLayout>

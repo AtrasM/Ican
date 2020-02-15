@@ -83,7 +83,7 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_margin="@dimen/margin_minimum"
-            app:cardBackgroundColor="@color/color_Danger"
+            app:cardBackgroundColor="@color/color_Red"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="59dp">
 
@@ -94,7 +94,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="@dimen/margin"
                 android:gravity="center"
-                android:text="@string/TitleFarzin"
+                android:text="farzin"
                 android:textColor="@color/color_White" />
         </androidx.cardview.widget.CardView>
 

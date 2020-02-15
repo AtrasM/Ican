@@ -5,12 +5,15 @@ package avida.ican.Farzin.View.Enum;
  */
 
 public enum CartableActionsEnum {
-    Hamesh("Hamesh"),
+    DstorErja("DstorErja"),
+    TozihShakhsi("TozihShakhsi"),
     ListHamesh("ListHamesh"),
     DocumentFlow("GardeshMadrak"),
     TheChainOfEvidence("ZanjireMadrak"),
-    Confirm("taeed"),
-    Comission("send");
+    Confirm("confirm"),
+    InWorkFlow("InWorkFlow"),
+    Send("send"),
+    ConfirmSend("ConfirmSend");
 
 
     private final String name;

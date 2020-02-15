@@ -47,7 +47,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/margin"
-                    android:gravity="center|right"
+                    android:gravity="center"
                     android:orientation="horizontal"
                     tools:ignore="RtlHardcoded">
 
@@ -55,7 +55,7 @@
                         style="@style/custom_Txt_Title_style"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
+                        android:layout_gravity="center|left"
                         android:layout_weight="1"
                         android:text="@string/title_start_date"
                         android:textColor="@color/color_Black" />
@@ -67,6 +67,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="داده"
+                        android:textAppearance="@style/TextAppearance.FontPathIranSans"
                         android:textColor="@color/color_Black" />
                 </LinearLayout>
 
@@ -77,8 +78,8 @@
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/margin"
                     android:gravity="center|right"
-                    android:visibility="gone"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     tools:ignore="RtlHardcoded">
 
                     <TextView
@@ -97,6 +98,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="داده"
+                        android:textAppearance="@style/TextAppearance.FontPathIranSans"
                         android:textColor="@color/color_Black" />
                 </LinearLayout>
 

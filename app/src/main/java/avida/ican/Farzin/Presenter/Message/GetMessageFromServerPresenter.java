@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Interface.Message.MessageListListener;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureMessageListRES;
@@ -39,6 +41,7 @@ public class GetMessageFromServerPresenter {
     private FarzinPrefrences farzinPrefrences;
     private String XmlFile = "";
     private AsyncTask<Void, Void, StructureMessageListRES> task;
+    private Type msgType = Type.ALL;
 
     public GetMessageFromServerPresenter() {
         farzinPrefrences = getFarzinPrefrences();
@@ -63,6 +66,11 @@ public class GetMessageFromServerPresenter {
     }
 
     private void GetMessage(String startDateTime, String finishDateTime, int count, final boolean isReceiveMessage, final MessageListListener messageListListener) {
+        if (isReceiveMessage) {
+            getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
+        } else {
+            getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
+        }
         CallApi(MethodName, EndPoint, getSoapObject(startDateTime, finishDateTime, count, isReceiveMessage), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
@@ -89,10 +97,15 @@ public class GetMessageFromServerPresenter {
         task = new AsyncTask<Void, Void, StructureMessageListRES>() {
             @Override
             protected StructureMessageListRES doInBackground(Void... voids) {
-                Log.i("xml", "doInBackground SentMessage xmlfile= " + xml);
-                StructureMessageListRES structureMessageListRES = new StructureMessageListRES();
+                if (msgType == Type.RECEIVED) {
+                    Log.i("xml", "doInBackground GetReceiveMessage xmlfile= " + xml);
+                } else {
+                    Log.i("xml", "doInBackground GetSentMessage xmlfile= " + xml);
+                }
 
-                if (xml.contains(App.RESPONSEPATH)) {
+                StructureMessageListRES structureMessageListRES;
+
+                if (xml.contains(App.getResponsePath())) {
                     MessageSaxHandler contentHandler = xmlToObject.parseXmlWithSax(xml, new MessageSaxHandler());
                     structureMessageListRES = contentHandler.getObject();
                     sleep();
@@ -113,7 +126,11 @@ public class GetMessageFromServerPresenter {
                         List<StructureMessageRES> messageListResult = structureMessageListRES.getGetMessageListResult();
                         messageListListener.onSuccess(new ArrayList<>(messageListResult));
                     }
-                    getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentDateTime().toString());
+                    if (msgType == Type.RECEIVED) {
+                        getFarzinPrefrences().putMessageRecieveLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
+                    } else {
+                        getFarzinPrefrences().putMessageSentLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
+                    }
                 } else {
                     messageListListener.onFailed("" + structureMessageListRES.getStrErrorMsg());
                 }
@@ -142,14 +159,19 @@ public class GetMessageFromServerPresenter {
         Filter.addProperty("MsgSubject", "");
         Filter.addProperty("MsgText", "");
         /*--------Optional----------*/
+        String type = "";
         if (isReceiveMessage) {
+            msgType = Type.RECEIVED;
+            type = "receive";
             Filter.addProperty("MsgType", "receive");
         } else {
+            msgType = Type.SENDED;
+            type = "send";
             Filter.addProperty("MsgType", "send");
         }
-
         if (!startDateTime.isEmpty()) {
             startDateTime = CustomFunction.arabicToDecimal(startDateTime);
+            Log.i("LOG", "startDateTime for get message= " + startDateTime + " MsgType= " + type);
             Filter.addProperty("StartDateTime", startDateTime);
         }
         if (!finishDateTime.isEmpty()) {
@@ -205,6 +227,7 @@ public class GetMessageFromServerPresenter {
             } catch (Exception e) {
                 dataProcessListener.onFailed();
                 e.printStackTrace();
+                //ACRA.getErrorReporter().handleSilentException(e);
             }
         }
 

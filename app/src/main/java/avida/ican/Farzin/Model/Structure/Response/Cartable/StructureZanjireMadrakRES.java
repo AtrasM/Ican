@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Created by AtrasVida on 2018-10-14 at 10:39 AM
  */
+
 @Root(name = "GetFileDependencyResult")
 public class StructureZanjireMadrakRES {
     @ElementList(required = false)

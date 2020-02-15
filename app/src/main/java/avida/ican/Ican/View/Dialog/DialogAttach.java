@@ -5,6 +5,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
@@ -39,8 +40,8 @@ public class DialogAttach {
         Button btnVideoPicker;
         @BindView(R.id.btn_file_picker)
         Button btnFilePicker;
-        @BindView(R.id.btn_cancel)
-        Button btnCancel;
+        @BindView(R.id.img_cancel)
+        ImageView imgCancel;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -65,70 +66,48 @@ public class DialogAttach {
 
     public void Show() {
 
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        context.runOnUiThread(() -> {
 
-                dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_attach))
-                        .setGravity(Gravity.BOTTOM)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(false)
-                        .setContentBackgroundResource(R.drawable.border_dialog)
-                        .create();
-                viewHolder = new Binding(dialog.getHolderView());
-                viewHolder.btnCameraPicker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onSuccess(AttachEnum.CameraPicker);
-                        dismiss();
+            dialog = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.dialog_attach))
+                    .setGravity(Gravity.BOTTOM)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setCancelable(false)
+                    .setContentBackgroundResource(android.R.color.transparent)
+                    .create();
+            viewHolder = new Binding(dialog.getHolderView());
+            viewHolder.btnCameraPicker.setOnClickListener(view -> {
+                listenerAttach.onSuccess(AttachEnum.CameraPicker);
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnPhotoPicker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onSuccess(AttachEnum.GallaryPicker);
-                        dismiss();
+            });
+            viewHolder.btnPhotoPicker.setOnClickListener(view -> {
+                listenerAttach.onSuccess(AttachEnum.GallaryPicker);
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnVideoPicker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onSuccess(AttachEnum.VideoPicker);
-                        dismiss();
+            });
+            viewHolder.btnVideoPicker.setOnClickListener(view -> {
+                listenerAttach.onSuccess(AttachEnum.VideoPicker);
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnAudioRecorderPicker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onSuccess(AttachEnum.AudioRecorde);
-                        dismiss();
+            });
+            viewHolder.btnAudioRecorderPicker.setOnClickListener(view -> {
+                listenerAttach.onSuccess(AttachEnum.AudioRecorde);
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnFilePicker.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onSuccess(AttachEnum.FilePicker);
-                        dismiss();
+            });
+            viewHolder.btnFilePicker.setOnClickListener(view -> {
+                listenerAttach.onSuccess(AttachEnum.FilePicker);
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerAttach.onCancel();
-                        dismiss();
-                    }
-                });
-                dialog.show();
-
-            }
+            });
+            viewHolder.imgCancel.setOnClickListener(view -> {
+                listenerAttach.onCancel();
+                dismiss();
+            });
+            dialog.show();
 
         });
 

@@ -1,7 +1,6 @@
 package avida.ican.Farzin.Model.Interface.Cartable;
 
 
-import java.util.ArrayList;
 
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
 

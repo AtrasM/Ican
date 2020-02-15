@@ -2,47 +2,265 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/custom_item_rcv_style"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/border_cadr"
-    android:orientation="vertical"
-    android:paddingLeft="0dp">
+    android:orientation="vertical">
 
     <LinearLayout
+        style="@style/custom_selected_style"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="@dimen/padding">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_minimum"
+        android:layout_marginBottom="@dimen/margin_minimum"
+        android:background="@drawable/border_ln_zanjire_madrak"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_minimum"
+        android:paddingTop="@dimen/padding_minimum"
+        android:paddingRight="@dimen/padding_minimum"
+        android:paddingBottom="@dimen/padding">
 
-        <ImageView
-            android:id="@+id/img_attach_icon"
-            style="@style/custom_ic_right_style"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            app:srcCompat="@drawable/ic_attach2" />
-
-        <TextView
-            android:id="@+id/txt_name"
-            style="@style/custom_Txt_Normal_style"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center|right"
-            android:text="نام"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
-            tools:ignore="RtlHardcoded" />
+            android:layout_gravity="center"
+            android:layout_marginTop="0dp"
+            android:background="@color/color_White"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="@dimen/padding"
+            tools:ignore="UnusedAttribute"
+            tools:targetApi="m">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/padding_minimum">
+
+                    <TextView
+                        android:id="@+id/txt_counter"
+                        style="@style/custom_Txt_light_count_style"
+                        android:layout_marginTop="@dimen/margin_minimum"
+                        android:layout_marginRight="@dimen/margin_minimum"
+                        android:layout_marginBottom="@dimen/margin_minimum"
+                        android:text="989"
+                        android:textAppearance="@style/TextAppearance.FontPathIranSans"
+                        android:textColor="@color/color_txt_Normal" />
+
+                    <ImageView
+                        android:id="@+id/img_attach_icon"
+                        style="@style/custom_ic_right_style"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:scaleType="fitCenter" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|top"
+                    android:layout_marginRight="@dimen/margin"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/txt_data_name"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="center|right"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:text="نام"
+                        android:textColor="@color/color_txt_Normal"
+                        android:textStyle="bold"
+                        tools:ignore="RtlHardcoded" />
+
+
+                    <TextView
+                        android:id="@+id/txt_full_name"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="center|right"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:text="نام"
+                        android:textColor="@color/color_Info"
+                        android:textStyle="bold"
+                        tools:ignore="RtlHardcoded" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/margin"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/ln_date_time"
+                        android:layout_width="70dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|top"
+                        android:gravity="center|left"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txt_date"
+                            style="@style/custom_Txt_Sub_Title_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|left"
+                            android:padding="0dp"
+                            android:text="12/06/1397"
+                            android:textAppearance="@style/TextAppearance.FontPathIranSans" />
+
+
+                        <TextView
+                            android:id="@+id/txt_time"
+                            style="@style/custom_Txt_Sub_Title_style"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|left"
+                            android:padding="0dp"
+                            android:text="/06/1397"
+                            android:textAppearance="@style/TextAppearance.FontPathIranSans"
+                            android:visibility="visible"
+                            tools:ignore="NestedWeights" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/img_more"
+                        style="@style/custom_selected_style"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="left|bottom"
+                        android:layout_marginTop="@dimen/margin_minimum"
+                        android:background="@drawable/circular_border"
+                        app:srcCompat="@drawable/ic_arrow_down"
+                        tools:ignore="UnusedAttribute" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <net.cachapa.expandablelayout.ExpandableLayout
+            android:id="@+id/expandable_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:background="@drawable/border_bottom_cartable_document_list"
+            android:paddingLeft="@dimen/padding"
+            android:paddingRight="@dimen/padding"
+            app:el_duration="100"
+            app:el_expanded="false"
+            app:el_parallax="0.5"
+            tools:ignore="RtlHardcoded">
+
+            <LinearLayout
+                android:id="@+id/ln_entity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/padding"
+                android:paddingTop="@dimen/padding_minimum"
+                android:paddingRight="@dimen/padding"
+                android:paddingBottom="@dimen/padding_minimum"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/txt_document_number_name"
+                            style="@style/custom_Txt_Normal_style"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|right"
+                            android:text="@string/hint_entity_name"
+                            android:textColor="@color/color_Info"
+                            tools:ignore="RtlHardcoded" />
+
+                        <TextView
+                            android:id="@+id/txt_document_number"
+                            style="@style/custom_Txt_Normal_style"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center|right"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:text="شماره مدرک"
+                            android:textColor="@color/color_txt_Normal"
+                            tools:ignore="RtlHardcoded" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/color_Divider" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/padding_minimum"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/custom_Txt_Normal_style"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center|right"
+                            android:text="@string/hint_entity_name"
+                            android:textColor="@color/color_Info"
+                            tools:ignore="RtlHardcoded" />
+
+                        <TextView
+                            android:id="@+id/txt_entity_name"
+                            style="@style/custom_Txt_Normal_style"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:gravity="center|right"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:text="نوع مدرک"
+                            android:textColor="@color/color_txt_Normal"
+                            tools:ignore="RtlHardcoded" />
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+        </net.cachapa.expandablelayout.ExpandableLayout>
+
 
     </LinearLayout>
 
-    <LinearLayout
-        style="@style/custom_divider_style"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_marginBottom="0dp"
-        android:layout_marginLeft="0dp" />
+
 </LinearLayout>

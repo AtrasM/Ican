@@ -79,10 +79,10 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
         pushTag(qName);
         sb = new StringBuilder();
         tempVal = "";
-        if (qName.equalsIgnoreCase("Peyro")) {
+        if (qName.equalsIgnoreCase("Peiro")) {
             // create a new instance of employee
             PeyroContent = new StructureFileRES();
-            setBooleanTrue("Peyro");
+            setBooleanTrue("Peiro");
         } else if (qName.equalsIgnoreCase("Peyvast")) {
             // create a new instance of address
             PeyvastContent = new StructureFileRES();
@@ -203,7 +203,44 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
                     IndicatorScanedFileContent.setFileExtension(tempVal);
                 }
             }
+        } else if (qName.equalsIgnoreCase("CreationFullName")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (bPeyro) {
+                    PeyroContent.setCreationFullName(tempVal);
+                } else if (bPeyvast) {
+                    PeyvastContent.setCreationFullName(tempVal);
+                } else if (bDarErtebat) {
+                    DarErtebatContent.setCreationFullName(tempVal);
+                } else if (bAtf) {
+                    AtfContent.setCreationFullName(tempVal);
+                }
+            }
+        } else if (qName.equalsIgnoreCase("CreationRoleName")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (bPeyro) {
+                    PeyroContent.setCreationRoleName(tempVal);
+                } else if (bPeyvast) {
+                    PeyvastContent.setCreationRoleName(tempVal);
+                } else if (bDarErtebat) {
+                    DarErtebatContent.setCreationRoleName(tempVal);
+                } else if (bAtf) {
+                    AtfContent.setCreationRoleName(tempVal);
+                }
+            }
+        } else if (qName.equalsIgnoreCase("CreationDate")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (bPeyro) {
+                    PeyroContent.setCreationDate(tempVal);
+                } else if (bPeyvast) {
+                    PeyvastContent.setCreationDate(tempVal);
+                } else if (bDarErtebat) {
+                    DarErtebatContent.setCreationDate(tempVal);
+                } else if (bAtf) {
+                    AtfContent.setCreationDate(tempVal);
+                }
+            }
         }
+
     }
 
     private void pushTag(String tag) {
@@ -230,7 +267,7 @@ public class ZanjireMadrakSaxHandler extends DefaultHandler {
     private void setBooleanTrue(String tag) {
 
         switch (tag) {
-            case "Peyro": {
+            case "Peiro": {
                 bPeyro = true;
                 bPeyvast = false;
                 bDarErtebat = false;

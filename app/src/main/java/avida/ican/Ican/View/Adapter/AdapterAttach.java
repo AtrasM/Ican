@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -59,10 +60,14 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
 
         @BindView(R.id.txt_name)
         TextView txtName;
+        @BindView(R.id.txt_counter)
+        TextView txtCounter;
         @BindView(R.id.img_attach_icon)
         ImageView imgAttachIcon;
         @BindView(R.id.img_delet)
         ImageView imgDelet;
+        @BindView(R.id.ln_divider)
+        LinearLayout lnDivider;
 
         public ViewHolder(View view) {
             super(view);
@@ -93,6 +98,8 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureAttach item = itemList.get(position);
+
+        viewHolder.txtCounter.setText("" + (position + 1));
         if (item.getName() == null || item.getName().isEmpty() || item.getName().contains("null")) {
             item.setName(Resorse.getString(R.string.noName));
         }
@@ -121,7 +128,7 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                     break;
                 }
                 case APPLICATION: {
-                    item.setIcon(R.drawable.ic_attach_file);
+                    item.setIcon(R.drawable.ic_attach_document);
                     break;
                 }
                 case NONE: {
@@ -131,23 +138,23 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                         public void run() {
                             itemList.remove(position);
                             notifyItemRemoved(position);
-                            new Message().ShowSnackBar(Resorse.getString(R.string.error_invalid_file), SnackBarEnum.SNACKBAR_LONG_TIME);
+                            App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_invalid_file), SnackBarEnum.SNACKBAR_LONG_TIME);
                         }
                     }, 200);
                     return;
                 }
                 default: {
-                    item.setIcon(R.drawable.ic_attach_file);
+                    item.setIcon(R.drawable.ic_attach_document);
                     break;
                 }
             }
         } else {
             viewHolder.txtName.setText(item.getName());
-            item.setIcon(R.drawable.ic_attach_file);
+            item.setIcon(R.drawable.ic_attach_document);
         }
 
 
-        viewHolder.imgAttachIcon.setBackground(Resorse.getDrawable(item.getIcon()));
+        viewHolder.imgAttachIcon.setImageDrawable(Resorse.getDrawable(item.getIcon()));
 
 
         if (canDelete) {
@@ -175,6 +182,24 @@ public class AdapterAttach extends RecyclerView.Adapter<AdapterAttach.ViewHolder
                 listenerAdapterAttach.onOpenFile(item);
             }
         });
+
+       /* if (position == itemList.size() - 1) {
+            viewHolder.lnDivider.setVisibility(View.GONE);
+        } else {
+            viewHolder.lnDivider.setVisibility(View.VISIBLE);
+        }*/
+    }
+
+    public void reset(StructureAttach structureAttach) {
+        for (int i = 0; i < itemList.size(); i++) {
+            listenerAdapterAttach.onDeletFile(itemList.get(i));
+            itemList.remove(itemList.get(i));
+            notifyItemRemoved(i);
+        }
+        itemList.clear();
+        itemList.add(structureAttach);
+        notifyDataSetChanged();
+        //notifyItemRangeChanged(itemList.size() - 1, 1);
     }
 
     public void add(StructureAttach structureAttach) {

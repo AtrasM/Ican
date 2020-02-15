@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,8 +15,11 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,14 +34,16 @@ import avida.ican.Farzin.Model.Structure.StructureCartableAction;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
-import avida.ican.Farzin.View.Adapter.AdapterCartableAction;
-import avida.ican.Farzin.View.Adapter.AdapterCartableActionPin;
+import avida.ican.Farzin.View.ActivityCreateDocument;
+import avida.ican.Farzin.View.Adapter.Cartable.AdapterCartableAction;
+import avida.ican.Farzin.View.Adapter.Cartable.AdapterCartableActionPin;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityCartableDocument;
 import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterCartableAction;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
+import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Enum.CompareDateTimeEnum;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
@@ -69,19 +75,27 @@ public class FragmentHome extends BaseFragment {
     LinearLayout lnMain;
     @BindView(R.id.ln_rcv)
     LinearLayout lnRcv;
+    @BindView(R.id.ln_top)
+    LinearLayout lnTop;
     @BindView(R.id.rcv_action)
     RecyclerView rcvAction;
     @BindView(R.id.rcv_pin)
     RecyclerView rcvPin;
     @BindView(R.id.frm_rcv_pin)
     FrameLayout frmRcvPin;
+    @BindView(R.id.img_scale)
+    ImageView imgScale;
+    @BindView(R.id.fab_create_document)
+    FloatingActionButton fabCreateDocument;
     @BindView(R.id.srl_refresh)
     SwipeRefreshLayout srlRefresh;
 
+    private Animator animator;
+    private boolean windowSizeIsMax = false;
     private ListenerAdapterCartableAction listenerAdapterCartableAction;
     private AdapterCartableAction adapterCartableAction;
     private AdapterCartableActionPin adapterCartableActionPin;
-    private static FragmentManager mfragmentManager;
+    private FragmentManager mfragmentManager;
     private String Tag = "";
     private ArrayList<StructureCartableAction> structureCartableActions = new ArrayList<>();
     private ArrayList<StructureCartableAction> structureCartableActionsPin = new ArrayList<>();
@@ -105,6 +119,7 @@ public class FragmentHome extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        animator = new Animator(App.CurentActivity);
         Activity activity = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
         if (activity != null) {
             activityMain = (FarzinActivityMain) activity;
@@ -123,46 +138,48 @@ public class FragmentHome extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         lnLoading.setVisibility(View.VISIBLE);
-        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                reGetDataFromServer();
+        srlRefresh.setOnRefreshListener(() -> reGetDataFromServer());
+
+        lnAllCartableDocument.setOnClickListener(view12 -> {
+            if (activityMain != null && cartableDocumentCount > 0) {
+                activityMain.selectCartableDocumentFragment();
+            }
+        });
+        lnAllUnreadMessage.setOnClickListener(view1 -> {
+            if (activityMain != null && unreadMessageCount > 0) {
+                activityMain.selectMessageFragment(true);
+
             }
         });
 
-        lnAllCartableDocument.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (activityMain != null && cartableDocumentCount > 0) {
-                    activityMain.selectCartableDocumentFragment();
-                }
-            }
-        });
-        lnAllUnreadMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (activityMain != null && unreadMessageCount > 0) {
-                    activityMain.selectMessageFragment(true);
+        fabCreateDocument.setOnClickListener(view13 -> goToActivity(ActivityCreateDocument.class));
+        imgScale.setOnClickListener(view14 -> {
+            windowSizeIsMax = !windowSizeIsMax;
+            if (windowSizeIsMax) {
+                imgScale.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_down));
+                animator.slideOutToUpFast(lnTop);
+                App.getHandlerMainThread().postDelayed(() -> {
+                    lnTop.setVisibility(View.GONE);
+                }, 50);
 
-                }
+            } else {
+                imgScale.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_up));
+                animator.slideInFromUpFast(lnTop);
+                lnTop.setVisibility(View.VISIBLE);
             }
         });
         initCartableDocumentListPresenter();
         initData();
     }
 
-
     private void initCartableDocumentListPresenter() {
-        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(new CartableDocumentDataListener() {
+        farzinCartableDocumentListPresenter = new FarzinCartableDocumentListPresenter(App.CurentActivity, new CartableDocumentDataListener() {
             @Override
             public void newData() {
-                App.CurentActivity.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        reGetDataFromLocal();
-                        lnLoading.setVisibility(View.GONE);
-                        srlRefresh.setRefreshing(false);
-                    }
+                App.CurentActivity.runOnUiThread(() -> {
+                    reGetDataFromLocal();
+                    lnLoading.setVisibility(View.GONE);
+                    srlRefresh.setRefreshing(false);
                 });
             }
 
@@ -193,8 +210,8 @@ public class FragmentHome extends BaseFragment {
     }
 
     private void initData() {
-        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, Status.UnRead);
-        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead);
+        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, Status.UnRead, null);
+        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead, null);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
         } else {
@@ -208,8 +225,7 @@ public class FragmentHome extends BaseFragment {
         if (App.networkStatus == NetworkStatus.Connected) {
             CompareDateTimeEnum compareDateTimeEnum = CustomFunction.compareDateWithCurentDate(getFarzinPrefrences().getCartableLastCheckDate(), (TimeValue.SecondsInMilli() * 10));
             if (compareDateTimeEnum == CompareDateTimeEnum.isAfter) {
-                getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
-                farzinCartableDocumentListPresenter.GetFromServer();
+                farzinCartableDocumentListPresenter.getFromServer();
             } else {
                 reGetDataFromLocal();
             }
@@ -221,8 +237,8 @@ public class FragmentHome extends BaseFragment {
     }
 
     public void reGetDataFromLocal() {
-        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, Status.UnRead);
-        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead);
+        structureCartableActions = new FarzinCartableQuery().getCartableAction(false, Status.UnRead, null);
+        structureCartableActionsPin = new FarzinCartableQuery().getCartableAction(true, Status.UnRead, null);
         if (structureCartableActionsPin.size() > 0) {
             frmRcvPin.setVisibility(View.VISIBLE);
         } else {
@@ -238,15 +254,18 @@ public class FragmentHome extends BaseFragment {
         if (cartableDocumentCount <= 0) {
             txtNoData.setText(Resorse.getString(R.string.no_cartable_data));
             txtNoData.setVisibility(View.VISIBLE);
+            imgScale.setVisibility(View.GONE);
             lnRcv.setVisibility(View.GONE);
         } else {
             if (structureCartableActions.size() > 0 || structureCartableActionsPin.size() > 0) {
+                imgScale.setVisibility(View.VISIBLE);
                 lnRcv.setVisibility(View.VISIBLE);
                 txtNoData.setVisibility(View.GONE);
             } else {
+                imgScale.setVisibility(View.GONE);
                 lnRcv.setVisibility(View.GONE);
-                txtNoData.setText(Resorse.getString(R.string.no_cartable_unread_data));
                 txtNoData.setVisibility(View.VISIBLE);
+                txtNoData.setText(Resorse.getString(R.string.no_cartable_unread_data));
             }
 
         }
@@ -268,8 +287,8 @@ public class FragmentHome extends BaseFragment {
         final GridLayoutManagerWithSmoothScroller gridLayoutManagerPin = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
         rcvAction.setLayoutManager(gridLayoutManager);
         rcvPin.setLayoutManager(gridLayoutManagerPin);
-        rcvPin.setNestedScrollingEnabled(false);
-        rcvAction.setNestedScrollingEnabled(false);
+        ViewCompat.setNestedScrollingEnabled(rcvPin, false);
+        ViewCompat.setNestedScrollingEnabled(rcvAction, false);
         initAdapter(structureCartableActions);
     }
 
@@ -350,12 +369,7 @@ public class FragmentHome extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        /*try {
-            mListener = (OnFragmentInteractionListener) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+
     }
 
     @Override

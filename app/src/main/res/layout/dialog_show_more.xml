@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/margin_minimum"
@@ -8,51 +9,62 @@
     android:orientation="vertical">
 
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_maximum"
-            android:orientation="vertical">
-
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_maximum"
-                android:gravity="center|right"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/txt_title"
-                    style="@style/custom_Txt_Normal_style"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="سمانه عبدالعلی"
-                    android:textColor="@color/colorPrimaryDark" />
-
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/txt_content"
-                style="@style/custom_Txt_Normal_style"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center|right"
-                android:text="با سلام در راستای مزاکرات"
-                android:textColor="@color/color_txt_SubTitle" />
-        </LinearLayout>
-
-    </FrameLayout>
-    <Button
-        android:id="@+id/btn_close"
-        style="@style/custom_close_button_style"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/close" />
+        android:layout_margin="@dimen/margin_maximum"
+        android:orientation="vertical">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="@dimen/margin_maximum"
+          android:gravity="center|right"
+          android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/txt_title"
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="سمانه عبدالعلی"
+            android:textColor="@color/colorPrimaryDark" />
+
+      </LinearLayout>
+
+      <WebView
+          android:id="@+id/web_view"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:scrollbars="vertical"
+          android:fadeScrollbars="true"
+          tools:ignore="WebViewLayout" />
+      <ScrollView
+          android:layout_width="match_parent"
+          android:visibility="gone"
+          android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txt_content"
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center|right"
+            android:text=""
+            android:textColor="@color/color_txt_SubTitle" />
+      </ScrollView>
+    </LinearLayout>
+
+  </FrameLayout>
+
+  <Button
+      android:id="@+id/btn_close"
+      style="@style/custom_close_button_style"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/close" />
 </LinearLayout>

@@ -10,28 +10,43 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@color/color_White"
+            android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rcv_hamesh_list"
-                style="@style/custom_item_rcv_style"
+            <include layout="@layout/layout_operator_queue_count" />
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingLeft="0dp"
-                android:paddingStart="0dp"
-                tools:ignore="RtlSymmetry" />
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcv_hamesh_list"
+                        style="@style/custom_item_rcv_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingStart="0dp"
+                        android:paddingLeft="0dp"
+                        tools:ignore="RtlSymmetry" />
+                </LinearLayout>
 
 
-            <include layout="@layout/layout_fab_list_move_up" />
+                <include layout="@layout/layout_fab_list_move_up" />
 
-            <include layout="@layout/item_txt_nodata" />
+                <include layout="@layout/item_txt_nodata" />
 
 
-            <include layout="@layout/ln_loading" />
+                <include layout="@layout/layout_loading" />
 
-        </FrameLayout>
+            </FrameLayout>
+        </LinearLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 

@@ -5,5 +5,5 @@
     <solid android:color="@color/color_bg_cadr" />
     <stroke
         android:width="@dimen/stroke_minimum"
-        android:color="@color/color_bg_cadr" />
+        android:color="@color/color_border" />
 </shape>

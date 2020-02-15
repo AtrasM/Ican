@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_margin="@dimen/margin_maximum"
+      android:layout_weight="1"
+      android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/ln_top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+      <LinearLayout
+          android:id="@+id/ln_new_cartable_document"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_marginLeft="@dimen/margin"
+          android:layout_marginTop="@dimen/margin_minimum"
+          android:layout_marginRight="@dimen/margin"
+          android:layout_marginBottom="@dimen/margin"
+          android:layout_weight="0.5"
+          android:background="@drawable/border_ln_home">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin">
+
+          <TextView
+              android:id="@+id/txt_new_cartable_document_count"
+              style="@style/custom_Txt_Sub_Title_style"
+              android:layout_width="26dp"
+              android:layout_height="26dp"
+              android:layout_gravity="left|top"
+              android:background="@drawable/circular_border_info"
+              android:gravity="center"
+              android:text="600"
+              android:textAppearance="@style/TextAppearance.FontPathIranSans"
+              android:textColor="@color/color_Info_Dark" />
+
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_margin="@dimen/margin"
+              android:gravity="center"
+              android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/ic_inbox" />
+
+            <TextView
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/title_new_cartable_document"
+                android:textColor="@color/color_Info" />
+          </LinearLayout>
+        </FrameLayout>
+      </LinearLayout>
+
+      <LinearLayout
+          android:id="@+id/ln_new_message"
+          style="@style/custom_selected_style"
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:layout_marginLeft="@dimen/margin"
+          android:layout_marginTop="@dimen/margin_minimum"
+          android:layout_marginRight="@dimen/margin"
+          android:layout_marginBottom="@dimen/margin"
+          android:layout_weight="0.5"
+          android:background="@drawable/border_ln_home">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin">
+
+          <TextView
+              android:id="@+id/txt_new_message_count"
+              style="@style/custom_Txt_Sub_Title_style"
+              android:layout_width="26dp"
+              android:layout_height="26dp"
+              android:layout_gravity="left|top"
+              android:background="@drawable/circular_border_red"
+              android:gravity="center"
+              android:text="600"
+              android:textAppearance="@style/TextAppearance.FontPathIranSans"
+              android:textColor="@color/colorPrimaryDark" />
+
+          <LinearLayout
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_margin="@dimen/margin"
+              android:gravity="center"
+              android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginBottom="-8dp"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/ic_unread_message" />
+
+            <TextView
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/title_all_new_message"
+                android:textColor="@color/color_Info" />
+          </LinearLayout>
+        </FrameLayout>
+
+      </LinearLayout>
+
+
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:fadeScrollbars="false"
+        android:scrollbars="vertical"
+        tools:ignore="UnusedAttribute">
+
+      <LinearLayout
+          android:id="@+id/ln_rcv"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical">
+
+        <FrameLayout
+            android:id="@+id/frm_rcv_pin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/margin"
+            android:visibility="visible">
+
+          <androidx.recyclerview.widget.RecyclerView
+              android:id="@+id/new_data_rcv_action_pin"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/margin"
+              android:background="@drawable/border_very_large_radios_light" />
+
+          <ImageView
+              android:id="@+id/ic_pin"
+              android:layout_width="24dp"
+              android:layout_height="24dp"
+              android:layout_gravity="top|center"
+              android:background="@drawable/circular_border"
+              app:srcCompat="@drawable/ic_pin"
+              tools:ignore="RtlHardcoded,UnusedAttribute" />
+
+
+        </FrameLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/new_data_rcv_action"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/border_very_large_radios_light"
+            android:elevation="@dimen/elevation"
+            tools:targetApi="lollipop" />
+
+      </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+  </LinearLayout>
+
+  <Button
+      android:id="@+id/btn_close"
+      style="@style/custom_close_button_style"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/close" />
+</LinearLayout>

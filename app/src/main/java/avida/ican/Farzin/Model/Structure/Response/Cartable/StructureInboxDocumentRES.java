@@ -48,6 +48,8 @@ public class StructureInboxDocumentRES {
     @Element(required = false)
     String ImportDate;
     @Element(required = false)
+    String ImportEntityNumber = "";
+    @Element(required = false)
     String ExportDate;
     @Element(required = false)
     String ReceiveDate;
@@ -69,6 +71,8 @@ public class StructureInboxDocumentRES {
     boolean IsRead;
     @Element(required = false)
     String LastChangeViewStatesDate;
+    @Element(required = false)
+    boolean bInWorkFlow;
 
     public StructureInboxDocumentRES() {
     }
@@ -287,5 +291,21 @@ public class StructureInboxDocumentRES {
 
     public void setSenderLastName(String senderLastName) {
         SenderLastName = senderLastName;
+    }
+
+    public String getImportEntityNumber() {
+        return ImportEntityNumber;
+    }
+
+    public void setImportEntityNumber(String importEntityNumber) {
+        ImportEntityNumber = importEntityNumber;
+    }
+
+    public boolean isbInWorkFlow() {
+        return bInWorkFlow;
+    }
+
+    public void setbInWorkFlow(boolean bInWorkFlow) {
+        this.bInWorkFlow = bInWorkFlow;
     }
 }

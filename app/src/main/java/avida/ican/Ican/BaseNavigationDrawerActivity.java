@@ -1,5 +1,7 @@
 package avida.ican.Ican;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 
@@ -16,20 +18,30 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import avida.ican.Farzin.Model.CustomLogger;
+import avida.ican.Farzin.Model.Interface.ChangeActiveRoleListener;
+import avida.ican.Farzin.View.ActivityCreateDocument;
 import avida.ican.Farzin.View.ActivitySetting;
+import avida.ican.Farzin.View.Dialog.DialogLogList;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.FarzinActivityChatRoom;
 import avida.ican.Farzin.View.FarzinActivityLogin;
+import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Farzin.View.FarzinActivityQueue;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import static avida.ican.Farzin.View.Enum.SettingEnum.AUTOMATIC;
 import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
+import static avida.ican.Farzin.View.Enum.SettingEnum.PRIVACY;
 
 /**
  * Created by AtrasVida on 2018-04-09 at 10:14 AM
@@ -46,6 +58,8 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     @Nullable
     @BindView(R.id.nav_view)
     NavigationView navigationView;
+    @BindView(R.id.txt_main_code_version)
+    TextView txtMainCodeVersion;
 
     @Nullable
     Menu nav_Menu;
@@ -56,9 +70,11 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
     View headerLayout;
 
     private String title = "";
-    private String navHeadeViewtitle;
-    private CircleImageView imgHeaderNav;
-    private TextView txtHeaderNav;
+    private ImageView imgHeaderNav;
+    private TextView txtNavHeaderName;
+    private TextView txtNavHeaderRoleName;
+    public ChangeActiveRoleListener mainChangeActiveRoleListener;
+    private boolean doubleBackToExitPressedOnce = false;
 
     public void setTollbarTitle(String title) {
         this.title = title;
@@ -66,6 +82,7 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         txtTitle.setText(title);
     }
 
+    @SuppressLint("SetTextI18n")
     public void initNavigationBar(String title, int menuRes) {
         setSupportActionBar(toolbar);
         assert txtTitle != null;
@@ -92,20 +109,22 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         //toolbar.setNavigationIcon(Resorse.getDrawable(R.drawable.ic_menu));
 
         //***********************toolbar*****************************
+        txtMainCodeVersion.setText(Resorse.getString(R.string.version) + " " + App.getAppVersionName());
 
     }
 
     private void initNavHeadeView() {
-        imgHeaderNav = (CircleImageView) headerLayout.findViewById(R.id.img_header);
-        txtHeaderNav = (TextView) headerLayout.findViewById(R.id.txt_header);
-        txtHeaderNav.setText("نام کاربری");
+        imgHeaderNav = (ImageView) headerLayout.findViewById(R.id.img_header);
+        txtNavHeaderName = (TextView) headerLayout.findViewById(R.id.txt_header_name);
+        txtNavHeaderRoleName = (TextView) headerLayout.findViewById(R.id.txt_header_role_name);
+        txtNavHeaderName.setText("نام کاربری");
+        txtNavHeaderRoleName.setText("[سمت]");
     }
 
-    public void setNavHeadeViewTitle(String title) {
-        this.navHeadeViewtitle = title;
-        txtHeaderNav.setText(title);
+    public void setNavHeadeViewTitle(String name, String roleName) {
+        txtNavHeaderName.setText(name);
+        txtNavHeaderRoleName.setText(roleName);
     }
-
 
     private void setUpNavigationItemSelectedListener(final int menuRes) {
         navigationView.setNavigationItemSelectedListener(item -> {
@@ -135,20 +154,62 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
     private void checkInFirstMenu(int itemId) {
         switch (itemId) {
-            case R.id.nav_manual_setting: {
+            case R.id.nav_create_document: {
+                goToActivity(ActivityCreateDocument.class);
+                break;
+            }
+            case R.id.nav_inbox: {
+                try {
+                    final Activity[] activity = {getActivityFromStackMap(FarzinActivityMain.class.getSimpleName())};
+                    final FarzinActivityMain[] activityMain = new FarzinActivityMain[1];
+                    if (App.activityStacks != null) {
+                        if (activity[0] != null) {
+                            activityMain[0] = (FarzinActivityMain) activity[0];
+                            activityMain[0].selectCartableDocumentFragment();
+                        }
+                    } else {
+                        goToActivity(FarzinActivityMain.class);
+
+                        App.getHandlerMainThread().postDelayed(() -> {
+                            activity[0] = getActivityFromStackMap(FarzinActivityMain.class.getSimpleName());
+                            if (activity[0] != null) {
+                                activityMain[0] = (FarzinActivityMain) activity[0];
+                                activityMain[0].selectCartableDocumentFragment();
+                            }
+                        }, 1000);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                break;
+            }
+            case R.id.nav_get_data_setting: {
                 Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
-                intent.putExtra(PutExtraEnum.Settingtype.getValue(), MANUALLY.getValue());
+                intent.putExtra(PutExtraEnum.SettingType.getValue(), MANUALLY.getValue());
                 goToActivity(intent);
                 break;
             }
             case R.id.nav_automatic_setting: {
                 Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
-                intent.putExtra(PutExtraEnum.Settingtype.getValue(), AUTOMATIC.getValue());
+                intent.putExtra(PutExtraEnum.SettingType.getValue(), AUTOMATIC.getValue());
+                goToActivity(intent);
+                break;
+            }
+            case R.id.nav_privacy_setting: {
+                Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
+                intent.putExtra(PutExtraEnum.SettingType.getValue(), PRIVACY.getValue());
                 goToActivity(intent);
                 break;
             }
             case R.id.nav_queue: {
                 goToActivity(FarzinActivityQueue.class);
+                break;
+            }
+            case R.id.nav_change_active_role: {
+                if (mainChangeActiveRoleListener != null) {
+                    mainChangeActiveRoleListener.doProcess();
+                }
                 break;
             }
             case R.id.nav_about: {
@@ -160,12 +221,23 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
                 break;
             }
             case R.id.nav_log_out: {
-                //App.canBack = true;
+                if (App.getFarzinBroadCastReceiver() != null) {
+                    App.getFarzinBroadCastReceiver().stopServices();
+                }
                 Intent intent = new Intent(App.CurentActivity, FarzinActivityLogin.class);
                 intent.putExtra("LogOut", true);
                 goToActivity(intent);
 
                 Finish(App.CurentActivity);
+                break;
+            }
+
+            case R.id.nav_show_log: {
+                new DialogLogList(App.CurentActivity).Show(new ArrayList<>(CustomLogger.getLog()));
+                break;
+            }
+            case R.id.nav_chat_room: {
+                goToActivity(FarzinActivityChatRoom.class);
                 break;
             }
         }
@@ -188,11 +260,24 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
         }
     }
 
+    public DrawerLayout getDrawer() {
+        return drawer;
+    }
+
     public void changeDrawerMenu(int menuRes) {
         navigationView.getMenu().clear();
         navigationView.inflateMenu(menuRes);
         nav_Menu = navigationView.getMenu();
         setUpNavigationItemSelectedListener(menuRes);
+    }
+
+    public void changeVisibilityItem(int itemRes, boolean isVisible) {
+        try {
+            nav_Menu.findItem(itemRes).setVisible(isVisible);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
@@ -220,7 +305,16 @@ public abstract class BaseNavigationDrawerActivity extends BaseToolbarActivity {
 
     public void FinishNavigationActivity() {
         if (!drawer.isDrawerOpen(GravityCompat.START)) {
-            Finish(App.CurentActivity);
+            if (doubleBackToExitPressedOnce) {
+                Finish(App.CurentActivity);
+                return;
+            } else {
+                App.ShowMessage().ShowToast(Resorse.getString(R.string.msg_double_back), ToastEnum.TOAST_LONG_TIME);
+            }
+            doubleBackToExitPressedOnce = true;
+            App.getHandlerMainThread().postDelayed(() -> {
+                doubleBackToExitPressedOnce = false;
+            }, TimeValue.SecondsInMilli() * 2);
         } else {
             drawer.closeDrawer(GravityCompat.START);
         }

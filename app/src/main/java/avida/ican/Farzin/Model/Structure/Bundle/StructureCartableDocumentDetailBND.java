@@ -1,12 +1,8 @@
 package avida.ican.Farzin.Model.Structure.Bundle;
 
-import android.app.Activity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-
-import avida.ican.Ican.Model.Structure.StructureAttach;
 
 /**
  * Created by AtrasVida on 2018-10-22 at 1:32 PM
@@ -22,11 +18,25 @@ public class StructureCartableDocumentDetailBND implements Serializable {
     private String SenderName;
     private String SenderRoleName;
     private String EntityNumber;
+    private String ImportEntityNumber;
+    private boolean isFromEntityDependency;
+    private boolean bInWorkFlow;
 
     public StructureCartableDocumentDetailBND() {
+
     }
 
-    public StructureCartableDocumentDetailBND(int ETC, int EC,int SendCode, int receiverCode, Date receiveDate, String title, String senderName, String senderRoleName, String entityNumber) {
+    public StructureCartableDocumentDetailBND(int ETC, int EC, String title, String entityNumber, String importEntityNumber) {
+        this.ETC = ETC;
+        this.EC = EC;
+        Title = title;
+        EntityNumber = entityNumber;
+        ImportEntityNumber = importEntityNumber;
+        this.isFromEntityDependency = true;
+        this.bInWorkFlow = false;
+    }
+
+    public StructureCartableDocumentDetailBND(int ETC, int EC, int SendCode, int receiverCode, Date receiveDate, String title, String senderName, String senderRoleName, String entityNumber, String importEntityNumber, boolean bInWorkFlow) {
         this.ETC = ETC;
         this.EC = EC;
         this.SendCode = SendCode;
@@ -36,6 +46,8 @@ public class StructureCartableDocumentDetailBND implements Serializable {
         SenderName = senderName;
         SenderRoleName = senderRoleName;
         EntityNumber = entityNumber;
+        ImportEntityNumber = importEntityNumber;
+        this.bInWorkFlow = bInWorkFlow;
     }
 
     public int getETC() {
@@ -108,5 +120,29 @@ public class StructureCartableDocumentDetailBND implements Serializable {
 
     public void setSendCode(int sendCode) {
         SendCode = sendCode;
+    }
+
+    public String getImportEntityNumber() {
+        return ImportEntityNumber;
+    }
+
+    public void setImportEntityNumber(String importEntityNumber) {
+        ImportEntityNumber = importEntityNumber;
+    }
+
+    public boolean isFromEntityDependency() {
+        return isFromEntityDependency;
+    }
+
+    public void setFromEntityDependency(boolean fromEntityDependency) {
+        isFromEntityDependency = fromEntityDependency;
+    }
+
+    public boolean isbInWorkFlow() {
+        return bInWorkFlow;
+    }
+
+    public void setbInWorkFlow(boolean bInWorkFlow) {
+        this.bInWorkFlow = bInWorkFlow;
     }
 }

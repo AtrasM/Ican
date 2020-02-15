@@ -4,46 +4,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-   style="@style/custom_item_rcv_style"
     android:orientation="vertical">
 
+
     <LinearLayout
+        style="@style/custom_item_rcv_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:layout_marginLeft="@dimen/margin_minimum"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="@dimen/margin_minimum"
+        android:layout_marginBottom="@dimen/margin"
+        android:background="@drawable/border"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/padding"
+        tools:targetApi="m">
+
+        <TextView
+            android:id="@+id/txt_counter"
+            style="@style/custom_Txt_light_count_style"
+            android:layout_marginRight="@dimen/margin_minimum"
+            android:layout_marginLeft="@dimen/margin_minimum"
+            android:layout_marginTop="@dimen/margin_minimum"
+            android:layout_marginBottom="@dimen/margin_minimum"
+            android:textAppearance="@style/TextAppearance.FontPathIranSans"
+            android:textColor="@color/color_txt_Normal" />
+
 
         <ImageView
             android:id="@+id/img_attach_icon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            style="@style/custom_ic_right_style" />
+            style="@style/custom_ic_right_style"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginLeft="@dimen/margin"
+            android:contentDescription="TODO" />
 
-            <TextView
-                android:id="@+id/txt_name"
-                style="@style/custom_Txt_Normal_style"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/margin"
-                android:gravity="center|right"
-                android:text="نام"
-                tools:ignore="RtlHardcoded" />
-
+        <TextView
+            android:id="@+id/txt_name"
+            style="@style/custom_Txt_Normal_style"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center|right"
+            android:text="نام"
+            android:textColor="@color/color_Info"
+            android:textStyle="bold"
+            tools:ignore="RtlHardcoded" />
 
         <ImageView
             android:id="@+id/img_delet"
+            style="@style/custom_ic_left_style"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            style="@style/custom_ic_left_style"
             android:visibility="gone"
-            app:srcCompat="@drawable/delete" />
+            app:srcCompat="@drawable/ic_circle_delete" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ln_divider"
         style="@style/custom_divider_style"
-        android:layout_width="match_parent"
-        android:layout_height="2dp" />
+        android:layout_marginLeft="0dp"
+        android:layout_marginBottom="0dp"
+        android:visibility="gone" />
 </LinearLayout>

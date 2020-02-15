@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
-import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRoll;
 import avida.ican.Farzin.View.Interface.ListenerUserAndRollSearch;

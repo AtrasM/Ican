@@ -6,7 +6,7 @@ import org.simpleframework.xml.Root;
 import avida.ican.Ican.Model.ChangeXml;
 
 /**
- * Created by AtrasVida in 2018-07-08 at 15:15 PM
+ * Created by AtrasVida in 2018-07-08 at 3:15 PM
  */
 
 @Root(name = "Receiver")
@@ -17,6 +17,12 @@ public class StructureReceiverRES {
     private int UserID;
     @Element
     private String UserName;
+    @Element(required = false)
+    private String RoleName;
+    @Element(required = false)
+    private String FirstName;
+    @Element(required = false)
+    private String LastName;
     @Element
     private boolean IsRead;
     @Element(required = false)
@@ -25,10 +31,13 @@ public class StructureReceiverRES {
     public StructureReceiverRES() {
     }
 
-    public StructureReceiverRES(int roleID, int userID, String userName, boolean isRead, String viewDate) {
+    public StructureReceiverRES(int roleID, int userID, String roleName, String firstName, String lastName, String userName, boolean isRead, String viewDate) {
         RoleID = roleID;
         UserID = userID;
         UserName = userName;
+        RoleName = roleName;
+        FirstName = firstName;
+        LastName = lastName;
         IsRead = isRead;
         ViewDate = viewDate;
     }
@@ -71,6 +80,30 @@ public class StructureReceiverRES {
 
     public void setViewDate(String viewDate) {
         ViewDate = viewDate;
+    }
+
+    public String getRoleName() {
+        return RoleName;
+    }
+
+    public void setRoleName(String roleName) {
+        RoleName = roleName;
+    }
+
+    public String getFirstName() {
+        return FirstName;
+    }
+
+    public void setFirstName(String firstName) {
+        FirstName = firstName;
+    }
+
+    public String getLastName() {
+        return LastName;
+    }
+
+    public void setLastName(String lastName) {
+        LastName = lastName;
     }
 }
 

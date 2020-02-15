@@ -3,6 +3,7 @@ package avida.ican.Ican.View.Custom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Created by AtrasVida on 2018-04-24 at 11:13 AM
@@ -25,9 +26,19 @@ public class DifferenceBetweenTwoDates {
     public DifferenceBetweenTwoDates(String strSimpleDateFormat, String startDate, String lastDate) {
         simpleDateFormat = new SimpleDateFormat(strSimpleDateFormat);
         try {
-            this.startDate = simpleDateFormat.parse(startDate);
-            this.endDate = simpleDateFormat.parse(lastDate);
-        } catch (ParseException e) {
+            /*this.startDate = simpleDateFormat.parse(startDate);
+            this.endDate = simpleDateFormat.parse(lastDate);*/
+
+            if (CustomFunction.ValidationDateFormat(startDate, strSimpleDateFormat)) {
+                startDate = CustomFunction.StandardizeTheDateFormat(startDate);
+            }
+            this.startDate = new Date(startDate);
+
+            if (CustomFunction.ValidationDateFormat(lastDate, strSimpleDateFormat)) {
+                lastDate = CustomFunction.StandardizeTheDateFormat(lastDate);
+            }
+            this.endDate = new Date(lastDate);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_minimum"
+    android:background="@color/color_White"
+    android:orientation="vertical">
+
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/txt_name"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin"
+                android:gravity="center"
+                android:text="@string/title_finger_print"
+                android:textColor="@color/color_Info"
+                tools:ignore="RtlHardcoded" />
+
+            <me.aflak.libraries.view.Fingerprint
+                android:id="@+id/fingerprint"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center" />
+
+            <TextView
+                android:id="@+id/txt_error"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/title_finger_print"
+                android:textColor="@color/color_Red_dark"
+                android:visibility="gone"
+                tools:ignore="RtlHardcoded" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/btn_close"
+        style="@style/custom_close_button_style"
+        android:layout_width="match_parent"
+        android:textSize="@dimen/txt_Normal_Size"
+        android:layout_height="wrap_content"
+        android:text="@string/cancel" />
+</LinearLayout>

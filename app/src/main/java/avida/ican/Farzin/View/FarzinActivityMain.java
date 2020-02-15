@@ -1,15 +1,15 @@
 package avida.ican.Farzin.View;
 
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
+import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -21,31 +21,56 @@ import android.widget.LinearLayout;
 
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import org.acra.ACRA;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
-import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.ChangeActiveRoleListener;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.MetaDataParentSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.StructureUserRoleDB;
+import avida.ican.Farzin.Model.Structure.Request.StructureUserRoleREQ;
+import avida.ican.Farzin.Presenter.Cartable.ChangeActiveRolePresenter;
+import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
+import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
+import avida.ican.Farzin.Presenter.Queue.FarzinCartableDocumentPublicQueuePresenter;
+import avida.ican.Farzin.Presenter.Service.SignalR.SignalRService;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
+import avida.ican.Farzin.View.Dialog.DialogNewData;
+import avida.ican.Farzin.View.Dialog.DialogUserRoleList;
 import avida.ican.Farzin.View.Enum.CurentProject;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Fragment.FragmentCartable;
 import avida.ican.Farzin.View.Fragment.FragmentHome;
 import avida.ican.Farzin.View.Fragment.Message.FragmentMessageList;
+import avida.ican.Farzin.View.Interface.ListenerDialogNewData;
+import avida.ican.Farzin.View.Interface.ListenerDialogUserRole;
 import avida.ican.Farzin.View.Interface.ListenerFilter;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseNavigationDrawerActivity;
 import avida.ican.Ican.View.Custom.CheckNetworkAvailability;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindString;
@@ -64,14 +89,13 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
 
-    private static BottomNavigationViewEx staticbottomNavigation;
-    @BindString(R.string.title_farzin_login)
+    //private static BottomNavigationViewEx staticbottomNavigation;
+    @BindString(R.string.title_home)
     String Title;
     private boolean menuShow = false;
     private FarzinMetaDataSync farzinMetaDataSync;
     private FarzinBroadcastReceiver broadcastReceiver;
     private IntentFilter intentFilter;
-
     private static final String TAB_CARTABLE = "tab_cartable";
     private static final String TAB_DASHBOARD = "tab_dashboard";
     private static final String TAB_Message = "tab_message_list";
@@ -84,6 +108,16 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private boolean filtering = false;
     private String curentTab = "";
     private int ACTIVITYSETTING = 200;
+    private ChangeActiveRoleListener mChangeActiveRoleListener;
+    private FarzinMetaDataQuery farzinMetaDataQuery;
+    private String notificationTag = "";
+
+    private SignalRService mService;
+    private boolean mBound = false;
+    private FirebaseJobDispatcher dispatcher;
+    private DialogNewData dialogNewData;
+    private Bundle bundleObject = new Bundle();
+    private int DOCUMENTDETAILCODE = 001;
 
     @Override
     protected int getLayoutResource() {
@@ -96,32 +130,99 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         if (App.fragmentStacks != null && App.fragmentStacks.size() > 0) {
             if (actionfilter != null) {
                 if (curentTab == TAB_DASHBOARD) {
-                    FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(TAB_DASHBOARD).lastElement();
-                    fragmentHome.reGetDataFromLocal();
-                    actionfilter.setVisible(false);
+                    if (App.needToReGetMessageList || App.needToReGetCartableDocumentList) {
+                        FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(TAB_DASHBOARD).lastElement();
+                        fragmentHome.reGetDataFromLocal();
+                    }
+
+                    try {
+                        actionfilter.setVisible(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
+        }
 
+        if (dialogNewData != null && !dialogNewData.isShowing()) {
+            checkNewData();
         }
 
         super.onResume();
     }
 
+    private void checkNewData() {
+        if (notificationTag == null || notificationTag.isEmpty()) {
+            long messageCount = new FarzinMessageQuery().getNewMessageCount();
+            long cartableDocumentCount = new FarzinCartableQuery().getNewCartableDocumentCount();
+            if (messageCount > 0 || cartableDocumentCount > 0) {
+                dialogNewData.show();
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        farzinPrefrences = getFarzinPrefrences();
+        String actorID = farzinPrefrences.getActorIDToken();
+        String userID = farzinPrefrences.getUserIDToken();
+        String cookie = farzinPrefrences.getCookie();
+        Log.i("cookie", "Ican cookie= " + cookie);
+        //Log.i("GetRoleList", "actorID= " + actorID + " userID= " + userID);
         isFilter = getIntent().getBooleanExtra(PutExtraEnum.IsFilter.getValue(), false);
+        notificationTag = getIntent().getStringExtra(PutExtraEnum.Notification.getValue());
+        App.needToReGetCartableDocumentList = false;
+        App.needToReGetMessageList = false;
         container.setVisibility(View.GONE);
         lnLoading.setVisibility(View.VISIBLE);
         CheckNetWork();
-        farzinPrefrences = getFarzinPrefrences();
+        farzinMetaDataQuery = new FarzinMetaDataQuery(App.CurentActivity);
         initNavigationBar(Title, R.menu.main_drawer);
         App.setCurentProject(CurentProject.Farzin);
-        initBroadcastReceiver();
+        broadcastReceiver = App.initBroadcastReceiver();
         initFragmentStack();
         App.getHandlerMainThread().postDelayed(() -> initFarzinMetaDataSyncClass(), TimeValue.SecondsInMilli());
+        initChangeActiveRoleListener();
+        dialogNewData = new DialogNewData(this, new ListenerDialogNewData() {
+            @Override
+            public void showMessageList() {
+                selectMessageFragment();
+            }
 
-        //bottomNavigation.setSelectedItemId(R.id.navigation_home);
+            @Override
+            public void showCartableDocumentList() {
+
+            }
+        }).init();
+    }
+
+    private void initChangeActiveRoleListener() {
+        ArrayList<StructureUserRoleDB> structureUserRoleDBS = farzinMetaDataQuery.getUserRole();
+        if (structureUserRoleDBS != null && structureUserRoleDBS.size() > 0) {
+            changeVisibilityItem(R.id.nav_change_active_role, true);
+        } else {
+            changeVisibilityItem(R.id.nav_change_active_role, false);
+        }
+
+        mChangeActiveRoleListener = new ChangeActiveRoleListener() {
+            @Override
+            public void doProcess() {
+                String roleIDToken = farzinPrefrences.getRoleIDToken();
+                showDialogUserRoles(roleIDToken, farzinPrefrences.getUserIDToken());
+            }
+
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailed(String error) {
+
+            }
+        };
+        mainChangeActiveRoleListener = mChangeActiveRoleListener;
     }
 
     private void initFragmentStack() {
@@ -139,21 +240,11 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         bottomNavigation.setOnNavigationItemSelectedListener(this);
         bottomNavigation.setTextVisibility(false);
         bottomNavigation.setCurrentItem(0);
+        bottomNavigation.setCurrentItem(2);
         bottomNavigation.setCurrentItem(1);
-        staticbottomNavigation = bottomNavigation;
+        //staticbottomNavigation = bottomNavigation;
     }
 
-    private void initBroadcastReceiver() {
-        broadcastReceiver = new FarzinBroadcastReceiver();
-        intentFilter = new IntentFilter();
-        String BROADCAST = "avida.ican.android.action.broadcast";
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        intentFilter.addAction(BROADCAST);
-        registerReceiver(broadcastReceiver, intentFilter);
-        Intent intent = new Intent(BROADCAST);
-        sendBroadcast(intent);
-        App.setFarzinBroadCastReceiver(broadcastReceiver);
-    }
 
     private void initFarzinMetaDataSyncClass() {
         farzinMetaDataSync = new FarzinMetaDataSync().RunONschedule(new MetaDataSyncListener() {
@@ -176,11 +267,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             @Override
             public void onFinish() {
-
-                StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
-                structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID(), farzinPrefrences.getRoleID());
-                String title = structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
-                setNavHeadeViewTitle(title);
+                setNavTitle();
                 checkAppSynced();
             }
         });
@@ -191,21 +278,29 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     }
 
+    private void setNavTitle() {
+        StructureUserAndRoleDB structureUserAndRoleDB = new StructureUserAndRoleDB();
+        if (farzinPrefrences.getRoleID() > 0) {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID(), farzinPrefrences.getRoleID());
+        } else {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(farzinPrefrences.getUserID());
+        }
+        String name = structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
+        String roleName = "[" + structureUserAndRoleDB.getRoleName() + "]";
+        setNavHeadeViewTitle(name, roleName);
+    }
+
     private void checkAppSynced() {
         App.getHandlerMainThread().postDelayed(() -> {
             if (!farzinPrefrences.isDataForFirstTimeSync()) {
                 App.canBack = true;
                 Intent intent = new Intent(App.CurentActivity, ActivitySetting.class);
-                intent.putExtra(PutExtraEnum.Settingtype.getValue(), SYNC.getValue());
+                intent.putExtra(PutExtraEnum.SettingType.getValue(), SYNC.getValue());
                 goToActivityForResult(intent, ACTIVITYSETTING);
             } else {
-                runBaseService();
+                runServices();
                 container.setVisibility(View.VISIBLE);
                 lnLoading.setVisibility(View.GONE);
-
-                if (staticbottomNavigation != null) {
-                    staticbottomNavigation.setCurrentItem(1);
-                }
             }
         }, 100);
     }
@@ -214,7 +309,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         String Title = "";
         switch (item.getItemId()) {
-
 
             case R.id.navigation_home: {
                 Title = "خانه";
@@ -253,6 +347,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
              */
 
             switch (tabId) {
+
                 case TAB_DASHBOARD: {
                     pushFragments(tabId, new FragmentHome(), true);
                     break;
@@ -280,6 +375,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
              */
             pushFragments(tabId, App.fragmentStacks.get(tabId).lastElement(), false);
         }
+
         App.getHandlerMainThread().post(new Runnable() {
             @Override
             public void run() {
@@ -291,41 +387,65 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     public void pushFragments(String tab, Fragment fragment, boolean shouldAdd) {
 
-
         if (shouldAdd) {
             curentTab = tab;
             App.fragmentStacks.get(tab).push(fragment);
             if (tab == TAB_Message) {
-                actionfilter.setVisible(true);
+                try {
+                    actionfilter.setVisible(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             getSupportFragmentManager()
                     .beginTransaction()
                     .hide(CurentFragment)
                     .add(R.id.frm_main, fragment)
-                    .commit();
+                    .commitAllowingStateLoss();
         } else {
             if (!tab.equals(curentTab)) {
                 curentTab = tab;
                 if (tab == TAB_DASHBOARD) {
-                    FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tab).lastElement();
-                    fragmentHome.reGetDataFromLocal();
-                    fragment = fragmentHome;
-                    actionfilter.setVisible(false);
-                } else if (tab == TAB_CARTABLE) {
-                    FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tab).lastElement();
-                    fragmentCartable.reGetDataFromLocal();
-                    fragment = fragmentCartable;
-                    actionfilter.setVisible(false);
-                } else if (tab == TAB_Message) {
-                    if (!filtering) {
-                        filterReceiveMessage();
+                    if (dialogNewData != null && !dialogNewData.isShowing()) {
+                        checkNewData();
                     }
+                    if (App.needToReGetMessageList || App.needToReGetCartableDocumentList) {
+                        FragmentHome fragmentHome = (FragmentHome) App.fragmentStacks.get(tab).lastElement();
+                        fragmentHome.reGetDataFromLocal();
+                        fragment = fragmentHome;
+                    }
+
+                    try {
+                        actionfilter.setVisible(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (tab == TAB_CARTABLE) {
+                    if (App.needToReGetCartableDocumentList) {
+                        FragmentCartable fragmentCartable = (FragmentCartable) App.fragmentStacks.get(tab).lastElement();
+                        fragmentCartable.reGetDataFromLocal();
+                        fragment = fragmentCartable;
+                        App.needToReGetCartableDocumentList = false;
+                    }
+                    try {
+                        actionfilter.setVisible(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (tab == TAB_Message) {
+                    if (App.needToReGetMessageList) {
+                        if (!filtering) {
+                            filterReceiveMessage();
+                        }
+                        App.needToReGetMessageList = false;
+                    }
+
                 }
                 getSupportFragmentManager()
                         .beginTransaction()
                         .hide(CurentFragment)
                         .show(fragment)
-                        .commit();
+                        .commitAllowingStateLoss();
 
 
             }
@@ -352,23 +472,12 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                Log.i("isMyServiceRunning?", true + "");
-                return true;
-            }
-        }
-        Log.i("isMyServiceRunning?", false + "");
-
-        return false;
-    }
 
     public void selectMessageFragment(boolean isFilter) {
-        if (staticbottomNavigation != null) {
+
+        if (bottomNavigation != null) {
             this.isFilter = isFilter;
-            staticbottomNavigation.setCurrentItem(2);
+            bottomNavigation.setCurrentItem(2);
         }
         if (isFilter) {
             filterReceiveMessage();
@@ -377,20 +486,29 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     public void selectMessageFragment() {
-        if (staticbottomNavigation != null) {
-            staticbottomNavigation.setCurrentItem(2);
-            if (!filtering) {
-                filterReceiveMessage();
+        if (bottomNavigation != null) {
+            bottomNavigation.setCurrentItem(2);
+            try {
+                if (!filtering) {
+                    filterReceiveMessage();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                ACRA.getErrorReporter().handleSilentException(e);
             }
         }
     }
 
 
     public void selectCartableDocumentFragment() {
-        if (staticbottomNavigation != null) {
-            staticbottomNavigation.setCurrentItem(0);
+        if (bottomNavigation != null) {
+            bottomNavigation.setCurrentItem(0);
         }
-        actionfilter.setVisible(false);
+        try {
+            actionfilter.setVisible(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void CheckNetWork() {
@@ -419,39 +537,132 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-
         getMenuInflater().inflate(R.menu.filter_toolbar_menu, menu);
-        // menu.findItem(R.id.action_search).setIntent(new Intent(G.currentActivity, ActivitySearch.class));
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        actionfilter = menu.findItem(R.id.action_filter);
-        actionfilter.setVisible(false);
-        actionfilter.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                if (!filtering) {
-                    isFilter = !isFilter;
-                    selectMessageFragment();
-                }
 
-                return false;
+        actionfilter = menu.findItem(R.id.action_filter);
+
+        try {
+            actionfilter.setVisible(false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        actionfilter.setOnMenuItemClickListener(menuItem -> {
+            if (!filtering) {
+                isFilter = !isFilter;
+                selectMessageFragment();
             }
+
+            return false;
         });
+
+
+        checkNotification();
+
         return super.onPrepareOptionsMenu(menu);
     }
 
+    private void checkNotification() {
+        if (notificationTag != null && !notificationTag.isEmpty()) {
+            if (notificationTag.equals(PutExtraEnum.MultyCartableDocument.getValue())) {
+                long cartableDocumentCount = new FarzinCartableQuery().getNewCartableDocumentCount();
+                if (cartableDocumentCount == 1) {
+                    StructureInboxDocumentDB structureInboxDocumentDB = new FarzinCartableQuery().getNewCartableDocument();
+                    gotoDocumentDetail(structureInboxDocumentDB);
+                } else if (cartableDocumentCount > 1) {
+                    dialogNewData.show();
+                } else {
+                    selectCartableDocumentFragment();
+                }
+
+            } else if (notificationTag.equals(PutExtraEnum.MultyMessage.getValue())) {
+                long messageCount = new FarzinMessageQuery().getNewMessageCount();
+                if (messageCount == 1) {
+                    StructureMessageDB structureMessageDB = new FarzinMessageQuery().getNewMessage();
+                    goToMessageDetail(structureMessageDB);
+                } else if (messageCount > 1) {
+                    dialogNewData.show();
+                } else {
+                    selectMessageFragment();
+                }
+            }
+            notificationTag = "";
+        }
+        notificationTag = "";
+    }
+
+    private void gotoDocumentDetail(final StructureInboxDocumentDB item) {
+        FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
+        App.getHandlerMainThread().post(() -> {
+            if (farzinCartableQuery.IsDocumentExist(item.getReceiverCode())) {
+                StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(item.getEntityTypeCode(), item.getEntityCode(), item.getSendCode(), item.getReceiverCode(), item.getReceiveDate(), item.getTitle(), item.getSenderName(), item.getSenderRoleName(), item.getEntityNumber(), item.getImportEntityNumber(),item.isbInWorkFlow());
+                farzinCartableQuery.updateCartableDocumentIsNewStatus(item.getId(), false);
+                bundleObject.putSerializable(PutExtraEnum.BundleCartableDocumentDetail.getValue(), cartableDocumentDetailBND);
+                Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocumentDetail.class);
+                intent.putExtras(bundleObject);
+                goToActivityForResult(intent, DOCUMENTDETAILCODE);
+                farzinCartableQuery.updateCartableDocumentStatus(item.getId(), Status.READ);
+            }
+        });
+    }
+
+    public void goToMessageDetail(StructureMessageDB item) {
+
+
+        StructureUserAndRoleDB structureUserAndRoleDB;
+        if (item.getSender_role_id() > 0) {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(item.getSender_user_id(), item.getSender_role_id());
+        } else {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(item.getSender_user_id());
+        }
+
+        String Name = "" + structureUserAndRoleDB.getFirstName() + " " + structureUserAndRoleDB.getLastName();
+        String RoleName = "";
+        if (item.getSender_role_id() > 0) {
+            RoleName = "[ " + structureUserAndRoleDB.getRoleName() + " ]";
+        }
+
+        String[] splitDateTime = CustomFunction.MiladyToJalaly(item.getSent_date().toString()).split(" ");
+        final String date = splitDateTime[0];
+        final String time = splitDateTime[1];
+        StructureDetailMessageBND structureDetailMessageBND = new StructureDetailMessageBND(item.getId(), item.getMain_id(), item.getSender_user_id(), item.getSender_role_id(), Name, RoleName, item.getSubject(), item.getContent(), date, time, new ArrayList<>(item.getMessage_files()), item.getAttachmentCount(), item.isFilesDownloaded(), new ArrayList<StructureReceiverDB>(), Type.RECEIVED);
+
+        FarzinMessageQuery farzinMessageQuery = new FarzinMessageQuery();
+        FarzinActivityDetailMessage.structureDetailMessageBND = structureDetailMessageBND;
+        goToActivity(FarzinActivityDetailMessage.class);
+
+        farzinMessageQuery.UpdateMessageStatus(structureDetailMessageBND.getId(), Status.READ);
+        farzinMessageQuery.updateMessageIsNewStatus(structureDetailMessageBND.getId(), false);
+
+    }
+
+    @Override
+    public void invalidateOptionsMenu() {
+        super.invalidateOptionsMenu();
+    }
+
     private void filterReceiveMessage() {
+
         filtering = true;
+
         FragmentMessageList fragmentMessageList = (FragmentMessageList) App.fragmentStacks.get(TAB_Message).lastElement();
-        actionfilter.setVisible(true);
-        listenerFilter = new ListenerFilter() {
-            @Override
-            public void isFilter(boolean mIsFilter) {
-                isFilter = mIsFilter;
+
+        try {
+            if (actionfilter != null) {
+                actionfilter.setVisible(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        listenerFilter = mIsFilter -> {
+            isFilter = mIsFilter;
+            if (actionfilter != null) {
                 if (isFilter) {
                     actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
                 } else {
@@ -461,43 +672,44 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         };
 
         if (isFilter) {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            if (actionfilter != null) {
+                actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_filter));
+            }
             fragmentMessageList.filterMessage(Status.UnRead, isFilter, listenerFilter);
+
         } else {
-            actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            if (actionfilter != null) {
+                actionfilter.setIcon(Resorse.getDrawable(R.drawable.ic_unfilter));
+            }
             fragmentMessageList.filterMessage(null, isFilter, listenerFilter);
         }
-        App.getHandler().postDelayed(() -> filtering = false, 1000);
+
+        App.getHandlerMainThread().postDelayed(() -> filtering = false, 1000);
+
     }
 
     private void callDialogDataSyncing(int ServiceCount, boolean isMetaData) {
+
         runOnUiThread(() -> {
+
             if (!isMetaData) {
                 runBaseService();
             }
-       /*     try {
-                if (BaseActivity.dialogDataSyncing != null) {
-                    BaseActivity.dialogDataSyncing.dismiss();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }*/
 
-            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, ServiceCount, isMetaData, new avida.ican.Farzin.Model.Interface.MetaDataSyncListener() {
+            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, ServiceCount, isMetaData, new MetaDataParentSyncListener() {
                 @Override
                 public void onFinish() {
                     runOnUiThread(() -> {
-                        Log.i("Log", "onFinish isMetaData= " + isMetaData);
                         if (!isMetaData) {
+                            runServices();
                             container.setVisibility(View.VISIBLE);
                             lnLoading.setVisibility(View.GONE);
-                            Log.i("Log", "onFinish in if isMetaData= " + isMetaData);
-                            if (staticbottomNavigation != null) {
-                                staticbottomNavigation.setCurrentItem(1);
+                            if (bottomNavigation != null) {
+                                bottomNavigation.setCurrentItem(0);
+                                bottomNavigation.setCurrentItem(1);
                             }
                         }
                     });
-
                 }
 
                 @Override
@@ -517,9 +729,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void runBaseService() {
-        broadcastReceiver.runGetCartableDocumentService();
-        broadcastReceiver.runGetSentMessageService();
-        broadcastReceiver.runGetRecieveMessageService();
+        broadcastReceiver.runBaseService();
     }
 
     private void stopServices() {
@@ -527,16 +737,132 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void runServices() {
-        broadcastReceiver.stopServices();
+        String lastDate = farzinPrefrences.getConfirmationListDataSyncDate();
+        if (lastDate == null || lastDate.isEmpty()) {
+            lastDate = farzinPrefrences.getCartableDocumentDataSyncDate();
+            farzinPrefrences.putConfirmationListDataSyncDate(lastDate);
+        }
+        broadcastReceiver.runServices();
     }
 
 
+    private void showDialogUserRoles(String curentRoleIDToken, String mainUserCodeToken) {
+        lnLoading.setVisibility(View.GONE);
+        try {
+            if (dialog != null) {
+                dialog.dismiss();
+            }
+            if (BaseActivity.dialog != null) {
+                BaseActivity.dialog.dismiss();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        String userName = farzinPrefrences.getUserName();
+
+        DialogUserRoleList dialogUserRoleList = new DialogUserRoleList(App.CurentActivity, farzinMetaDataQuery.getUserRole(), true);
+
+        dialogUserRoleList.setOnListener(new ListenerDialogUserRole() {
+            @Override
+            public void onSuccess(StructureUserRoleDB userRoleDB) {
+                if (!userRoleDB.getRoleIDToken().equals(curentRoleIDToken)) {
+                    StructureUserRoleREQ structureUserRoleREQ = new StructureUserRoleREQ(userName, curentRoleIDToken, userRoleDB.getRoleIDToken(), userRoleDB.getRoleID(), userRoleDB.getActorIDToken(), mainUserCodeToken);
+                    ChangeActiveRole(structureUserRoleREQ);
+                }
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+
+        App.getHandlerMainThread().postDelayed(() -> dialogUserRoleList.Show(), 500);
+    }
+
+
+    private void ChangeActiveRole(StructureUserRoleREQ structureUserRoleREQ) {
+        if (new FarzinCartableDocumentPublicQueuePresenter().userHasQueue()) {
+            App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.invalid_user_has_queue), SnackBarEnum.SNACKBAR_INDEFINITE);
+        } else {
+            lnLoading.setVisibility(View.VISIBLE);
+            App.canBack = false;
+
+            ChangeActiveRolePresenter changeActiveRolePresenter = new ChangeActiveRolePresenter();
+            changeActiveRolePresenter.CallRequest(structureUserRoleREQ, new ChangeActiveRoleListener() {
+                @Override
+                public void doProcess() {
+                }
+
+                @Override
+                public void onSuccess() {
+                    try {
+                        App.getFarzinDatabaseHelper().clearDocumentOperatorsQueue();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    farzinPrefrences.putRoleIDToken(structureUserRoleREQ.getNewRoleID());
+                    farzinPrefrences.putUserBaseInfo(structureUserRoleREQ.getUserName(), structureUserRoleREQ.getRoleID(), structureUserRoleREQ.getActorIDToken());
+                    App.canBack = true;
+                    lnLoading.setVisibility(View.GONE);
+                    recreate();
+                }
+
+                @Override
+                public void onFailed(String error) {
+                    App.canBack = true;
+                    lnLoading.setVisibility(View.GONE);
+                }
+
+            });
+        }
+    }
+
+/*
+    public void startSignalRService(){
+        Intent intent = new Intent();
+        intent.setClass(App.getAppContext(), SignalRService.class);
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop() {
+        // Unbind from the service
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+        }
+        super.onStop();
+    }
+    */
+
+    /**
+     * Defines callbacks for service binding, passed to bindService()
+     *//*
+    public final ServiceConnection mConnection = new ServiceConnection() {
+
+        @Override
+        public void onServiceConnected(ComponentName className,
+                                       IBinder service) {
+            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
+            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
+            mService = binder.getService();
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            mBound = false;
+        }
+    };*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ACTIVITYSETTING) {
             if (resultCode == SYNC.getValue()) {
-                App.getHandler().postDelayed(() -> {
+                App.getHandlerMainThread().postDelayed(() -> {
                     callDialogDataSyncing(DataSyncingNameEnum.getDataSyncingCount(), false);
                 }, TimeValue.SecondsInMilli());
 
@@ -546,15 +872,18 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         }
     }
 
-
     @Override
     protected void onDestroy() {
-        if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
+        try {
+            App.activityStacks = null;
+            App.getFarzinBroadCastReceiver().restartServices();
+            farzinMetaDataSync.onDestory();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
         }
-        farzinMetaDataSync.onDestory();
-        super.onDestroy();
 
+        super.onDestroy();
     }
 
     @Override
@@ -564,8 +893,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
             if (mCurrentTab == TAB_DASHBOARD) {
                 FinishNavigationActivity();
             } else {
-                if (staticbottomNavigation != null) {
-                    staticbottomNavigation.setCurrentItem(1);
+                if (bottomNavigation != null) {
+                    bottomNavigation.setCurrentItem(1);
                 }
             }
 
@@ -579,17 +908,22 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
-                // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
-                if (mCurrentTab == TAB_DASHBOARD) {
-                    FinishNavigationActivity();
-                } else {
-                    if (staticbottomNavigation != null) {
-                        staticbottomNavigation.setCurrentItem(1);
+            if (!getDrawer().isDrawerOpen(GravityCompat.START)) {
+                if (App.fragmentStacks.get(mCurrentTab).size() == 1) {
+                    // We are already showing first fragment of current tab, so when back pressed, we will finish this activity..
+                    if (mCurrentTab == TAB_DASHBOARD) {
+                        FinishNavigationActivity();
+                    } else {
+                        if (bottomNavigation != null) {
+                            bottomNavigation.setCurrentItem(1);
+                        }
                     }
-                }
 
+                }
+            } else {
+                getDrawer().closeDrawer(GravityCompat.START);
             }
+
             return true;
         }
 

@@ -18,7 +18,6 @@ public class StructureZanjireMadrakListRES {
     @Element(required = false)
     private String strErrorMsg;
 
-
     public String getStrErrorMsg() {
         return new ChangeXml().viewCharDecoder(strErrorMsg);
     }
@@ -34,4 +33,5 @@ public class StructureZanjireMadrakListRES {
     public void setGetFileDependencyResult(StructureZanjireMadrakRES getFileDependencyResult) {
         GetFileDependencyResult = getFileDependencyResult;
     }
+
 }

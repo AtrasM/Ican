@@ -2,12 +2,13 @@ package avida.ican.Farzin.Model.Prefrences;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import org.ksoap2.HeaderProperty;
 
 import java.util.List;
+import java.util.Objects;
 
-import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
@@ -29,6 +30,7 @@ public class FarzinPrefrences {
         putUserName(UserName);
         putPassword(Password);
         putCookie(headerList);
+
     }
 
     public void putUserBaseInfo(int UserID, int RoleID) {
@@ -36,28 +38,94 @@ public class FarzinPrefrences {
         putRoleID(RoleID);
     }
 
+    public void putUserBaseInfo(String UserName, int RoleID, String ActorIDToken) {
+        putUserName(UserName);
+        putRoleID(RoleID);
+        putActorIDToken(ActorIDToken);
+    }
+
     public void putIsRemember(boolean isRemember) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "isRemember", isRemember).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isRemember", isRemember).apply();
+        }
     }
 
     public boolean isRemember() {
-        return sharedPreferencesValue.getBoolean(TAG + "isRemember", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isRemember", false);
+        }
+    }
+
+    public void putIsAnableFingerPrint(boolean isAnableFingerPrint) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isAnableFingerPrint", isAnableFingerPrint).apply();
+        }
+    }
+
+    public boolean isAnableFingerPrint() {
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isAnableFingerPrint", false);
+        }
+    }
+
+    public void putAnableAppLock(boolean isAnableAppLock) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isAnableAppLock", isAnableAppLock).apply();
+        }
+    }
+
+    public boolean isAnableAppLock() {
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isAnableAppLock", false);
+        }
+    }
+
+    public void putIsSupportFingerPrint(boolean isSupportFingerPrint) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isSupportFingerPrint", isSupportFingerPrint).apply();
+        }
+    }
+
+    public boolean isSupportFingerPrint() {
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isSupportFingerPrint", true);
+        }
     }
 
     public void putServerUrl(String serverUrl) {
-        sharedPreferencesValue.edit().putString(TAG + "ServerUrl", serverUrl).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "ServerUrl", serverUrl).apply();
+        }
     }
 
     public String getServerUrl() {
-        return sharedPreferencesValue.getString(TAG + "ServerUrl", "");
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "ServerUrl", "");
+        }
     }
 
     public void saveBaseUrl(String baseUrl) {
-        sharedPreferencesValue.edit().putString(TAG + "baseUrl", baseUrl).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "baseUrl", baseUrl).apply();
+        }
+    }
+
+    public void saveBaseChatUrl(String baseUrl) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "baseChatUrl", baseUrl).apply();
+        }
     }
 
     public String getBaseUrl() {
-        return sharedPreferencesValue.getString(TAG + "baseUrl", "FarzinSoft/WebServices/OA/");
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "baseUrl", "FarzinSoft/WebServices/OA/");
+        }
+    }
+
+    public String getBaseChatUrl() {
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "baseChatUrl", "FarzinSoft/WebServices/Chat/");
+        }
     }
 
     private void putCookie(List headerList) {
@@ -73,184 +141,396 @@ public class FarzinPrefrences {
                 }
             }
         }
-        sharedPreferencesValue.edit().putString(TAG + "cookie", SESSION_ID).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "cookie", SESSION_ID).apply();
+        }
+        //Log.i("LOG", "cookie = " + SESSION_ID);
     }
 
 
     public void putPassword(String password) {
-        sharedPreferencesValue.edit().putString(TAG + "password", password).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "password", password).apply();
+        }
     }
 
     private void putUserName(String userName) {
-        sharedPreferencesValue.edit().putString(TAG + "userName", userName).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "userName", userName).apply();
+        }
     }
 
     private void putRoleID(int roleID) {
-        sharedPreferencesValue.edit().putInt(TAG + "roleID", roleID).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putInt(TAG + "roleID", roleID).apply();
+        }
     }
 
+    public void putRoleIDToken(String roleIDToken) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "roleIDToken", roleIDToken).apply();
+        }
+    }
+
+    public String getRoleIDToken() {
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "roleIDToken", "");
+        }
+    }
+
+    public void putUserIDToken(String mainUserCodeToken) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "Main_UserCodeToken", mainUserCodeToken).apply();
+        }
+    }
+
+    public String getUserIDToken() {
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "Main_UserCodeToken", "");
+        }
+    }
+
+    public void putActorIDToken(String ActorIDToken) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "ActorIDToken", ActorIDToken).apply();
+        }
+    }
+
+    public String getActorIDToken() {
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "ActorIDToken", "");
+        }
+    }
+
+
     private void putUserID(int userID) {
-        sharedPreferencesValue.edit().putInt(TAG + "userID", userID).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putInt(TAG + "userID", userID).apply();
+        }
     }
 
     public String getCookie() {
-        return sharedPreferencesValue.getString(TAG + "cookie", "");
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "cookie", "");
+        }
     }
 
+
     public String getPassword() {
-        return sharedPreferencesValue.getString(TAG + "password", "-1");
+        synchronized (this) {
+            String password = CustomFunction.arabicToDecimal(Objects.requireNonNull(sharedPreferencesValue.getString(TAG + "password", "-1")));
+            return password;
+        }
     }
 
     public String getUserName() {
-        return sharedPreferencesValue.getString(TAG + "userName", "-1");
+        synchronized (this) {
+            String userName = CustomFunction.arabicToDecimal(Objects.requireNonNull(sharedPreferencesValue.getString(TAG + "userName", "-1")));
+            return userName;
+        }
     }
 
     public int getUserID() {
-        return sharedPreferencesValue.getInt(TAG + "userID", -1);
+        synchronized (this) {
+            return sharedPreferencesValue.getInt(TAG + "userID", -1);
+        }
     }
 
     public int getRoleID() {
-        return sharedPreferencesValue.getInt(TAG + "roleID", -1);
+        synchronized (this) {
+            return sharedPreferencesValue.getInt(TAG + "roleID", -1);
+        }
     }
 
 
     public void putMessageViewSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MessageViewSyncDate", DateTime).apply();
+        }
     }
 
     public String getMessageViewLastSyncDate() {
-        return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MessageViewSyncDate", "");
+        }
     }
 
     public void putMetaDataLastSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MetaDataSyncDate", DateTime).apply();
+        }
     }
 
     public String getMetaDataLastSyncDate() {
-        return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MetaDataSyncDate", "");
+        }
+    }
+
+    public void putConfirmationListDataSyncDate(String DateTime) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "ConfirmationListDataSyncDate", DateTime).apply();
+        }
+    }
+
+    public String getConfirmationListDataSyncDate() {
+        synchronized (this) {
+            //String defDate = CustomFunction.getCurentLocalDateTimeAsStringFormat();
+            return sharedPreferencesValue.getString(TAG + "ConfirmationListDataSyncDate", "");
+        }
     }
 
     public void putCartableDocumentDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDate", DateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "CartableDocumentDataSyncDate", DateTime).apply();
+        }
     }
 
     public String getCartableDocumentDataSyncDate() {
         String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
-        return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", defDate);
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "CartableDocumentDataSyncDate", defDate);
+        }
     }
 
+    //_______________*****CartableDocumentSettingDate******_____________________________
+    public void putCartableDocumentSettingStartDate(String DateTime) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "CartableDocumentSettingStartDate", DateTime).apply();
+        }
+    }
+
+    public String getCartableDocumentSettingStartDate() {
+        String defDate = getCartableDocumentDataSyncDate();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "CartableDocumentSettingStartDate", defDate);
+        }
+    }
+
+    public void putCartableDocumentSettingEndDate(String DateTime) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "CartableDocumentSettingEndDate", DateTime).apply();
+        }
+    }
+
+    public String getCartableDocumentSettingEndDate() {
+        String defDate = getCartableDocumentDataSyncDate();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "CartableDocumentSettingEndDate", defDate);
+        }
+    }
+    //_______________*****CartableDocumentSettingDate******_____________________________
+
+    //_______________*****MessageSettingDate******_____________________________
+    public void putMessageSettingStartDate(String DateTime) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MessageSettingStartDate", DateTime).apply();
+        }
+    }
+
+    public String getMessageSettingStartDate() {
+        String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MessageSettingStartDate", defDate);
+        }
+    }
+
+    public void putMessageSettingEndDate(String DateTime) {
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MessageSettingEndDate", DateTime).apply();
+        }
+    }
+
+    public String getMessageSettingEndDate() {
+        String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MessageSettingEndDate", defDate);
+        }
+    }
+    //_______________*****MessageSettingDate******_____________________________
+
+
     public void putReceiveMessageDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "ReceiveMessageDataSyncDate", DateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "ReceiveMessageDataSyncDate", DateTime).apply();
+        }
     }
 
     public String getReceiveMessageDataSyncDate() {
         String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
-        return sharedPreferencesValue.getString(TAG + "ReceiveMessageDataSyncDate", defDate);
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "ReceiveMessageDataSyncDate", defDate);
+        }
     }
 
     public void putSendMessageDataSyncDate(String DateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "SendMessageDataSyncDate", DateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "SendMessageDataSyncDate", DateTime).apply();
+        }
     }
 
     public String getSendMessageDataSyncDate() {
         String defDate = CustomFunction.getLastMonthDateTimeAsFormat();
-        return sharedPreferencesValue.getString(TAG + "SendMessageDataSyncDate", defDate);
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "SendMessageDataSyncDate", defDate);
+        }
     }
 
     public void putDefultActionCode(int code) {
-        sharedPreferencesValue.edit().putInt(TAG + "DefultActionCode", code).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putInt(TAG + "DefultActionCode", code).apply();
+        }
     }
 
     public int getDefultActionCode() {
-        return sharedPreferencesValue.getInt(TAG + "DefultActionCode", -1);
+        synchronized (this) {
+            return sharedPreferencesValue.getInt(TAG + "DefultActionCode", -1);
+        }
     }
 
     public void putDefultCountOfGetDocument(int count) {
-        sharedPreferencesValue.edit().putInt(TAG + "DefultCountOfGetDocument", count).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putInt(TAG + "DefultCountOfGetDocument", count).apply();
+        }
     }
 
     public int getDefultCountOfGetDocument() {
-        return sharedPreferencesValue.getInt(TAG + "DefultCountOfGetDocument", 10);
+        synchronized (this) {
+            return sharedPreferencesValue.getInt(TAG + "DefultCountOfGetDocument", 10);
+        }
     }
 
     public void putCartableDocumentForFirstTimeSync(boolean isDataForFirstTimeSync) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "isCartableDocumentForFirstTimeSync", isDataForFirstTimeSync).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isCartableDocumentForFirstTimeSync", isDataForFirstTimeSync).apply();
+        }
     }
 
     public boolean isCartableDocumentForFirstTimeSync() {
-        return sharedPreferencesValue.getBoolean(TAG + "isCartableDocumentForFirstTimeSync", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isCartableDocumentForFirstTimeSync", false);
+        }
     }
 
     public void putReceiveMessageForFirstTimeSync(boolean isDataForFirstTimeSync) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "isReceiveMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isReceiveMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+        }
     }
 
     public boolean isReceiveMessageForFirstTimeSync() {
-        return sharedPreferencesValue.getBoolean(TAG + "isReceiveMessageForFirstTimeSync", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isReceiveMessageForFirstTimeSync", false);
+        }
     }
 
     public void putSendMessageForFirstTimeSync(boolean isDataForFirstTimeSync) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "isSendMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isSendMessageForFirstTimeSync", isDataForFirstTimeSync).apply();
+        }
     }
 
     public boolean isSendMessageForFirstTimeSync() {
-        return sharedPreferencesValue.getBoolean(TAG + "isSendMessageForFirstTimeSync", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isSendMessageForFirstTimeSync", false);
+        }
     }
 
     public void putMetaDataForFirstTimeSync(boolean isMetaDataForFirstTimeSync) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "MetaDataForFirstTimeSync", isMetaDataForFirstTimeSync).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isMetaDataForFirstTimeSync", isMetaDataForFirstTimeSync).apply();
+        }
     }
 
     public boolean isMetaDataForFirstTimeSync() {
-        return sharedPreferencesValue.getBoolean(TAG + "MetaDataForFirstTimeSync", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isMetaDataForFirstTimeSync", false);
+        }
     }
 
     public void putDataForFirstTimeSync(boolean isDataForFirstTimeSync) {
-        sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putBoolean(TAG + "isDataForFirstTimeSync", isDataForFirstTimeSync).apply();
+        }
     }
 
     public boolean isDataForFirstTimeSync() {
-        return sharedPreferencesValue.getBoolean(TAG + "isDataForFirstTimeSync", false);
+        synchronized (this) {
+            return sharedPreferencesValue.getBoolean(TAG + "isDataForFirstTimeSync", false);
+        }
     }
 
     public void putCartableLastCheckDate(String dateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "CartableLastCheckDate", dateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "CartableLastCheckDate", dateTime).apply();
+        }
     }
 
     public String getCartableLastCheckDate() {
-        return sharedPreferencesValue.getString(TAG + "CartableLastCheckDate", "");
+        String def=CustomFunction.getCurentLocalDateTimeAsStringFormat();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "CartableLastCheckDate", def);
+        }
     }
 
     public void putMessageRecieveLastCheckDate(String dateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "MessageRecieveLastCheckDate", dateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MessageRecieveLastCheckDate", dateTime).apply();
+        }
     }
 
     public String getMessageRecieveLastCheckDate() {
-        return sharedPreferencesValue.getString(TAG + "MessageRecieveLastCheckDate", "");
+        String def=CustomFunction.getCurentLocalDateTimeAsStringFormat();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MessageRecieveLastCheckDate", def);
+        }
     }
 
     public void putMessageSentLastCheckDate(String dateTime) {
-        sharedPreferencesValue.edit().putString(TAG + "MessageSendLastCheckDate", dateTime).apply();
+        synchronized (this) {
+            sharedPreferencesValue.edit().putString(TAG + "MessageSendLastCheckDate", dateTime).apply();
+        }
     }
 
     public String getMessageSentLastCheckDate() {
-        return sharedPreferencesValue.getString(TAG + "MessageSendLastCheckDate", "");
+        String def=CustomFunction.getCurentLocalDateTimeAsStringFormat();
+        synchronized (this) {
+            return sharedPreferencesValue.getString(TAG + "MessageSendLastCheckDate", def);
+        }
     }
 
-
     public void clearCatch() {
-        putUserAuthenticationInfo("", "", null);
-        putUserBaseInfo(-1, -1);
-        putDataForFirstTimeSync(false);
-        putMetaDataLastSyncDate("");
-        putCartableDocumentForFirstTimeSync(false);
-        putSendMessageForFirstTimeSync(false);
-        putReceiveMessageForFirstTimeSync(false);
-        putCartableLastCheckDate("");
-        putMessageRecieveLastCheckDate("");
-        putMessageSentLastCheckDate("");
-        putMessageViewSyncDate("");
-        putCartableDocumentDataSyncDate("");
+        synchronized (this) {
+            sharedPreferencesValue.edit().remove(TAG + "userName").apply();
+            sharedPreferencesValue.edit().remove(TAG + "password").apply();
+            sharedPreferencesValue.edit().remove(TAG + "cookie").apply();
+            sharedPreferencesValue.edit().remove(TAG + "userID").apply();
+            sharedPreferencesValue.edit().remove(TAG + "roleID").apply();
+            sharedPreferencesValue.edit().remove(TAG + "ServerUrl").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isMetaDataForFirstTimeSync").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isDataForFirstTimeSync").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MetaDataSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isCartableDocumentForFirstTimeSync").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isSendMessageForFirstTimeSync").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isReceiveMessageForFirstTimeSync").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MessageViewSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "CartableLastCheckDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MessageRecieveLastCheckDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MessageSendLastCheckDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "DefultActionCode").apply();
+            sharedPreferencesValue.edit().remove(TAG + "SendMessageDataSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "ReceiveMessageDataSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "CartableDocumentDataSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "ConfirmationListDataSyncDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MessageSettingEndDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "MessageSettingStartDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "CartableDocumentSettingStartDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "CartableDocumentSettingEndDate").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isAnableAppLock").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isAnableFingerPrint").apply();
+            sharedPreferencesValue.edit().remove(TAG + "isRemember").apply();
+        }
+
     }
 
 }

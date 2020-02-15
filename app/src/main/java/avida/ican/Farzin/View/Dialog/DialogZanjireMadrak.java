@@ -34,14 +34,12 @@ public class DialogZanjireMadrak {
     private int Etc;
     private int Ec;
     private ListenerFile listenerFile;
-
     private FragmentZanjireMadrak fragmentZanjireMadrak;
     private FragmentManager mfragmentManager;
 
     public DialogZanjireMadrak(Activity context) {
         this.context = context;
     }
-
 
     public class Binding {
         @Nullable
@@ -69,36 +67,27 @@ public class DialogZanjireMadrak {
 
     public void Creat(FragmentManager fragmentManager) {
         this.mfragmentManager = fragmentManager;
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_zanjire_madrak))
-                        .setGravity(Gravity.CENTER)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setContentBackgroundResource(R.drawable.border_dialog)
-                        .setCancelable(false)
-                        .create();
-                dialog.show();
-                viewHolder = new DialogZanjireMadrak.Binding(dialog.getHolderView());
-                initViewPagerFragment();
-                viewHolder.btnClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        dismiss();
-                    }
-                });
-
-            }
+        context.runOnUiThread(() -> {
+            dialog = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.dialog_zanjire_madrak))
+                    .setGravity(Gravity.CENTER)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setContentBackgroundResource(R.drawable.border_dialog)
+                    .setCancelable(false)
+                    .create();
+            dialog.show();
+            viewHolder = new Binding(dialog.getHolderView());
+            initViewPagerFragment();
+            viewHolder.btnClose.setOnClickListener(view -> dismiss());
 
         });
     }
 
     private void initViewPagerFragment() {
-
         fragmentZanjireMadrak = new FragmentZanjireMadrak().newInstance(App.CurentActivity, Etc, Ec, listenerFile);
+        fragmentZanjireMadrak.setDialog(this);
         initTab();
     }
 

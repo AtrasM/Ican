@@ -51,7 +51,7 @@
 
         </LinearLayout>
 
-        <include layout="@layout/ln_loading" />
+        <include layout="@layout/layout_loading" />
     </FrameLayout>
 
 </LinearLayout>

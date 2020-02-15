@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -27,7 +28,7 @@ import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static avida.ican.Ican.BaseActivity.closeKeboard;
+import static avida.ican.Ican.BaseActivity.closeKeyboard;
 
 
 /**
@@ -61,7 +62,6 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
         ImageView imgCheck;
         @BindView(R.id.img_profile)
         ImageView imgProfile;
-
         public ViewHolder(View view) {
             super(view);
 
@@ -113,7 +113,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
             @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
             @Override
             public void onClick(View v) {
-               closeKeboard();
+               closeKeyboard();
                 item.setSelected(!item.isSelected());
                 CheckItemSelected(item, viewHolder, false);
             }
@@ -124,12 +124,12 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
 
     private void CheckItemSelected(StructureUserAndRoleDB item, ViewHolder viewHolder, boolean a_System) {
         if (item.isSelected()) {
-            viewHolder.imgCheck.setBackground(Resorse.getDrawable(R.drawable.check_square_select));
+            viewHolder.imgCheck.setImageDrawable(Resorse.getDrawable(R.drawable.ic_check_box_select));
             if (!a_System) {
                 listenerAdapterUserAndRole.onSelect(item);
             }
         } else {
-            viewHolder.imgCheck.setBackground(Resorse.getDrawable(R.drawable.check_square_unselect));
+            viewHolder.imgCheck.setImageDrawable(Resorse.getDrawable(R.drawable.ic_check_box_unselect));
             if (!a_System) {
                 listenerAdapterUserAndRole.unSelect(item);
             }
@@ -153,7 +153,7 @@ public class AdapterUserAndRoleMain extends RecyclerView.Adapter<AdapterUserAndR
     public void unSelect(final StructureUserAndRoleDB structureUserAndRoleDB) {
        /* int pos = itemList.indexOf(structureUserAndRoleDB);
         if (pos > -1) {
-            itemList.get(pos).setSelected(false);
+            itemList.get(pos).setToolSelected(false);
             App.CurentActivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {

@@ -29,7 +29,6 @@ public class FarzinHistoryListPresenter {
     private final int Etc;
     private final int Ec;
     private CartableHistoryListListener cartableHistoryListListener;
-    private Handler handler = new Handler();
     private GetCartableHistoryFromServerPresenter getCartableHistoryFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
     private int counterFailed=0;
@@ -60,12 +59,7 @@ public class FarzinHistoryListPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onFailed("");
-                        }
-                    },300);
+                    App.getHandlerMainThread().postDelayed(() -> onFailed(""),300);
                 } else {
                     reGetData();
                 }
@@ -74,12 +68,7 @@ public class FarzinHistoryListPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    },300);
+                    App.getHandlerMainThread().postDelayed(() -> onCancel(),300);
                 } else {
                     reGetData();
                 }
@@ -120,7 +109,7 @@ public class FarzinHistoryListPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onFailed("");
@@ -135,7 +124,7 @@ public class FarzinHistoryListPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected&&App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onCancel();
@@ -158,7 +147,7 @@ public class FarzinHistoryListPresenter {
             listenerGraf.noData();
             counterFailed=0;
         }else {
-            handler.postDelayed(new Runnable() {
+            App.getHandlerMainThread().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     GetCartableHistoryFromServer();

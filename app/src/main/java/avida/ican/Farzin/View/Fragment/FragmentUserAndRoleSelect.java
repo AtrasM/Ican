@@ -14,7 +14,7 @@ import avida.ican.Ican.View.Custom.LinearLayoutManagerWithSmoothScroller;
 import avida.ican.R;
 import butterknife.BindView;
 
-import static avida.ican.Ican.BaseActivity.closeKeboard;
+import static avida.ican.Ican.BaseActivity.closeKeyboard;
 
 public class FragmentUserAndRoleSelect extends BaseFragment {
 
@@ -24,7 +24,7 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
     LinearLayout lnUserAndRoleSelect;
     private Activity context;
     private static AdapterUserAndRoleSelected adapterUserAndRoleSelected;
-    public static String Tag = "FragmentUserAndRoleSelect";
+    public final String Tag = "FragmentUserAndRoleSelect";
 
 
     public FragmentUserAndRoleSelect newInstance(Activity context, AdapterUserAndRoleSelected adapterUserAndRoleSelected) {
@@ -55,13 +55,13 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
         rcvSelected.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeKeboard();
+                closeKeyboard();
             }
         });
         lnUserAndRoleSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeKeboard();
+                closeKeyboard();
             }
         });
     }
@@ -76,12 +76,7 @@ public class FragmentUserAndRoleSelect extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        /*try {
-            mListener = (OnFragmentInteractionListener) getActivity();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+
     }
 
     @Override

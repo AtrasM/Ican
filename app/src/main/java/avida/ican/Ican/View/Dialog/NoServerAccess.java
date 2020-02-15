@@ -12,7 +12,7 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 public class NoServerAccess {
 
     public void ShowDialog() {
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

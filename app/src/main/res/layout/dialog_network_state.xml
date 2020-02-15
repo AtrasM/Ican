@@ -49,14 +49,14 @@
         android:layout_gravity="center"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="5dp"
-        app:indicatorColor="@color/color_Danger"
+        app:indicatorColor="@color/color_Red"
         app:indicatorName="BallClipRotateMultipleIndicator" />
 
     <Button
         android:id="@+id/btn_exit"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
-        android:background="@color/color_Danger"
+        android:background="@color/color_Red"
         android:text="@string/close"
         android:textColor="@color/color_White"
         android:textSize="14sp" />

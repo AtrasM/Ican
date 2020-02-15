@@ -12,6 +12,7 @@ import com.wang.avi.AVLoadingIndicatorView;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -26,12 +27,14 @@ public class Loading {
     private int gravity = Gravity.CENTER;
     private DialogPlus dialogLoading;
     private Binding viewHolder;
-    private String indicatore = "BallGridPulseIndicator";
+    private String indicatore = "BallSpinFadeLoaderIndicator";
+    private int indicatoreColor =Resorse.getColor(R.color.color_Red_light);
 
     @SuppressLint("ResourceAsColor")
     static class Binding {
 
-        @Nullable @BindView(R.id.av_loading_indicator_view)
+        @Nullable
+        @BindView(R.id.av_loading_indicator_view)
         AVLoadingIndicatorView avLoadingIndicatorView;
 
         Binding(View rootView) {
@@ -48,13 +51,20 @@ public class Loading {
         return this;
     }
 
-    public AVLoadingIndicatorView setIndicator(String indicatore) {
+
+    public Loading setIndicator(String indicatore) {
         this.indicatore = indicatore;
         viewHolder.avLoadingIndicatorView.setIndicator(indicatore);
-        return viewHolder.avLoadingIndicatorView;
+        return this;
+    }
+
+    public Loading setIndicatorColor(int color) {
+        indicatoreColor=color;
+        return this;
     }
 
     public void Show() {
+        Creat();
         dialogLoading.show();
         App.isLoading = true;
     }
@@ -62,26 +72,24 @@ public class Loading {
     public void Hide() {
         dialogLoading.dismiss();
         App.isLoading = false;
+
     }
 
     public Loading Creat() {
 
-        BaseActivity.closeKeboard();
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                dialogLoading = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.item_loading))
-                        .setGravity(gravity)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(false)
-                        .setContentBackgroundResource(android.R.color.transparent)
-                        .create();
-                viewHolder = new Binding(dialogLoading.getHolderView());
-                viewHolder.avLoadingIndicatorView.setIndicator(indicatore);
-                viewHolder.avLoadingIndicatorView.setVisibility(View.VISIBLE);
-            }
-
+        BaseActivity.closeKeyboard();
+        context.runOnUiThread(() -> {
+            dialogLoading = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.item_loading))
+                    .setGravity(gravity)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setCancelable(false)
+                    .setContentBackgroundResource(android.R.color.transparent)
+                    .create();
+            viewHolder = new Binding(dialogLoading.getHolderView());
+            viewHolder.avLoadingIndicatorView.setIndicator(indicatore);
+            viewHolder.avLoadingIndicatorView.setIndicatorColor(indicatoreColor);
+            viewHolder.avLoadingIndicatorView.setVisibility(View.VISIBLE);
         });
         return this;
     }

@@ -63,18 +63,16 @@ public class GetZanjireMadrakFromServerPresenter {
                 zanjireMadrakListener.onCancel();
             }
         });
-
     }
 
     @SuppressLint("StaticFieldLeak")
     private void initStructure(final String data, final ZanjireMadrakListener zanjireMadrakListener) {
         final StructureZanjireMadrakListRES[] structureZanjireMadrakListRES = new StructureZanjireMadrakListRES[1];
-
         task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
-                    if (data.contains(App.RESPONSEPATH)) {
+                    if (data.contains(App.getResponsePath())) {
                         ZanjireMadrakSaxHandler zanjireMadrakSaxHandler = xmlToObject.parseXmlWithSax(data, new ZanjireMadrakSaxHandler());
                         structureZanjireMadrakListRES[0] = zanjireMadrakSaxHandler.getObject();
                         sleep();
@@ -93,19 +91,20 @@ public class GetZanjireMadrakFromServerPresenter {
             @Override
             protected void onPostExecute(Void aVoid) {
                 try {
-                    if (structureZanjireMadrakListRES[0].getStrErrorMsg() == null || structureZanjireMadrakListRES[0].getStrErrorMsg().isEmpty()) {
-                        if (structureZanjireMadrakListRES[0].getGetFileDependencyResult() == null) {
+                    if (structureZanjireMadrakListRES[0].getGetFileDependencyResult() == null) {
+                        if (structureZanjireMadrakListRES[0].getStrErrorMsg() == null || structureZanjireMadrakListRES[0].getStrErrorMsg().isEmpty()) {
                             zanjireMadrakListener.onSuccess(new StructureZanjireMadrakRES());
                         } else {
-                            StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES[0].getGetFileDependencyResult();
-                            // changeXml.charDecoder(structureMessageList.get())
-                            zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
+                            zanjireMadrakListener.onFailed("");
                         }
                     } else {
-                        zanjireMadrakListener.onFailed("" + structureZanjireMadrakListRES[0].getStrErrorMsg());
+                        StructureZanjireMadrakRES structureZanjireMadrakRES = structureZanjireMadrakListRES[0].getGetFileDependencyResult();
+                        // changeXml.charDecoder(structureMessageList.get())
+                        zanjireMadrakListener.onSuccess(structureZanjireMadrakRES);
                     }
-                }catch (Exception e){
-                    zanjireMadrakListener.onFailed("" );
+
+                } catch (Exception e) {
+                    zanjireMadrakListener.onFailed("");
 
                     e.printStackTrace();
                 }
@@ -113,7 +112,7 @@ public class GetZanjireMadrakFromServerPresenter {
             }
         };
 
-        task.execute();
+        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void sleep() {

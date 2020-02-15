@@ -6,9 +6,9 @@ package avida.ican.Ican.View.Custom;
 
 public class TimeValue {
     private final static long secondsInMilli = 1000;
-    private final static long minutesInMilli = secondsInMilli * 60;
-    private final static long hoursInMilli = minutesInMilli * 60;
-    private final static long daysInMilli = hoursInMilli * 24;
+    private final static long minutesInMilli = 1000 * 60;
+    private final static long hoursInMilli = (1000 * 60) * 60;
+    private final static long daysInMilli = ((1000 * 60) * 60) * 24;
 
     public static long SecondsInMilli() {
         return secondsInMilli;

@@ -6,18 +6,23 @@ package avida.ican.Farzin.View.Enum;
 
 public enum PutExtraEnum {
     ID("ID"),
+    Title("Title"),
     LogOut("LogOut"),
+    IsAppLock("IsAppLock"),
     BundleMessage("BundleMessage"),
     BundleCartableDocument("BundleCartableDocument"),
     BundleCartableDocumentDetail("BundleCartableDocumentDetail"),
+    BundleActivityDocumentAttach("BundleActivityDocumentAttach"),
     MultyMessage("MultyMessage"),
     MultyCartableDocument("MultyCartableDocument"),
     Notification("Notification"),
     ISFwdReplyMessage("ISFwdReplyMessage"),
     IsFilter("IsFilter"),
+    Extension("Extension"),
     ComeFromNotificationManager("ComeFromNotificationManager"),
-    Datepickerdialog("Datepickerdialog"),
-    Settingtype("Settingtype");
+    DatepickerDialog("DatepickerDialog"),
+    SettingType("SettingType"),
+    QueueType("QueueType");
 
 
     private final String name;

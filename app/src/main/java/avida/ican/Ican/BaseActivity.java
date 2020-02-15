@@ -1,5 +1,6 @@
 package avida.ican.Ican;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -23,7 +24,7 @@ import java.util.Iterator;
 import java.util.Stack;
 
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
-import avida.ican.Ican.View.ActivityMain;
+import avida.ican.Farzin.View.FarzinActivityMain;
 import avida.ican.Ican.View.Custom.AudioRecorder;
 import avida.ican.Ican.View.Custom.ChangeAligneViewLayoutToRtl;
 import avida.ican.Ican.View.Custom.FilePicker;
@@ -37,8 +38,9 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 /**
  * Created by AtrasVida on 96-11-21 at 5:31 PM
  */
-
+@SuppressLint("StaticFieldLeak")
 public abstract class BaseActivity extends AppCompatActivity {
+
     public static DialogPlus dialog = null;
     public static DialogDataSyncing dialogDataSyncing = null;
     public static AudioRecorder audioRecorder;
@@ -55,6 +57,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         App.CurentActivity = this;
+        baseActivity = this;
         super.onResume();
     }
 
@@ -70,7 +73,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         App.CurentActivity = this;
         baseActivity = this;
-
         setContentView(getLayoutResource());
         ButterKnife.bind(this);
         if (App.activityStacks != null) {
@@ -102,7 +104,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (!(view instanceof EditText)) {
             view.setOnTouchListener(new View.OnTouchListener() {
                 public boolean onTouch(View v, MotionEvent event) {
-                    closeKeboard();
+                    closeKeyboard();
                     return false;
                 }
             });
@@ -128,66 +130,98 @@ public abstract class BaseActivity extends AppCompatActivity {
     }
 
 
-    public static void closeKeboard() {
-        App.getHandlerMainThread().post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    InputMethodManager inputManager = (InputMethodManager) App.CurentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                    inputManager.hideSoftInputFromWindow(App.CurentActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+    public static void closeKeyboard() {
+        App.getHandlerMainThread().post(() -> {
+            try {
+                InputMethodManager inputManager = (InputMethodManager) App.CurentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.hideSoftInputFromWindow(App.CurentActivity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+    }
 
-
+    public static void openKeyboard() {
+        App.getHandlerMainThread().post(() -> {
+            try {
+                InputMethodManager inputManager = (InputMethodManager) App.CurentActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputManager.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public boolean Finish(Activity activity) {
+        closeKeyboard();
         if (App.isLoading) return false;
         if (!App.canBack) return false;
         activity.finish();
         activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-        App.activityStacks.keySet().remove(activity.getClass().getSimpleName());
+        try {
+            App.activityStacks.keySet().remove(activity.getClass().getSimpleName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return true;
     }
 
-    public static void CloseActivitys(ListenerCloseActivitys listenerCloseActivitys) {
-
-        if (App.activityStacks == null) {
+    public static void CloseActivitys(boolean onlyTheHomepageShouldBeOpen, ListenerCloseActivitys listenerCloseActivitys) {
+        if (App.activityStacks == null || App.activityStacks.size() <= 1) {
             listenerCloseActivitys.onCancel();
         } else {
             App.canBack = false;
-            Iterator mIterator = App.activityStacks.keySet().iterator();
-            while (mIterator.hasNext()) {
-                String key = (String) mIterator.next();
-                Activity activity = App.activityStacks.get(key).lastElement();
-                if (!activity.getClass().getSimpleName().equals(baseActivity.getClass().getSimpleName()))
-                    if (!activity.getClass().getSimpleName().equals(ActivityMain.class.getSimpleName())) {
-                        activity.finish();
-                        App.activityStacks.keySet().remove(key);
-                    }
+            HashMap<String, Stack<Activity>> tempActivityStacks = new HashMap<>();
 
+            for (Iterator<String> iterator = App.activityStacks.keySet().iterator(); iterator.hasNext(); ) {
+                String key = iterator.next();
+                if (key != null && !key.isEmpty()) {
+                    Activity activity = App.activityStacks.get(key).lastElement();
+                    if (!activity.getClass().getSimpleName().equals(baseActivity.getClass().getSimpleName())) {
+                        if (!activity.getClass().getSimpleName().equals(FarzinActivityMain.class.getSimpleName())) {
+                            activity.finish();
+                        } else {
+                            tempActivityStacks.put(key, new Stack<>());
+                            tempActivityStacks.get(key).push(activity);
+                        }
+                    } else {
+                        if (onlyTheHomepageShouldBeOpen) {
+                            if (!activity.getClass().getSimpleName().equals(FarzinActivityMain.class.getSimpleName())) {
+                                activity.finish();
+                            } else {
+                                tempActivityStacks.put(key, new Stack<>());
+                                tempActivityStacks.get(key).push(activity);
+                            }
+                        } else {
+                            tempActivityStacks.put(key, new Stack<>());
+                            tempActivityStacks.get(key).push(activity);
+                        }
+                    }
+                }
             }
-            listenerCloseActivitys.onFinish();
+            App.activityStacks.clear();
+            App.activityStacks = tempActivityStacks;
             App.canBack = true;
+            App.isLoading = false;
+            listenerCloseActivitys.onFinish();
         }
 
     }
 
     public static void goToActivity(Class<?> cls) {
-
-        Intent intent = new Intent(App.CurentActivity, cls);
-        //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        App.CurentActivity.startActivity(intent);
-        App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-
+        try {
+            Intent intent = new Intent(App.CurentActivity, cls);
+            //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            App.CurentActivity.startActivity(intent);
+            //App.CurentActivity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void goToActivity(Intent intent) {
-        //intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         try {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             App.CurentActivity.startActivity(intent);
@@ -195,10 +229,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
     }
-
 
     public static void goToActivityForResult(Intent intent) {
         App.CurentActivity.startActivityForResult(intent, 1);

@@ -13,43 +13,56 @@
         android:id="@+id/ln_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_gravity="center"
-            android:layout_marginBottom="@dimen/margin_minimum"
-            android:layout_marginTop="@dimen/margin_minimum"
-            android:background="@color/color_White"
-            android:gravity="center"
-            android:padding="@dimen/padding">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_minimum"
+                android:background="@drawable/border_header"
+                android:gravity="center"
+                android:paddingLeft="@dimen/padding"
+                android:paddingTop="@dimen/padding_maximum"
+                android:paddingRight="@dimen/padding"
+                android:paddingBottom="@dimen/padding_maximum">
 
 
-            <TextView
-                style="@style/custom_Txt_Normal_style"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center|right"
-                android:text="@string/hint_message_subject" />
+                <TextView
+                    style="@style/custom_Txt_Normal_style"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center|right"
+                    android:text="@string/hint_message_subject"
+                    android:textColor="@color/color_White" />
 
-            <EditText
-                android:id="@+id/edt_subject"
-                style="@style/custom_fill_edittext_style"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:textColor="@color/color_Info_Dark" />
+                <EditText
+                    android:id="@+id/edt_subject"
+                    style="@style/custom_Txt_Normal_style"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_minimum"
+                    android:layout_weight="1"
+                    android:background="@drawable/border"
+                    android:gravity="right"
+                    android:padding="@dimen/padding"
+                    android:textColor="@color/color_Info" />
 
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|top"
-            android:layout_marginBottom="@dimen/margin_minimum"
-            android:layout_marginTop="@dimen/margin_minimum"
-            android:background="@color/color_White"
+            android:layout_marginTop="-4dp"
+            android:background="@color/color_bg_cadr"
             android:gravity="center|top"
             android:orientation="vertical"
             android:padding="@dimen/padding">
@@ -60,12 +73,15 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:padding="@dimen/padding">
+                android:paddingLeft="@dimen/padding"
+                android:paddingTop="@dimen/padding"
+                android:paddingBottom="@dimen/padding">
 
                 <ImageView
-                    android:layout_width="24dp"
+                    android:layout_width="36dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center|left"
+                    android:adjustViewBounds="true"
                     app:srcCompat="@drawable/ic_add_contact" />
 
                 <TextView
@@ -75,7 +91,8 @@
                     android:layout_gravity="center|right"
                     android:layout_marginRight="@dimen/margin_minimum"
                     android:gravity="center|right"
-                    android:text="@string/title_contacts" />
+                    android:text="@string/title_contacts"
+                    android:textColor="@color/color_Info" />
 
 
             </FrameLayout>
@@ -85,20 +102,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:gravity="center">
+                android:gravity="center"
+                android:paddingLeft="@dimen/padding">
 
                 <com.ms.square.android.expandabletextview.ExpandableTextView xmlns:expandableTextView="http://schemas.android.com/apk/res-auto"
                     android:id="@+id/ex_txt_contacts"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     expandableTextView:animDuration="150"
-                    expandableTextView:maxCollapsedLines="2">
+                    expandableTextView:maxCollapsedLines="3">
 
                     <TextView
                         android:id="@id/expandable_text"
                         style="@style/custom_Txt_Normal_style"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="right"
                         android:textColor="@color/color_Info_Dark" />
 
                     <ImageButton
@@ -106,7 +125,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@color/color_White"
+                        android:background="@color/color_bg_cadr"
                         android:padding="@dimen/padding_maximum" />
                 </com.ms.square.android.expandabletextview.ExpandableTextView>
 
@@ -127,7 +146,9 @@
                 android:layout_gravity="right"
                 android:layout_weight="1"
                 android:focusableInTouchMode="true"
+                android:foregroundGravity="right"
                 android:padding="@dimen/padding"
+                android:textAlignment="viewStart"
                 tools:ignore="RtlCompat,RtlHardcoded" />
 
 

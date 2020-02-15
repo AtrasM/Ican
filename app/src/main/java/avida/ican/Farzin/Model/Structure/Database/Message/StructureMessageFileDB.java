@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.io.Serializable;
 
 /**
- * Created by AtrasVida in 2018-06-19 at 15:25 PM
+ * Created by AtrasVida in 2018-06-19 at 3:25 PM
  */
 
 @DatabaseTable(tableName = "message_file")
@@ -19,9 +19,9 @@ public class StructureMessageFileDB implements Serializable {
     @DatabaseField()
     private String file_name;
     @DatabaseField()
-    private  String file_path;
+    private String file_path;
     @DatabaseField()
-    private   String file_extension;
+    private String file_extension;
 
 
     public StructureMessageFileDB() {

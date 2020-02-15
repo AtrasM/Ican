@@ -14,37 +14,6 @@ public class StructureAttach {
     private String Description;
     private int icon;
 
-    public String getFilePath() {
-        return new ChangeXml().viewCharDecoder(filePath);
-    }
-
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
-
-    public String getName() {
-        return new ChangeXml().viewCharDecoder(Name);
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public int getIcon() {
-        return icon;
-    }
-
-    public void setIcon(int icon) {
-        this.icon = icon;
-    }
-
-    public String getFileExtension() {
-        return FileExtension;
-    }
-
-    public void setFileExtension(String fileExtension) {
-        FileExtension = fileExtension;
-    }
 
     public StructureAttach(String name, String fileExtension, int icon) {
         this.Name = name;
@@ -83,6 +52,45 @@ public class StructureAttach {
         this.FileExtension = fileExtension;
         this.Description = description;
     }
+
+
+    public String getFilePath() {
+        return new ChangeXml().viewCharDecoder(filePath);
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getName() {
+        if (Name == null) {
+            return "NoName";
+        } else {
+            return new ChangeXml().viewCharDecoder(Name);
+        }
+
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
+
+    public int getIcon() {
+        return icon;
+    }
+
+    public void setIcon(int icon) {
+        this.icon = icon;
+    }
+
+    public String getFileExtension() {
+        return FileExtension;
+    }
+
+    public void setFileExtension(String fileExtension) {
+        FileExtension = fileExtension;
+    }
+
 
     public StringBuilder getFileAsStringBuilder() {
         return fileAsStringBuilder;

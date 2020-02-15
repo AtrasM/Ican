@@ -33,7 +33,8 @@ public enum DataSyncingNameEnum {
     }
 
     public static int getDataSyncingCount() {
-        return (getAllCount() - getMetaDataCount());
+        //1-SyncCartableDocument 2-SyncReceiveMessage 3-SyncSendMessage
+        return (3);
     }
 
     private static int getAllCount() {

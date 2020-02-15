@@ -3,7 +3,10 @@ package avida.ican.Ican.View.Custom;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+
 import com.google.android.material.snackbar.Snackbar;
+
+import android.os.Handler;
 import android.view.View;
 import android.widget.Toast;
 
@@ -20,35 +23,45 @@ import avida.ican.Ican.View.Enum.ToastEnum;
 public class Message {
 
 
-    public void ShowToast(final String msg, final ToastEnum customTime) {
-        App.CurentActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-               // if (App.isTestMod) {
-                    if (customTime == ToastEnum.TOAST_LONG_TIME) {
-                        Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_LONG).show();
-                    } else if (customTime == ToastEnum.TOAST_SHORT_TIME) {
-                        Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_SHORT).show();
-                    }
-               // }
+    private static Message mInstance = null;
 
+    public static Message getInstance() {
+
+        if (mInstance == null) {
+            mInstance = new Message();
+        }
+        return mInstance;
+    }
+
+    private Message() {
+    }
+
+
+    public void ShowToast(final String msg, final ToastEnum customTime) {
+
+        App.getHandlerMainThread().post(() -> {
+            // if (App.isTestMod) {
+            if (customTime == ToastEnum.TOAST_LONG_TIME) {
+                Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_LONG).show();
+            } else if (customTime == ToastEnum.TOAST_SHORT_TIME) {
+                Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_SHORT).show();
             }
+            // }
+
         });
 
     }
 
     public void ShowToast(final String msg, final int customTime) {
-        App.CurentActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                    Toast.makeText(App.getAppContext(), msg, customTime).show();
-            }
-        });
+        App.getHandlerMainThread().post(() -> Toast.makeText(App.getAppContext(), msg, customTime).show());
 
     }
 
 
     public void ShowSnackBar(String message, final SnackBarEnum snackBarEnum) {
+        if (App.CurentActivity == null) {
+            return;
+        }
         View rootView = App.CurentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
         //rootView.setBackgroundColor(ContextCompat.getColor(G.currentActivity, R.color.colorBlack));
         Snackbar snackbar = null;
@@ -73,6 +86,9 @@ public class Message {
 
     @SuppressLint("StaticFieldLeak")
     public void ShowSnackBar(final ArrayList<String> messageList, final SnackBarEnum snackBarEnum) {
+        if (App.CurentActivity == null) {
+            return;
+        }
         final View rootView = App.CurentActivity.getWindow().getDecorView().findViewById(android.R.id.content);
         //rootView.setBackgroundColor(ContextCompat.getColor(G.currentActivity, R.color.colorBlack));
         final Snackbar[] snackbar = {null};
@@ -110,19 +126,16 @@ public class Message {
     private void mShowSnackBar(Snackbar snackbar, final SnackBarEnum snackBarEnum) {
 
         final Snackbar finalSnackbar = snackbar;
-        App.CurentActivity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (snackBarEnum == SnackBarEnum.SNACKBAR_INDEFINITE) {
-                    finalSnackbar.setAction("بستن", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            finalSnackbar.dismiss();
-                        }
-                    }).show();
-                } else {
-                    finalSnackbar.show();
-                }
+        App.getHandlerMainThread().post(() -> {
+            if (snackBarEnum == SnackBarEnum.SNACKBAR_INDEFINITE) {
+                finalSnackbar.setAction("بستن", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finalSnackbar.dismiss();
+                    }
+                }).show();
+            } else {
+                finalSnackbar.show();
             }
         });
     }

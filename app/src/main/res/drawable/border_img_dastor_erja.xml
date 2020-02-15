@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <corners android:radius="@dimen/normal_radios" />
+    <!-- <solid android:color="@color/LightFillColor"  ></solid>-->
+    <solid android:color="@color/color_Info_Light" />
+    <stroke
+        android:width="@dimen/stroke_minimum"
+        android:color="@color/color_Info_Light" />
+    <size
+        android:width="30dp"
+        android:height="30dp" />
+</shape>

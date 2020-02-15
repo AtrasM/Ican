@@ -12,6 +12,7 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB
 import avida.ican.Farzin.Model.Structure.Request.StructureMessageFileREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructureReceiverREQ;
 import avida.ican.Farzin.Model.Structure.Response.Message.StructureSendMessageRES;
+import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -19,6 +20,7 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
 import avida.ican.Ican.View.Custom.CustomFunction;
+import avida.ican.Ican.View.Enum.ToastEnum;
 
 /**
  * Created by AtrasVida on 2018-06-09 at 14:59 PM
@@ -38,9 +40,7 @@ public class SendMessageToServerPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-
     public void SendMessage(String Subject, String Content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole, final MessageListener messageListener) {
-
         CallApi(MethodName, EndPoint, getSoapObject(Subject, Content, structureAttaches, structureUserAndRole), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
@@ -56,13 +56,12 @@ public class SendMessageToServerPresenter {
             @Override
             public void onFailed() {
                 messageListener.onFailed("");
-                //App.ShowMessage().ShowToast(Resorse.getString(R.string.error_faild), ToastEnum.TOAST_LONG_TIME);
+                //App.ShowMessage().ShowToast(Resorse.getString(R.string.error_get_data_faild), ToastEnum.TOAST_LONG_TIME);
             }
 
             @Override
             public void onCancel() {
                 messageListener.onCancel();
-                //App.ShowMessage().ShowToast("کنسل", ToastEnum.TOAST_LONG_TIME);
             }
         });
     }
@@ -70,7 +69,7 @@ public class SendMessageToServerPresenter {
     private SoapObject getSoapObject(String subject, String content, ArrayList<StructureAttach> structureAttaches, List<StructureUserAndRoleDB> structureUserAndRole) {
         SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         soapObject.addProperty("Subject", subject);
-        content=CustomFunction.AddXmlCData(content);
+        content = CustomFunction.AddXmlCData(content);
         soapObject.addProperty("Content", content);
 
         //*******____________________________  AttachList  ____________________________********
@@ -94,7 +93,9 @@ public class SendMessageToServerPresenter {
 
         soapObject.addSoapObject(messageFileHeader);
         soapObject.addSoapObject(receiverHeader);
-
+       /* App.getHandlerMainThread().post(() -> {
+            App.ShowMessage().ShowToast("send message: subject= " + subject, ToastEnum.TOAST_LONG_TIME);
+        });*/
         return soapObject;
 
     }
@@ -121,7 +122,6 @@ public class SendMessageToServerPresenter {
                 }).execute();
 
     }
-
 
     private class processData {
         processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {

@@ -5,7 +5,7 @@
     android:orientation="vertical">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/srl_new_message"
+        android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -14,11 +14,12 @@
             style="@style/custom_item_rcv_style"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="0dp"
             android:paddingStart="0dp"
+            android:paddingLeft="0dp"
             tools:ignore="RtlSymmetry" />
 
         <include layout="@layout/layout_fab_list_move_up" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
     <include layout="@layout/item_txt_nodata" />
 </FrameLayout>

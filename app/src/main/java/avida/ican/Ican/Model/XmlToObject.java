@@ -6,6 +6,7 @@ import com.stanfy.gsonxml.GsonXml;
 import com.stanfy.gsonxml.GsonXmlBuilder;
 import com.stanfy.gsonxml.XmlParserCreator;
 
+import org.acra.ACRA;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.xml.sax.ContentHandler;
@@ -80,6 +81,7 @@ public class XmlToObject {
         } catch (Exception ex) {
             Log.d("XML", "SAXXMLParser error =" + ex.toString());
             Log.d("XML", "SAXXMLParser: parse() failed");
+            ACRA.getErrorReporter().handleSilentException(ex);
         }
 
         return (T) saxHandler;

@@ -7,6 +7,6 @@
     android:layout_height="35dp"
     android:layout_gravity="center"
     android:visibility="visible"
-    app:indicatorColor="#f2f2f2"
-    app:indicatorName="BallGridPulseIndicator" />
+    app:indicatorColor="@color/color_Info"
+    app:indicatorName="BallPulseIndicator" />
 

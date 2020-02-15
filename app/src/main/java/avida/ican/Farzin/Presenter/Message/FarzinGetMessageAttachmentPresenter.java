@@ -20,11 +20,11 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
 
 public class FarzinGetMessageAttachmentPresenter {
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
-    private Handler handler = new Handler();
     private FarzinMessageQuery farzinMessageQuery;
     private GetMessageAttachmentFromServerPresenter getMessageAttachmentFromServerPresenter;
     private MessageAttachmentListListener messageAttachmentListListener;
     private MessageQueryAttachmentListListener messageQueryAttachmentListListener;
+    private int MainID;
     private int ID;
 
     public FarzinGetMessageAttachmentPresenter(MessageQueryAttachmentListListener messageQueryAttachmentListListener) {
@@ -46,7 +46,7 @@ public class FarzinGetMessageAttachmentPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(() -> onFailed(""), 300);
+                    App.getHandlerMainThread().postDelayed(() -> onFailed(""), 300);
                 } else {
                     reGetData();
                 }
@@ -55,7 +55,7 @@ public class FarzinGetMessageAttachmentPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(() -> onCancel(), 300);
+                    App.getHandlerMainThread().postDelayed(() -> onCancel(), 300);
                 } else {
                     reGetData();
                 }
@@ -63,12 +63,13 @@ public class FarzinGetMessageAttachmentPresenter {
         };
     }
 
-    public void getData(int id) {
+    public void getData(int id, int mainID) {
         ID = id;
+        MainID = mainID;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             messageQueryAttachmentListListener.onFailed("");
         } else {
-            getMessageAttachmentFromServerPresenter.GetMessageAttachment(ID, messageAttachmentListListener);
+            getMessageAttachmentFromServerPresenter.GetMessageAttachment(MainID, messageAttachmentListListener);
         }
     }
 
@@ -106,10 +107,10 @@ public class FarzinGetMessageAttachmentPresenter {
     }
 
     private void reGetData() {
-        handler.postDelayed(new Runnable() {
+        App.getHandlerMainThread().postDelayed(new Runnable() {
             @Override
             public void run() {
-                getData(ID);
+                getData(ID,MainID);
             }
         }, DELAY);
 

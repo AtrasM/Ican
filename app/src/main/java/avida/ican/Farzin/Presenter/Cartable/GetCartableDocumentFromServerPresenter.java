@@ -47,7 +47,7 @@ public class GetCartableDocumentFromServerPresenter {
     }
 
     private void GetCartableDocument(SoapObject soapObject, final CartableDocumentListListener cartableDocumentListListener) {
-
+        getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
         CallApi(MethodName, EndPoint, soapObject, new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
@@ -72,7 +72,7 @@ public class GetCartableDocumentFromServerPresenter {
         StructureCartableDocumentListRES structureCartableDocumentListRES = xmlToObject.DeserializationSimpleXml(xml, StructureCartableDocumentListRES.class);
         if (structureCartableDocumentListRES.getStrErrorMsg() == null || structureCartableDocumentListRES.getStrErrorMsg().isEmpty()) {
             if (structureCartableDocumentListRES.getGetCartableDocumentResult().size() <= 0) {
-                cartableDocumentListListener.onSuccess(new ArrayList<StructureInboxDocumentRES>());
+                cartableDocumentListListener.onSuccess(new ArrayList<>());
             } else {
                 ArrayList<StructureInboxDocumentRES> structureInboxDocumentRES = new ArrayList<>(structureCartableDocumentListRES.getGetCartableDocumentResult());
                 cartableDocumentListListener.onSuccess(structureInboxDocumentRES);
@@ -80,7 +80,7 @@ public class GetCartableDocumentFromServerPresenter {
         } else {
             cartableDocumentListListener.onFailed("" + structureCartableDocumentListRES.getStrErrorMsg());
         }
-        getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentDateTime().toString());
+        getFarzinPrefrences().putCartableLastCheckDate(CustomFunction.getCurentLocalDateTimeAsStringFormat());
     }
 
     private SoapObject getSoapObject(String startDateTime, int count) {
@@ -90,13 +90,13 @@ public class GetCartableDocumentFromServerPresenter {
         Filter.addProperty("ActionCode", getFarzinPrefrences().getDefultActionCode());
         if (!startDateTime.isEmpty()) {
             startDateTime = CustomFunction.arabicToDecimal(startDateTime);
+            Log.i("LOG", "startDateTime for GetCartableDocument= " + startDateTime);
             Filter.addProperty("StartDateTime", startDateTime);
         }
         Filter.addProperty("CountOfRecord", count);
         Filter.addProperty("SortType", "ASC");
         soapObject.addSoapObject(Filter);
         return soapObject;
-
     }
 
     private SoapObject getSoapObject(String startDateTime, String finishDateTime) {
@@ -112,7 +112,7 @@ public class GetCartableDocumentFromServerPresenter {
             finishDateTime = CustomFunction.arabicToDecimal(finishDateTime);
             Filter.addProperty("FinishDateTime", finishDateTime);
         }
-        Filter.addProperty("CountOfRecord", -1);
+        Filter.addProperty("CountOfRecord", 100);
         Filter.addProperty("SortType", "ASC");
         soapObject.addSoapObject(Filter);
         return soapObject;

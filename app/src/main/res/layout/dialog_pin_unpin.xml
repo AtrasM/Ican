@@ -1,32 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_White"
     android:orientation="vertical">
 
-
-    <Button
-        android:id="@+id/btn_pin"
-        style="@style/custom_attach_button_style"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/border"
-        android:text="@string/Pin" />
+        android:layout_marginTop="@dimen/margin">
 
-    <Button
-        android:id="@+id/btn_unpin"
-        style="@style/custom_attach_button_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border"
-        android:text="@string/unPin" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_maximum"
+            android:background="@drawable/border_ln_dialog"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/padding_maximum">
 
-    <Button
-        android:id="@+id/btn_cancel"
-        style="@style/custom_cancel_button_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/close" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_maximum" />
 
+            <Button
+                android:id="@+id/btn_pin"
+                style="@style/custom_attach_button_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_ln_home"
+                android:text="@string/Pin" />
+
+            <Button
+                android:id="@+id/btn_unpin"
+                style="@style/custom_attach_button_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_ln_home"
+                android:text="@string/unPin" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_maximum" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_cancel"
+            style="@style/custom_selected_style"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|center"
+            android:background="@drawable/circular_border"
+            android:elevation="@dimen/elevation"
+            app:srcCompat="@drawable/ic_circle_delete" />
+    </FrameLayout>
 </LinearLayout>

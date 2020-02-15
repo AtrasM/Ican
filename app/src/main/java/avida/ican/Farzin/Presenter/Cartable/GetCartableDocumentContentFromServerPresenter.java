@@ -75,7 +75,7 @@ public class GetCartableDocumentContentFromServerPresenter {
         task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (xml.contains(App.RESPONSEPATH)) {
+                if (xml.contains(App.getResponsePath())) {
                     DocumentContentSaxHandler documentContentSaxHandler = xmlToObject.parseXmlWithSax(xml, new DocumentContentSaxHandler());
                     cartableDocumentContentRES[0] = documentContentSaxHandler.getObject();
                 } else {

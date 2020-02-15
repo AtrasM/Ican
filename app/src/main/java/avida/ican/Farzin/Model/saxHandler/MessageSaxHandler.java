@@ -2,7 +2,9 @@ package avida.ican.Farzin.Model.saxHandler;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
+
 import androidx.annotation.RequiresApi;
+
 import android.util.Log;
 
 import org.xml.sax.Attributes;
@@ -55,10 +57,10 @@ public class MessageSaxHandler extends DefaultHandler {
     }
 
     public <T> T getObject() {
-            StructureMessageListRES structureMessageListRES = new StructureMessageListRES();
-            structureMessageListRES.setGetMessageListResult(Messages);
-            structureMessageListRES.setStrErrorMsg("");
-            return (T) structureMessageListRES;
+        StructureMessageListRES structureMessageListRES = new StructureMessageListRES();
+        structureMessageListRES.setGetMessageListResult(Messages);
+        structureMessageListRES.setStrErrorMsg("");
+        return (T) structureMessageListRES;
 
     }
 
@@ -195,6 +197,30 @@ public class MessageSaxHandler extends DefaultHandler {
                     Sender.setRoleID(Integer.parseInt(tempVal));
                 } else if (parentTag.equalsIgnoreCase("Receiver")) {
                     Receiver.setRoleID(Integer.parseInt(tempVal));
+                }
+            }
+        } else if (qName.equalsIgnoreCase("RoleName")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (parentTag.equalsIgnoreCase("Sender")) {
+                    Sender.setRoleName(tempVal);
+                } else if (parentTag.equalsIgnoreCase("Receiver")) {
+                    Receiver.setRoleName(tempVal);
+                }
+            }
+        } else if (qName.equalsIgnoreCase("FirstName")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (parentTag.equalsIgnoreCase("Sender")) {
+                    Sender.setFirstName(tempVal);
+                } else if (parentTag.equalsIgnoreCase("Receiver")) {
+                    Receiver.setRoleName(tempVal);
+                }
+            }
+        } else if (qName.equalsIgnoreCase("LastName")) {
+            if (tempVal != null && !tempVal.isEmpty()) {
+                if (parentTag.equalsIgnoreCase("Sender")) {
+                    Sender.setLastName(tempVal);
+                } else if (parentTag.equalsIgnoreCase("Receiver")) {
+                    Receiver.setLastName(tempVal);
                 }
             }
 

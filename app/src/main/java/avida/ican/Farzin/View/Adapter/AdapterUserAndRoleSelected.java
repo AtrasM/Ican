@@ -39,7 +39,7 @@ import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static avida.ican.Ican.BaseActivity.closeKeboard;
+import static avida.ican.Ican.BaseActivity.closeKeyboard;
 
 
 /**
@@ -64,6 +64,9 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     public AdapterUserAndRoleSelected(Activity context, List<StructureUserAndRoleDB> itemList, UserAndRoleEnum userAndRoleEnum, ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS) {
         imageLoader = App.getImageLoader();
         this.itemList = itemList;
+        if (itemList.size() > 0) {
+            itemList.get(0).setLnMoreVisible(true);
+        }
         this.context = context;
         animator = new Animator(context);
         this.userAndRoleEnum = userAndRoleEnum;
@@ -105,8 +108,6 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
         Spinner spActions;
         @BindView(R.id.ln_more)
         LinearLayout lnMore;
-        @BindView(R.id.ln_img_more)
-        LinearLayout lnImgMore;
         @BindView(R.id.img_more)
         ImageView imgMore;
 
@@ -135,12 +136,22 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
     }
 
     // Replace the contents of a view (invoked by the layout manager)
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
         final StructureUserAndRoleDB item = itemList.get(position);
         viewHolder.txtName.setText(item.getFirstName() + " " + item.getLastName());
         viewHolder.txtRoleName.setText("[ " + item.getRoleName() + " ] ");
         if (userAndRoleEnum == UserAndRoleEnum.SEND) {
+            if (item.isLnMoreVisible()) {
+                animator.slideInFromDownFast(viewHolder.lnMore);
+                viewHolder.lnMore.setVisibility(View.VISIBLE);
+                viewHolder.imgMore.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_up));
+            } else {
+                animator.slideOutToDown(viewHolder.lnMore);
+                viewHolder.imgMore.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_down));
+                viewHolder.lnMore.setVisibility(View.GONE);
+            }
             structurePersons.get(position).setRoleId(item.getRole_ID());
             structurePersons.get(position).setFullName(item.getFirstName() + " " + item.getLastName());
             ArrayAdapter<String> adapterActions = new CustomFunction(App.CurentActivity).getSpinnerAdapter(spList);
@@ -195,45 +206,37 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
 
                 }
             });
-            viewHolder.lnImgMore.setVisibility(View.VISIBLE);
             viewHolder.imgMore.setVisibility(View.VISIBLE);
-            viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
+            viewHolder.imgMore.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_down));
         } else {
             viewHolder.imgMore.setVisibility(View.GONE);
-            viewHolder.lnImgMore.setVisibility(View.GONE);
         }
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                closeKeboard();
-                if (viewHolder.imgMore.getVisibility() == View.VISIBLE) {
-                    if (viewHolder.lnMore.getVisibility() == View.GONE) {
-                        animator.slideInFromDownFast(viewHolder.lnMore);
-                        viewHolder.lnMore.setVisibility(View.VISIBLE);
-                        viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_up));
-
-                    } else {
-                        animator.slideOutToDown(viewHolder.lnMore);
-                        viewHolder.imgMore.setBackground(Resorse.getDrawable(R.drawable.ic_arrow_down));
-                        viewHolder.lnMore.setVisibility(View.GONE);
-                    }
+        viewHolder.itemView.setOnClickListener(view -> {
+            closeKeyboard();
+            if (viewHolder.imgMore.getVisibility() == View.VISIBLE) {
+                item.setLnMoreVisible(!item.isLnMoreVisible());
+                if (item.isLnMoreVisible()) {
+                    animator.slideInFromDownFast(viewHolder.lnMore);
+                    viewHolder.lnMore.setVisibility(View.VISIBLE);
+                    viewHolder.imgMore.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_up));
+                } else {
+                    animator.slideOutToDown(viewHolder.lnMore);
+                    viewHolder.imgMore.setImageDrawable(Resorse.getDrawable(R.drawable.ic_arrow_down));
+                    viewHolder.lnMore.setVisibility(View.GONE);
                 }
             }
         });
 
-        viewHolder.imgDelet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        viewHolder.imgDelet.setOnClickListener(view -> listenerAdapterUserAndRole.unSelect(item));
 
-                listenerAdapterUserAndRole.unSelect(item);
-            }
-        });
     }
 
     public void Select(StructureUserAndRoleDB structureUserAndRoleDB) {
         itemList.add(structureUserAndRoleDB);
+        if (itemList.size() == 1) {
+            itemList.get(0).setLnMoreVisible(true);
+        }
         structurePersons.add(new StructurePersonREQ());
         notifyItemRangeChanged(itemList.size() - 1, 1);
     }
@@ -265,8 +268,12 @@ public class AdapterUserAndRoleSelected extends RecyclerView.Adapter<AdapterUser
                     if (pos > -1) {
                         int position = pos;
                         itemList.remove(position);
-                        structurePersons.remove(position);
+                        if (structurePersons.size() > 0 && structurePersons.size() >= position) {
+                            structurePersons.remove(position);
+                        }
                         notifyItemRemoved(position);
+
+
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

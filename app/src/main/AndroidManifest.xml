@@ -3,164 +3,244 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="avida.ican">
 
-    <uses-sdk tools:overrideLibrary="me.aflak.libraries" />
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.Read_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.checkPermission.INTERNET" />
-    <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" /> <!-- ______________________________________________________________________________________ -->
-    <uses-permission android:name="android.checkPermission.RECORD_AUDIO" />
-    <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.checkPermission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.Read_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.checkPermission.INTERNET" />
+  <uses-permission android:name="android.checkPermission.ACCESS_NETWORK_STATE" />
+  <uses-permission android:name="android.checkPermission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.checkPermission.RECORD_AUDIO" />
+  <uses-permission android:name="android.checkPermission.WRITE_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.checkPermission.WAKE_LOCK" />
+  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <application
-        android:name=".Ican.App"
-        android:allowBackup="true"
-        android:appComponentFactory="androidx"
-        android:fullBackupContent="true"
-        android:hardwareAccelerated="false"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:largeHeap="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator,UnusedAttribute"
-        tools:replace="theme, allowBackup,android:appComponentFactory">
+  <uses-sdk tools:overrideLibrary="me.aflak.libraries" />
+
+  <application
+      android:name=".Ican.App"
+      android:allowBackup="false"
+      android:appComponentFactory="androidx"
+      android:fullBackupContent="true"
+      android:hardwareAccelerated="false"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name"
+      android:largeHeap="true"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:supportsRtl="true"
+      android:theme="@style/AppTheme.NoActionBar"
+      android:usesCleartextTraffic="true"
+      tools:ignore="GoogleAppIndexingWarning,HardcodedText,InnerclassSeparator,UnusedAttribute"
+      tools:replace="theme,allowBackup,android:appComponentFactory">
 
 
-        <receiver
-            android:name=".Farzin.FarzinBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExtraText">
-            <intent-filter>
-                <action
-                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
-                    tools:ignore="BatteryLife" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".Farzin.FarzinMessageNotificationReceiver"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExtraText">
-            <intent-filter>
-                <action
-                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
-                    tools:ignore="BatteryLife" />
-            </intent-filter>
-        </receiver>
-        <receiver
-            android:name=".Farzin.FarzinCartableNotificationReceiver"
-            android:enabled="true"
-            android:exported="true"
-            tools:ignore="ExtraText">
-            <intent-filter>
-                <action
-                    android:name="android.net.conn.CONNECTIVITY_CHANGE"
-                    tools:ignore="BatteryLife" />
-            </intent-filter>
-        </receiver>
-        <!--
-              <service
-              android:name=".Ican.View.Custom.NetWorkCheckingService"
-              android:enabled="true" />
-        -->
-        <service
-            android:name=".Farzin.Presenter.Service.CheckServerAviableService"
-            android:enabled="true" />
-        <!--
-  <service
-            android:name=".Farzin.Presenter.Service.CheckServerAviableService"
-            android:enabled="true" />
-        -->
-        <service
-            android:name=".Farzin.Presenter.Service.Message.SendMessageService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Message.GetSentMessageService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentTaeedQueueService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Cartable.CartableDocumentAppendQueueService"
-            android:enabled="true" />
-        <service
-            android:name=".Farzin.Presenter.Service.Cartable.OpticalPenQueueService"
-            android:enabled="true" />
+    <receiver
+        android:name=".Farzin.FarzinBroadcastReceiver"
+        android:enabled="true"
+        android:exported="true"
+        android:label="FarzinBroadcastReceiver">
+      <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+      </intent-filter>
+    </receiver>
+    <receiver
+        android:name=".Farzin.FarzinMessageNotificationDismissReceiver"
+        android:exported="false"
+        android:label="MessageNotificationReceiver" />
+    <receiver
+        android:name=".Farzin.FarzinCartableNotificationDismissReceiver"
+        android:exported="false"
+        android:label="FarzinCartableNotificationReceiver" />
 
-        <provider
-            android:name="androidx.core.content.FileProvider"
-            android:authorities="avida.ican.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
+    <service
+        android:name=".Farzin.Presenter.Service.CheckServerAviableJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
 
-        <activity android:name=".Ican.View.ActivitySplash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+    <service
+        android:name=".Farzin.Presenter.Service.ParentJobService.CartableParentJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+    <service
+        android:name=".Farzin.Presenter.Service.ParentJobService.MessageParentJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".Farzin.View.FarzinActivityLogin"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Ican.View.ActivityMain"
-            android:windowSoftInputMode="stateHidden|adjustResize">
 
-        </activity>
-        <activity
-            android:name=".Farzin.View.FarzinActivityMain"
-            android:label="@string/title_activity_farzin_main"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.ActivityDocumentSetting"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+    <service
+        android:name=".Farzin.Presenter.Service.Message.SendMessageJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
 
-        </activity>
-        <activity
-            android:name=".Farzin.View.ActivityMessageSetting"
-            android:windowSoftInputMode="stateHidden|adjustResize">
+    <service
+        android:name=".Farzin.Presenter.Service.Message.GetSentMessageJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
 
-        </activity>
-        <activity
-            android:name=".Farzin.View.ActivitySetting"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.FarzinActivityWriteMessage"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.FarzinActivityDetailMessage"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.FarzinActivityCartableDocument"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".Farzin.View.FarzinActivityQueue"
-            android:windowSoftInputMode="stateHidden|adjustResize" />
 
-        <activity android:name=".Farzin.View.FarzinNotificationManager" />
+    <service
+        android:name=".Farzin.Presenter.Service.Message.GetRecieveMessageJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
 
-        <activity android:name=".Ican.View.ActivityImageViewer" />
-    </application>
+
+    <service
+        android:name=".Farzin.Presenter.Service.Cartable.GetCartableDocumentJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+
+    <service
+        android:name=".Farzin.Presenter.Service.Cartable.GetConfirmationListJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+
+
+    <service
+        android:name=".Farzin.Presenter.Service.Cartable.DocumentOpreratorsQueueJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+
+
+    <service
+        android:name=".Farzin.Presenter.Service.Cartable.DocumentAttachFileQueueJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+
+    <service
+        android:name=".Farzin.Presenter.Service.Cartable.ImportDocumentJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+
+
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="avida.ican.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+      <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/provider_paths" />
+    </provider>
+
+    <activity
+        android:name=".Ican.View.ActivitySplash"
+        android:screenOrientation="portrait"
+        tools:ignore="LockedOrientationActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+
+    </activity>
+    <activity
+        android:name=".Farzin.View.FarzinActivityLogin"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Ican.View.ActivityMain"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize">
+
+    </activity>
+    <activity
+        android:name=".Farzin.View.FarzinActivityMain"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.ActivityDocumentSetting"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.ActivityMessageSetting"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize">
+
+    </activity>
+    <activity
+        android:name=".Farzin.View.ActivitySetting"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityWriteMessage"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+
+    <activity
+        android:name=".Farzin.View.FarzinActivityDetailMessage"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityCartableDocument"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityCartableDocumentDetail"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityQueue"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+
+    <activity
+        android:name=".Farzin.View.FarzinNotificationManager"
+        android:exported="true" />
+
+    <activity
+        android:name=".Ican.View.ActivityImageViewer"
+        android:configChanges="orientation|screenSize" />
+
+    <activity
+        android:name=".Farzin.View.FarzinActivityDocumentAttachFile"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.ActivityCreateDocument"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityChatRoom"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+    <activity
+        android:name=".Farzin.View.FarzinActivityChatRoomMessage"
+        android:configChanges="orientation|screenSize"
+        android:windowSoftInputMode="stateHidden|adjustResize" />
+  </application>
 
 </manifest>

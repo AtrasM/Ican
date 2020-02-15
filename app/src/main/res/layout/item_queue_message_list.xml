@@ -8,59 +8,75 @@
     tools:ignore="ContentDescription,RtlHardcoded">
 
     <LinearLayout
+        style="@style/custom_item_rcv_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
+        android:layout_marginLeft="@dimen/margin"
+        android:layout_marginTop="@dimen/margin_minimum"
+        android:layout_marginRight="@dimen/margin"
+        android:layout_marginBottom="@dimen/margin_minimum"
+        android:background="@drawable/border"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="0dp"
+        android:paddingTop="0dp"
+        android:paddingRight="0dp">
 
-        <FrameLayout
-            style="@style/custom_item_rcv_style"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_minimum"
-            android:layout_marginBottom="@dimen/margin_minimum">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <com.daimajia.swipe.SwipeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/swipe_layout"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:clickToClose="true"
-                app:drag_edge="right|left"
-                app:show_mode="pull_out">
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_header"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/img_delete"
+                    style="@style/custom_ic_right_style"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center|top"
+                    android:layout_margin="@dimen/margin"
+                    android:padding="@dimen/padding_minimum"
+                    app:srcCompat="@drawable/ic_close" />
 
                 <LinearLayout
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/color_Danger"
-                    android:weightSum="1">
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:paddingLeft="26dp"
+                    android:paddingTop="@dimen/padding_minimum"
+                    android:paddingBottom="@dimen/padding_minimum">
 
-                    <LinearLayout
-                        android:id="@+id/ln_delete"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:orientation="vertical"
-                        tools:ignore="UseCompoundDrawables,UselessParent">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginBottom="@dimen/margin"
-                            app:srcCompat="@drawable/ic_trash" />
-
-                        <TextView
-                            style="@style/custom_Txt_Normal_style"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:padding="0dp"
-                            android:text="@string/hint_delete_item"
-                            android:textColor="@color/color_White"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-
+                    <TextView
+                        android:id="@+id/txt_subject"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:ellipsize="end"
+                        android:gravity="center|right"
+                        android:lines="1"
+                        android:maxLines="1"
+                        android:text="موضوع"
+                        android:textColor="@color/color_White" />
                 </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/custom_divider_style"
+                android:layout_margin="0dp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/padding">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -71,18 +87,18 @@
 
                     <LinearLayout
                         android:id="@+id/ln_main"
-                        style="@style/custom_item_rcv_style"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingTop="@dimen/padding"
+                        android:paddingBottom="@dimen/padding">
 
                         <ImageView
                             android:id="@+id/img_profile"
-                            style="@style/custom_ic_right_style"
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
                             android:layout_gravity="center"
                             android:layout_margin="0dp" />
 
@@ -104,17 +120,16 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
                                     android:layout_gravity="center"
-                                    android:gravity="center"
-                                    android:paddingTop="@dimen/padding">
+                                    android:gravity="center">
 
 
                                     <ImageView
-                                        android:id="@+id/img_waiting"
-                                        android:layout_width="15dp"
-                                        android:layout_height="14dp"
-                                        android:layout_gravity="center"
+                                        android:id="@+id/img_state"
+                                        android:layout_width="18dp"
+                                        android:layout_height="18dp"
+                                        android:layout_gravity="center|top"
                                         android:layout_margin="@dimen/margin"
-                                        android:background="@drawable/ic_clock"
+                                        android:background="@drawable/ic_waiting"
                                         android:visibility="visible" />
                                 </LinearLayout>
 
@@ -137,12 +152,15 @@
                                             style="@style/custom_Txt_Normal_style"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
+                                            android:ellipsize="end"
                                             android:gravity="center|right"
+                                            android:lines="1"
+                                            android:maxLines="1"
                                             android:text="pol pol" />
 
                                         <TextView
                                             android:id="@+id/txt_role_name"
-                                            style="@style/custom_Txt_Normal_style"
+                                            style="@style/custom_Txt_Sub_Title_style"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content"
                                             android:ellipsize="end"
@@ -152,19 +170,6 @@
                                             android:text="[ 123 ]"
                                             android:textColor="@color/colorPrimaryDark"
                                             tools:ignore="NestedWeights" />
-
-                                        <TextView
-                                            android:id="@+id/txt_subject"
-                                            style="@style/custom_Txt_Normal_style"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content"
-                                            android:layout_marginRight="@dimen/margin_minimum"
-                                            android:ellipsize="end"
-                                            android:gravity="center|right"
-                                            android:maxLines="1"
-                                            android:padding="0dp"
-                                            android:text="@string/tmpl_text"
-                                            android:textColor="@color/color_txt_SubTitle" />
 
 
                                     </LinearLayout>
@@ -180,14 +185,35 @@
 
                 </LinearLayout>
 
-            </com.daimajia.swipe.SwipeLayout>
-        </FrameLayout>
+                <LinearLayout
+                    android:id="@+id/ln_try"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-        <LinearLayout
-            style="@style/custom_divider_style"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="@dimen/margin_maximum" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/bg_cover"
+                        android:gravity="center"
+                        android:visibility="visible">
+
+                        <ImageView
+                            android:id="@+id/img_try"
+                            style="@style/custom_icon_style"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            app:srcCompat="@drawable/ic_refresh_fill" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </FrameLayout>
+
+            <include layout="@layout/layout_queue_error_message" />
+
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

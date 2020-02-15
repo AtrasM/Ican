@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- ______________________________________________________________________________________________________________-->
+<?xml version="1.0" encoding="utf-8"?><!-- ______________________________________________________________________________________________________________-->
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -9,35 +8,53 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+  <androidx.coordinatorlayout.widget.CoordinatorLayout
 
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+      <include layout="@layout/farzin_custome_toolbar" />
 
-         <include layout="@layout/farzin_custome_toolbar"/>
+    </com.google.android.material.appbar.AppBarLayout>
+    <!-- ______________________________________________________________________________________________________________-->
 
-        </com.google.android.material.appbar.AppBarLayout>
-        <!-- ______________________________________________________________________________________________________________-->
+    <include layout="@layout/farzin_content_activity_main" />
 
-        <include layout="@layout/farzin_content_activity_main"/>
+  </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+  <com.google.android.material.navigation.NavigationView
+      android:id="@+id/nav_view"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_gravity="start"
+      android:fitsSystemWindows="true"
+      android:gravity="center|right"
+      android:layoutDirection="rtl"
+      app:headerLayout="@layout/nav_header_activity"
+      app:itemIconPadding="@dimen/navigation_drawer_icon_padding"
+      app:itemIconSize="@dimen/navigation_drawer_icon_size"
+      app:itemTextColor="@color/color_txt_Normal"
+      app:menu="@menu/main_drawer"
+      tools:ignore="RtlHardcoded,UnusedAttribute">
 
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        android:gravity="center|right"
-        android:layoutDirection="rtl"
-        app:headerLayout="@layout/nav_header_activity"
-        app:itemTextColor="@color/color_txt_Title"
-        app:menu="@menu/main_drawer" />
+    <TextView
+        android:id="@+id/txt_main_code_version"
+        style="@style/custom_Txt_Title_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_marginBottom="@dimen/margin_maximum"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/color_txt_SubTitle"
+        android:textSize="@dimen/txt_Normal_Size" />
+
+
+  </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

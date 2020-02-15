@@ -6,17 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:ignore="RtlHardcoded">
+    tools:ignore="RtlHardcoded,UnusedAttribute">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_gravity="center"
-        android:gravity="center"
         android:background="@drawable/border_tab"
+        android:elevation="@dimen/elevation"
+        android:gravity="center"
         android:orientation="horizontal"
-        tools:ignore="UselessParent">
+        tools:ignore="UnusedAttribute,UselessParent">
 
         <com.ogaclejapan.smarttablayout.SmartTabLayout
             android:id="@+id/smart_tabLayout"

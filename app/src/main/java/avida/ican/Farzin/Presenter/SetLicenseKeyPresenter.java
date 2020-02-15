@@ -40,7 +40,6 @@ public class SetLicenseKeyPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-
     public void CallRequest(final SetLicenseKeyListener setLicenseKeyListener) {
 
         CallApi(MethodName, EndPoint, getSoapObject(), new DataProcessListener() {
@@ -70,7 +69,6 @@ public class SetLicenseKeyPresenter {
             } else {
                 setLicenseKeyListener.onFailed("" + structureSetLicenseKeyRES.getiErrorCode());
             }
-
         } else {
             setLicenseKeyListener.onFailed("" + structureSetLicenseKeyRES.getiErrorCode());
         }
@@ -85,7 +83,8 @@ public class SetLicenseKeyPresenter {
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native String GetApplicationName();
+    public native String
+    GetApplicationName();
 
     public native String GetRandom(String data);
 
@@ -98,9 +97,6 @@ public class SetLicenseKeyPresenter {
         soapObject.addProperty("Random", structureSetLicenseKeyBND.getRandom());
         return soapObject;
     }
-
-
-
 
     private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();

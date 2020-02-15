@@ -3,16 +3,25 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import avida.ican.Farzin.View.Adapter.AdapterReceiveMessage;
+import java.util.ArrayList;
+import java.util.List;
+
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.View.Adapter.Message.AdapterReceiveMessage;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
+import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
@@ -30,13 +39,14 @@ public class FragmentReceiveMessageList extends BaseFragment {
     ImageView imgMoveUp;
     @BindView(R.id.txt_no_data)
     TextView txtNoData;
-    @BindView(R.id.srl_new_message)
-    SwipeRefreshLayout srlNewMessage;
+    @BindView(R.id.srl_refresh)
+    SwipeRefreshLayout srlRefresh;
 
     private Activity context;
     // private static FragmentReceiveMessageList fragment;
-    private static AdapterReceiveMessage adapterReceiveMessage;
-    public static String Tag = "FragmentReceiveMessageList";
+    private AdapterReceiveMessage adapterReceiveMessage;
+    private FragmentMessageList fragmentMessageList;
+    public String Tag = "FragmentReceiveMessageList";
     private ListenerRcv listenerRcv;
     private int[] pastVisiblesItems;
     private int visibleItemCount;
@@ -51,21 +61,28 @@ public class FragmentReceiveMessageList extends BaseFragment {
     }
 
 
-    public static AdapterReceiveMessage getAdapterReceiveMessage() {
-        return adapterReceiveMessage;
-    }
-
-    public static void setAdapterReceiveMessage(AdapterReceiveMessage adapterReceiveMessage) {
-        FragmentReceiveMessageList.adapterReceiveMessage = adapterReceiveMessage;
-    }
-
-
-    public FragmentReceiveMessageList newInstance(Activity context, AdapterReceiveMessage adapterReceiveMessage, ListenerRcv listenerRcv) {
+    public FragmentReceiveMessageList newInstance(Activity context, FragmentMessageList fragmentMessageList, ListenerRcv listenerRcv) {
         this.context = context;
-        this.adapterReceiveMessage = adapterReceiveMessage;
+        this.fragmentMessageList = fragmentMessageList;
+        initAdapter();
         this.listenerRcv = listenerRcv;
         animator = new Animator(context);
         return this;
+    }
+
+
+    public AdapterReceiveMessage getAdapter() {
+
+        return adapterReceiveMessage;
+    }
+
+
+    public void updateAdapterReceiveMessage(List<StructureMessageDB> mstructuresSentMessages) {
+        if (this.adapterReceiveMessage != null) {
+            adapterReceiveMessage.updateData(mstructuresSentMessages);
+            adapterReceiveMessage.notifyDataSetChanged();
+        }
+
     }
 
 
@@ -79,21 +96,14 @@ public class FragmentReceiveMessageList extends BaseFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initRcv();
-        imgMoveUp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //gridLayoutManager.scrollToPositionWithOffset(2, 20);
-                rcvMain.smoothScrollToPosition(0);
-                imgMoveUp.setVisibility(View.GONE);
-            }
+        imgMoveUp.setOnClickListener(v -> {
+            //gridLayoutManager.scrollToPositionWithOffset(2, 20);
+            rcvMain.smoothScrollToPosition(0);
+            imgMoveUp.setVisibility(View.GONE);
         });
 
-        srlNewMessage.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                listenerRcv.onSwipeRefresh(srlNewMessage);
-            }
-        });
+        srlRefresh.setOnRefreshListener(() -> listenerRcv.onSwipeRefresh(srlRefresh));
+
    /*     edtSearch.setFilters(new InputFilter[]{new CustomFunction().ignoreFirstWhiteSpace()});
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -116,6 +126,20 @@ public class FragmentReceiveMessageList extends BaseFragment {
 
             }
         });*/
+    }
+
+    private void initAdapter() {
+        adapterReceiveMessage = new AdapterReceiveMessage(new ArrayList<>(), new ListenerAdapterMessageList() {
+            @Override
+            public void onDelet(StructureMessageDB structureMessageDB) {
+                //App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.delete_action), SnackBarEnum.SNACKBAR_SHORT_TIME);
+            }
+
+            @Override
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND, int position) {
+                fragmentMessageList.goToMessageDetail(structureDetailMessageBND, position, Type.RECEIVED);
+            }
+        });
     }
 
     private void initRcv() {

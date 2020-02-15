@@ -1,5 +1,6 @@
 package avida.ican.Farzin.View.Interface.Cartable;
 
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakEntityDB;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 
 /**
@@ -7,6 +8,7 @@ import avida.ican.Ican.Model.Structure.StructureAttach;
  */
 
 public interface ListenerAdapterZanjireMadrak {
+    void onClickZanjireEntity(StructureZanjireMadrakEntityDB zanjireMadrakEntityDB);
     void onOpenFile(StructureAttach structureAttach);
     void FileNotExist();
 

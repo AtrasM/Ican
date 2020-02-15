@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_minimum"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@color/color_White"
+      android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rcv_log"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/margin"
+        android:layout_weight="1"
+        android:background="@drawable/border_very_large_radios_light" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:gravity="bottom"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding">
+
+      <Button
+          android:id="@+id/btn_log_close"
+          style="@style/custom_right_button_style"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="0.5"
+          android:text="@string/close" />
+
+      <Button
+          android:id="@+id/btn_log_clear"
+          style="@style/custom_left_button_style"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_marginRight="@dimen/margin_minimum"
+          android:layout_weight="0.5"
+          android:text="@string/clear_log" />
+    </LinearLayout>
+  </LinearLayout>
+
+</LinearLayout>

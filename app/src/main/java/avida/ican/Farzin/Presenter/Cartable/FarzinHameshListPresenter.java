@@ -1,8 +1,5 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
-import android.os.Handler;
-import android.view.View;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +10,6 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHameshRES;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
 import avida.ican.Ican.App;
-import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 
@@ -22,16 +18,15 @@ import avida.ican.Ican.View.Enum.NetworkStatus;
  */
 
 public class FarzinHameshListPresenter {
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
+    private final long DELAY = TimeValue.SecondsInMilli() * 10;
     private final ListenerHamesh listenerHamesh;
     private final int Etc;
     private final int Ec;
     private CartableHameshListListener cartableHameshListListener;
-    private Handler handler = new Handler();
     private GetCartableHameshFromServerPresenter getCartableHameshFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
-    private static int counterFailed=0;
-    private int MaxTry=2;
+    private static int counterFailed = 0;
+    private int MaxTry = 2;
 
     public FarzinHameshListPresenter(int Etc, int Ec, ListenerHamesh listenerHamesh) {
         this.Etc = Etc;
@@ -49,7 +44,7 @@ public class FarzinHameshListPresenter {
             public void onSuccess(ArrayList<StructureHameshRES> structureHameshRES) {
                 if (structureHameshRES.size() == 0) {
                     listenerHamesh.noData();
-                    counterFailed=0;
+                    counterFailed = 0;
                 } else {
                     List<StructureHameshDB> structureHameshDBS = farzinCartableQuery.getImageHamesh(Etc, Ec);
                     for (StructureHameshDB structureHameshDB : structureHameshDBS) {
@@ -67,7 +62,7 @@ public class FarzinHameshListPresenter {
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onFailed("");
@@ -81,12 +76,7 @@ public class FarzinHameshListPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    }, 300);
+                    App.getHandlerMainThread().postDelayed(() -> onCancel(), 300);
                 } else {
                     reGetData();
                 }
@@ -107,30 +97,27 @@ public class FarzinHameshListPresenter {
 
         final StructureHameshRES structureHameshRES = structureHameshsRES.get(0);
         farzinCartableQuery.saveHamesh(structureHameshRES, Etc, Ec, new HameshQuerySaveListener() {
-
-
             @Override
             public void onSuccess(StructureHameshDB structureHameshDB) {
-
                 structureHameshsRES.remove(0);
                 if (structureHameshsRES.size() > 0) {
                     SaveData(structureHameshsRES);
                 } else {
                     listenerHamesh.newData(structureHameshDB);
-                    counterFailed=0;
+                    counterFailed = 0;
                 }
             }
 
             @Override
             public void onExisting() {
                 listenerHamesh.noData();
-                counterFailed=0;
+                counterFailed = 0;
             }
 
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onFailed("");
@@ -145,7 +132,7 @@ public class FarzinHameshListPresenter {
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected || App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
+                    App.getHandlerMainThread().postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             onCancel();
@@ -162,16 +149,11 @@ public class FarzinHameshListPresenter {
 
     private void reGetData() {
         counterFailed++;
-        if(counterFailed>=MaxTry){
+        if (counterFailed >= MaxTry) {
             listenerHamesh.noData();
-            counterFailed=0;
-        }else {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    GetHameshFromServer();
-                }
-            }, DELAY);
+            counterFailed = 0;
+        } else {
+            App.getHandlerMainThread().postDelayed(() -> GetHameshFromServer(), DELAY);
         }
     }
 

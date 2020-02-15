@@ -16,13 +16,14 @@ import com.mohamadamin.persianmaterialdatetimepicker.date.DatePickerDialog;
 import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianCalendar;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Interface.GetDateTimeListener;
 import avida.ican.Farzin.Model.Interface.Message.MessageDataListener;
-import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.MetaDataParentSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Presenter.Cartable.FarzinCartableDocumentListPresenter;
 import avida.ican.Farzin.Presenter.Message.FarzinGetMessagePresenter;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
@@ -32,8 +33,7 @@ import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
-import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Enum.SnackBarEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
@@ -64,6 +64,8 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     TextView edtSubject;
     @BindView(R.id.edt_content)
     TextView edtContent;
+    @BindView(R.id.txt_info)
+    TextView txtInfo;
     @BindString(R.string.TitleActivityDocumentSetting)
     String Title;
     private static String strStartDate = "";
@@ -73,11 +75,15 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     private FarzinPrefrences farzinPrefrences;
     private int messageTypeDefPos = 0;
     private int countOfGetDocumentDefPos = 0;
-    ArrayList<Type> arrayType = new ArrayList<>();
+    private ArrayList<Type> arrayType = new ArrayList<>();
     private Type type;
     private int settingType = -1;
     private FarzinGetMessagePresenter farzinGetMessagePresenter;
     private ArrayList<String> spList = new ArrayList<>();
+    private DatePickerDialog endDatePickerDialog;
+    private DatePickerDialog startDatePickerDialog;
+    private int serviceCounter = 0;
+
 
     @Override
     protected int getLayoutResource() {
@@ -87,12 +93,20 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        settingType = getIntent().getIntExtra(PutExtraEnum.Settingtype.getValue(), -1);
+
+        settingType = getIntent().getIntExtra(PutExtraEnum.SettingType.getValue(), -1);
         farzinMessageQuery = new FarzinMessageQuery();
         farzinPrefrences = getFarzinPrefrences();
         initTollBar(Title);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        if (settingType == SYNC.getValue()) {
+            txtInfo.setVisibility(View.GONE);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            getSupportActionBar().setDisplayShowHomeEnabled(false);
+        } else {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+        }
+
         initView();
     }
 
@@ -105,13 +119,14 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
             lnEndDate.setVisibility(View.GONE);
             lnStartDate.setVisibility(View.GONE);
         }
-        //strStartDate = farzinPrefrences.getReceiveMessageDataSyncDate();
-        strStartDate = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
-        strEndDate = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
 
+
+        strStartDate = farzinPrefrences.getMessageSettingStartDate();
+        strEndDate = farzinPrefrences.getMessageSettingEndDate();
         txtStartDate.setText(CustomFunction.MiladyToJalaly(strStartDate));
         txtEndDate.setText(CustomFunction.MiladyToJalaly(strEndDate));
         initDateView();
+
 
         lnMessagType.setOnClickListener(view -> {
             spMessageType.performClick();
@@ -121,30 +136,42 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     private void initDateView() {
         lnStartDate.setOnClickListener(view -> {
             PersianCalendar persianCalendar = new PersianCalendar();
-            DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(
-                    (view1, year, monthOfYear, dayOfMonth) -> {
-                        strStartDate = CustomFunction.convertDateToCustomFormat(year, monthOfYear, dayOfMonth, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
-                        txtStartDate.setText(strStartDate.replace("T", " "));
-                    },
-                    persianCalendar.getPersianYear(),
-                    persianCalendar.getPersianMonth(),
-                    persianCalendar.getPersianDay()
-            );
-            datePickerDialog.show(getFragmentManager(), PutExtraEnum.Datepickerdialog.getValue());
+
+            if (startDatePickerDialog == null) {
+                Date date = CustomFunction.changeDateTimeAsDateFormat(strStartDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+                if (date != null) {
+                    persianCalendar.setTime(date);
+                }
+                startDatePickerDialog = DatePickerDialog.newInstance(
+                        (view1, year, monthOfYear, dayOfMonth) -> {
+                            strStartDate = CustomFunction.convertDateToCustomFormat(year, monthOfYear + 1, dayOfMonth, 0, 0, 0, SimpleDateFormatEnum.DateTime_Y_m_d_H_i_s.getValue(), true);
+                            txtStartDate.setText(strStartDate.replace("T", " "));
+                            strStartDate = CustomFunction.JalalyToMilady(strStartDate);
+                        },
+                        persianCalendar.getPersianYear(),
+                        persianCalendar.getPersianMonth(),
+                        persianCalendar.getPersianDay()
+                );
+            }
+            startDatePickerDialog.show(getFragmentManager(), PutExtraEnum.DatepickerDialog.getValue());
         });
 
         lnEndDate.setOnClickListener(view -> {
             PersianCalendar persianCalendar = new PersianCalendar();
-            DatePickerDialog datePickerDialog = DatePickerDialog.newInstance(
-                    (view1, year, monthOfYear, dayOfMonth) -> {
-                        strEndDate = CustomFunction.convertDateToCustomFormat(year, monthOfYear, dayOfMonth, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
-                        txtEndDate.setText(strEndDate.replace("T", " "));
-                    },
-                    persianCalendar.getPersianYear(),
-                    persianCalendar.getPersianMonth(),
-                    persianCalendar.getPersianDay()
-            );
-            datePickerDialog.show(getFragmentManager(), PutExtraEnum.Datepickerdialog.getValue());
+            if (endDatePickerDialog == null) {
+                persianCalendar.setTime(CustomFunction.getCurentDateTimeAsDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue()));
+                endDatePickerDialog = DatePickerDialog.newInstance(
+                        (view1, year, monthOfYear, dayOfMonth) -> {
+                            strEndDate = CustomFunction.convertDateToCustomFormat(year, monthOfYear + 1, dayOfMonth, 23, 59, 59, SimpleDateFormatEnum.DateTime_Y_m_d_H_i_s.getValue(), true);
+                            txtEndDate.setText(strEndDate.replace("T", " "));
+                            strEndDate = CustomFunction.JalalyToMilady(strEndDate);
+                        },
+                        persianCalendar.getPersianYear(),
+                        persianCalendar.getPersianMonth(),
+                        persianCalendar.getPersianDay()
+                );
+            }
+            endDatePickerDialog.show(getFragmentManager(), PutExtraEnum.DatepickerDialog.getValue());
         });
     }
 
@@ -185,11 +212,11 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     }
 
     private void initSpMessageTypeData() {
-        //spList.add("همه");
+        spList.add("همه");
         spList.add("ارسالی");
         spList.add("دریافتی");
 
-        //arrayType.add(Type.ALL);
+        arrayType.add(Type.ALL);
         arrayType.add(Type.SENDED);
         arrayType.add(Type.RECEIVED);
       /*   if (defDefultMessageType.equals(Type.SENDED.getValue())) {
@@ -213,54 +240,108 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
         }
     }
 
-    private void getData() {
+    private void getData(boolean all, int serviceCount) {
         App.canBack = false;
-        callDialogDataSyncing();
-        strStartDate = CustomFunction.JalalyToMilady(strStartDate);
-        strEndDate = CustomFunction.JalalyToMilady(strEndDate);
-
-        farzinGetMessagePresenter = new FarzinGetMessagePresenter(new MessageDataListener() {
+        callDialogDataSyncing(serviceCount);
+       /* strStartDate = CustomFunction.JalalyToMilady(strStartDate);
+        strEndDate = CustomFunction.JalalyToMilady(strEndDate);*/
+        serviceCounter++;
+        if (all) {
+            type = Type.RECEIVED;
+        }
+        farzinGetMessagePresenter = new FarzinGetMessagePresenter(App.CurentActivity, new MessageDataListener() {
             @Override
             public void newData() {
-                String date = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
-
-                if (type == Type.RECEIVED) {
-                    getFarzinPrefrences().putReceiveMessageDataSyncDate(date);
-                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncReceiveMessage);
-                } else {
-                    getFarzinPrefrences().putSendMessageDataSyncDate(date);
-                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncSendMessage);
+                try {
+                    serviceCounter++;
+                    setSyncDate(type);
+                    if (all && serviceCounter == 2) {
+                        type = Type.SENDED;
+                        farzinGetMessagePresenter.GetFromServer(strStartDate, strEndDate, type);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
             }
 
             @Override
             public void noData() {
-                String date = CustomFunction.getCurentDateTimeAsStringFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
-
-                if (type == Type.RECEIVED) {
-                    getFarzinPrefrences().putReceiveMessageDataSyncDate(date);
-                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncReceiveMessage);
-                } else {
-                    getFarzinPrefrences().putSendMessageDataSyncDate(date);
-                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncSendMessage);
+                try {
+                    serviceCounter++;
+                    setSyncDate(type);
+                    if (all && serviceCounter == 2) {
+                        type = Type.SENDED;
+                        farzinGetMessagePresenter.GetFromServer(strStartDate, strEndDate, type);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+
             }
 
             @Override
             public void onFailed(String message) {
-                BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncFailed);
-                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_faild), SnackBarEnum.SNACKBAR_LONG_TIME);
+                try {
+                    BaseActivity.dialogDataSyncing.serviceGetDataFinish(DataSyncingNameEnum.SyncFailed);
+                    App.ShowMessage().ShowToast(message, ToastEnum.TOAST_LONG_TIME);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         farzinGetMessagePresenter.GetFromServer(strStartDate, strEndDate, type);
 
     }
 
-    private void callDialogDataSyncing() {
+    private void setSyncDate(Type type) {
+        doProccess(type);
+    }
+
+    private void doProccess(Type type) {
+        CustomFunction.getCurentDateTimeAsStringFormat(new GetDateTimeListener() {
+            @Override
+            public void onSuccess(String strDateTime) {
+                countinuProcess(strDateTime, type);
+            }
+
+            @Override
+            public void onFailed(String message) {
+                String strDate = CustomFunction.getCurentLocalDateTimeAsStringFormat();
+                countinuProcess(strDate, type);
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+        });
+    }
+
+    private void countinuProcess(String strDateTime, Type type) {
+        try {
+            if (type == Type.RECEIVED) {
+                getFarzinPrefrences().putReceiveMessageDataSyncDate(strDateTime);
+                BaseActivity.dialogDataSyncing.serviceGetDataFinish();
+            } else {
+                getFarzinPrefrences().putSendMessageDataSyncDate(strDateTime);
+                BaseActivity.dialogDataSyncing.serviceGetDataFinish();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private void callDialogDataSyncing(int serviceCount) {
 
         runOnUiThread(() -> {
 
-            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, 1, false, new MetaDataSyncListener() {
+            BaseActivity.dialogDataSyncing = new DialogDataSyncing(App.CurentActivity, serviceCount, new MetaDataParentSyncListener() {
                 @Override
                 public void onFinish() {
                     runOnUiThread(() -> {
@@ -283,6 +364,7 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
         });
     }
 
+
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();
     }
@@ -303,25 +385,48 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem actionSuccess = menu.findItem(R.id.action_success);
+        MenuItem actionDownload = menu.findItem(R.id.action_download);
+
+        if (settingType == MANUALLY.getValue()) {
+            actionDownload.setVisible(true);
+            actionSuccess.setVisible(false);
+        } else {
+            actionDownload.setVisible(false);
+            actionSuccess.setVisible(true);
+        }
+
         CustomFunction customFunction = new CustomFunction(App.CurentActivity);
         Drawable drawable = customFunction.ChengeDrawableColor(R.drawable.ic_success, R.color.color_White);
         actionSuccess.setIcon(drawable);
-        actionSuccess.setOnMenuItemClickListener(menuItem -> {
 
+        Drawable drawableDownload = customFunction.ChengeDrawableColor(R.drawable.ic_download, R.color.color_White);
+        actionDownload.setIcon(drawableDownload);
+        actionDownload.setOnMenuItemClickListener(menuItem -> {
+            farzinPrefrences.putMessageSettingStartDate(strStartDate);
+            farzinPrefrences.putMessageSettingEndDate(strEndDate);
+            if (type == Type.ALL) {
+                getData(true, 2);
+            } else {
+                getData(false, 1);
+            }
+            return true;
+        });
+        actionSuccess.setOnMenuItemClickListener(menuItem -> {
+            farzinPrefrences.putMessageSettingStartDate(strStartDate);
             if (settingType == SYNC.getValue()) {
                 if (strStartDate != farzinPrefrences.getSendMessageDataSyncDate()) {
-                    farzinPrefrences.putSendMessageDataSyncDate(CustomFunction.JalalyToMilady(strStartDate));
+                    //farzinPrefrences.putSendMessageDataSyncDate(CustomFunction.JalalyToMilady(strStartDate));
+                    farzinPrefrences.putSendMessageDataSyncDate(strStartDate);
                 }
                 if (strStartDate != farzinPrefrences.getReceiveMessageDataSyncDate()) {
-                    farzinPrefrences.putReceiveMessageDataSyncDate(CustomFunction.JalalyToMilady(strStartDate));
+                    //farzinPrefrences.putReceiveMessageDataSyncDate(CustomFunction.JalalyToMilady(strStartDate));
+                    farzinPrefrences.putReceiveMessageDataSyncDate(strStartDate);
                 }
 
                 Finish(App.CurentActivity);
 
-            } else if (settingType == MANUALLY.getValue()) {
-                //Finish(App.CurentActivity);
-                getData();
             } else if (settingType == AUTOMATIC.getValue()) {
+                farzinPrefrences.putMessageSettingEndDate(strEndDate);
                 Finish(App.CurentActivity);
             }
 
@@ -330,14 +435,28 @@ public class ActivityMessageSetting extends BaseToolbarActivity {
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                if (settingType != SYNC.getValue()) {
+                    Finish(App.CurentActivity);
+                }
+                break;
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            Finish(App.CurentActivity);
+            if (settingType != SYNC.getValue()) {
+                Finish(App.CurentActivity);
+            }
             return true;
         }
-
         return super.onKeyDown(keyCode, event);
     }
+
 }

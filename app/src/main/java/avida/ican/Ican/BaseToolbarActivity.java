@@ -51,9 +51,6 @@ public abstract class BaseToolbarActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    /*    if (App.netWorkStatusListener == null) {
-            RunNetWorkChecking();
-        }*/
         RunNetWorkChecking();
     }
 

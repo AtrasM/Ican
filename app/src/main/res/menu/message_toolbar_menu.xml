@@ -4,13 +4,14 @@
 
     <item
         android:id="@+id/action_send_message"
-        android:icon="@drawable/ic_send"
-        android:orderInCategory="100"
+        android:icon="@drawable/ic_send_message"
+        android:orderInCategory="2"
         android:title=""
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_attach"
-        android:icon="@drawable/ic_attach"
+        android:orderInCategory="1"
+        android:icon="@drawable/ic_attach2"
         android:title=""
         app:showAsAction="ifRoom" />
 

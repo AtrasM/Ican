@@ -2,10 +2,14 @@ package avida.ican.Farzin.View;
 
 import android.annotation.SuppressLint;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +32,7 @@ import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureFwdReplyBND;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Structure.Request.DocumentOpratores.StructureAppendREQ;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.View.Dialog.DialogUserAndRole;
@@ -48,6 +52,7 @@ import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogAttach;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.AttachEnum;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.AudioRecorderListener;
@@ -75,7 +80,6 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     RecyclerView RcvAttach;
     @BindView(R.id.sp_size)
     Spinner spSize;
-
     private String msgContent = "";
     private DialogUserAndRole dialogUserAndRole;
     private List<StructureUserAndRoleDB> structuresMain = new ArrayList<>();
@@ -93,6 +97,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private File file;
     private String message = "";
     public static StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND();
+    private DialogAttach dialogAttach;
 
     @Override
     protected void onResume() {
@@ -121,40 +126,52 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
         if (ISFwdReplyMessage) {
             //structureFwdReplyBND = (StructureFwdReplyBND) bundleObject.getSerializable(PutExtraEnum.ISFwdReplyMessage.getValue());
             if (structureFwdReplyBND.isReply()) {
-
                 initTollBar(Resorse.getString(R.string.title_farzin_reply_message));
                 String subject = Resorse.getString(R.string.reply_message) + " " + structureFwdReplyBND.getSubject();
                 edtSubject.setText(subject);
-                String divider = CustomFunction.repeatChar('-', 80);
+                String divider = CustomFunction.repeatChar('-', 50);
                 String content = "(" + Resorse.getString(R.string.sender) + structureFwdReplyBND.getSenderFullName() + structureFwdReplyBND.getSenderRoleName() + ") <br> " + structureFwdReplyBND.getContent() + " <br> " + divider + " <br> ";
-                reMsg.setHtml(content);
-                StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReplyBND.getSender_user_id(), structureFwdReplyBND.getSender_role_id());
-                userAndRoleDBS.add(structureUserAndRoleDB);
-                ShowSelectionItem(userAndRoleDBS);
-                structureAttaches = structureFwdReplyBND.getStructureAttaches();
-                adapterAttach.addAll(structureAttaches);
+                setContent(content);
+                frmAddContacts.setEnabled(false);
+                //frmAddContacts.setBackgroundColor(Resorse.getColor(R.color.color_disable));
+                StructureUserAndRoleDB structureUserAndRoleDB;
+                if (structureFwdReplyBND.getSender_role_id() > 0) {
+                    structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReplyBND.getSender_user_id(), structureFwdReplyBND.getSender_role_id());
+                } else {
+                    structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(structureFwdReplyBND.getSender_user_id());
+                }
+                if (structureUserAndRoleDB != null) {
+                    userAndRoleDBS.add(structureUserAndRoleDB);
+                    ShowSelectionItem(userAndRoleDBS);
+                }
+
             } else {
                 initTollBar(Resorse.getString(R.string.title_farzin_fwd_message));
+                structureAttaches = structureFwdReplyBND.getStructureAttaches();
+                adapterAttach.addAll(structureAttaches);
                 edtSubject.setText(structureFwdReplyBND.getSubject());
                 String content = "(" + Resorse.getString(R.string.sender) + structureFwdReplyBND.getSenderFullName() + structureFwdReplyBND.getSenderRoleName() + ") <br> " + structureFwdReplyBND.getContent() + " <br> ";
-                reMsg.setHtml(content);
+                setContent(content);
             }
 
 
         } else {
+            setContent(Resorse.getString(R.string.Hellow));
             initTollBar(Resorse.getString(R.string.title_farzin_write_message));
         }
 
 
-        frmAddContacts.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                showUserAndRoleDialog();
-            }
-        });
+        frmAddContacts.setOnClickListener(view -> showUserAndRoleDialog());
 
 
+    }
+
+    private void setContent(String content) {
+        reMsg.focusEditor();
+        reMsg.setHtml(content);
+        reMsg.focusEditor();
+        reMsg.setSelected(true);
+        reMsg.setAlignRight();
     }
 
     private void showUserAndRoleDialog() {
@@ -191,7 +208,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                                     }
                                     int pos = structuresMain.indexOf(item);
                                     if (pos > -1) {
-                                        structuresMain.get(pos).setSelected(false);
+                                        structuresMain.get(pos).setToolSelected(false);
                                     }
                                 }
                                 return null;
@@ -254,24 +271,13 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
     private void setUpRichEditore() {
         //reMsg.setEditorHeight(200);
-        reMsg.setEditorFontSize(textSize);
+
    /*     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             reMsg.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
         }*/
         reMsg.setEditorFontColor(Color.BLACK);
         reMsg.setPadding(defPading, defPading, defPading, defPading);
-        reMsg.focusEditor();
-        //reMsg.setPlaceholder(Resorse.getString(R.string.editore_place_holder));
-        reMsg.setHtml(Resorse.getString(R.string.editore_place_holder));
-        reMsg.focusEditor();
-        reMsg.setAlignRight();
-        //reMsg.getRight();
-        reMsg.setOnTextChangeListener(new RichEditor.OnTextChangeListener() {
-            @Override
-            public void onTextChange(String text) {
-                msgContent = text;
-            }
-        });
+        reMsg.setOnTextChangeListener(text -> msgContent = text);
 
 
         ArrayList<String> msize = new ArrayList<>();
@@ -299,85 +305,28 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
             }
         });
+        reMsg.setEditorFontSize(Hsize.get(0));
+        findViewById(R.id.action_bold).setOnClickListener(v -> reMsg.setBold());
 
-        findViewById(R.id.action_bold).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setBold();
-            }
-        });
+        findViewById(R.id.action_italic).setOnClickListener(v -> reMsg.setItalic());
 
-        findViewById(R.id.action_italic).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setItalic();
-            }
-        });
+        findViewById(R.id.action_strikethrough).setOnClickListener(v -> reMsg.setStrikeThrough());
 
-        findViewById(R.id.action_strikethrough).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setStrikeThrough();
-            }
-        });
+        findViewById(R.id.action_underline).setOnClickListener(v -> reMsg.setUnderline());
 
-        findViewById(R.id.action_underline).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setUnderline();
-            }
-        });
+        findViewById(R.id.action_indent).setOnClickListener(v -> reMsg.setIndent());
 
+        findViewById(R.id.action_outdent).setOnClickListener(v -> reMsg.setOutdent());
 
-        findViewById(R.id.action_indent).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setIndent();
-            }
-        });
+        findViewById(R.id.action_align_left).setOnClickListener(v -> reMsg.setAlignLeft());
 
-        findViewById(R.id.action_outdent).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setOutdent();
-            }
-        });
+        findViewById(R.id.action_align_center).setOnClickListener(v -> reMsg.setAlignCenter());
 
-        findViewById(R.id.action_align_left).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setAlignLeft();
-            }
-        });
+        findViewById(R.id.action_align_right).setOnClickListener(v -> reMsg.setAlignRight());
 
-        findViewById(R.id.action_align_center).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setAlignCenter();
-            }
-        });
+        findViewById(R.id.action_insert_bullets).setOnClickListener(v -> reMsg.setBullets());
 
-        findViewById(R.id.action_align_right).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setAlignRight();
-            }
-        });
-
-
-        findViewById(R.id.action_insert_bullets).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setBullets();
-            }
-        });
-
-        findViewById(R.id.action_insert_numbers).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reMsg.setNumbers();
-            }
-        });
+        findViewById(R.id.action_insert_numbers).setOnClickListener(v -> reMsg.setNumbers());
         reMsg.focusEditor();
         reMsg.setAlignRight();
     }
@@ -413,7 +362,7 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
             @Override
             public void onSuccess(ArrayList<File> files, ArrayList<String> base64s, ArrayList<String> fileNames) {
                 // App.ShowMessage().ShowToast("onSuccess", ToastEnum.TOAST_SHORT_TIME);
-                addAllToAttach(base64s, fileNames, R.drawable.ic_attach_file);
+                addAllToAttach(base64s, fileNames, R.drawable.ic_attach_document);
             }
 
             @Override
@@ -495,9 +444,12 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void ShowDialogAttach() {
-        new DialogAttach(App.CurentActivity).setOnListener(new ListenerAttach() {
+        dialogAttach = new DialogAttach(App.CurentActivity);
+        dialogAttach.setOnListener(new ListenerAttach() {
             @Override
             public void onSuccess(AttachEnum attachEnum) {
+                App.canBack = true;
+                dialogAttach = null;
                 switch (attachEnum) {
                     case FilePicker: {
                         ShowFilePicker();
@@ -524,7 +476,8 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
 
             @Override
             public void onCancel() {
-
+                App.canBack = true;
+                dialogAttach = null;
             }
         }).Show();
     }
@@ -581,24 +534,19 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem actionSend = menu.findItem(R.id.action_send_message);
         MenuItem actionAttach = menu.findItem(R.id.action_attach);
-
-        actionSend.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-
-                if (isValid()) {
-                    SaveMessage();
-                }
-
-                return false;
+        Drawable drawable = new CustomFunction(App.CurentActivity).ChengeDrawableColor(R.drawable.ic_attach2, R.color.color_White);
+        actionAttach.setIcon(drawable);
+        actionSend.setOnMenuItemClickListener(menuItem -> {
+            closeKeyboard();
+            if (isValid()) {
+                SaveMessage();
             }
+
+            return false;
         });
-        actionAttach.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                ShowDialogAttach();
-                return false;
-            }
+        actionAttach.setOnMenuItemClickListener(menuItem -> {
+            ShowDialogAttach();
+            return false;
         });
         return super.onPrepareOptionsMenu(menu);
     }
@@ -606,39 +554,49 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     private void SaveMessage() {
         loading.Show();
         String Subject = "" + edtSubject.getText().toString();
-        // StructureUserAndRoleDB structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(getFarzinPrefrences().getUserName());
         int user_id = getFarzinPrefrences().getUserID();
         int role_id = getFarzinPrefrences().getRoleID();
-        new FarzinMessageQuery().SaveSendLocalMessage(user_id, role_id, Subject, message, structureAttaches, userAndRoleDBS, new MessageQuerySaveListener() {
+        StructureUserAndRoleDB structureUserAndRoleDB;
+        if (role_id > 0) {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(user_id, role_id);
+        } else {
+            structureUserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(user_id);
+        }
 
+
+        new FarzinMessageQuery().SaveSendLocalMessage(user_id, role_id, structureUserAndRoleDB.getRoleName(), structureUserAndRoleDB.getFirstName(), structureUserAndRoleDB.getLastName(), Subject, message, structureAttaches, userAndRoleDBS, new MessageQuerySaveListener() {
             @Override
             public void onSuccess(final StructureMessageDB structureMessageDB) {
-                if (App.fragmentMessageList != null) {
-                    App.CurentActivity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            loading.Hide();
-                            App.fragmentMessageList.UpdateMessageData();
-                            App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
-                            Finish(App.CurentActivity);
-                        }
-                    });
-                }
+                App.getHandlerMainThread().post(() -> {
+                    /*if (App.fragmentMessageList != null) {
+                        App.fragmentMessageList.UpdateMessageData();
+                    }*/
+                    loading.Hide();
+                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                        App.ShowMessage().ShowToast(Resorse.getString(R.string.the_command_was_placed_in_the_queue), ToastEnum.TOAST_LONG_TIME);
+                    } else {
+                        App.ShowMessage().ShowToast(Resorse.getString(R.string.message_sent_successfully), ToastEnum.TOAST_LONG_TIME);
+                    }
+                    App.canBack = true;
+                    App.isLoading = false;
+                    App.fragmentMessageList.checkQueue();
+                    Finish(App.CurentActivity);
+                });
             }
 
             @Override
             public void onExisting() {
-
             }
 
             @Override
             public void onFailed(final String message) {
-                showSnackStatus(message);
+                App.getHandlerMainThread().post(() -> showSnackStatus(message));
             }
 
             @Override
             public void onCancel() {
-                showSnackStatus(Resorse.getString(R.string.rule_cancel));
+                App.getHandlerMainThread().post(() -> showSnackStatus(Resorse.getString(R.string.rule_cancel)));
+
 
             }
         });
@@ -647,19 +605,14 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
     }
 
     private void showSnackStatus(final String message) {
-        App.getHandlerMainThread().post(new Runnable() {
-            @Override
-            public void run() {
-                loading.Hide();
-                App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_SHORT_TIME);
-            }
+        App.getHandlerMainThread().post(() -> {
+            loading.Hide();
+            App.ShowMessage().ShowSnackBar(message, SnackBarEnum.SNACKBAR_SHORT_TIME);
         });
-
     }
 
     private boolean isValid() {
         boolean isValid = true;
-        loading.Show();
         if (edtSubject.getText().toString().isEmpty()) {
             isValid = false;
             edtSubject.setError(Resorse.getString(R.string.error_empty_filed));
@@ -679,8 +632,46 @@ public class FarzinActivityWriteMessage extends BaseToolbarActivity {
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_empty_editor_filed), SnackBarEnum.SNACKBAR_LONG_TIME);*/
             }
         }
-        loading.Hide();
+
         return isValid;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home: {
+                Back();
+                break;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            Back();
+            return true;
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void Back() {
+        if (App.canBack) {
+            App.fragmentMessageList.checkQueue();
+            Finish(App.CurentActivity);
+        } /*else {
+            try {
+                if (dialogAttach != null) {
+                    App.canBack = true;
+                    dialogAttach.dismiss();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }*/
     }
 
     private FarzinPrefrences getFarzinPrefrences() {

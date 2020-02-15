@@ -1,16 +1,12 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
-import android.util.Base64;
-
 import org.ksoap2.serialization.SoapObject;
 
-import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
-import avida.ican.Farzin.Model.Interface.Cartable.TaeedListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
+import avida.ican.Farzin.Model.Interface.Queue.DocumentOperatorQueuesListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
+import avida.ican.Farzin.Model.Structure.Request.DocumentOpratores.StructureOpticalPenREQ;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureAddHameshOpticalPenRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureTaeedRES;
 import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
@@ -31,14 +27,17 @@ public class OpticalPenPresenter {
     private XmlToObject xmlToObject = new XmlToObject();
     private String Tag = "OpticalPenPresenter";
     private FarzinPrefrences farzinPrefrences;
+    private int ETC;
+    private int EC;
 
     public OpticalPenPresenter() {
         farzinPrefrences = getFarzinPrefrences();
     }
 
 
-    public void CallRequest(StructureOpticalPenREQ opticalPenREQ, final OpticalPenListener listener) {
-
+    public void CallRequest(int ETC, int EC,StructureOpticalPenREQ opticalPenREQ, final DocumentOperatorQueuesListener listener) {
+        this.ETC=ETC;
+        this.EC=EC;
         CallApi(MethodName, EndPoint, getSoapObject(opticalPenREQ), new DataProcessListener() {
             @Override
             public void onSuccess(String Xml) {
@@ -58,7 +57,7 @@ public class OpticalPenPresenter {
 
     }
 
-    private void initStructure(String xml, OpticalPenListener listener) {
+    private void initStructure(String xml, DocumentOperatorQueuesListener listener) {
         StructureAddHameshOpticalPenRES addHameshOpticalPenRES = xmlToObject.DeserializationGsonXml(xml, StructureAddHameshOpticalPenRES.class);
         if (addHameshOpticalPenRES.getStrErrorMsg() == null || addHameshOpticalPenRES.getStrErrorMsg().isEmpty()) {
 
@@ -78,8 +77,8 @@ public class OpticalPenPresenter {
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("bfile", opticalPenREQ.getBfile());
         soapObject.addProperty("strExtention", opticalPenREQ.getStrExtention());
-        soapObject.addProperty("ETC", opticalPenREQ.getETC());
-        soapObject.addProperty("EC", opticalPenREQ.getEC());
+        soapObject.addProperty("ETC", ETC);
+        soapObject.addProperty("EC", EC);
         soapObject.addProperty("hiddenHamesh", false);
         soapObject.addProperty("Hameshtitle", opticalPenREQ.getHameshtitle());
 

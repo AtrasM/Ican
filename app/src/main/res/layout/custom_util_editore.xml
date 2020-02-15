@@ -139,7 +139,5 @@
     </HorizontalScrollView>
 
     <LinearLayout
-        style="@style/custom_divider_style"
-        android:layout_width="match_parent"
-        android:layout_height="1dp" />
+        style="@style/custom_divider_style" />
 </LinearLayout>

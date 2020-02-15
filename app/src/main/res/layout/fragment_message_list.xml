@@ -9,6 +9,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include layout="@layout/layout_operator_queue_count" />
+
         <include
             layout="@layout/layout_tab"
             android:layout_width="match_parent"
@@ -17,8 +19,7 @@
         <com.booking.rtlviewpager.RtlViewPager
             android:id="@+id/view_pager"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
+            android:layout_height="match_parent" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -29,7 +30,8 @@
         android:layout_margin="@dimen/margin_maximum"
         android:scaleType="center"
         app:backgroundTint="@color/color_fab"
-        app:fabSize="mini"
+        app:fabSize="normal"
+        app:maxImageSize="36dp"
         app:srcCompat="@drawable/ic_write_message"
         tools:ignore="RtlHardcoded" />
 </FrameLayout>

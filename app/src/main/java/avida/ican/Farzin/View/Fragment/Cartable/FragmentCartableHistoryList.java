@@ -2,6 +2,7 @@ package avida.ican.Farzin.View.Fragment.Cartable;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -19,16 +20,24 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.DocumentOperatoresTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHistoryListRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureNodeRES;
 import avida.ican.Farzin.Presenter.Cartable.FarzinHistoryListPresenter;
-import avida.ican.Farzin.View.Adapter.AdapterCartableHistory;
+import avida.ican.Farzin.Presenter.Queue.FarzinDocumentOperatorsQueuePresenter;
+import avida.ican.Farzin.View.Adapter.Cartable.AdapterCartableHistory;
+import avida.ican.Farzin.View.Dialog.DialogCartableHistoryList;
+import avida.ican.Farzin.View.Enum.PutExtraEnum;
+import avida.ican.Farzin.View.Enum.QueueEnum;
+import avida.ican.Farzin.View.FarzinActivityQueue;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerGraf;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 import butterknife.BindView;
@@ -47,7 +56,12 @@ public class FragmentCartableHistoryList extends BaseFragment {
     LinearLayout lnHistoryNumber;
     @BindView(R.id.sp_history_number)
     Spinner spHistoryNumber;
-
+    @BindView(R.id.ln_operator_queue_count)
+    LinearLayout lnOperatorQueueCount;
+    @BindView(R.id.txt_operator_queue_count)
+    TextView txtOperatorQueueCount;
+    @BindView(R.id.txt_title_operator)
+    TextView txtTitleOperator;
     private Activity context;
     private GridLayoutManagerWithSmoothScroller gridLayoutManager;
     private int Etc;
@@ -55,14 +69,22 @@ public class FragmentCartableHistoryList extends BaseFragment {
     private AdapterCartableHistory adapterCartableHistory;
     private StructureHistoryListRES.StructureGraphs structureGraphs;
     private FarzinHistoryListPresenter farzinHistoryListPresenter;
-    public static String Tag = "FragmentZanjireMadrak";
+    public final String Tag = "FragmentZanjireMadrak";
     private boolean initialized = false;
+    private boolean showInDialog = false;
+    private DialogCartableHistoryList tempDialog;
+
 
     public FragmentCartableHistoryList newInstance(Activity context, int Etc, int Ec) {
         this.context = context;
         this.Etc = Etc;
         this.Ec = Ec;
         return this;
+    }
+
+    public void setDialog(DialogCartableHistoryList dialog) {
+        showInDialog = true;
+        tempDialog = dialog;
     }
 
     @Override
@@ -79,11 +101,16 @@ public class FragmentCartableHistoryList extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        srlRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                reGetData();
+        srlRefresh.setOnRefreshListener(() -> reGetData());
+        lnOperatorQueueCount.setOnClickListener(view1 -> {
+            checkQueue();
+            if (showInDialog) {
+                tempDialog.dismiss();
             }
+            Intent intent = new Intent(App.CurentActivity, FarzinActivityQueue.class);
+            intent.putExtra(PutExtraEnum.QueueType.getValue(), QueueEnum.DocumentOperator.getValue());
+            BaseActivity.goToActivity(intent);
+
         });
         if (!initialized) {
             initRcv();
@@ -138,9 +165,8 @@ public class FragmentCartableHistoryList extends BaseFragment {
     }
 
 
-
-
     private void initData() {
+        checkQueue();
         initialized = true;
         lnLoading.setVisibility(View.VISIBLE);
         List<StructureNodeRES> structureNodesRES = new ArrayList<>();
@@ -162,7 +188,10 @@ public class FragmentCartableHistoryList extends BaseFragment {
 
         initAdapter(new ArrayList<>(structureNodesRES));
     }
+
+
     private void reGetData() {
+        checkQueue();
         txtNoData.setVisibility(View.GONE);
         if (!srlRefresh.isRefreshing()) {
             lnLoading.setVisibility(View.VISIBLE);
@@ -190,7 +219,16 @@ public class FragmentCartableHistoryList extends BaseFragment {
 
     }
 
-
+    public void checkQueue() {
+        long count = new FarzinDocumentOperatorsQueuePresenter().getDocumentOperatorQueueNotSendedCount(Etc, Ec, DocumentOperatoresTypeEnum.Append);
+        if (count > 0) {
+            lnOperatorQueueCount.setVisibility(View.VISIBLE);
+            txtTitleOperator.setText(Resorse.getString(R.string.title_Append_operator));
+            txtOperatorQueueCount.setText("" + count);
+        } else {
+            lnOperatorQueueCount.setVisibility(View.GONE);
+        }
+    }
 
     private void initAdapter(ArrayList<StructureNodeRES> structureNodeRES) {
         adapterCartableHistory = new AdapterCartableHistory(structureNodeRES);
@@ -200,7 +238,10 @@ public class FragmentCartableHistoryList extends BaseFragment {
     private void initSpinner(StructureHistoryListRES.StructureGraphs graphs) {
         this.structureGraphs = graphs;
         ArrayList<String> item = new ArrayList<>();
-        for (int i = 1; i <= structureGraphs.getGraph().size(); i++) {
+       /* for (int i = 1; i <= structureGraphs.getGraph().size(); i++) {
+            item.add("شماره " + i);
+        }*/
+        for (int i = structureGraphs.getGraph().size(); i > 0; i--) {
             item.add("شماره " + i);
         }
         if (item.size() <= 1) {
@@ -223,6 +264,7 @@ public class FragmentCartableHistoryList extends BaseFragment {
             }
         });
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

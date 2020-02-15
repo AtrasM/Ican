@@ -3,15 +3,24 @@ package avida.ican.Farzin.View.Fragment.Message;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.annotation.Nullable;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+
 import android.view.View;
 import android.widget.ImageView;
 
-import avida.ican.Farzin.View.Adapter.AdapterSentMessage;
+import java.util.ArrayList;
+import java.util.List;
+
+import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
+import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
+import avida.ican.Farzin.View.Adapter.Message.AdapterSentMessage;
 import avida.ican.Farzin.View.Interface.ListenerRcv;
+import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
@@ -27,12 +36,13 @@ public class FragmentSentMessageList extends BaseFragment {
     RecyclerView rcvMain;
     @BindView(R.id.img_move_up)
     ImageView imgMoveUp;
-    @BindView(R.id.srl_new_message)
+    @BindView(R.id.srl_refresh)
     SwipeRefreshLayout srlNewMessage;
 
     private Activity context;
     private AdapterSentMessage adapterSentMessage;
-    public static String Tag = "FragmentSentMessageList";
+    private FragmentMessageList fragmentMessageList;
+    public final String Tag = "FragmentSentMessageList";
     private ListenerRcv listenerRcv;
     private int[] pastVisiblesItems;
     private int visibleItemCount;
@@ -47,14 +57,27 @@ public class FragmentSentMessageList extends BaseFragment {
         return R.layout.fragment_sent_message_list;
     }
 
-    public FragmentSentMessageList newInstance(Activity context, AdapterSentMessage adapterSentMessage, ListenerRcv listenerRcv) {
+    public FragmentSentMessageList newInstance(Activity context, FragmentMessageList fragmentMessageList, ListenerRcv listenerRcv) {
 
         this.context = context;
-        this.adapterSentMessage = adapterSentMessage;
+        this.fragmentMessageList = fragmentMessageList;
+        initAdapter();
         this.listenerRcv = listenerRcv;
         animator = new Animator(context);
         return this;
     }
+
+    public AdapterSentMessage getAdapter() {
+        return adapterSentMessage;
+    }
+
+    public void updateAdapterSendMessage(List<StructureMessageDB> mstructuresSentMessages) {
+        if (this.adapterSentMessage != null) {
+            this.adapterSentMessage.updateData(mstructuresSentMessages);
+            adapterSentMessage.notifyDataSetChanged();
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,6 +88,7 @@ public class FragmentSentMessageList extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         initRcv();
         imgMoveUp.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,12 +99,7 @@ public class FragmentSentMessageList extends BaseFragment {
             }
         });
 
-        srlNewMessage.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                listenerRcv.onSwipeRefresh(srlNewMessage);
-            }
-        });
+        srlNewMessage.setOnRefreshListener(() -> listenerRcv.onSwipeRefresh(srlNewMessage));
    /*     edtSearch.setFilters(new InputFilter[]{new CustomFunction().ignoreFirstWhiteSpace()});
         edtSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -103,6 +122,24 @@ public class FragmentSentMessageList extends BaseFragment {
 
             }
         });*/
+    }
+
+    private void initAdapter() {
+        adapterSentMessage = new AdapterSentMessage(new ArrayList<>(), new ListenerAdapterMessageList() {
+            @Override
+            public void onDelet(StructureMessageDB structureMessageDB) {
+             /*   final Loading loading = new Loading(App.CurentActivity).Creat();
+                loading.Show();
+                loading.Hide();
+                App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.delete_action), SnackBarEnum.SNACKBAR_SHORT_TIME);
+           */
+            }
+
+            @Override
+            public void onItemClick(StructureDetailMessageBND structureDetailMessageBND, int position) {
+                fragmentMessageList.goToMessageDetail(structureDetailMessageBND, position, Type.SENDED);
+            }
+        });
     }
 
 
@@ -148,7 +185,6 @@ public class FragmentSentMessageList extends BaseFragment {
     public void setCanLoading(boolean canLoading) {
         this.canLoading = canLoading;
     }
-
 
 
     @Override

@@ -1,10 +1,11 @@
 package avida.ican.Farzin.View.Dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -13,6 +14,8 @@ import com.orhanobut.dialogplus.ViewHolder;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
+import avida.ican.Ican.Model.ChangeXml;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -39,6 +42,8 @@ public class DialogShowMore {
         TextView txtTitle;
         @BindView(R.id.txt_content)
         TextView txtContent;
+        @BindView(R.id.web_view)
+        WebView webView;
         @BindView(R.id.btn_close)
         Button btnClose;
 
@@ -48,14 +53,15 @@ public class DialogShowMore {
     }
 
     public DialogShowMore setData(String title, String content) {
-        this.Content = content;
+        this.Content = new ChangeXml().saxCharEncoder(content);
+        this.Content = new ChangeXml().charDecoder(Content);
         this.Title = title;
         return this;
     }
 
     public void Creat() {
 
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override
@@ -77,15 +83,14 @@ public class DialogShowMore {
         });
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private void initView() {
-        viewHolder.btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                dismiss();
-            }
-        });
+        viewHolder.webView.getSettings().setJavaScriptEnabled(true);
+        Content = "<html><body>" + "<p dir=\"rtl\">" + Content + "</p> </body></html>";
+        viewHolder.webView.loadDataWithBaseURL("", Content, "text/html", "UTF-8", "");
+        viewHolder.btnClose.setOnClickListener(view -> dismiss());
         viewHolder.txtTitle.setText(Title);
-        viewHolder.txtContent.setText(Content);
+        new CustomFunction(context).setHtmlText(viewHolder.txtContent, Content);
     }
 
     private void dismiss() {

@@ -1,261 +1,338 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/color_background</item>
-        <item name="android:typeface">serif</item>
-        <item name="android:screenOrientation">portrait</item>
-        <item name="android:homeAsUpIndicator">@drawable/back_arrow_rtl</item>
-    </style>
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Customize your theme here. -->
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:windowBackground">@color/color_background</item>
+    <item name="android:typeface">serif</item>
+    <item name="android:screenOrientation">portrait</item>
+    <item name="android:homeAsUpIndicator">@drawable/back_arrow_rtl</item>
+    <item name="listPreferredItemHeightSmall">@dimen/navigation_item_Height</item>
+  </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:windowBackground">@color/color_background</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:typeface">serif</item>
-        <!-- <item name="android:textColorSecondary">@color/color_White</item>-->
-        <item name="android:screenOrientation">portrait</item>
-        <item name="android:homeAsUpIndicator">@drawable/back_arrow_rtl</item>
-    </style>
+  <style name="AppTheme.NoActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <item name="android:windowBackground">@color/color_background</item>
+    <item name="colorAccent">@color/colorAccent</item>
+    <item name="android:typeface">serif</item>
+    <!-- <item name="android:textColorSecondary">@color/color_White</item>-->
+    <item name="android:screenOrientation">portrait</item>
+    <item name="android:homeAsUpIndicator">@drawable/back_arrow_rtl</item>
+  </style>
 
-    <style name="custom_Txt_Title_style" parent="TextAppearance.AppCompat">
-        <item name="android:textColor">@color/color_White</item>
-        <item name="android:textColorHighlight">?android:textColorHighlight</item>
-        <item name="android:textColorLink">?android:textColorLink</item>
-        <item name="android:textSize">@dimen/txt_Title_Size</item>
-        <item name="android:typeface">serif</item>
-        <item name="android:paddingBottom">@dimen/padding</item>
-        <item name="android:paddingLeft">@dimen/padding</item>
-        <item name="android:paddingRight">@dimen/padding</item>
-        <item name="android:paddingTop">@dimen/padding</item>
-    </style>
+  <style name="custom_Txt_Title_style" parent="TextAppearance.AppCompat">
+    <item name="android:textColor">@color/color_White</item>
+    <item name="android:textColorHighlight">?android:textColorHighlight</item>
+    <item name="android:textColorLink">?android:textColorLink</item>
+    <item name="android:textSize">@dimen/txt_Title_Size</item>
+    <item name="android:typeface">serif</item>
+    <item name="android:paddingBottom">@dimen/padding</item>
+    <item name="android:paddingLeft">@dimen/padding</item>
+    <item name="android:paddingRight">@dimen/padding</item>
+    <item name="android:paddingTop">@dimen/padding</item>
+    <!-- <item name="android:textIsSelectable">true</item>
+     <item name="android:focusable">true</item>
+     <item name="android:longClickable">true</item>-->
+  </style>
 
-    <style name="custom_Txt_Sub_Title_style" parent="custom_Txt_Title_style">
-        <item name="android:textColor">@color/color_txt_SubTitle</item>
-        <item name="android:textSize">@dimen/txt_SubTitle_Size</item>
-    </style>
+  <style name="custom_Txt_Sub_Title_style" parent="custom_Txt_Title_style">
+    <item name="android:textColor">@color/color_txt_SubTitle</item>
+    <item name="android:textSize">@dimen/txt_SubTitle_Size</item>
+    <item name="android:paddingRight">@dimen/padding_minimum</item>
+    <item name="android:paddingLeft">@dimen/padding_minimum</item>
+  </style>
 
-    <style name="custom_Txt_Normal_style" parent="custom_Txt_Title_style">
-        <item name="android:textColor">@color/color_txt_Normal</item>
-        <item name="android:textSize">@dimen/txt_Normal_Size</item>
-        <item name="android:paddingTop">@dimen/padding_minimum</item>
-        <item name="android:paddingBottom">@dimen/padding_minimum</item>
-        <item name="android:paddingRight">@dimen/padding_minimum</item>
-        <item name="android:paddingLeft">@dimen/padding_minimum</item>
-        <item name="android:gravity">center</item>
-    </style>
+  <style name="custom_Txt_Normal_style" parent="custom_Txt_Title_style">
+    <item name="android:textColor">@color/color_txt_Normal</item>
+    <item name="android:textSize">@dimen/txt_Normal_Size</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:paddingBottom">@dimen/padding_minimum</item>
+    <item name="android:paddingRight">@dimen/padding_minimum</item>
+    <item name="android:paddingLeft">@dimen/padding_minimum</item>
+    <item name="android:gravity">center</item>
+  </style>
 
+  <style name="custom_chk_style" parent="custom_Txt_Title_style">
+    <item name="android:textColor">@color/color_White</item>
+    <item name="android:textSize">@dimen/txt_Normal_Size</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:paddingBottom">@dimen/padding_minimum</item>
+    <item name="android:paddingRight">@dimen/padding_minimum</item>
+    <item name="android:paddingLeft">@dimen/padding_minimum</item>
+    <!--<item name="android:drawableRight">@drawable/chk_drawable</item>-->
+    <item name="android:drawablePadding">@dimen/padding</item>
+    <item name="android:button">@drawable/chk_drawable</item>
 
-    <style name="custom_ic_left_style">
-        <item name="android:padding">@dimen/padding_minimum</item>
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-    </style>
-
-    <style name="custom_ic_right_style">
-        <item name="android:padding">@dimen/padding_minimum</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-    </style>
-
-    <style name="custom_item_rcv_style">
-        <item name="android:background">@drawable/border_rcv</item>
-        <item name="android:paddingTop">@dimen/padding_minimum</item>
-        <item name="android:paddingBottom">@dimen/padding_minimum</item>
-        <item name="android:paddingLeft">@dimen/padding</item>
-        <item name="android:paddingRight">@dimen/padding</item>
-        <item name="android:layout_marginRight">0dp</item>
-        <item name="android:layout_marginLeft">0dp</item>
-        <item name="android:layout_marginTop">@dimen/margin_minimum</item>
-        <item name="android:layout_marginBottom">0dp</item>
-        <!-- <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>-->
-    </style>
-
-    <style name="custom_spinner_style">
-        <item name="android:padding">@dimen/padding</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    //______________________***********Floating MenuButtons Style**************______________________________
-
-    <style name="MenuLabelsStyle">
-        <item name="android:background">@drawable/fab_label_background</item>
-        <item name="android:textColor">#FFFFFF</item>
-        <item name="android:textSize">14sp</item>
-        <item name="android:maxLines">2</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="MenuButtonsStyle">
-        <item name="fab_showAnimation">@anim/jump_from_down</item>
-        <item name="fab_hideAnimation">@anim/jump_to_down</item>
-        <item name="fab_shadowColor">#444</item>
-        <item name="fab_colorNormal">#FFB805</item>
-        <item name="fab_colorPressed">#F2AB00</item>
-        <item name="fab_colorRipple">#D99200</item>
-    </style>
-
-    <style name="MenuButtonsSmall">
-        <item name="fab_size">mini</item>
-        <item name="fab_colorNormal">#1565C0</item>
-        <item name="fab_colorPressed">#2272CD</item>
-        <item name="fab_colorRipple">#62B2FF</item>
-    </style>
-
-    <style name="MenuButtonsSmall.Green">
-        <item name="fab_size">mini</item>
-        <item name="fab_colorNormal">#43A047</item>
-        <item name="fab_colorPressed">#2E7D32</item>
-        <item name="fab_colorRipple">#1B5E20</item>
-    </style>
-    //______________________***********Floating MenuButtons
-    Style**************______________________________
+    <item name="android:gravity">center</item>
+  </style>
 
 
-    <style name="custom_normal_edittext_style">
-        <item name="android:textColor">@color/color_txt_Normal</item>
-        <item name="android:textColorHint">@color/color_Hint</item>
-        <item name="android:textColorHighlight">?android:textColorHighlight</item>
-        <item name="android:textColorLink">?android:textColorLink</item>
-        <item name="android:padding">@dimen/padding_minimum</item>
-        <item name="android:gravity">center|right</item>
-        <item name="android:typeface">serif</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:background">@drawable/border_edittext</item>
-        <item name="android:textSize">@dimen/txt_Normal_Size</item>
-    </style>
+  <style name="custom_Txt_light_count_style" parent="custom_Txt_Sub_Title_style">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:layout_gravity">center</item>
+    <item name="android:gravity">center</item>
+    <item name="android:paddingBottom">@dimen/padding_minimum</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:background">@drawable/border_light_count</item>
+    <item name="android:paddingRight">@dimen/padding_minimum</item>
+    <item name="android:paddingLeft">@dimen/padding_minimum</item>
+    <item name="android:textColor">@color/color_Info</item>
+
+  </style>
 
 
-    <style name="custom_fill_edittext_style" parent="custom_normal_edittext_style">
-        <item name="android:background">@drawable/background_fiil_edittext</item>
-    </style>
-    <style name="custom_login_edittext_style" parent="custom_normal_edittext_style">
-        <item name="android:background">@drawable/border_login_edt</item>
-        <item name="android:padding">@dimen/padding</item>
-    </style>
+  <style name="custom_ic_left_style">
+    <item name="android:padding">@dimen/padding_minimum</item>
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <!--<item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>-->
+  </style>
 
-    <style name="custom_right_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_White</item>
-        <item name="android:background">@drawable/border_btn_right</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-    </style>
+  <style name="custom_ic_delete_right_style">
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
 
-    <style name="custom_attach_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_Info_Dark</item>
-        <item name="android:background">@color/color_White</item>
-        <item name="android:textSize">@dimen/txt_Title_Size</item>
-        <item name="android:stateListAnimator" tools:targetApi="lollipop">@null</item>
-        <item name="android:layout_margin">@dimen/margin</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-    </style>
+  <style name="custom_ic_delete_left_style">
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
 
-    <style name="custom_left_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_Black</item>
-        <item name="android:background">@drawable/border_btn_left</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-    </style>
+  <style name="custom_ic_right_style">
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <!-- <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>-->
+  </style>
 
-    <style name="custom_cancel_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_Black</item>
-        <item name="android:background">@drawable/border_btn_cancel</item>
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-        <item name="android:layout_marginTop">@dimen/margin_minimum</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_marginBottom">@dimen/margin</item>
-    </style>
+  <style name="custom_item_rcv_style">
+    <item name="android:background">@drawable/border_rcv</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:paddingBottom">@dimen/padding_minimum</item>
+    <item name="android:paddingLeft">@dimen/padding</item>
+    <item name="android:paddingRight">@dimen/padding</item>
+    <item name="android:layout_marginRight">0dp</item>
+    <item name="android:layout_marginLeft">0dp</item>
+    <item name="android:layout_marginTop">@dimen/margin_minimum</item>
+    <item name="android:layout_marginBottom">0dp</item>
+    <!-- <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>-->
+  </style>
 
-    <style name="custom_close_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_txt_Normal</item>
-        <item name="android:background">@drawable/border_btn_close</item>
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-        <item name="android:layout_marginTop">@dimen/margin</item>
-        <item name="android:textSize">@dimen/txt_Title_Size</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_marginBottom">@dimen/margin</item>
-    </style>
-    <style name="custom_success_button_style" parent="custom_Txt_Normal_style">
-        <item name="android:textColor">@color/color_White</item>
-        <item name="android:background">@drawable/border_btn_success</item>
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-        <item name="android:layout_marginTop">@dimen/margin</item>
-        <item name="android:textSize">@dimen/txt_Title_Size</item>
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_marginBottom">@dimen/margin</item>
-    </style>
+  <style name="custom_spinner_style">
+    <item name="android:padding">@dimen/padding_minimum</item>
+    <item name="android:layout_gravity">center</item>
+    <item name="android:gravity">center</item>
+  </style>
 
-    <style name="custom_image_button_style">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_margin">@dimen/margin_minimum</item>
-        <item name="android:background">@drawable/border_ic_editore</item>
-        <item name="android:padding">@dimen/padding_maximum</item>
-    </style>
-    <style name="custom_image_close_style">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_margin">@dimen/margin_minimum</item>
-        <item name="android:background">@drawable/border_cadr</item>
-        <item name="android:padding">@dimen/padding_maximum</item>
-    </style>
+  //______________________***********Floating MenuButtons
+  Style**************______________________________
 
-    <style name="custom_image_button_transparent_style">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:layout_margin">@dimen/margin_minimum</item>
-    </style>
+  <style name="MenuLabelsStyle">
+    <item name="android:background">@drawable/fab_label_background</item>
+    <item name="android:textColor">#FFFFFF</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:maxLines">2</item>
+    <item name="android:ellipsize">end</item>
+  </style>
 
-    <style name="custom_icon_style">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-        <item name="android:scaleType">center</item>
-    </style>
-    <style name="custom_selected_style">
-        <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
-    </style>
+  <style name="MenuButtonsStyle">
+    <item name="fab_showAnimation">@anim/jump_from_down</item>
+    <item name="fab_hideAnimation">@anim/jump_to_down</item>
+    <item name="fab_shadowColor">#444</item>
+    <item name="fab_colorNormal">#FFB805</item>
+    <item name="fab_colorPressed">#F2AB00</item>
+    <item name="fab_colorRipple">#D99200</item>
+  </style>
 
-    <style name="custom_divider_style">
-        <item name="android:layout_marginLeft">@dimen/margin</item>
-        <item name="android:layout_marginRight">@dimen/margin</item>
-        <item name="android:layout_marginTop">@dimen/margin_minimum</item>
-       <!-- <item name="android:layout_marginBottom">@dimen/margin_minimum</item>-->
-        <item name="android:background">@color/color_Divider</item>
-        <item name="android:alpha">@dimen/divider_alpha</item>
-    </style>
+  <style name="MenuButtonsSmall">
+    <item name="fab_size">mini</item>
+    <item name="fab_colorNormal">#1565C0</item>
+    <item name="fab_colorPressed">#2272CD</item>
+    <item name="fab_colorRipple">#62B2FF</item>
+  </style>
 
-    <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
-        <item name="android:textColor">@color/color_txt_Normal</item>
-        <item name="android:textSize">@dimen/txt_Normal_Size</item>
-        <item name="android:paddingTop">@dimen/padding_minimum</item>
-        <item name="android:paddingBottom">@dimen/padding_minimum</item>
-        <item name="android:paddingRight">@dimen/padding_minimum</item>
-        <item name="android:paddingLeft">@dimen/padding_minimum</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
-        <item name="android:textColor">@color/color_txt_Normal</item>
-        <item name="android:textSize">@dimen/txt_Normal_Size</item>
-        <item name="android:paddingTop">@dimen/padding_minimum</item>
-        <item name="android:paddingBottom">@dimen/padding</item>
-        <item name="android:paddingRight">@dimen/padding_maximum</item>
-        <item name="android:paddingLeft">@dimen/padding_maximum</item>
-        <item name="android:gravity">center</item>
-    </style>
+  <style name="MenuButtonsSmall.Green">
+    <item name="fab_size">mini</item>
+    <item name="fab_colorNormal">#43A047</item>
+    <item name="fab_colorPressed">#2E7D32</item>
+    <item name="fab_colorRipple">#1B5E20</item>
+  </style>
+  //______________________***********Floating MenuButtons
+  Style**************______________________________
 
 
-    <style name="Theme.Transparent" parent="Theme.AppCompat">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
-    </style>
+  <style name="custom_normal_edittext_style">
+    <item name="android:textColor">@color/color_txt_Normal</item>
+    <item name="android:textColorHint">@color/color_Hint</item>
+    <item name="android:textColorHighlight">?android:textColorHighlight</item>
+    <item name="android:textColorLink">?android:textColorLink</item>
+    <item name="android:padding">@dimen/padding_minimum</item>
+    <item name="android:gravity">center|right</item>
+    <item name="android:typeface">serif</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_gravity">center</item>
+    <item name="android:background">@drawable/border_edittext</item>
+    <item name="android:textSize">@dimen/txt_Normal_Size</item>
+  </style>
+
+
+  <style name="custom_fill_edittext_style" parent="custom_normal_edittext_style">
+    <item name="android:background">@drawable/background_fiil_edittext</item>
+  </style>
+
+  <style name="custom_login_edittext_style" parent="custom_normal_edittext_style">
+    <item name="android:background">#00000000</item>
+    <item name="android:padding">@dimen/padding</item>
+    <item name="android:textColorHint">@color/color_Hint</item>
+    <item name="android:textColor">@color/color_txt_Normal</item>
+  </style>
+
+
+  <style name="custom_attach_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_Info_Dark</item>
+    <item name="android:background">@color/color_White</item>
+    <item name="android:textSize">@dimen/txt_Title_Size</item>
+    <item name="android:stateListAnimator" tools:targetApi="lollipop">@null</item>
+    <item name="android:layout_margin">@dimen/margin</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
+
+  <style name="custom_right_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_White</item>
+    <item name="android:background">@drawable/border_btn_right</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
+
+
+  <style name="custom_left_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_Black</item>
+    <item name="android:background">@drawable/border_btn_left</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
+
+
+  <style name="custom_cancel_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_Black</item>
+    <item name="android:background">@drawable/border_btn_cancel</item>
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <item name="android:layout_marginTop">@dimen/margin_minimum</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_marginBottom">@dimen/margin</item>
+  </style>
+
+  <style name="custom_close_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_txt_Normal</item>
+    <item name="android:background">@drawable/border_btn_close</item>
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <item name="android:layout_marginTop">@dimen/margin</item>
+    <item name="android:textSize">@dimen/txt_Title_Size</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_marginBottom">@dimen/margin</item>
+  </style>
+
+  <style name="custom_success_button_style" parent="custom_Txt_Normal_style">
+    <item name="android:textColor">@color/color_White</item>
+    <item name="android:background">@drawable/border_info</item>
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <item name="android:layout_marginTop">@dimen/margin</item>
+    <item name="android:textSize">@dimen/txt_Title_Size</item>
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_marginBottom">@dimen/margin</item>
+  </style>
+
+  <style name="custom_image_button_style">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_margin">@dimen/margin_minimum</item>
+    <item name="android:background">@drawable/border_ic_editore</item>
+    <item name="android:padding">@dimen/padding_maximum</item>
+  </style>
+
+  <style name="custom_image_close_style">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_margin">@dimen/margin_minimum</item>
+    <item name="android:background">@drawable/border_cadr</item>
+    <item name="android:padding">@dimen/padding_maximum</item>
+  </style>
+
+  <style name="custom_image_button_transparent_style">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:layout_margin">@dimen/margin_minimum</item>
+  </style>
+
+  <style name="custom_icon_style">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+    <item name="android:scaleType">center</item>
+  </style>
+
+  <style name="custom_selected_style">
+    <item name="android:foreground">?attr/selectableItemBackgroundBorderless</item>
+  </style>
+
+  <style name="custom_divider_style">
+    <item name="android:layout_marginLeft">@dimen/margin</item>
+    <item name="android:layout_marginRight">@dimen/margin</item>
+    <item name="android:layout_marginTop">@dimen/margin_minimum</item>
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">1dp</item>
+    <item name="android:orientation">vertical</item>
+    <!-- <item name="android:layout_marginBottom">@dimen/margin_minimum</item>-->
+    <item name="android:background">@color/color_Divider</item>
+    <item name="android:alpha">@dimen/divider_alpha</item>
+  </style>
+
+  <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
+    <item name="android:textColor">@color/color_Info</item>
+    <item name="android:textSize">@dimen/txt_Normal_Size</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:paddingBottom">@dimen/padding_minimum</item>
+    <item name="android:paddingRight">@dimen/padding_minimum</item>
+    <item name="android:typeface">serif</item>
+    <item name="android:textAppearance">@style/TextAppearance.FontPathSahel</item>
+    <item name="android:paddingLeft">@dimen/padding_minimum</item>
+    <item name="android:gravity">center</item>
+  </style>
+
+  <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+    <item name="android:textColor">@color/color_Info</item>
+    <item name="android:textSize">@dimen/txt_Normal_Size</item>
+    <item name="android:typeface">serif</item>
+    <item name="android:textAppearance">@style/TextAppearance.FontPathSahel</item>
+    <item name="android:paddingTop">@dimen/padding_minimum</item>
+    <item name="android:paddingBottom">@dimen/padding</item>
+    <item name="android:paddingRight">@dimen/padding_maximum</item>
+    <item name="android:paddingLeft">@dimen/padding_maximum</item>
+    <item name="android:gravity">center</item>
+  </style>
+
+
+  <style name="Theme.Transparent" parent="Theme.AppCompat">
+    <item name="android:windowIsTranslucent">true</item>
+    <item name="android:windowBackground">@android:color/transparent</item>
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="android:windowIsFloating">true</item>
+    <item name="android:backgroundDimEnabled">false</item>
+  </style>
+
+  <style name="SwitchStyle">
+    <item name="colorControlActivated">@color/color_Info</item>
+    <item name="android:colorForeground">@color/color_bg_cadr</item>
+  </style>
+
+  <style name="TextAppearance.FontPathIranSans" parent="android:TextAppearance">
+    <!-- Custom Attr-->
+    <item name="fontPath">font/iran_sans_mobile.ttf</item>
+  </style>
+
+  <style name="TextAppearance.FontPathSahel" parent="android:TextAppearance">
+    <!-- Custom Attr-->
+    <item name="fontPath">font/sahel.ttf</item>
+  </style>
 </resources>

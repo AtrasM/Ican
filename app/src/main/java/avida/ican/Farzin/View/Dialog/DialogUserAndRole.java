@@ -27,7 +27,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
-import avida.ican.Farzin.Model.Structure.Request.StructureAppendREQ;
+import avida.ican.Farzin.Model.Structure.Request.DocumentOpratores.StructureAppendREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructurePersonREQ;
 import avida.ican.Farzin.Model.Structure.Request.StructureSenderREQ;
 import avida.ican.Farzin.Presenter.Cartable.CartableDocumentActionsPresenter;
@@ -46,7 +46,6 @@ import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
-import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Interface.ListenerValidate;
 import avida.ican.R;
 import butterknife.BindView;
@@ -59,10 +58,8 @@ import butterknife.ButterKnife;
 public class DialogUserAndRole {
     private final Activity context;
     private int sendCode;
-    private int Ec = 0;
     private int Etc = 0;
     private String Title = "";
-    private Loading loading;
     private DialogPlus dialogUserAndRole;
     private List<StructureUserAndRoleDB> mstructuresMain = new ArrayList<>();
     private List<StructureUserAndRoleDB> mstructuresSelect = new ArrayList<>();
@@ -81,6 +78,7 @@ public class DialogUserAndRole {
     private FarzinPrefrences farzinPrefrences;
     private ArrayList<StructureCartableDocumentActionsDB> cartableDocumentActionsDBS = new ArrayList<>();
     private boolean canDo = true;
+    private int lastSelectedSize = 0;
 
     @SuppressLint("ResourceAsColor")
 
@@ -107,16 +105,13 @@ public class DialogUserAndRole {
 
     public DialogUserAndRole(Activity context) {
         this.context = context;
-        loading = new Loading(this.context).Creat();
 
     }
 
-    public DialogUserAndRole(Activity context, int Etc, int Ec, int SendCode) {
+    public DialogUserAndRole(Activity context, int Etc, int SendCode) {
         this.context = context;
         this.Etc = Etc;
-        this.Ec = Ec;
         this.sendCode = SendCode;
-        loading = new Loading(this.context).Creat();
     }
 
     public DialogUserAndRole setTitle(String title) {
@@ -124,26 +119,34 @@ public class DialogUserAndRole {
         return this;
     }
 
-
     public DialogUserAndRole init(FragmentManager fragmentManager, List<StructureUserAndRoleDB> structuresMain, List<StructureUserAndRoleDB> structuresSelect, UserAndRoleEnum userAndRoleEnum, final ListenerUserAndRoll listenerUserAndRoll) {
         farzinCartableQuery = new FarzinCartableQuery();
         farzinPrefrences = new FarzinPrefrences().init();
         mtmpItemSelect = new ArrayList<>();
+        if (structuresSelect != null) {
+            lastSelectedSize = structuresSelect.size();
+        }
+
         this.mfragmentManager = fragmentManager;
         this.listenerUserAndRollMain = listenerUserAndRoll;
         this.userAndRoleEnum = userAndRoleEnum;
-        if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
-            cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(Etc).GetDocumentActions();
-            StructureCartableDocumentActionsDB structureCartableDocumentActionsDB = new StructureCartableDocumentActionsDB(-1, -1, "انتخاب", -1, "");
+        if (userAndRoleEnum == UserAndRoleEnum.SEND) {
+            if (Etc > 0) {
+                cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(Etc).getDocumentActions();
+            } else {
+                cartableDocumentActionsDBS = (ArrayList<StructureCartableDocumentActionsDB>) new CartableDocumentActionsPresenter(-1).getAllDocumentActionsForSend(true);
+            }
+            StructureCartableDocumentActionsDB structureCartableDocumentActionsDB = new StructureCartableDocumentActionsDB(-1, -1, -1, -1, "انتخاب", -1, "");
             cartableDocumentActionsDBS.add(0, structureCartableDocumentActionsDB);
         }
+
         this.userAndRoleEnum = userAndRoleEnum;
         userAndRolePresenter = new UserAndRolePresenter(structuresMain, structuresSelect).onListener(new ListenerUserAndRoll() {
             @Override
             public void onSuccess(List<StructureUserAndRoleDB> structureUserAndRolesMain, List<StructureUserAndRoleDB> structureUserAndRolesSelect) {
                 mstructuresMain = structureUserAndRolesMain;
                 mstructuresSelect = structureUserAndRolesSelect;
-                BaseActivity.closeKeboard();
+                BaseActivity.closeKeyboard();
                 initView();
             }
 
@@ -175,14 +178,14 @@ public class DialogUserAndRole {
 
         dialogUserAndRole = DialogPlus.newDialog(context)
                 .setHeader(R.layout.item_dialog_header)
-                .setContentHolder(new ViewHolder(R.layout.dialog_activity_user_and_role))
+                .setContentHolder(new ViewHolder(R.layout.dialog_user_and_role))
                 .setGravity(Gravity.CENTER)
                 .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
                 .setCancelable(false)
                 .setContentBackgroundResource(R.drawable.border_dialog)
                 .create();
-        View viewhelder = dialogUserAndRole.getHeaderView();
-        TextView txtHeader = viewhelder.findViewById(R.id.txt_dialog_title);
+        View viewHolderHeader = dialogUserAndRole.getHeaderView();
+        TextView txtHeader = viewHolderHeader.findViewById(R.id.txt_dialog_title);
         txtHeader.setText(Title);
         //------------------------------------------------------------------------------------------------
         viewHolder = new DialogUserAndRole.Binding(dialogUserAndRole.getHolderView());
@@ -191,36 +194,33 @@ public class DialogUserAndRole {
 
         initTab();
 
-        viewHolder.btnOk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (canDo) {
-                    if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
-                        final ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
-                        ValidationPerson(structurePersonsREQ, new ListenerValidate() {
-                            @Override
-                            public void onValid() {
-                                StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID(), sendCode);
-                                StructureAppendREQ structureAppendREQ = new StructureAppendREQ(Etc, Ec, structureSenderREQ, structurePersonsREQ);
-                                listenerUserAndRollMain.onSuccess(structureAppendREQ);
-                                finish();
-                            }
+        viewHolder.btnOk.setOnClickListener(view -> {
+            if (canDo) {
+                if (userAndRoleEnum == UserAndRoleEnum.SEND) {
+                    final ArrayList<StructurePersonREQ> structurePersonsREQ = adapterUserAndRoleSelected.getStructurePersonList();
+                    ValidationPerson(structurePersonsREQ, new ListenerValidate() {
+                        @Override
+                        public void onValid() {
+                            StructureSenderREQ structureSenderREQ = new StructureSenderREQ(farzinPrefrences.getRoleID(), sendCode);
+                            StructureAppendREQ structureAppendREQ = new StructureAppendREQ(structureSenderREQ, structurePersonsREQ);
+                            listenerUserAndRollMain.onSuccess(structureAppendREQ);
+                            finish();
+                        }
 
-                            @Override
-                            public void unValid() {
-                                viewHolder.viewPager.setCurrentItem(1);
-                            }
-                        });
+                        @Override
+                        public void unValid() {
+                            viewHolder.viewPager.setCurrentItem(1);
+                        }
+                    });
 
 
-                    } else {
-                        listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
-                        finish();
-                    }
+                } else {
+                    listenerUserAndRollMain.onSuccess(mstructuresMain, mstructuresSelect);
+                    finish();
                 }
-
-
             }
+
+
         });
         viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -232,7 +232,7 @@ public class DialogUserAndRole {
         viewHolder.lnDialogUserAndRole.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BaseActivity.closeKeboard();
+                BaseActivity.closeKeyboard();
             }
         });
 
@@ -293,17 +293,17 @@ public class DialogUserAndRole {
         viewHolder.smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                BaseActivity.closeKeboard();
+                BaseActivity.closeKeyboard();
             }
 
             @Override
             public void onPageSelected(int position) {
-                BaseActivity.closeKeboard();
+                BaseActivity.closeKeyboard();
             }
 
             @Override
             public void onPageScrollStateChanged(int state) {
-                BaseActivity.closeKeboard();
+                BaseActivity.closeKeyboard();
             }
         });
     }
@@ -335,9 +335,9 @@ public class DialogUserAndRole {
             }
         });
 
-        if (userAndRoleEnum == UserAndRoleEnum.SEND && Etc > 0) {
+        if (userAndRoleEnum == UserAndRoleEnum.SEND) {
             adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, userAndRoleEnum, cartableDocumentActionsDBS);
-            viewHolder.btnOk.setText(Resorse.getString(R.string.title_send));
+            viewHolder.btnOk.setText(Resorse.getString(R.string.title_erja));
         } else {
             adapterUserAndRoleSelected = new AdapterUserAndRoleSelected(context, mstructuresSelect, userAndRoleEnum);
         }
@@ -375,8 +375,11 @@ public class DialogUserAndRole {
             viewHolder.btnOk.setEnabled(true);
             customFunction.ChangeBackgroundTintColor(viewHolder.btnOk, R.color.color_Info);
         } else {
-            viewHolder.btnOk.setEnabled(false);
-            customFunction.ChangeBackgroundTintColor(viewHolder.btnOk, R.color.color_disable);
+            if (lastSelectedSize == 0) {
+                viewHolder.btnOk.setEnabled(false);
+                customFunction.ChangeBackgroundTintColor(viewHolder.btnOk, R.color.color_disable);
+            }
+
         }
     }
 
@@ -395,7 +398,7 @@ public class DialogUserAndRole {
     }
 
 
-    public void performSearch(String Query, boolean reset) {
+    public void performSearch(String Query, boolean reset, ListenerUserAndRollSearch listenerMain) {
         if (!reset) {
             userAndRolePresenter.Search(Query, new ListenerUserAndRollSearch() {
                 @Override
@@ -403,21 +406,22 @@ public class DialogUserAndRole {
                     mstructuresSearch.clear();
                     mstructuresSearch = new ArrayList<>(structureUserAndRolesSearch);
                     adapterUserAndRoleMain.filter(structureUserAndRolesSearch);
+                    listenerMain.onSuccess(structureUserAndRolesSearch);
                 }
 
                 @Override
                 public void onFailed() {
-
+                    listenerMain.onFailed();
                 }
 
                 @Override
                 public void onCancel() {
-
+                    listenerMain.onCancel();
                 }
             });
         } else {
             adapterUserAndRoleMain.filter(mstructuresMain);
-
+            listenerMain.onSuccess(mstructuresMain);
         }
 
     }

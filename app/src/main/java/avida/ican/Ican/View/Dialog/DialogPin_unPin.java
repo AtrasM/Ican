@@ -5,14 +5,13 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
-import avida.ican.Ican.View.Enum.AttachEnum;
-import avida.ican.Ican.View.Interface.ListenerAttach;
 import avida.ican.Ican.View.Interface.ListenerPin_unPin;
 import avida.ican.R;
 import butterknife.BindView;
@@ -35,8 +34,8 @@ public class DialogPin_unPin {
         @BindView(R.id.btn_unpin)
         Button btnUnpin;
 
-        @BindView(R.id.btn_cancel)
-        Button btnCancel;
+        @BindView(R.id.img_cancel)
+        ImageView imgCancel;
 
         Binding(View rootView) {
             ButterKnife.bind(this, rootView);
@@ -58,61 +57,49 @@ public class DialogPin_unPin {
         dialog.dismiss();
         App.canBack = true;
     }
+
     public boolean isShowing() {
-       return dialog.isShowing();
+        return dialog.isShowing();
     }
 
 
     public void Show(final boolean isPin) {
 
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        context.runOnUiThread(() -> {
 
-                dialog = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_pin_unpin))
-                        .setGravity(Gravity.BOTTOM)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(false)
-                        //.setContentBackgroundResource(R.drawable.border_dialog)
-                        .create();
-                viewHolder = new Binding(dialog.getHolderView());
-                viewHolder.btnPin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerPin_unPin.onPin();
-                        dismiss();
+            dialog = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.dialog_pin_unpin))
+                    .setGravity(Gravity.BOTTOM)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setCancelable(false)
+                    .setContentBackgroundResource(android.R.color.transparent)
+                    .create();
+            viewHolder = new Binding(dialog.getHolderView());
+            viewHolder.btnPin.setOnClickListener(view -> {
+                listenerPin_unPin.onPin();
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnUnpin.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerPin_unPin.unPin();
-                        dismiss();
+            });
+            viewHolder.btnUnpin.setOnClickListener(view -> {
+                listenerPin_unPin.unPin();
+                dismiss();
 
-                    }
-                });
-                viewHolder.btnCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        listenerPin_unPin.onCancel();
-                        dismiss();
+            });
+            viewHolder.imgCancel.setOnClickListener(view -> {
+                listenerPin_unPin.onCancel();
+                dismiss();
 
-                    }
-                });
-                if (isPin) {
-                    viewHolder.btnPin.setVisibility(View.GONE);
-                    viewHolder.btnUnpin.setVisibility(View.VISIBLE);
-                } else {
-                    viewHolder.btnPin.setVisibility(View.VISIBLE);
-                    viewHolder.btnUnpin.setVisibility(View.GONE);
-                }
-                dialog.show();
-
+            });
+            if (isPin) {
+                viewHolder.btnPin.setVisibility(View.GONE);
+                viewHolder.btnUnpin.setVisibility(View.VISIBLE);
+            } else {
+                viewHolder.btnPin.setVisibility(View.VISIBLE);
+                viewHolder.btnUnpin.setVisibility(View.GONE);
             }
+            dialog.show();
 
         });
 

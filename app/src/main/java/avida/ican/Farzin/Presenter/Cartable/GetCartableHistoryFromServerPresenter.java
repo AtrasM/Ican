@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.util.Log;
+
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
@@ -14,6 +16,7 @@ import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-10-06 at 11:43 AM
@@ -68,11 +71,13 @@ public class GetCartableHistoryFromServerPresenter {
             cartableHistoryListListener.onSuccess(new ArrayList<StructureGraphRES>(), "");
         } else {
             ArrayList<StructureGraphRES> structureGraphRES = new ArrayList<>(structureHistoryListRES.getGetHistoryListResult().getGraphs().getGraph());
+            Log.i("LOG","CartableHistoryData1 structureHistoryListRES="+ xml);
+            Log.i("LOG","CartableHistoryData structureHistoryListRES="+ new CustomFunction().ConvertObjectToString(structureGraphRES));
             // changeXml.CharDecoder(structureMessageList.get())
             cartableHistoryListListener.onSuccess(structureGraphRES, xml);
         }
     /*    } else {
-        cartableHistoryListListener.onFailed("" + structureHistoryListRES.getStrErrorMsg());
+        cartableHistoryListListener.invalidLogin("" + structureHistoryListRES.getStrErrorMsg());
 
     }*/
     }

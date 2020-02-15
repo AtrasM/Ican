@@ -1,18 +1,20 @@
 package avida.ican.Ican.View.Custom;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+
 import androidx.annotation.Nullable;
 
 import com.github.pwittchen.reactivenetwork.library.rx2.ReactiveNetwork;
 
+import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
 
 /**
@@ -35,47 +37,38 @@ public class NetWorkCheckingService extends Service {
         return Service.START_STICKY;
     }
 
+    @SuppressLint("CheckResult")
     private void Checking() {
         ReactiveNetwork.observeInternetConnectivity()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Consumer<Boolean>() {
+                .subscribe(isConnectedToInternet -> new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                     @Override
-                    public void accept(Boolean isConnectedToInternet) {
+                    public void onConnected() {
+                        if (App.netWorkStatusListener != null) {
+                            App.netWorkStatusListener.Connected();
+                        }
 
-                        new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
-                            @Override
-                            public void onConnected() {
-                                if (App.netWorkStatusListener != null) {
-                                    App.netWorkStatusListener.Connected();
-                                }
-
-                                App.networkStatus = NetworkStatus.Connected;
-
-                            }
-
-                            @Override
-                            public void disConnected() {
-                                if (App.netWorkStatusListener != null) {
-                                    App.netWorkStatusListener.WatingForNetwork();
-                                }
-
-                                App.networkStatus = NetworkStatus.WatingForNetwork;
-                            }
-
-                            @Override
-                            public void onFailed() {
-                                if (App.netWorkStatusListener != null) {
-                                    App.netWorkStatusListener.WatingForNetwork();
-                                }
-
-                                App.networkStatus = NetworkStatus.WatingForNetwork;
-                            }
-                        });
+                        App.networkStatus = NetworkStatus.Connected;
 
                     }
 
-                });
+                    @Override
+                    public void disConnected() {
+                        if (App.netWorkStatusListener != null) {
+                            App.netWorkStatusListener.WatingForNetwork();
+                        }
+                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                    }
+
+                    @Override
+                    public void onFailed() {
+                        if (App.netWorkStatusListener != null) {
+                            App.netWorkStatusListener.WatingForNetwork();
+                        }
+                        App.networkStatus = NetworkStatus.WatingForNetwork;
+                    }
+                }));
 
     }
 

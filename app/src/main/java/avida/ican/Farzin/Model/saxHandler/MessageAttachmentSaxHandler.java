@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.util.Log;
 
+import org.acra.ACRA;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -79,6 +80,7 @@ public class MessageAttachmentSaxHandler extends DefaultHandler {
                 myOutWriter.append(new String(buffer, start, length));
             } catch (IOException e) {
                 e.printStackTrace();
+                ACRA.getErrorReporter().handleSilentException(e);
             }
 
         } else {

@@ -72,52 +72,43 @@ public class ChangeXml {
     }
 
     public String charDecoder(String xml) {
-      /*  if (xml.contains("![CDATA[")) {
-            xml = RemoveTag(xml, "<![CDATA[", "]]>");
-        }*/
-
- /*       xml = xml.replaceAll("&amp;", "&")
-                .replaceAll("&lt;", "<")
-                .replaceAll("&gt;", ">")
-                .replaceAll("&apos;", "\'")
-                .replaceAll("&quot;", "\"")
-                .replaceAll("&nbsp;", " ")
-                .replaceAll("&copy;", "@")
-                .replaceAll("&reg;", "?");*/
+        String lineSep = System.getProperty("line.separator");
+        assert lineSep != null;
         xml = xml.replaceAll("&amp;lt;", "<")
                 .replaceAll("&amp;gt;", ">")
                 .replaceAll("&amp;apos;", "\'")
                 .replaceAll("&amp;quot;", "\"")
                 .replaceAll("&amp;nbsp;", " ")
+                .replaceAll("&amp;nbsp", " ")
                 .replaceAll("&amp;copy;", "@")
-                .replaceAll("&amp;reg;", "?");/*
-                .replaceAll("\u0020+", " ");*/
+                .replaceAll("&amp;reg;", "?")
+                .replaceAll("#AvidaEnterTag#", "<br/>");
+        /*
+                .replaceAll("&#xD;&#xA;|&#xD;|&#xA;", "#AvidaEnterTag#")
+                .replaceAll("\r\n|\r|\n", "#AvidaEnterTag#");*/
+
         return xml;
     }
 
     public String charSpaceDecoder(String xml) {
-        xml = xml.replaceAll("&amp;nbsp;", " ");/*
-                .replaceAll("\u0020+", " ");*/
+        xml = xml.replaceAll("&amp;nbsp;", " ");
+        /*.replaceAll("\u0020+", " ");*/
         return xml;
     }
 
     public String saxCharEncoder(String xml) {
-       /* Pattern  p = Pattern.compile("[\\s ]+");
-        xml = p.matcher(xml).replaceAll("%20");*/
         xml = xml.replaceAll("&", "&amp;")
-                .replaceAll("&amp;amp;", "&amp;");
-             /*   .replaceAll("<br/>", "\n")
-                .replaceAll("<br>", "\n");*/
-                /*replaceAll("\\s+", "\u0020")
-                .replaceAll(" ", "\u0020");*/
-
-
+                .replaceAll("&amp;amp;", "&amp;")
+                .replaceAll("'|\'", "&amp;quot;")
+                .replaceAll("&#xD;&#xA;|&#xD;|&#xA;", "#AvidaEnterTag#")
+                .replaceAll("\r\n|\r|\n", "#AvidaEnterTag#");
         return xml;
     }
 
     public String viewCharDecoder(String data) {
         if (data != null && !data.isEmpty()) {
-            data = charDecoder(data).replaceAll("&amp;", "&");
+            data = charDecoder(data).replaceAll("&amp;", "&")
+                    .replaceAll("#AvidaEnterTag#", "<br/>");
         } else {
             data = "";
         }

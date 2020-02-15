@@ -3,7 +3,8 @@ package avida.ican.Farzin.Presenter;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import avida.ican.Farzin.Model.Interface.Message.MetaDataSyncListener;
+import avida.ican.Farzin.Model.Interface.GetDateTimeListener;
+import avida.ican.Farzin.Model.Interface.MetaDataSyncListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
@@ -16,13 +17,11 @@ import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 
-
 /**
  * Created by AtrasVida on 2018-04-21 at 10:02 AM
  */
 
 public class FarzinMetaDataSync {
-
 
     private final long PERIOD = TimeValue.HoursInMilli() * 12;
     private final long LONGDELAY = TimeValue.MinutesInMilli();
@@ -43,9 +42,9 @@ public class FarzinMetaDataSync {
             @Override
             public void run() {
                 try {
-                    final String strSimpleDateFormat = SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue();
+                    final String strSimpleDateFormat = SimpleDateFormatEnum.DateTime_as_iso_8601.getValue();
                     new CustomFunction(App.CurentActivity);
-                    final String CurentDateTime = CustomFunction.getCurentDateTimeAsStringFormat(strSimpleDateFormat);
+
                     final String MetaDataLastSyncDate = farzinPrefrences.getMetaDataLastSyncDate();
                     if (MetaDataLastSyncDate.isEmpty()) {
                         new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
@@ -69,34 +68,49 @@ public class FarzinMetaDataSync {
                         });
 
                     } else {
+                        final String[] curentDateTime = {CustomFunction.getCurentLocalDateTimeAsStringFormat()};
+                        CustomFunction.getCurentDateTimeAsStringFormat(new GetDateTimeListener() {
+                            @Override
+                            public void onSuccess(String strDateTime) {
+                                curentDateTime[0] = strDateTime;
+                            }
+
+                            @Override
+                            public void onFailed(String message) {
+                            }
+
+                            @Override
+                            public void onCancel() {
+
+                            }
+                        });
                         new CheckNetworkAvailability().isServerAvailable(new ListenerNetwork() {
                             @Override
                             public void onConnected() {
                                 App.networkStatus = NetworkStatus.Connected;
-                                long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, CurentDateTime, MetaDataLastSyncDate).getElapsedDays();
+                                long difrence = new DifferenceBetweenTwoDates(strSimpleDateFormat, MetaDataLastSyncDate, curentDateTime[0]).getElapsedDays();
                                 if (difrence > 11) {
                                     new FarzinMetaDataQuery(App.CurentActivity).Sync(metaDataSyncListener);
                                 } else {
-                                    App.getHandlerMainThread().post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            String userName = farzinPrefrences.getUserName();
+                                    App.getHandlerMainThread().post(() -> {
+                                        String userName = farzinPrefrences.getUserName();
+                                        int roleID = farzinPrefrences.getRoleID();
+                                        try {
                                             StructureUserAndRoleDB UserAndRoleDB = new FarzinMetaDataQuery(App.CurentActivity).getUserInfo(userName);
-                                            farzinPrefrences.putUserBaseInfo(UserAndRoleDB.getUser_ID(), UserAndRoleDB.getRole_ID());
-                                            metaDataSyncListener.onFinish();
+                                            farzinPrefrences.putUserBaseInfo(UserAndRoleDB.getUser_ID(), roleID);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
+                                        metaDataSyncListener.onFinish();
                                     });
                                 }
                             }
 
                             @Override
                             public void disConnected() {
-                                App.getHandlerMainThread().post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        App.networkStatus = NetworkStatus.WatingForNetwork;
-                                        metaDataSyncListener.onFinish();
-                                    }
+                                App.getHandlerMainThread().post(() -> {
+                                    App.networkStatus = NetworkStatus.WatingForNetwork;
+                                    metaDataSyncListener.onFinish();
                                 });
                             }
 
@@ -122,5 +136,6 @@ public class FarzinMetaDataSync {
 
     public void onDestory() {
         timerAsync.cancel();
+        timerTaskAsync.cancel();
     }
 }

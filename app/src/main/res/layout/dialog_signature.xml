@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="@dimen/margin"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:id="@+id/ln_dialog_signature"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rcv_signature"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@color/color_White"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding">
+
+            <Button
+                android:id="@+id/btn_ok"
+                style="@style/custom_right_button_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/success" />
+
+            <Button
+                android:id="@+id/btn_cancel"
+                style="@style/custom_left_button_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/margin_minimum"
+                android:layout_weight="0.5"
+                android:text="@string/close" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <include layout="@layout/layout_loading" />
+</FrameLayout>

@@ -6,7 +6,6 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_selected"
-        style="@style/custom_item_rcv_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

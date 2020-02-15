@@ -10,4 +10,6 @@ public interface LoginViewListener {
     void onAccessDenied();
 
     void onFailed(String error);
+
+    void invalidLogin(String error);
 }

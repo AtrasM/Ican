@@ -23,15 +23,21 @@ public class StructureCartableDocumentActionsDB implements Serializable {
     int ActionOrder;
     @DatabaseField()
     String FarsiDescription;
+    @DatabaseField()
+    int IsActiveForCardTable;
+    @DatabaseField()
+    int IsActiveForSend;
 
     public StructureCartableDocumentActionsDB() {
     }
 
-    public StructureCartableDocumentActionsDB(int ETC, int actionCode, String actionName, int actionOrder, String farsiDescription) {
+    public StructureCartableDocumentActionsDB(int ETC, int actionCode, int isActiveForCardTable, int isActiveForSend, String actionName, int actionOrder, String farsiDescription) {
         this.ETC = ETC;
         ActionCode = actionCode;
         ActionName = actionName;
         ActionOrder = actionOrder;
+        IsActiveForCardTable = isActiveForCardTable;
+        IsActiveForSend = isActiveForSend;
         FarsiDescription = farsiDescription;
     }
 
@@ -81,5 +87,21 @@ public class StructureCartableDocumentActionsDB implements Serializable {
 
     public void setFarsiDescription(String farsiDescription) {
         FarsiDescription = farsiDescription;
+    }
+
+    public int getIsActiveForCardTable() {
+        return IsActiveForCardTable;
+    }
+
+    public void setIsActiveForCardTable(int isActiveForCardTable) {
+        IsActiveForCardTable = isActiveForCardTable;
+    }
+
+    public int getIsActiveForSend() {
+        return IsActiveForSend;
+    }
+
+    public void setIsActiveForSend(int isActiveForSend) {
+        IsActiveForSend = isActiveForSend;
     }
 }

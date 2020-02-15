@@ -1,101 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/color_White"
     android:orientation="vertical">
 
-    <LinearLayout
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/btn_camera_picker"
-            style="@style/custom_attach_button_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_camera" />
+        android:layout_marginTop="@dimen/margin">
 
         <LinearLayout
-            style="@style/custom_divider_style"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        >
-
-        <Button
-            android:id="@+id/btn_photo_picker"
-            style="@style/custom_attach_button_style"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_photo" />
+            android:layout_marginTop="@dimen/margin_maximum"
+            android:background="@drawable/border_ln_dialog"
+            android:orientation="vertical"
+            android:paddingTop="@dimen/padding">
 
-        <LinearLayout
-            style="@style/custom_divider_style"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_camera_picker"
+                    style="@style/custom_attach_button_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_camera" />
 
-        <Button
-            android:id="@+id/btn_video_picker"
-            style="@style/custom_attach_button_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_video" />
+                <LinearLayout style="@style/custom_divider_style" />
+            </LinearLayout>
 
-        <LinearLayout
-            style="@style/custom_divider_style"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_photo_picker"
+                    style="@style/custom_attach_button_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_photo" />
 
-        <Button
-            android:id="@+id/btn_audio_recorder_picker"
-            style="@style/custom_attach_button_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_voice_recorder" />
+                <LinearLayout style="@style/custom_divider_style" />
+            </LinearLayout>
 
-        <LinearLayout
-            style="@style/custom_divider_style"
-            android:layout_width="match_parent"
-            android:layout_height="1dp" />
-    </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+                <Button
+                    android:id="@+id/btn_video_picker"
+                    style="@style/custom_attach_button_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_video" />
 
-        <Button
-            android:id="@+id/btn_file_picker"
-            style="@style/custom_attach_button_style"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title_file" />
-    </LinearLayout>
+                <LinearLayout style="@style/custom_divider_style" />
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_cancel"
-        style="@style/custom_cancel_button_style"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/close" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_audio_recorder_picker"
+                    style="@style/custom_attach_button_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_voice_recorder" />
+
+                <LinearLayout style="@style/custom_divider_style" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btn_file_picker"
+                    style="@style/custom_attach_button_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/title_file" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_cancel"
+            style="@style/custom_selected_style"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="top|center"
+            android:background="@drawable/circular_border"
+            android:elevation="@dimen/elevation"
+            app:srcCompat="@drawable/ic_circle_delete" />
+    </FrameLayout>
 
 </LinearLayout>

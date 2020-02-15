@@ -20,7 +20,6 @@ import org.ksoap2.transport.Transport;
 import org.xmlpull.v1.XmlPullParserException;
 
 import avida.ican.Ican.Model.ChangeXml;
-import avida.ican.Ican.Model.Interface.ListenerWorkWithFile;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 public class IcanHttpTransportSE extends Transport {
@@ -185,18 +184,17 @@ public class IcanHttpTransportSE extends Transport {
         int kilobyte = 1024;
         long megabyte = 1024 * 1024;
         double fileSizeAsKB = (file.length() / kilobyte);
+
+
         long limitSize = (4 * megabyte);
         CustomFunction.freeMemory();
         long freeMemorySpaceAsKB = Runtime.getRuntime().freeMemory() / kilobyte;
-        //Log.i("readDebug", "fileSizeAsKB1= " + fileSizeAsKB + " freeMemorySpaceAsKB1= " + freeMemorySpaceAsKB);
-        //Log.i("readDebug", "fileSizeAsKB2= " + fileSizeAsKB + " freeMemorySpaceAsKB2= " + freeMemorySpaceAsKB);
         if (fileSizeAsKB <= limitSize && fileSizeAsKB <= (freeMemorySpaceAsKB)) {
             this.responseDump = new ChangeXml().charSpaceDecoder(new CustomFunction().readXmlResponseFromStorage(filePath));
             Log.i("responseDump", "responseDump= " + responseDump);
         } else {
             responseDump = filePath;
         }
-
     }
 
     private InputStream getUnZippedInputStream(InputStream inputStream) throws IOException {

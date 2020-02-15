@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="avida.ican.Farzin.View.FarzinActivityWriteMessage">
+
+    <include layout="@layout/farzin_custome_toolbar" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/mdtp_white">
+
+        <LinearLayout
+            android:id="@+id/ln_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin"
+                android:background="@drawable/border"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/border_header"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/padding"
+                    android:paddingTop="@dimen/padding_maximum"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingBottom="@dimen/padding_maximum">
+
+
+                    <TextView
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center|right"
+                        android:text="@string/hint_description"
+                        android:textColor="@color/color_White" />
+
+                    <EditText
+                        android:id="@+id/edt_description"
+                        style="@style/custom_Txt_Normal_style"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/margin_minimum"
+                        android:layout_weight="1"
+                        android:background="@drawable/border"
+                        android:gravity="right"
+                        android:padding="@dimen/padding"
+                        android:textColor="@color/color_Info" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-4dp"
+                    android:background="@color/color_bg_cadr"
+                    android:paddingTop="@dimen/padding"
+                    android:paddingRight="@dimen/padding"
+                    android:paddingBottom="@dimen/padding">
+
+                    <Spinner
+                        android:id="@+id/sp_type"
+                        style="@style/custom_spinner_style"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="right|center" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <avida.ican.Ican.View.Custom.MaxHeightLinearLayout
+                    android:id="@+id/ln_rcv_attach"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:maxHeightDp="200">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rcv_attach"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+
+
+                </avida.ican.Ican.View.Custom.MaxHeightLinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+
+
+</LinearLayout>

@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_main_drawing_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_minimum"
+    android:background="@color/color_background"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edt_title"
+            style="@style/custom_normal_edittext_style"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:background="@drawable/border_layout_main_draw"
+            android:ellipsize="end"
+            android:hint="@string/title_drawing_view_edt"
+            android:lines="1"
+            android:maxLines="1"
+            android:padding="@dimen/padding" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin"
+            android:background="@drawable/border_layout_main_draw"
+            android:orientation="vertical"
+            android:padding="@dimen/padding_maximum"
+            tools:ignore="Suspicious0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/border_draw_view"
+                android:orientation="vertical"
+                android:padding="@dimen/padding">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_corner_top">
+
+                    <com.byox.drawview.views.DrawView
+                        android:id="@+id/draw_view"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:dv_draw_alpha="255"
+                        app:dv_draw_corners="round"
+                        app:dv_draw_dither="true"
+                        app:dv_draw_font_family="default_font"
+                        app:dv_draw_font_size="12"
+                        app:dv_draw_mode="draw"
+                        app:dv_draw_style="stroke"
+                        app:dv_draw_tool="pen"
+                        app:dv_draw_width="4" />
+
+
+                </FrameLayout>
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+
+                    android:background="@drawable/border_corner_bottom">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:id="@+id/ln_color_blue"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_right_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                app:srcCompat="@drawable/ic_color_blue" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ln_color_pink"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                app:srcCompat="@drawable/ic_color_pink" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ln_redo"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                app:srcCompat="@drawable/ic_redo" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ln_undo"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                app:srcCompat="@drawable/ic_undo" />
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/ln_pen"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                app:srcCompat="@drawable/ic_pen" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ln_eraser"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+                            android:background="@drawable/border_unselect_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                android:padding="@dimen/padding_minimum"
+                                app:srcCompat="@drawable/ic_eraser" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/ln_trash"
+                            android:layout_width="0dp"
+                            android:layout_height="40dp"
+                            android:layout_weight="1.4"
+
+                            android:background="@drawable/border_unselect_left_draw_tool">
+
+                            <ImageView
+                                style="@style/custom_image_button_transparent_style"
+                                android:layout_width="match_parent"
+                                android:layout_height="36dp"
+                                android:adjustViewBounds="true"
+                                android:padding="@dimen/padding_minimum"
+                                app:srcCompat="@drawable/ic_recyclebin" />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </FrameLayout>
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_gravity="bottom"
+            android:gravity="bottom"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding">
+
+            <Button
+                android:id="@+id/btn_dialog_drawing_view_send"
+                style="@style/custom_right_button_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.5"
+                android:text="@string/upload" />
+
+            <Button
+                android:id="@+id/btn_dialog_drawing_view_cancel"
+                style="@style/custom_left_button_style"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/margin_minimum"
+                android:layout_weight="0.5"
+                android:text="@string/close" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>

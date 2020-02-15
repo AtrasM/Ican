@@ -17,7 +17,12 @@ public class StructureSenderRES {
     private int UserID;
     @Element
     private String UserName;
-
+    @Element(required = false)
+    private String RoleName;
+    @Element(required = false)
+    private String FirstName;
+    @Element(required = false)
+    private String LastName;
 
     public int getRoleID() {
         return RoleID;
@@ -41,6 +46,30 @@ public class StructureSenderRES {
 
     public void setUserName(String userName) {
         UserName = userName;
+    }
+
+    public String getRoleName() {
+        return RoleName;
+    }
+
+    public void setRoleName(String roleName) {
+        RoleName = roleName;
+    }
+
+    public String getFirstName() {
+        return FirstName;
+    }
+
+    public void setFirstName(String firstName) {
+        FirstName = firstName;
+    }
+
+    public String getLastName() {
+        return LastName;
+    }
+
+    public void setLastName(String lastName) {
+        LastName = lastName;
     }
 }
 

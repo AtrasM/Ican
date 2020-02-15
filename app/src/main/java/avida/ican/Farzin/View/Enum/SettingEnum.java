@@ -7,7 +7,8 @@ package avida.ican.Farzin.View.Enum;
 public enum SettingEnum {
     SYNC(100),
     MANUALLY(101),
-    AUTOMATIC(102);
+    AUTOMATIC(102),
+    PRIVACY(103);
 
     private int value;
 

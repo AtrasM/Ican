@@ -12,7 +12,7 @@ import avida.ican.Ican.Model.ChangeXml;
  */
 
 @Root(name = "anyType")
-@Namespace( prefix = "type", reference = "Hamesh")
+@Namespace( prefix = "type", reference = "DstorErja")
 public class StructureHameshRES {
     @Element()
     int HameshID;
@@ -28,7 +28,7 @@ public class StructureHameshRES {
     String CreatorRoleName="";
     @Element
     String CreationShamsiDate="";
-    @Element
+    @Element(required = false)
     String CreationDate="";
     @Element
     boolean IsPrivate;

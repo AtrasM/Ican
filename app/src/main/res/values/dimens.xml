@@ -6,17 +6,19 @@
     <dimen name="txt_Title_Size">16sp</dimen>
     <dimen name="txt_SubTitle_Size">10sp</dimen>
     <dimen name="txt_Normal_Size">12sp</dimen>
-    <dimen name="txt_editor_Size">16px</dimen>
+    <dimen name="txt_editor_Size">16sp</dimen>
     <dimen name="margin_maximum">12dp</dimen>
-    <dimen name="margin_login_view">30dp</dimen>
+    <dimen name="margin_login_view">40dp</dimen>
     <dimen name="margin_minimum">2dp</dimen>
     <dimen name="margin">6dp</dimen>
-    <dimen name="padding_maximum">12dp</dimen>
+    <dimen name="padding_maximum">10dp</dimen>
     <dimen name="padding_minimum">2dp</dimen>
     <dimen name="padding">6dp</dimen>
-    <dimen name="normal_radios">8dp</dimen>
+    <dimen name="normal_radios">6dp</dimen>
     <dimen name="minimum_radios">2dp</dimen>
     <dimen name="maximum_radios">12dp</dimen>
+    <dimen name="very_maximum_radios">18dp</dimen>
+    <dimen name="login_layout_very_maximum_radios">22dp</dimen>
     <dimen name="stroke_minimum">1dp</dimen>
     <dimen name="stroke">2dp</dimen>
     <dimen name="stroke_maximum">3dp</dimen>
@@ -26,5 +28,10 @@
 
     <item name="divider_alpha" format="float" type="dimen">0.4</item>
     <dimen name="design_fab_image_size" tools:override="true">56dp</dimen>
-   <!-- <dimen name="fab_margin">16dp</dimen>-->
+    <dimen name="bottom_navigation_icon_size" tools:override="true">32dp</dimen>
+    <dimen name="design_bottom_navigation_height" tools:override="true">56dp</dimen>
+    <dimen name="navigation_item_Height" tools:override="true">36dp</dimen>
+    <dimen name="navigation_drawer_icon_size" tools:override="true">26dp</dimen>
+    <dimen name="navigation_drawer_icon_padding" tools:override="true">18dp</dimen>
+    <!-- <dimen name="fab_margin">16dp</dimen>-->
 </resources>

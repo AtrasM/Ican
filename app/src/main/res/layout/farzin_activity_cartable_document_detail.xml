@@ -1,241 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/farzin_custome_toolbar" />
+  <include layout="@layout/farzin_custome_toolbar" />
 
-    <FrameLayout
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ln_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+      <LinearLayout
+          android:id="@+id/ln_top"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:visibility="visible">
 
         <LinearLayout
-            android:id="@+id/ln_main"
+            android:id="@+id/ln_header"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginTop="@dimen/margin_minimum"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin"
+            android:background="@drawable/border"
+            android:elevation="@dimen/elevation"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:paddingLeft="@dimen/padding_maximum"
+            android:paddingTop="@dimen/padding"
+            android:paddingRight="@dimen/padding_maximum">
 
-            <LinearLayout
-                android:layout_width="match_parent"
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txt_name"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/margin_maximum"
-                android:background="@color/color_White"
-                android:elevation="@dimen/elevation"
-                android:orientation="vertical"
-                android:paddingLeft="@dimen/padding_maximum"
-                android:paddingRight="@dimen/padding_maximum"
-                android:paddingTop="@dimen/padding">
+                android:gravity="center|right"
+                android:text="name"
+                android:textColor="@color/color_Info"
+                tools:ignore="RtlHardcoded" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txt_name"
-                        style="@style/custom_Txt_Normal_style"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center|right"
-                        android:text="name" />
-
-                    <TextView
-                        android:id="@+id/txt_role_name"
-                        style="@style/custom_Txt_Normal_style"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center|right"
-                        android:text="role name" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/txt_subject"
-                        style="@style/custom_Txt_Normal_style"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|right"
-                        android:layout_weight="1"
-                        android:gravity="center|right"
-                        android:text="subject" />
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|left"
-                        android:gravity="left|center"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/txt_date"
-                            style="@style/custom_Txt_Sub_Title_style"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:paddingLeft="@dimen/padding_minimum"
-                            android:paddingRight="@dimen/padding_minimum"
-                            android:gravity="center|left"
-                            android:text="date" />
-
-                        <TextView
-                            android:id="@+id/txt_time"
-                            style="@style/custom_Txt_Sub_Title_style"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center|left"
-                            android:paddingTop="0dp"
-                            android:text="time"
-                            android:visibility="gone" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+            <TextView
+                android:id="@+id/txt_role_name"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:fitsSystemWindows="true">
+                android:gravity="center|right"
+                android:text="role name"
+                android:textColor="@color/color_Info"
+                tools:ignore="RtlHardcoded" />
 
+          </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+          <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center"
+              android:layout_marginBottom="@dimen/margin_minimum"
+              android:gravity="center"
+              android:orientation="vertical">
 
-                    <include
-                        layout="@layout/layout_tab"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-
-
-                    <com.booking.rtlviewpager.RtlViewPager
-                        android:id="@+id/mview_pager"
-                        android:layout_width="fill_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                </LinearLayout>
-
-
-            </FrameLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/color_Divider" />
-
-            <LinearLayout
+            <TextView
+                android:id="@+id/txt_subject"
+                style="@style/custom_Txt_Normal_style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/color_bg_cadr"
-                android:elevation="@dimen/elevation"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        android:id="@+id/img_taeed"
-                        style="@style/custom_image_button_transparent_style"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_confirm" />
-                </LinearLayout>
+                android:layout_gravity="center|right"
+                android:layout_marginBottom="@dimen/margin_minimum"
+                android:gravity="center|right"
+                android:text="subject"
+                tools:ignore="RtlHardcoded" />
 
 
-                <LinearLayout
-                    style="@style/custom_image_button_transparent_style"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|left"
+                android:gravity="left|center"
+                android:orientation="vertical">
 
-                    <ImageView
-                        android:id="@+id/img_erja"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_erja" />
-                </LinearLayout>
+              <TextView
+                  android:id="@+id/txt_date"
+                  style="@style/custom_Txt_Sub_Title_style"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:layout_gravity="center|left"
+                  android:gravity="center|left"
+                  android:paddingLeft="@dimen/padding_minimum"
+                  android:paddingRight="@dimen/padding_minimum"
+                  android:paddingBottom="0dp"
+                  android:text="date"
+                  android:textAppearance="@style/TextAppearance.FontPathIranSans" />
 
-                <LinearLayout
-                    style="@style/custom_image_button_transparent_style"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        android:id="@+id/img_taeed_erja"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_taeed_erja" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding"
-                    android:visibility="gone">
-
-                    <ImageView
-                        android:id="@+id/img_write_hamesh"
-                        style="@style/custom_image_button_transparent_style"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_write_hamesh" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_margin="@dimen/margin"
-                    android:layout_weight="0.2"
-                    android:gravity="center"
-                    android:padding="@dimen/padding">
-
-                    <ImageView
-                        android:id="@+id/img_ghalam_nory"
-                        style="@style/custom_image_button_transparent_style"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        app:srcCompat="@drawable/ic_ghalam_nory" />
-                </LinearLayout>
+              <TextView
+                  android:id="@+id/txt_time"
+                  style="@style/custom_Txt_Sub_Title_style"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:gravity="center|left"
+                  android:paddingTop="0dp"
+                  android:text="time"
+                  android:visibility="visible" />
             </LinearLayout>
+
+          </LinearLayout>
+
         </LinearLayout>
 
-        <include layout="@layout/ln_loading" />
-    </FrameLayout>
+      </LinearLayout>
+
+
+      <FrameLayout
+          android:id="@+id/frm_view_pager"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_marginTop="@dimen/margin"
+          android:layout_weight="1"
+          android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/margin_maximum"
+            android:orientation="vertical">
+
+          <include
+              layout="@layout/layout_tab"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="1dp" />
+
+
+          <com.booking.rtlviewpager.RtlViewPager
+              android:id="@+id/mview_pager"
+              android:layout_width="fill_parent"
+              android:layout_height="0dp"
+              android:layout_weight="1" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/img_scale"
+            style="@style/custom_selected_style"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|right"
+            android:layout_marginRight="@dimen/margin"
+            android:background="@drawable/circular_border"
+            android:elevation="@dimen/elevation"
+            app:srcCompat="@drawable/ic_arrow_up" />
+      </FrameLayout>
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/color_Divider" />
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="@color/color_bg_cadr"
+          android:elevation="@dimen/elevation"
+          android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ln_confirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_confirm"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_taeed" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/ln_inworkflow"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_inworkflow"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_continue_workflow" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_erja"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_erja"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_erja" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_confirm_erja"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_confirm_erja"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_taeed_erja" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_ghalam_nory"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_optical_pen" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ln_signature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="0.2"
+            android:gravity="center"
+            android:padding="@dimen/padding_minimum">
+
+          <ImageView
+              android:id="@+id/img_signature"
+              style="@style/custom_image_button_transparent_style"
+              android:layout_width="40dp"
+              android:layout_height="40dp"
+              app:srcCompat="@drawable/ic_signuture" />
+        </LinearLayout>
+      </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center|top"
+        android:padding="@dimen/padding"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_circle_arrow_up" />
+
+    <include layout="@layout/layout_loading" />
+  </FrameLayout>
 
 </LinearLayout>

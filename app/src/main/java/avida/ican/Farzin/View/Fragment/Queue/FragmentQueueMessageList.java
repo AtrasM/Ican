@@ -3,7 +3,6 @@ package avida.ican.Farzin.View.Fragment.Queue;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.MessageQueue;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -15,27 +14,18 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import avida.ican.Farzin.Model.Enum.QueueStatus;
+import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
-import avida.ican.Farzin.Presenter.Cartable.FarzinHameshListPresenter;
+import avida.ican.Farzin.Model.Structure.Database.Queue.StructureMessageQueueDB;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
-import avida.ican.Farzin.Presenter.Queue.FarzinQueuesPresenter;
-import avida.ican.Farzin.View.Adapter.AdapterHamesh;
-import avida.ican.Farzin.View.Adapter.AdapterQueueMessage;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerAdapterHameshList;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerHamesh;
-import avida.ican.Farzin.View.Interface.ListenerFile;
-import avida.ican.Farzin.View.Interface.Message.ListenerAdapterMessageList;
+import avida.ican.Farzin.View.Adapter.Queue.AdapterQueueMessage;
 import avida.ican.Farzin.View.Interface.Queue.ListenerAdapterMessageQueue;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
-import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Dialog.DialogQuestion;
-import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindView;
@@ -56,8 +46,7 @@ public class FragmentQueueMessageList extends BaseFragment {
     private AdapterQueueMessage adapterQueueMessage;
     private int start = 0;
     private int COUNT = -1;
-    private FarzinQueuesPresenter farzinQueuesPresenter;
-    public static String Tag = "FragmentQueueMessageList";
+    public final String Tag = "FragmentQueueMessageList";
 
     public FragmentQueueMessageList newInstance(Activity context) {
         this.context = context;
@@ -91,7 +80,6 @@ public class FragmentQueueMessageList extends BaseFragment {
 
 
     private void initPresenter() {
-        farzinQueuesPresenter = new FarzinQueuesPresenter();
         initData();
 
     }
@@ -107,7 +95,7 @@ public class FragmentQueueMessageList extends BaseFragment {
         }*/
     private void initData() {
         lnLoading.setVisibility(View.VISIBLE);
-        List<StructureMessageQueueDB> structureMessageQueueDBS = farzinQueuesPresenter.getQueueMessageList();
+        List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID());
         lnLoading.setVisibility(View.GONE);
         if (structureMessageQueueDBS.size() <= 0) {
             txtNoData.setVisibility(View.VISIBLE);
@@ -123,7 +111,7 @@ public class FragmentQueueMessageList extends BaseFragment {
             lnLoading.setVisibility(View.VISIBLE);
         }
         lnLoading.setVisibility(View.VISIBLE);
-        List<StructureMessageQueueDB> structureMessageQueueDBS = farzinQueuesPresenter.getQueueMessageList();
+        List<StructureMessageQueueDB> structureMessageQueueDBS = new FarzinMessageQuery().getMessageQueue(getFarzinPrefrences().getUserID(), getFarzinPrefrences().getRoleID());
         if (structureMessageQueueDBS.size() <= 0) {
             txtNoData.setVisibility(View.VISIBLE);
         }
@@ -140,7 +128,15 @@ public class FragmentQueueMessageList extends BaseFragment {
                 new DialogQuestion(context).setTitle(Resorse.getString(R.string.delet_question)).setOnListener(new ListenerQuestion() {
                     @Override
                     public void onSuccess() {
-                        farzinQueuesPresenter.deletMessageQueueRowWithId(structureMessageQueueDB.getId());
+                        new FarzinMessageQuery().DeletMessageQueue(structureMessageQueueDB.getId(), structureMessageQueueDB.getMessage());
+                        App.getHandlerMainThread().post(() -> {
+                            try {
+                                App.fragmentMessageList.checkQueue();
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                        });
                         reGetData();
                     }
 
@@ -153,6 +149,12 @@ public class FragmentQueueMessageList extends BaseFragment {
             }
 
             @Override
+            public void onTry(StructureMessageQueueDB structureMessageQueueDB) {
+                new FarzinMessageQuery().updateMessageQueueStatus(structureMessageQueueDB.getId(), QueueStatus.WAITING);
+                reGetData();
+            }
+
+            @Override
             public void onItemClick(StructureDetailMessageBND structureDetailMessageBND, int position) {
 
             }
@@ -161,6 +163,9 @@ public class FragmentQueueMessageList extends BaseFragment {
         rcvList.setAdapter(adapterQueueMessage);
     }
 
+    private FarzinPrefrences getFarzinPrefrences() {
+        return new FarzinPrefrences().init();
+    }
 
     @Override
     public void onAttach(Context context) {

@@ -19,9 +19,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.view.ViewCompat;
 
+import android.telephony.TelephonyManager;
 import android.text.Html;
 import android.text.InputFilter;
 import android.text.Spanned;
+import android.text.format.DateFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -32,9 +34,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.mohamadamin.persianmaterialdatetimepicker.utils.PersianDateParser;
 import com.ms.square.android.expandabletextview.ExpandableTextView;
 
+import org.acra.ACRA;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -43,12 +45,10 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,26 +58,23 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
+import java.util.TimeZone;
 import java.util.UUID;
 
+import avida.ican.Farzin.Model.Interface.GetDateTimeListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
+import avida.ican.Farzin.Model.Structure.Request.StructureGetDateTimeREQ;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
+import avida.ican.Farzin.Presenter.GetDateTimeFromServerPresenter;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Enum.NotificationChanelEnum;
 import avida.ican.Ican.App;
@@ -89,6 +86,7 @@ import avida.ican.Ican.View.Custom.Enum.CompareTimeEnum;
 import avida.ican.Ican.View.Custom.Enum.SimpleDateFormatEnum;
 import avida.ican.Ican.View.Dialog.DialogQuestion;
 import avida.ican.Ican.View.Enum.ExtensionEnum;
+import avida.ican.Ican.View.Enum.TimeZoneEnum;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
@@ -129,6 +127,14 @@ public class CustomFunction {
     public CustomFunction(Activity activity, Context context) {
         this.activity = activity;
         this.context = context;
+    }
+
+    public static String convertNullToEmpety(String data) {
+        if (data == null) {
+            return "";
+        } else {
+            return data;
+        }
     }
 
 
@@ -329,7 +335,9 @@ public class CustomFunction {
         File file = null;
         if (fileAsBytes != null && fileAsBytes.length > 0) {
             if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE && !UnSupportMediaFormat(fileExtension)) {
+                //if (getExtensionCategory(fileExtension) == ExtensionEnum.IMAGE) {
                 ActivityImageViewer.byteArray = fileAsBytes;
+                ActivityImageViewer.fileExtension = fileExtension;
                 goToActivity(ActivityImageViewer.class);
                 return file;
             } else {
@@ -340,7 +348,7 @@ public class CustomFunction {
                     String type = mime.getMimeTypeFromExtension(fileExtension.replace(".", ""));
 
                     try {
-                        File dir = new File(App.DEFAULTPATHTEMP);
+                        File dir = new File(App.getDefaultTempPath());
                         fileName = fileName.replace(".ican", "");
                         if (fileName.contains(fileExtension)) {
                             file = new File(dir, "/" + fileName);
@@ -372,24 +380,20 @@ public class CustomFunction {
                     } catch (
                             IOException e) {
                         e.printStackTrace();
+                        ACRA.getErrorReporter().handleSilentException(e);
                     }
                 }
 
             }
         } else {
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    App.ShowMessage().ShowToast(Resorse.getString(R.string.error_invalid_file), ToastEnum.TOAST_LONG_TIME);
-                }
-            });
+            activity.runOnUiThread(() -> App.ShowMessage().ShowToast(Resorse.getString(R.string.error_invalid_file), ToastEnum.TOAST_LONG_TIME));
 
         }
         return file;
     }
 
     private boolean UnSupportMediaFormat(String fileExtension) {
-        String format = ".tiff";
+        String format = ".tif .tiff .TIF .TIFF";
         return format.contains(fileExtension);
     }
 
@@ -398,6 +402,9 @@ public class CustomFunction {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         String type = mime.getMimeTypeFromExtension(extention.replace(".", ""));
+        if (type == null || type.isEmpty()) {
+            return false;
+        }
         if (type.startsWith("audio")) {
             return true;
         }
@@ -434,6 +441,7 @@ public class CustomFunction {
             filePath = saveXmlToStorage(fileAsBytes);
         } catch (IOException e) {
             e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
         }
 
         return filePath;
@@ -449,6 +457,7 @@ public class CustomFunction {
             filePath = saveXmlToStorage(fileAsBytes);
         } catch (IOException e) {
             e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
         }
 
         return filePath;
@@ -456,11 +465,11 @@ public class CustomFunction {
 
     public String saveXmlToStorage(byte[] fileAsBytes) {
         ObjectOutputStream objectOutputStream = null;
-        File dir = new File(App.RESPONSEPATH);
+        File dir = new File(App.getResponsePath());
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.getResponseFileName();
         try {
             objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath));
             objectOutputStream.writeUTF("@rasVida");
@@ -472,6 +481,7 @@ public class CustomFunction {
             objectOutputStream.writeUTF("@rasVida");
         } catch (IOException e) {
             e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
             Log.e("saveFile", e.toString());
         } finally {
             try {
@@ -479,6 +489,7 @@ public class CustomFunction {
                 objectOutputStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
+                ACRA.getErrorReporter().handleSilentException(e);
                 Log.e("saveFile", e.toString());
             }
         }
@@ -487,17 +498,18 @@ public class CustomFunction {
 
     public String saveXmlResponseToStorage(String xml) {
         ObjectOutputStream objectOutputStream = null;
-        File dir = new File(App.RESPONSEPATH);
+        File dir = new File(App.getResponsePath());
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.getResponseFileName();
         try {
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(filePath));
             outputStreamWriter.write(xml);
             outputStreamWriter.close();
         } catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
+            ACRA.getErrorReporter().handleSilentException(e);
         }
         return filePath;
     }
@@ -506,11 +518,11 @@ public class CustomFunction {
     public String saveXmlResponseToStorage(InputStream is) {
 
         boolean isError = false;
-        File dir = new File(App.RESPONSEPATH);
+        File dir = new File(App.getResponsePath());
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String filePath = dir.getPath() + "/" + getRandomUUID() + App.RESPONSEFILENAME;
+        String filePath = dir.getPath() + "/" + getRandomUUID() + App.getResponseFileName();
         long megabyte = 1024 * 1024;
         int buferSize = 1024;
         FileOutputStream fOut = null;
@@ -543,10 +555,12 @@ public class CustomFunction {
         } catch (IOException e) {
             isError = true;
             Log.e("Exception", "File write failed: " + e.toString());
+            ACRA.getErrorReporter().handleSilentException(e);
         } catch (Exception e) {
             isError = true;
             Log.e("Exception", "File write failed: " + e.toString());
             e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
         }
 
         if (isError) {
@@ -604,24 +618,11 @@ public class CustomFunction {
             //Log.e("Log", "The file was successfully saved");
         } catch (IOException e) {
             Log.e("Log", "saveFileToStorage File write failed: " + e.toString());
+            ACRA.getErrorReporter().handleSilentException(e);
         }
-     /*   try {
-            FileOutputStream fOut = new FileOutputStream(filePath);
-            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
-            for (int i = 0; i < stringBuilder.length(); i++) {
-                myOutWriter.append(stringBuilder.charAt(i));
-            }
-            myOutWriter.close();
-
-            fOut.flush();
-            fOut.close();
-        } catch (IOException e) {
-            Log.e("Exception", "File write failed: " + e.toString());
-        }*/
-
-
         return filePath;
     }
+
 
     public String getFileFromStorageAsBase64(String filePath) {
         return new Base64EncodeDecodeFile().EncodeByteArrayToString(getFileFromStorageAsByte(filePath));
@@ -711,15 +712,15 @@ public class CustomFunction {
     }
 
     private File initDir() {
-        Date date = getCurentDateTime();
+        Date date = getCurentDateTimeAsDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
         Calendar cal = Calendar.getInstance();
         cal.setTime(date);
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH);
         int day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR);
+        int hour = cal.get(Calendar.HOUR_OF_DAY);
         String folder = year + "_" + (month + 1) + "_" + day;//+"_"+hour;
-        File dir = new File(App.DEFAULTPATH + "/" + folder);
+        File dir = new File(App.getFilePath() + "/" + folder);
         if (!dir.exists()) {
             dir.mkdirs();
         }
@@ -738,7 +739,8 @@ public class CustomFunction {
     public static String getRandomUUID() {
         String uuid = UUID.randomUUID().toString();
         return uuid.replace("-", "");
-    } 
+    }
+
  /*   public static int getRandomUUID() {
         int min = 1;
         int max = 10000;
@@ -746,38 +748,18 @@ public class CustomFunction {
         return r.nextInt(max - min) + min;
     }*/
 
-    /**
-     * @param df example: "dd/M/yyyy hh:mm:ss"
-     */
-    public static String getCurentDateTimeAsStringFormat(String df) {
-        Calendar c = Calendar.getInstance();
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
-        return simpleDateFormat.format(c.getTime());
-    }
 
-    public static Date getCurentDateTimeAsDateFormat(String df) {
-        Calendar c = Calendar.getInstance();
-        Date date = null;// = new Date(c.getTime().toString());
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(df);
-        String strDate = simpleDateFormat.format(c.getTime());
-        try {
-            date = simpleDateFormat.parse(strDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-
-    public static Date ChangeDateTimeAsDateFormat(String strDate, String df) {
+    public static Date changeDateTimeAsDateFormat(String strDate, String df) {
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat format = new SimpleDateFormat(df);
-        strDate= arabicToDecimal(strDate);
+        strDate = arabicToDecimal(strDate);
         Date date = null;
         try {
-            date = format.parse(strDate);
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
+            if (ValidationDateFormat(strDate, df)) {
+                strDate = CustomFunction.StandardizeTheDateFormat(strDate);
+            }
+            date = new Date(strDate);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return date;
@@ -798,31 +780,38 @@ public class CustomFunction {
         return compareTimeEnum;
     }
 
-    public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long delay) {
+    public static CompareDateTimeEnum compareDateWithCurentDate(String strLastDate, long dateDifference) {
+        Date curentDate = null;
+        long dificalt = -1;
         try {
-            strLastDate=StandardizeTheDateFormat(strLastDate);
-            strLastDate= arabicToDecimal(strLastDate);
+            Log.i("LOG", "compareDateWithCurentDate dateDifference= " + dateDifference);
+            strLastDate = StandardizeTheDateFormat(strLastDate);
+            strLastDate = arabicToDecimal(strLastDate);
             Date lastDate = new Date(strLastDate);
-            Date curentDate = getCurentDateTime();
+            Log.i("LOG", "compareDateWithCurentDate LastDate= " + strLastDate);
+            curentDate = getCurentDateTimeAsDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+            Log.i("LOG", "compareDateWithCurentDate curentDate= " + curentDate);
             //int a = curentDate.compareTo(lastDate);
-            long dificalt = curentDate.getTime() - lastDate.getTime();
+            dificalt = Math.abs(curentDate.getTime() - lastDate.getTime());
             CompareDateTimeEnum compareDateTimeEnum;
-            if (dificalt >= delay) {
+            if (dificalt >= dateDifference) {
                 compareDateTimeEnum = CompareDateTimeEnum.isAfter;
             } else {
                 compareDateTimeEnum = CompareDateTimeEnum.isBefore;
             }
+            Log.i("LOG", "compareDateWithCurentDate compareDateTimeEnum " + compareDateTimeEnum);
             return compareDateTimeEnum;
         } catch (Exception e) {
             e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
+            ACRA.getErrorReporter().handleSilentException(new Exception("compareDateWithCurentDate error ==> lastDate= " + strLastDate + " And curentDate= " + curentDate + " And dificalt:(lastDate-curentDate) " + dificalt + " And dateDifference= " + dateDifference));
             return CompareDateTimeEnum.ErrorFormat;
         }
-
     }
 
     public static CompareDateTimeEnum compareDates(String DateTime1, String DateTime2) {
-        DateTime1= arabicToDecimal(DateTime1);
-        DateTime2= arabicToDecimal(DateTime2);
+        DateTime1 = arabicToDecimal(DateTime1);
+        DateTime2 = arabicToDecimal(DateTime2);
         long a = System.currentTimeMillis();
         Date d1 = new Date(DateTime1);
         Date d2 = new Date(DateTime2);
@@ -837,15 +826,96 @@ public class CustomFunction {
         return compareDateTimeEnum;
     }
 
-    public static Date getCurentDateTime() {
+    @SuppressLint("SimpleDateFormat")
+    public static String getCurentLocalDateTimeAsStringFormat() {
         Calendar c = Calendar.getInstance();
-        return c.getTime();
+        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+        //format.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.IRAN_TEHRAN.getValue()));
+        String strDate = "" + format.format(c.getTime());
+        Log.i("LOG", "getCurentDateTimeAsDateFormat= " + strDate);
+        return strDate;
     }
 
+    public static void getCurentDateTimeAsStringFormat(GetDateTimeListener listener) {
+        StructureGetDateTimeREQ structureGetDateTimeREQ = new StructureGetDateTimeREQ();
+        new GetDateTimeFromServerPresenter().getDateTime(structureGetDateTimeREQ, new GetDateTimeListener() {
+            @Override
+            public void onSuccess(String dateTime) {
+                int dotPos = dateTime.indexOf(".");
+                if (dotPos > 0) {
+                    dateTime = dateTime.substring(0, dotPos);
+                }
+                /*dateTime = CustomFunction.StandardizeTheDateFormat(dateTime);
+                Date date = changeDateTimeAsDateFormat(dateTime, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+               */
+                listener.onSuccess(dateTime);
+
+            }
+
+            @Override
+            public void onFailed(String message) {
+                listener.onFailed(message);
+            }
+
+            @Override
+            public void onCancel() {
+                listener.onCancel();
+            }
+        });
+
+    }
+
+    /**
+     * @param df example: "dd/M/yyyy hh:mm:ss"
+     */
+    @SuppressLint("SimpleDateFormat")
+    public static String getCurentLocalDateTimeAsStringFormat(String df) {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat(df);
+        //format.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.IRAN_TEHRAN.getValue()));
+        String strDate = "" + format.format(c.getTime());
+        Log.i("LOG", "getCurentDateTimeAsDateFormat= " + strDate);
+        return strDate;
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public static Date getCurentDateTimeAsDateFormat(String df) {
+        Calendar c = Calendar.getInstance();
+
+        Date date = null;// = new Date(c.getTime().toString());
+        SimpleDateFormat format = new SimpleDateFormat(df);
+        //format.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.IRAN_TEHRAN.getValue()));
+        String strDate = format.format(c.getTime());
+        try {
+            if (ValidationDateFormat(strDate, df)) {
+                strDate = CustomFunction.StandardizeTheDateFormat(strDate);
+            }
+            date = new Date(strDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        Log.i("LOG", "getCurentDateTimeAsDateFormat Date= " + date);
+        return date;
+    }
+
+    @SuppressLint("SimpleDateFormat")
     public static Date getLastMonthDateTime() {
         Calendar c = Calendar.getInstance();
         c.add(Calendar.MONTH, -1);
-        return c.getTime();//Sat Feb 16 10:25:43 GMT+03:30 2019
+        SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+        //format.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.IRAN_TEHRAN.getValue()));
+        String strDate = format.format(c.getTime());
+        Log.i("LOG", "getCurentDateTimeAsDateFormat= " + strDate);
+        Date date = null;
+        try {
+            if (ValidationDateFormat(strDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue())) {
+                strDate = CustomFunction.StandardizeTheDateFormat(strDate);
+            }
+            date = new Date(strDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return date;//Sat Feb 16 10:25:43 GMT+03:30 2019
     }
 
     public static String getLastMonthDateTimeAsFormat() {
@@ -853,29 +923,37 @@ public class CustomFunction {
         c.add(Calendar.MONTH, -1);
         @SuppressLint("SimpleDateFormat")
         SimpleDateFormat format = new SimpleDateFormat(SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+        //format.setTimeZone(TimeZone.getTimeZone(TimeZoneEnum.IRAN_TEHRAN.getValue()));
         Log.i("DateTime", "getLastMonthDateTimeAsFormat=" + format.format(c.getTime()));
         return format.format(c.getTime());
     }
 
-    public static String convertDateToCustomFormat(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minute, int second, String dateFormat) {
-        Calendar c = Calendar.getInstance();
-        c.set(year, monthOfYear, dayOfMonth, hourOfDay, minute, second);
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-        return format.format(c.getTime());
+    public static String convertDateToCustomFormat(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minute, int second, String dateFormat, boolean isDateAsjalaly) {
+
+        if (isDateAsjalaly) {
+            PersianDateFormat pdformater = new PersianDateFormat(dateFormat);
+            PersianDate pdate = new PersianDate();
+            pdate.setShYear(year);
+            pdate.setShMonth(monthOfYear);
+            pdate.setShDay(dayOfMonth);
+            pdate.setHour(hourOfDay);
+            pdate.setMinute(minute);
+            pdate.setSecond(second);
+            return pdformater.format(pdate);
+        } else {
+            Calendar c = Calendar.getInstance();
+            c.set(year, monthOfYear, dayOfMonth, hourOfDay, minute, second);
+            @SuppressLint("SimpleDateFormat")
+            SimpleDateFormat format = new SimpleDateFormat(dateFormat);
+            return format.format(c.getTime());
+        }
+
     }
 
-    public static String convertDateToCustomFormat(int year, int monthOfYear, int dayOfMonth, String dateFormat) {
-        Calendar c = Calendar.getInstance();
-        c.set(year, monthOfYear, dayOfMonth);
-        @SuppressLint("SimpleDateFormat")
-        SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-        return format.format(c.getTime());
-    }
 
     public static String StandardizeTheDateFormat(String strDate) {
         //String dateDefault = "0001/01/01 00:00:00";
-        strDate= arabicToDecimal(strDate);
+        strDate = arabicToDecimal(strDate);
         String dateDefault = "";
         if (strDate != null && !strDate.isEmpty()) {
             try {
@@ -885,8 +963,10 @@ public class CustomFunction {
                 if (dotPos > 0) {
                     strDate = strDate.substring(0, dotPos);
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
+                ACRA.getErrorReporter().handleSilentException(e);
                 //return null;
             }
         } else {
@@ -897,7 +977,7 @@ public class CustomFunction {
     }
 
     public static boolean ValidationDateFormat(String strDate, String dateFormat) {
-        strDate= arabicToDecimal(strDate);
+        strDate = arabicToDecimal(strDate);
         boolean valid = true;
         try {
             SimpleDateFormat format = new SimpleDateFormat(dateFormat);
@@ -909,10 +989,13 @@ public class CustomFunction {
     }
 
     public static String MiladyToJalaly(String strDate) {
-        strDate= arabicToDecimal(strDate);
+        Log.i("LOG", "MiladyToJalaly strDate= " + strDate);
+        strDate = arabicToDecimal(strDate);
         if (ValidationDateFormat(strDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue())) {
             strDate = CustomFunction.StandardizeTheDateFormat(strDate);
         }
+
+        Log.i("LOG", "MiladyToJalaly Date= " + strDate);
         Date date = new Date(strDate);
         PersianDate pdate = new PersianDate(date);
         int year = pdate.getShYear();
@@ -921,48 +1004,71 @@ public class CustomFunction {
         int hour = pdate.getHour();
         int minute = pdate.getMinute();
         int second = pdate.getSecond();
-        return convertDateToCustomFormat(year, month, day, hour, minute, second, SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue());
+        return convertDateToCustomFormat(year, month, day, hour, minute, second, SimpleDateFormatEnum.DateTime_Y_m_d_H_i_s.getValue(), true);
     }
 
     public static String JalalyToMilady(String strDate) {
-        strDate= arabicToDecimal(strDate);
+        strDate = arabicToDecimal(strDate);
+
         if (ValidationDateFormat(strDate, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue())) {
             strDate = CustomFunction.StandardizeTheDateFormat(strDate);
         }
-        Date date = new Date(strDate);
-        PersianDate pdate = new PersianDate(date);
-
-        int[] grDate = new PersianDate().toGregorian(pdate.getGrgYear(), pdate.getGrgMonth(), pdate.getGrgDay());
-        int year = grDate[0];
-        int month = grDate[1];
-        int day = grDate[2];
+        PersianDate pdate = null;
+        try {
+            pdate = new PersianDateFormat(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue()).parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
+        }
+        int year = pdate.getGrgYear();
+        int month = pdate.getGrgMonth();
+        int day = pdate.getGrgDay();
         int hour = pdate.getHour();
         int minute = pdate.getMinute();
         int second = pdate.getSecond();
-        return convertDateToCustomFormat(year, month, day, hour, minute, second, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue());
+        return convertDateToCustomFormat(year, month - 1, day, hour, minute, second, SimpleDateFormatEnum.DateTime_as_iso_8601.getValue(), false);
+    }
+
+    public static Date convertLongTimeToDateStandartFormat(long timeInMilliSecond) {
+        return new Date(timeInMilliSecond);
+        //return new Date(DateFormat.format(SimpleDateFormatEnum.DateTime_yyyy_MM_dd_hh_mm_ss.getValue(), new Date(timeInMilliSecond)).toString()) ;
+    }
+
+    public static String convertLongTimeToCustomFormat(long timeInMilliSecond, String simpleDateFormat) {
+        @SuppressLint("SimpleDateFormat")
+        SimpleDateFormat formatter = new SimpleDateFormat(simpleDateFormat);
+        String dateString = formatter.format(new Date(timeInMilliSecond));
+        return dateString;
     }
 
     public void setHtmlText(TextView myTextView, String myText) {
         ChangeXml changeXml = new ChangeXml();
         if (myText.contains("![CDATA[")) {
             myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
+            myText = changeXml.viewCharDecoder(myText);
         }
         myText = changeXml.charDecoder(myText);
+        myText = changeXml.viewCharDecoder(myText);
         UrlImageParser p = new UrlImageParser(myTextView, activity);
         Spanned htmlSpan = Html.fromHtml(myText, p, null);
         myTextView.setText(htmlSpan);
     }
 
     public void setHtmlText(ExpandableTextView myExTextView, String myText) {
-        ChangeXml changeXml = new ChangeXml();
-        if (myText.contains("![CDATA[")) {
-            myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
+        try {
+            ChangeXml changeXml = new ChangeXml();
+            if (myText.contains("![CDATA[")) {
+                myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
+            }
+            myText = changeXml.saxCharEncoder(myText);
+            myText = changeXml.charDecoder(myText);
+            UrlImageParser p = new UrlImageParser(myExTextView, activity);
+            Spanned htmlSpan = Html.fromHtml(myText, p, null);
+            myExTextView.setText(htmlSpan);
+        } catch (Exception e) {
+            e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
         }
-        myText = changeXml.saxCharEncoder(myText);
-        myText = changeXml.charDecoder(myText);
-        UrlImageParser p = new UrlImageParser(myExTextView, activity);
-        Spanned htmlSpan = Html.fromHtml(myText, p, null);
-        myExTextView.setText(htmlSpan);
     }
 
     public int getWidthOrHeightColums(int MOD, boolean isWhidth) {
@@ -1012,18 +1118,15 @@ public class CustomFunction {
 
     // ignore enter First space on edittext
     public static InputFilter ignoreFirstWhiteSpace() {
-        return new InputFilter() {
-            public CharSequence filter(CharSequence source, int start, int end,
-                                       Spanned dest, int dstart, int dend) {
+        return (source, start, end, dest, dstart, dend) -> {
 
-                for (int i = start; i < end; i++) {
-                    if (Character.isWhitespace(source.charAt(i))) {
-                        if (dstart == 0)
-                            return "";
-                    }
+            for (int i = start; i < end; i++) {
+                if (Character.isWhitespace(source.charAt(i))) {
+                    if (dstart == 0)
+                        return "";
                 }
-                return null;
             }
+            return null;
         };
     }
 
@@ -1083,6 +1186,7 @@ public class CustomFunction {
             Log.i("Notif", "UpdateAllNewMessageStatusToUnreadStatus");
         } catch (Exception e) {
             Log.i("Notif", "error update status");
+            ACRA.getErrorReporter().handleSilentException(e);
             e.printStackTrace();
         }
     }
@@ -1182,6 +1286,33 @@ public class CustomFunction {
         }
     }
 
+    public static int getOsSdkInt() {
+        return Build.VERSION.SDK_INT;
+    }
+
+    public static String getOsVersionName() {
+        return Build.VERSION_CODES.class.getFields()[android.os.Build.VERSION.SDK_INT].getName();
+    }
+
+    public static String getOsVersionCode() {
+        return Build.VERSION.RELEASE;
+    }
+    public static String getDeviceSERIAL() {
+       return android.os.Build.SERIAL;
+    }
+
+    public static String getDeviceModel() {
+        return android.os.Build.MODEL;
+    }
+
+    public static String getDeviceName() {
+        return android.os.Build.MANUFACTURER;
+    }
+
+    public static String getDeviceBrand() {
+        return android.os.Build.BRAND;
+    }
+
     public static void resetApp(final Activity context, final ListenerQuestion mlistenerQuestion) {
         final FarzinPrefrences farzinPrefrences = new FarzinPrefrences().init();
         new DialogQuestion(context).setOnListener(new ListenerQuestion() {
@@ -1189,12 +1320,13 @@ public class CustomFunction {
             public void onSuccess() {
                 farzinPrefrences.clearCatch();
                 try {
-                    App.getFarzinDatabaseHelper().ClearAllTable();
-                    CustomFunction.deletDirectory(new File(App.DEFAULTPATH));
+                    CustomFunction.deletDirectory(new File(App.getDefaultPath()));
+                    App.getFarzinDatabaseHelper().clearAllTable();
                     mlistenerQuestion.onSuccess();
                 } catch (SQLException e) {
                     mlistenerQuestion.onCancel();
                     e.printStackTrace();
+                    ACRA.getErrorReporter().handleSilentException(e);
                 }
             }
 
@@ -1206,4 +1338,5 @@ public class CustomFunction {
 
 
     }
+
 }

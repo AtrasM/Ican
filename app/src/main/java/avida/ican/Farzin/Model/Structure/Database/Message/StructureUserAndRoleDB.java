@@ -52,6 +52,7 @@ public class StructureUserAndRoleDB implements Serializable {
 
     private boolean Selected;
 
+    private boolean isLnMoreVisible;
 
     public StructureUserAndRoleDB() {
         //empty
@@ -59,10 +60,13 @@ public class StructureUserAndRoleDB implements Serializable {
 
     public StructureUserAndRoleDB(int user_ID, String userName, String firstName, String lastName, String role_ParentID, String isDefForCardTable, String roleCode, String roleName, int role_ID, String organCode, String organizationRoleName, String organizationRole_ID, String departmentID, String mobile, String gender, String birthDate, String e_Mail, String nativeID) {
         User_ID = user_ID;
-        UserName = userName;
+        UserName = userName.toLowerCase();
         FirstName = firstName;
         LastName = lastName;
         Role_ParentID = role_ParentID;
+        if (isDefForCardTable == null || isDefForCardTable.isEmpty()) {
+            isDefForCardTable = "0";
+        }
         IsDefForCardTable = isDefForCardTable;
         RoleCode = roleCode;
         RoleName = roleName;
@@ -78,10 +82,13 @@ public class StructureUserAndRoleDB implements Serializable {
         NativeID = nativeID;
     }
 
-    public StructureUserAndRoleDB(String user_name, int user_id, int role_id) {
+    public StructureUserAndRoleDB(String user_name, int user_id, int role_id, String roleName, String firstName, String lastName) {
         User_ID = user_id;
-        UserName = user_name;
+        UserName = user_name.toLowerCase();
         Role_ID = role_id;
+        RoleName = roleName;
+        FirstName = firstName;
+        LastName = lastName;
     }
 
     public int getUser_ID() {
@@ -234,5 +241,13 @@ public class StructureUserAndRoleDB implements Serializable {
 
     public void setSelected(boolean selected) {
         Selected = selected;
+    }
+
+    public boolean isLnMoreVisible() {
+        return isLnMoreVisible;
+    }
+
+    public void setLnMoreVisible(boolean lnMoreVisible) {
+        isLnMoreVisible = lnMoreVisible;
     }
 }

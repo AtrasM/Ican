@@ -1,6 +1,5 @@
 package avida.ican.Farzin.Model;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
@@ -12,18 +11,25 @@ import java.sql.SQLException;
 
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentActionsDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentContentDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentSignatureDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableSendQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableDocumentTaeedQueueDB;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureOpticalPenQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakEntityDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
-import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Queue.StructureCreatDocumentQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Queue.StructureDocumentAttachFileQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.Queue.StructureMessageQueueDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
+import avida.ican.Farzin.Model.Structure.Database.Queue.StructureDocumentOperatorsQueueDB;
+import avida.ican.Farzin.Model.Structure.Database.StructureLogDB;
+import avida.ican.Farzin.Model.Structure.Database.StructureUserRoleDB;
+import avida.ican.Ican.App;
 
 /**
  * Created by AtrasVida on 2018-04-18 at 5:36 PM
@@ -32,8 +38,7 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB
 public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
 
     private static final String DATABASE_NAME = "Ican_Farzin.db";
-    private static final int DATABASE_VERSION = 1;
-
+    private static final int DATABASE_VERSION = 4;
     private Dao<StructureUserAndRoleDB, Integer> mGetUserAndRoleListDao = null;
     private Dao<StructureMessageDB, Integer> mMessageDao = null;
     private Dao<StructureMessageFileDB, Integer> mMessageFileDao = null;
@@ -43,14 +48,29 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureHameshDB, Integer> mHameshDao = null;
     private Dao<StructureCartableHistoryDB, Integer> mHistoryDao = null;
     private Dao<StructureZanjireMadrakFileDB, Integer> mZanjireMadrakFileDao = null;
-    private Dao<StructureCartableDocumentTaeedQueueDB, Integer> mCartableDocumentTaeedQueueDao = null;
-    private Dao<StructureOpticalPenQueueDB, Integer> mOpticalPenQueueDBDao = null;
     private Dao<StructureCartableDocumentActionsDB, Integer> mCartableDocumentActionsDao = null;
-    private Dao<StructureCartableSendQueueDB, Integer> mCartableSendQueueDao = null;
     private Dao<StructureCartableDocumentContentDB, Integer> mDocumentContentDao = null;
+    private Dao<StructureCartableDocumentSignatureDB, Integer> mCartableDocumentSignatureDao = null;
+    private Dao<StructureUserRoleDB, Integer> mStructureUserRoleDBDao = null;
+    private Dao<StructureDocumentOperatorsQueueDB, Integer> mStructureDocumentOperatorsQueueDBDao = null;
+    private Dao<StructureDocumentAttachFileQueueDB, Integer> mStructureDocumentAttachFileQueueDBDao = null;
+    private Dao<StructureCreatDocumentQueueDB, Integer> mStructureCreatDocumentQueueDBDao = null;
+    private Dao<StructureZanjireMadrakEntityDB, Integer> mStructureZanjireMadrakEntityDBDao = null;
+    private Dao<StructureLogDB, Integer> mStructureLogDBDao = null;
+    private Dao<StructureChatRoomListDB, Integer> mChatRoomListDBDao = null;
+    private Dao<StructureChatRoomMessageDB, Integer> mChatRoomMessageListDBDao = null;
 
-    public FarzinDatabaseHelper(Context context) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    private static FarzinDatabaseHelper mInstance = null;
+
+    public static FarzinDatabaseHelper getInstance() {
+        if (mInstance == null) {
+            mInstance = new FarzinDatabaseHelper();
+        }
+        return mInstance;
+    }
+
+    private FarzinDatabaseHelper() {
+        super(App.getAppContext(), DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -66,11 +86,17 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureHameshDB.class);
             TableUtils.createTable(connectionSource, StructureCartableHistoryDB.class);
             TableUtils.createTable(connectionSource, StructureZanjireMadrakFileDB.class);
-            TableUtils.createTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class);
-            TableUtils.createTable(connectionSource, StructureOpticalPenQueueDB.class);
             TableUtils.createTable(connectionSource, StructureCartableDocumentActionsDB.class);
-            TableUtils.createTable(connectionSource, StructureCartableSendQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureCartableDocumentSignatureDB.class);
             TableUtils.createTable(connectionSource, StructureCartableDocumentContentDB.class);
+            TableUtils.createTable(connectionSource, StructureUserRoleDB.class);
+            TableUtils.createTable(connectionSource, StructureDocumentOperatorsQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureDocumentAttachFileQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureCreatDocumentQueueDB.class);
+            TableUtils.createTable(connectionSource, StructureZanjireMadrakEntityDB.class);
+            TableUtils.createTable(connectionSource, StructureLogDB.class);
+            TableUtils.createTable(connectionSource, StructureChatRoomListDB.class);
+            TableUtils.createTable(connectionSource, StructureChatRoomMessageDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -80,7 +106,13 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
                           int oldVersion, int newVersion) {
         try {
-            TableUtils.dropTable(connectionSource, StructureUserAndRoleDB.class, true);
+            if (oldVersion < 3) {
+                Dao messageDao = getMessageDao();
+                Dao inboxDocumentDao = getCartableDocumentDao();
+                messageDao.executeRaw("ALTER TABLE 'message' ADD COLUMN isNew Boolean");
+                inboxDocumentDao.executeRaw("ALTER TABLE 'cartable_inbox_document' ADD COLUMN isNew Boolean");
+            }
+    /*      TableUtils.dropTable(connectionSource, StructureUserAndRoleDB.class, true);
             TableUtils.dropTable(connectionSource, StructureMessageDB.class, true);
             TableUtils.dropTable(connectionSource, StructureMessageFileDB.class, true);
             TableUtils.dropTable(connectionSource, StructureReceiverDB.class, true);
@@ -89,17 +121,19 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.dropTable(connectionSource, StructureHameshDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableHistoryDB.class, true);
             TableUtils.dropTable(connectionSource, StructureZanjireMadrakFileDB.class, true);
-            TableUtils.dropTable(connectionSource, StructureCartableDocumentTaeedQueueDB.class, true);
-            TableUtils.dropTable(connectionSource, StructureOpticalPenQueueDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableDocumentActionsDB.class, true);
-            TableUtils.dropTable(connectionSource, StructureCartableSendQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureCartableDocumentSignatureDB.class, true);
             TableUtils.dropTable(connectionSource, StructureCartableDocumentContentDB.class, true);
-            onCreate(db, connectionSource);
+            TableUtils.dropTable(connectionSource, StructureUserRoleDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureDocumentOperatorsQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureDocumentAttachFileQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureCreatDocumentQueueDB.class, true);
+            TableUtils.dropTable(connectionSource, StructureZanjireMadrakEntityDB.class, true);
+            onCreate(db, connectionSource);*/
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
 
     public Dao<StructureUserAndRoleDB, Integer> getUserAndRoleListDao() throws SQLException {
         if (mGetUserAndRoleListDao == null) {
@@ -173,40 +207,82 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mZanjireMadrakFileDao;
     }
 
-    public Dao<StructureCartableDocumentTaeedQueueDB, Integer> getCartableDocumentTaeedDao() throws SQLException {
-        if (mCartableDocumentTaeedQueueDao == null) {
-            mCartableDocumentTaeedQueueDao = getDao(StructureCartableDocumentTaeedQueueDB.class);
-        }
-        return mCartableDocumentTaeedQueueDao;
-    }
-
-    public Dao<StructureOpticalPenQueueDB, Integer> getOpticalPenDao() throws SQLException {
-        if (mOpticalPenQueueDBDao == null) {
-            mOpticalPenQueueDBDao = getDao(StructureOpticalPenQueueDB.class);
-        }
-        return mOpticalPenQueueDBDao;
-    }
-
     public Dao<StructureCartableDocumentActionsDB, Integer> getDocumentActionsDao() throws SQLException {
         if (mCartableDocumentActionsDao == null) {
             mCartableDocumentActionsDao = getDao(StructureCartableDocumentActionsDB.class);
         }
         return mCartableDocumentActionsDao;
+
     }
 
-    public Dao<StructureCartableSendQueueDB, Integer> getCartableSendQueueDao() throws SQLException {
-        if (mCartableSendQueueDao == null) {
-            mCartableSendQueueDao = getDao(StructureCartableSendQueueDB.class);
+    public Dao<StructureCartableDocumentSignatureDB, Integer> getCartableDocumentSignatureDao() throws SQLException {
+        if (mCartableDocumentSignatureDao == null) {
+            mCartableDocumentSignatureDao = getDao(StructureCartableDocumentSignatureDB.class);
         }
-        return mCartableSendQueueDao;
+        return mCartableDocumentSignatureDao;
     }
 
     public Dao<StructureCartableDocumentContentDB, Integer> getDocumentContentDao() throws SQLException {
         if (mDocumentContentDao == null) {
             mDocumentContentDao = getDao(StructureCartableDocumentContentDB.class);
         }
-
         return mDocumentContentDao;
+    }
+
+    public Dao<StructureUserRoleDB, Integer> getUserRolesDBDao() throws SQLException {
+        if (mStructureUserRoleDBDao == null) {
+            mStructureUserRoleDBDao = getDao(StructureUserRoleDB.class);
+        }
+        return mStructureUserRoleDBDao;
+    }
+
+    public Dao<StructureDocumentOperatorsQueueDB, Integer> getDocumentOperatorsQueueDBDao() throws SQLException {
+        if (mStructureDocumentOperatorsQueueDBDao == null) {
+            mStructureDocumentOperatorsQueueDBDao = getDao(StructureDocumentOperatorsQueueDB.class);
+        }
+        return mStructureDocumentOperatorsQueueDBDao;
+    }
+
+    public Dao<StructureDocumentAttachFileQueueDB, Integer> getDocumentAttachFileDao() throws SQLException {
+        if (mStructureDocumentAttachFileQueueDBDao == null) {
+            mStructureDocumentAttachFileQueueDBDao = getDao(StructureDocumentAttachFileQueueDB.class);
+        }
+        return mStructureDocumentAttachFileQueueDBDao;
+    }
+
+    public Dao<StructureCreatDocumentQueueDB, Integer> getCreatDocumentDao() throws SQLException {
+        if (mStructureCreatDocumentQueueDBDao == null) {
+            mStructureCreatDocumentQueueDBDao = getDao(StructureCreatDocumentQueueDB.class);
+        }
+        return mStructureCreatDocumentQueueDBDao;
+    }
+
+    public Dao<StructureZanjireMadrakEntityDB, Integer> getZanjireMadrakEntityDao() throws SQLException {
+        if (mStructureZanjireMadrakEntityDBDao == null) {
+            mStructureZanjireMadrakEntityDBDao = getDao(StructureZanjireMadrakEntityDB.class);
+        }
+        return mStructureZanjireMadrakEntityDBDao;
+    }
+
+    public Dao<StructureLogDB, Integer> getStructureLogDBDao() throws SQLException {
+        if (mStructureLogDBDao == null) {
+            mStructureLogDBDao = getDao(StructureLogDB.class);
+        }
+        return mStructureLogDBDao;
+    }
+
+    public Dao<StructureChatRoomListDB, Integer> getChatRoomListDBDao() throws SQLException {
+        if (mChatRoomListDBDao == null) {
+            mChatRoomListDBDao = getDao(StructureChatRoomListDB.class);
+        }
+        return mChatRoomListDBDao;
+    }
+
+    public Dao<StructureChatRoomMessageDB, Integer> getChatRoomMessageListDBDao() throws SQLException {
+        if (mChatRoomMessageListDBDao == null) {
+            mChatRoomMessageListDBDao = getDao(StructureChatRoomMessageDB.class);
+        }
+        return mChatRoomMessageListDBDao;
     }
 
     @Override
@@ -220,96 +296,139 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         mHameshDao = null;
         mHistoryDao = null;
         mZanjireMadrakFileDao = null;
-        mCartableDocumentTaeedQueueDao = null;
-        mOpticalPenQueueDBDao = null;
         mCartableDocumentActionsDao = null;
-        mCartableSendQueueDao = null;
+        mCartableDocumentSignatureDao = null;
         mDocumentContentDao = null;
+        mStructureUserRoleDBDao = null;
+        mStructureDocumentOperatorsQueueDBDao = null;
+        mStructureDocumentAttachFileQueueDBDao = null;
+        mStructureCreatDocumentQueueDBDao = null;
+        mStructureZanjireMadrakEntityDBDao = null;
+        mStructureLogDBDao = null;
+        mChatRoomListDBDao = null;
+        mChatRoomMessageListDBDao = null;
         super.close();
     }
 
-    public void ClearUserAndRole() throws SQLException {
+    public void clearUserAndRole() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureUserAndRoleDB.class);
 
     }
 
-    public void ClearMessage() throws SQLException {
+    public void clearMessage() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureMessageDB.class);
 
     }
 
-    public void ClearMessageFile() throws SQLException {
+    public void clearMessageFile() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureMessageFileDB.class);
 
     }
 
-    public void ClearReceiver() throws SQLException {
+    public void clearReceiver() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureReceiverDB.class);
 
     }
 
-    public void ClearMessageQueue() throws SQLException {
+    public void clearMessageQueue() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureMessageQueueDB.class);
 
     }
 
-    public void ClearCartableDocument() throws SQLException {
+    public void clearCartableDocument() throws SQLException {
 
         TableUtils.clearTable(getConnectionSource(), StructureInboxDocumentDB.class);
 
     }
 
-    public void ClearHamesh() throws SQLException {
+    public void clearHamesh() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureHameshDB.class);
     }
 
-    public void ClearCartableHistory() throws SQLException {
+    public void clearCartableHistory() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableHistoryDB.class);
     }
 
-    public void ClearZanjireMadrak() throws SQLException {
+    public void clearZanjireMadrak() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureZanjireMadrakFileDB.class);
     }
 
-    public void ClearCartableDocumentTaeedQueue() throws SQLException {
-        TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentTaeedQueueDB.class);
-    }
 
-    public void ClearOpticalPenQueue() throws SQLException {
-        TableUtils.clearTable(getConnectionSource(), StructureOpticalPenQueueDB.class);
-    }
-
-    public void ClearDocumentActions() throws SQLException {
+    public void clearDocumentActions() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentActionsDB.class);
     }
 
-    public void ClearCartableSendQueue() throws SQLException {
-        TableUtils.clearTable(getConnectionSource(), StructureCartableSendQueueDB.class);
-    }
 
-    public void ClearDocumentContent() throws SQLException {
+    public void clearDocumentContent() throws SQLException {
         TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentContentDB.class);
     }
 
-    public void ClearAllTable() throws SQLException {
-        ClearCartableDocumentTaeedQueue();
-        ClearOpticalPenQueue();
-        ClearDocumentActions();
-        ClearCartableSendQueue();
-        ClearDocumentContent();
-        ClearMessageQueue();
-        ClearCartableDocument();
-        ClearHamesh();
-        ClearCartableHistory();
-        ClearZanjireMadrak();
-        ClearUserAndRole();
-        ClearMessage();
-        ClearMessageFile();
-        ClearReceiver();
+    public void clearCartableDocumentActions() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentActionsDB.class);
+    }
+
+    public void clearCartableDocumentSignature() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCartableDocumentSignatureDB.class);
+    }
+
+    public void clearUserRoles() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureUserRoleDB.class);
+    }
+
+    public void clearDocumentOperatorsQueue() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureDocumentOperatorsQueueDB.class);
+    }
+
+    public void clearDocumentAttachFileQueue() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureDocumentAttachFileQueueDB.class);
+    }
+
+    public void clearCreatDocumentQueue() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureCreatDocumentQueueDB.class);
+    }
+
+    public void clearZanjireMadrakEntity() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureZanjireMadrakEntityDB.class);
+    }
+
+    public void clearStructureLogDB() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureLogDB.class);
+    }
+
+    public void clearChatRoomListDB() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureChatRoomListDB.class);
+    }
+
+    public void clearChatRoomMessageListDB() throws SQLException {
+        TableUtils.clearTable(getConnectionSource(), StructureChatRoomMessageDB.class);
+    }
+
+    public void clearAllTable() throws SQLException {
+        clearDocumentActions();
+        clearDocumentContent();
+        clearMessageQueue();
+        clearCartableDocument();
+        clearHamesh();
+        clearCartableHistory();
+        clearZanjireMadrak();
+        clearUserAndRole();
+        clearMessage();
+        clearMessageFile();
+        clearReceiver();
+        clearCartableDocumentActions();
+        clearCartableDocumentSignature();
+        clearUserRoles();
+        clearDocumentOperatorsQueue();
+        clearDocumentAttachFileQueue();
+        clearCreatDocumentQueue();
+        clearZanjireMadrakEntity();
+        clearStructureLogDB();
+        clearChatRoomListDB();
+        clearChatRoomMessageListDB();
     }
 }

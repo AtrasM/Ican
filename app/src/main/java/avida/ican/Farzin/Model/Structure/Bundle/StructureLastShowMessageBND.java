@@ -4,7 +4,7 @@ import java.io.Serializable;
 import avida.ican.Farzin.Model.Enum.Type;
 
 /**
- * Created by AtrasVida on 2019-05-25 at 16:06 PM
+ * Created by AtrasVida on 2019-05-25 at 4:06 PM
  */
 
 public class StructureLastShowMessageBND implements Serializable {

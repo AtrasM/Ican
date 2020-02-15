@@ -104,7 +104,17 @@ public class Animator {
         animation = AnimationUtils.loadAnimation(context, R.anim.slide_in_up_fast);
         viewToAnimate.startAnimation(animation);
     }
+    public void slideOutToUpFast(final View viewToAnimate) {
+        animation = AnimationUtils.loadAnimation(context, R.anim.slide_out_up_fast);
+        viewToAnimate.startAnimation(animation);
 
+        HANDLER.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                viewToAnimate.setVisibility(View.GONE);
+            }
+        }, 500);
+    }
 
     public void testAnim(View viewToAnimate) {
         viewToAnimate.setVisibility(View.VISIBLE);

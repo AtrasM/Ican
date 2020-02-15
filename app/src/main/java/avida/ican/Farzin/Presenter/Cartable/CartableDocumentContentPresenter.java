@@ -5,6 +5,7 @@ import android.os.Handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.Model.Enum.DocumentContentFileTypeEnum;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentListener;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentContentQuerySaveListener;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentContentBND;
@@ -24,7 +25,6 @@ public class CartableDocumentContentPresenter {
     private final int Etc;
     private final int Ec;
     private CartableDocumentContentListener cartableDocumentContentListener;
-    private Handler handler = new Handler();
     private GetCartableDocumentContentFromServerPresenter getCartableDocumentContentFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
     private static int counterFailed = 0;
@@ -64,10 +64,10 @@ public class CartableDocumentContentPresenter {
         getCartableDocumentContentFromServerPresenter.GetContent(Etc, Ec, cartableDocumentContentListener);
     }
 
-    public List<StructureCartableDocumentContentDB> GetFromLocal() {
+    public List<StructureCartableDocumentContentDB> GetFromLocal(DocumentContentFileTypeEnum fileTypeEnum) {
         List<StructureCartableDocumentContentDB> cartableDocumentContentDB = new ArrayList<>();
-        if (farzinCartableQuery.IsDocumentContentExist(Etc, Ec)) {
-            cartableDocumentContentDB = farzinCartableQuery.getDocumentContent(Etc, Ec);
+        if (farzinCartableQuery.IsDocumentContentExist(Etc, Ec,fileTypeEnum)) {
+            cartableDocumentContentDB = farzinCartableQuery.getDocumentContent(Etc, Ec,fileTypeEnum);
         }
 
         return cartableDocumentContentDB;
@@ -76,7 +76,7 @@ public class CartableDocumentContentPresenter {
 
     private void SaveData(final StringBuilder fileBinaryAsStringBuilder) {
 
-        StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(fileBinaryAsStringBuilder, Etc, Ec);
+        StructureCartableDocumentContentBND cartableDocumentContentBND = new StructureCartableDocumentContentBND(fileBinaryAsStringBuilder,".pdf", DocumentContentFileTypeEnum.CONTENT, Etc, Ec);
         farzinCartableQuery.saveCartableDocumentContent(cartableDocumentContentBND, new CartableDocumentContentQuerySaveListener() {
 
 
@@ -111,7 +111,7 @@ public class CartableDocumentContentPresenter {
         if (counterFailed > MaxTry) {
             listenerCartableDocumentContent.noData();
         } else {
-            handler.postDelayed(new Runnable() {
+            App.getHandlerMainThread().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     GetFromServer();

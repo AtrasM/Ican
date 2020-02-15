@@ -1,8 +1,6 @@
 package avida.ican.Farzin.Model.Structure.Response.Message;
 
 
-import android.util.Log;
-
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;

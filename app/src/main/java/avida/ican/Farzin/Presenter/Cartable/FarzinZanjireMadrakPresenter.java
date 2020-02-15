@@ -2,41 +2,34 @@ package avida.ican.Farzin.Presenter.Cartable;
 
 import android.os.Handler;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryListListener;
-import avida.ican.Farzin.Model.Interface.Cartable.CartableHistoryQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakListener;
 import avida.ican.Farzin.Model.Interface.Cartable.ZanjireMadrakQuerySaveListener;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureCartableHistoryDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureGraphRES;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureHistoryListRES;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureZanjireMadrakRES;
-import avida.ican.Farzin.View.Interface.Cartable.ListenerGraf;
 import avida.ican.Farzin.View.Interface.Cartable.ListenerZanjireMadrak;
 import avida.ican.Ican.App;
-import avida.ican.Ican.Model.XmlToObject;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.R;
 
 /**
  * Created by AtrasVida on 2018-10-15 at 3:40 PM
  */
 
 public class FarzinZanjireMadrakPresenter {
-    private final long DELAY = TimeValue.SecondsInMilli() * 15;
+    private final long FAEILDDELAY = TimeValue.SecondsInMilli() * 5;
     private final ListenerZanjireMadrak listenerZanjireMadrak;
     private final int Etc;
     private final int Ec;
     private ZanjireMadrakListener zanjireMadrakListener;
-    private Handler handler = new Handler();
     private GetZanjireMadrakFromServerPresenter getZanjireMadrakFromServerPresenter;
     private FarzinCartableQuery farzinCartableQuery;
-    private static int counterFailed=0;
-    private int MaxTry=2;
+    private static int counterFailed = 0;
+    private int MaxTry = 2;
 
     public FarzinZanjireMadrakPresenter(int Etc, int Ec, ListenerZanjireMadrak listenerZanjireMadrak) {
         this.Etc = Etc;
@@ -51,9 +44,9 @@ public class FarzinZanjireMadrakPresenter {
         zanjireMadrakListener = new ZanjireMadrakListener() {
             @Override
             public void onSuccess(StructureZanjireMadrakRES structureZanjireMadrakRES) {
-                if (structureZanjireMadrakRES.getPeyro().size() == 0 && structureZanjireMadrakRES.getDarErtebat().size() == 0 && structureZanjireMadrakRES.getAtf().size() == 0 && structureZanjireMadrakRES.getPeyvast().size() == 0&& structureZanjireMadrakRES.getIndicatorScanedFile().size() == 0) {
+                if (structureZanjireMadrakRES.getPeyro().size() == 0 && structureZanjireMadrakRES.getDarErtebat().size() == 0 && structureZanjireMadrakRES.getAtf().size() == 0 && structureZanjireMadrakRES.getPeyvast().size() == 0 && structureZanjireMadrakRES.getIndicatorScanedFile().size() == 0) {
                     listenerZanjireMadrak.noData();
-                    counterFailed=0;
+                    counterFailed = 0;
                 } else {
                     SaveData(structureZanjireMadrakRES);
                 }
@@ -61,27 +54,22 @@ public class FarzinZanjireMadrakPresenter {
 
             @Override
             public void onFailed(String message) {
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onFailed("");
-                        }
-                    },300);
-                } else {
-                    reGetData();
+                if (message.contains(Resorse.getString(R.string.error_permision))) {
+                    listenerZanjireMadrak.noData();
+                }else{
+                    if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+                        listenerZanjireMadrak.noData();
+                    } else {
+                        reGetData();
+                    }
                 }
+
             }
 
             @Override
             public void onCancel() {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    },300);
+                    listenerZanjireMadrak.noData();
                 } else {
                     reGetData();
                 }
@@ -89,11 +77,11 @@ public class FarzinZanjireMadrakPresenter {
         };
     }
 
-    public void GetZanjireMadrakFromServer() {
+    public void getZanjireMadrakFromServer() {
         getZanjireMadrakFromServerPresenter.GetZanjireMadrakList(Etc, Ec, zanjireMadrakListener);
     }
 
-    public List<StructureZanjireMadrakFileDB> GetZanjireMadrakList(ZanjireMadrakFileTypeEnum zanjireMadrakFileTypeEnum) {
+    public List<StructureZanjireMadrakFileDB> getZanjireMadrakList(ZanjireMadrakFileTypeEnum zanjireMadrakFileTypeEnum) {
         return farzinCartableQuery.getZanjireMadrak(Etc, Ec, zanjireMadrakFileTypeEnum);
     }
 
@@ -104,60 +92,39 @@ public class FarzinZanjireMadrakPresenter {
             public void onSuccess() {
 
                 listenerZanjireMadrak.newData();
-                counterFailed=0;
+                counterFailed = 0;
             }
 
             @Override
             public void onExisting() {
                 listenerZanjireMadrak.noData();
-                counterFailed=0;
+                counterFailed = 0;
             }
 
             @Override
             public void onFailed(String message) {
                 if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onFailed("");
-                        }
-                    },300);
+                    listenerZanjireMadrak.noData();
                 } else {
                     reGetData();
                 }
-
             }
 
             @Override
             public void onCancel() {
-                if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            onCancel();
-                        }
-                    },300);
-                } else {
-                    reGetData();
-                }
+                listenerZanjireMadrak.noData();
             }
         });
-
     }
 
 
     private void reGetData() {
         counterFailed++;
-        if(counterFailed>=MaxTry){
+        if (counterFailed >= MaxTry) {
             listenerZanjireMadrak.noData();
-            counterFailed=0;
-        }else{
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    GetZanjireMadrakFromServer();
-                }
-            }, DELAY);
+            counterFailed = 0;
+        } else {
+            App.getHandlerMainThread().postDelayed(() -> getZanjireMadrakFromServer(), FAEILDDELAY);
         }
 
     }

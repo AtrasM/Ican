@@ -18,6 +18,20 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:id="@+id/txt_info"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_maximum"
+                android:layout_marginTop="@dimen/margin_maximum"
+                android:layout_marginRight="@dimen/margin_maximum"
+                android:background="@drawable/border"
+                android:gravity="center"
+                android:padding="@dimen/padding"
+                android:text="@string/msg_limit_count_of_get_from_server_record"
+                android:textColor="@color/color_Info" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -67,6 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="داده"
+                        android:textAppearance="@style/TextAppearance.FontPathIranSans"
                         android:textColor="@color/color_Black" />
                 </LinearLayout>
 
@@ -97,6 +112,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="داده"
+                        android:textAppearance="@style/TextAppearance.FontPathIranSans"
                         android:textColor="@color/color_Black" />
                 </LinearLayout>
 
@@ -107,20 +123,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/color_White"
-                android:visibility="gone"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_subject"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:id="@+id/edt_subject"
-                    android:hint="@string/hint_subject"
+                    android:hint="@string/hint_subject2"
                     android:padding="@dimen/padding_maximum" />
 
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edt_content"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:id="@+id/edt_content"
                     android:hint="@string/hint_content_massage"
                     android:padding="@dimen/padding_maximum" />
             </LinearLayout>
@@ -139,13 +155,13 @@
 
                 <LinearLayout
                     android:id="@+id/ln_message_type"
-                    android:visibility="gone"
                     style="@style/custom_selected_style"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_margin="@dimen/margin"
                     android:gravity="center|right"
                     android:orientation="horizontal"
+                    android:visibility="gone"
                     tools:ignore="RtlHardcoded">
 
                     <TextView

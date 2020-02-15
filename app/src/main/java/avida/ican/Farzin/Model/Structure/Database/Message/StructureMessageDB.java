@@ -11,6 +11,7 @@ import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-06-19 at 1:24 PM
@@ -26,34 +27,45 @@ public class StructureMessageDB implements Serializable {
     private int sender_user_id;
     @DatabaseField()
     private int sender_role_id;
+    @DatabaseField
+    private String sender_role_name;
+    @DatabaseField
+    private String sender_first_name;
+    @DatabaseField
+    private String sender_last_name;
     @DatabaseField()
     private String subject;
     @DatabaseField()
     private String content;
     @DatabaseField()
-    private Date sent_date;
+    private long sent_date;
     @DatabaseField()
     private boolean isFilesDownloaded;
     @DatabaseField()
-    private int AttachmentCount=0;
+    private int AttachmentCount;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<StructureMessageFileDB> message_files;
     @ForeignCollectionField(eager = true)
     private ForeignCollection<StructureReceiverDB> receivers;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
+    @DatabaseField()
+    boolean isNew;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Type type;
 
     public StructureMessageDB() {
     }
 
-    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String subject, String content, Date sent_date, Status status, Type type,int AttachmentCount,boolean isFilesDownloaded) {
+    public StructureMessageDB(int main_id, int sender_user_id, int sender_role_id, String sender_role_name, String sender_first_name, String sender_last_name, String subject, String content, Date sent_date, Status status, Type type, int AttachmentCount, boolean isFilesDownloaded) {
         this.sender_user_id = sender_user_id;
         this.sender_role_id = sender_role_id;
+        this.sender_role_name = sender_role_name;
+        this.sender_first_name = sender_first_name;
+        this.sender_last_name = sender_last_name;
         this.subject = subject;
         this.content = content;
-        this.sent_date = sent_date;
+        this.sent_date = sent_date.getTime();
         this.status = status;
         this.type = type;
         this.isFilesDownloaded = isFilesDownloaded;
@@ -98,7 +110,7 @@ public class StructureMessageDB implements Serializable {
     }
 
     public Date getSent_date() {
-        return sent_date;
+        return CustomFunction.convertLongTimeToDateStandartFormat(sent_date);
     }
 
     public int getId() {
@@ -131,5 +143,37 @@ public class StructureMessageDB implements Serializable {
 
     public void setAttachmentCount(int attachmentCount) {
         AttachmentCount = attachmentCount;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
+    public String getSender_role_name() {
+        return sender_role_name;
+    }
+
+    public void setSender_role_name(String sender_role_name) {
+        this.sender_role_name = sender_role_name;
+    }
+
+    public String getSender_first_name() {
+        return sender_first_name;
+    }
+
+    public void setSender_first_name(String sender_first_name) {
+        this.sender_first_name = sender_first_name;
+    }
+
+    public String getSender_last_name() {
+        return sender_last_name;
+    }
+
+    public void setSender_last_name(String sender_last_name) {
+        this.sender_last_name = sender_last_name;
     }
 }

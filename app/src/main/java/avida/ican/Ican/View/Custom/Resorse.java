@@ -3,9 +3,12 @@ package avida.ican.Ican.View.Custom;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import org.acra.ACRA;
 
 import avida.ican.Ican.App;
 
@@ -19,17 +22,19 @@ public class Resorse {
     }
 
     public static Drawable getDrawable(int drawable) {
-        return ContextCompat.getDrawable(App.getAppContext(), drawable);
+        Context context = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { //>= API 21
+            context = App.getAppContext();
+        } else {
+            context = App.CurentActivity;
+        }
+        return ContextCompat.getDrawable(context, drawable);
     }
 
     @NonNull
     public static String getString(int resorseString) {
-      /*  Context context = App.CurentActivity;
-        if (App.CurentActivity == null) {
 
-            context = App.getServiceContext();
-        }*/
-            return App.getAppContext().getResources().getString(resorseString);
+        return App.getAppContext().getResources().getString(resorseString);
     }
 
     @NonNull

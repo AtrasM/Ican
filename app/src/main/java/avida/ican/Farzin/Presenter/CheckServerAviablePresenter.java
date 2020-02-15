@@ -2,11 +2,8 @@ package avida.ican.Farzin.Presenter;
 
 import org.ksoap2.serialization.SoapObject;
 
-import avida.ican.Farzin.Model.Interface.Cartable.OpticalPenListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
-import avida.ican.Farzin.Model.Structure.Request.StructureOpticalPenREQ;
-import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureAddHameshOpticalPenRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureHelloRES;
 import avida.ican.Ican.App;
 import avida.ican.Ican.Model.ChangeXml;
@@ -14,7 +11,6 @@ import avida.ican.Ican.Model.Interface.WebserviceResponseListener;
 import avida.ican.Ican.Model.Structure.Output.WebServiceResponse;
 import avida.ican.Ican.Model.WebService;
 import avida.ican.Ican.Model.XmlToObject;
-import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
@@ -80,10 +76,8 @@ public class CheckServerAviablePresenter {
 
     private SoapObject getSoapObject() {
         SoapObject soapObject = new SoapObject(NameSpace, MethodName);
-
         return soapObject;
     }
-
 
     private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
@@ -107,7 +101,6 @@ public class CheckServerAviablePresenter {
 
     }
 
-
     private class processData {
         processData(WebServiceResponse webServiceResponse, DataProcessListener dataProcessListener) {
 
@@ -130,6 +123,7 @@ public class CheckServerAviablePresenter {
                 dataProcessListener.onFailed();
                 e.printStackTrace();
             }
+
         }
 
     }

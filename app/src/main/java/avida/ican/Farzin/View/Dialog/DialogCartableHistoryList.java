@@ -1,10 +1,12 @@
 package avida.ican.Farzin.View.Dialog;
 
 import android.app.Activity;
+
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
+
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,7 +64,7 @@ public class DialogCartableHistoryList {
 
     public void Creat(FragmentManager fragmentManager) {
         this.mfragmentManager = fragmentManager;
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override
@@ -102,6 +104,7 @@ public class DialogCartableHistoryList {
         adapter.addFrag(fragmentCartableHistoryList, R.string.title_gardesh_madrak);
         viewHolder.viewPager.setAdapter(adapter);
         viewHolder.smartTabLayout.setViewPager(viewHolder.viewPager);
+        fragmentCartableHistoryList.setDialog(this);
     }
 
     public boolean isShowing() {

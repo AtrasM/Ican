@@ -4,13 +4,12 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-import org.simpleframework.xml.Root;
-
 import java.io.Serializable;
 import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
+import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
  * Created by AtrasVida on 2018-09-16 at 4:40 PM
@@ -27,7 +26,7 @@ public class StructureInboxDocumentDB implements Serializable {
     @DatabaseField()
     private String PriorityEntity_Name;
     @DatabaseField()
-    private  int PrioritySend_ID;
+    private int PrioritySend_ID;
     @DatabaseField()
     private int EntityCode;
     @DatabaseField()
@@ -35,7 +34,7 @@ public class StructureInboxDocumentDB implements Serializable {
     @DatabaseField()
     private String Title;
     @DatabaseField()
-    private  boolean HaveDependency;
+    private boolean HaveDependency;
     @DatabaseField()
     private int SecurityLevelCode;
     @DatabaseField()
@@ -43,43 +42,51 @@ public class StructureInboxDocumentDB implements Serializable {
     @DatabaseField()
     private String EntityTypeName;
     @DatabaseField()
-    private  int ActionCode;
+    private int ActionCode;
     @DatabaseField()
-    private  String ActionName;
+    private String ActionName;
     @DatabaseField()
-    private  String SenderName;
+    private String SenderName;
     @DatabaseField()
     private String SenderFirstName;
     @DatabaseField()
-    private  String SenderLastName;
+    private String SenderLastName;
     @DatabaseField()
     private String SenderRoleName;
     @DatabaseField()
     private String EntityNumber;
     @DatabaseField()
-    private Date ImportDate;
+    private String ImportEntityNumber;
     @DatabaseField()
-    private  Date ExportDate;
+    private long ImportDate;
     @DatabaseField()
-    private Date ReceiveDate;
+    private long ExportDate;
     @DatabaseField()
-    private Date ExpireDate;
+    private long ReceiveDate;
+    @DatabaseField()
+    private long ExpireDate;
     @DatabaseField()
     private String UserDescription;
     @DatabaseField()
     private String PrivateHameshContent;
     @DatabaseField()
-    private  String PrivateHameshTitle;
+    private String PrivateHameshTitle;
     @DatabaseField()
-    private  boolean Pin;
+    private boolean Pin;
     @DatabaseField()
     private boolean IsRead;
     @DatabaseField()
-    private Date LastChangeViewStatesDate;
+    private long LastChangeViewStatesDate;
     @DatabaseField()
-    private  boolean isTaeed;
+    private boolean isConfirm;
     @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private Status status;
+    @DatabaseField()
+    boolean isNew;
+    @DatabaseField()
+    private int UserRoleID;
+    @DatabaseField()
+    boolean bInWorkFlow;
 
     //temp filed for control adapter item view
     private boolean isLnMoreVisible;
@@ -87,8 +94,7 @@ public class StructureInboxDocumentDB implements Serializable {
     public StructureInboxDocumentDB() {
     }
 
-
-    public StructureInboxDocumentDB(StructureInboxDocumentRES structureInboxDocumentRES, Date importDate, Date exportDate, Date receiveDate, Date expireDate, Date LastChangeViewStatesDate, Status status, boolean isPin) {
+    public StructureInboxDocumentDB(StructureInboxDocumentRES structureInboxDocumentRES, Date importDate, Date exportDate, Date receiveDate, Date expireDate, Date LastChangeViewStatesDate, Status status, int userRoleID, boolean isPin) {
         HaveDependency = structureInboxDocumentRES.isHaveDependency();
         SecurityLevelCode = structureInboxDocumentRES.getSecurityLevelCode();
         SecurityLevelName = structureInboxDocumentRES.getSecurityLevelName();
@@ -100,6 +106,7 @@ public class StructureInboxDocumentDB implements Serializable {
         SenderLastName = structureInboxDocumentRES.getSenderLastName();
         SenderRoleName = structureInboxDocumentRES.getSenderRoleName();
         EntityNumber = structureInboxDocumentRES.getEntityNumber();
+        ImportEntityNumber = structureInboxDocumentRES.getImportEntityNumber();
         ReceiverCode = structureInboxDocumentRES.getReceiverCode();
         SendCode = structureInboxDocumentRES.getSendCode();
         EntityTypeCode = structureInboxDocumentRES.getEntityTypeCode();
@@ -108,6 +115,12 @@ public class StructureInboxDocumentDB implements Serializable {
         PriorityEntity_Name = structureInboxDocumentRES.getPriorityEntity_Name();
         PrioritySend_ID = structureInboxDocumentRES.getPrioritySend_ID();
         IsRead = structureInboxDocumentRES.isRead();
+        if (structureInboxDocumentRES.getPrivateHameshContent() != null) {
+            UserDescription = structureInboxDocumentRES.getUserDescription();
+        } else {
+            UserDescription = "";
+        }
+
         if (structureInboxDocumentRES.getPrivateHameshContent() != null) {
             this.PrivateHameshContent = structureInboxDocumentRES.getPrivateHameshContent();
         } else {
@@ -118,15 +131,17 @@ public class StructureInboxDocumentDB implements Serializable {
         } else {
             this.PrivateHameshTitle = "";
         }
-        ImportDate = importDate;
-        ExportDate = exportDate;
-        ReceiveDate = receiveDate;
-        ExpireDate = expireDate;
-        this.LastChangeViewStatesDate = LastChangeViewStatesDate;
-        UserDescription = structureInboxDocumentRES.getUserDescription();
+        ImportDate = importDate.getTime();
+        ExportDate = exportDate.getTime();
+        ReceiveDate = receiveDate.getTime();
+        ExpireDate = expireDate.getTime();
+        this.LastChangeViewStatesDate = LastChangeViewStatesDate.getTime();
+
         this.status = status;
+        UserRoleID = userRoleID;
         this.Pin = isPin;
-        isTaeed = false;
+        isConfirm = false;
+        bInWorkFlow = structureInboxDocumentRES.isbInWorkFlow();
     }
 
     public String getFIELD_NAME_ID() {
@@ -214,35 +229,35 @@ public class StructureInboxDocumentDB implements Serializable {
     }
 
     public Date getImportDate() {
-        return ImportDate;
+        return CustomFunction.convertLongTimeToDateStandartFormat(ImportDate);
     }
 
     public void setImportDate(Date importDate) {
-        ImportDate = importDate;
+        ImportDate = importDate.getTime();
     }
 
     public Date getExportDate() {
-        return ExportDate;
+        return CustomFunction.convertLongTimeToDateStandartFormat(ExportDate);
     }
 
     public void setExportDate(Date exportDate) {
-        ExportDate = exportDate;
+        ExportDate = exportDate.getTime();
     }
 
     public Date getReceiveDate() {
-        return ReceiveDate;
+        return CustomFunction.convertLongTimeToDateStandartFormat(ReceiveDate);
     }
 
     public void setReceiveDate(Date receiveDate) {
-        ReceiveDate = receiveDate;
+        ReceiveDate = receiveDate.getTime();
     }
 
     public Date getExpireDate() {
-        return ExpireDate;
+        return CustomFunction.convertLongTimeToDateStandartFormat(ExpireDate);
     }
 
     public void setExpireDate(Date expireDate) {
-        ExpireDate = expireDate;
+        ExpireDate = expireDate.getTime();
     }
 
     public String getUserDescription() {
@@ -350,19 +365,19 @@ public class StructureInboxDocumentDB implements Serializable {
     }
 
     public Date getLastChangeViewStatesDate() {
-        return LastChangeViewStatesDate;
+        return CustomFunction.convertLongTimeToDateStandartFormat(LastChangeViewStatesDate);
     }
 
     public void setLastChangeViewStatesDate(Date lastChangeViewStatesDate) {
-        LastChangeViewStatesDate = lastChangeViewStatesDate;
+        LastChangeViewStatesDate = lastChangeViewStatesDate.getTime();
     }
 
-    public boolean isTaeed() {
-        return isTaeed;
+    public boolean isConfirm() {
+        return isConfirm;
     }
 
-    public void setTaeed(boolean taeed) {
-        isTaeed = taeed;
+    public void setConfirm(boolean confirm) {
+        isConfirm = confirm;
     }
 
     public String getSenderFirstName() {
@@ -387,5 +402,37 @@ public class StructureInboxDocumentDB implements Serializable {
 
     public void setLnMoreVisible(boolean lnMoreVisible) {
         isLnMoreVisible = lnMoreVisible;
+    }
+
+    public String getImportEntityNumber() {
+        return ImportEntityNumber;
+    }
+
+    public void setImportEntityNumber(String importEntityNumber) {
+        ImportEntityNumber = importEntityNumber;
+    }
+
+    public boolean isNew() {
+        return isNew;
+    }
+
+    public void setNew(boolean aNew) {
+        isNew = aNew;
+    }
+
+    public int getUserRoleID() {
+        return UserRoleID;
+    }
+
+    public void setUserRoleID(int userRoleID) {
+        UserRoleID = userRoleID;
+    }
+
+    public boolean isbInWorkFlow() {
+        return bInWorkFlow;
+    }
+
+    public void setbInWorkFlow(boolean bInWorkFlow) {
+        this.bInWorkFlow = bInWorkFlow;
     }
 }

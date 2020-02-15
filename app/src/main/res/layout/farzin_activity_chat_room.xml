@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+  <include layout="@layout/farzin_custome_toolbar" />
+
+  <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ln_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:layout_marginTop="@dimen/margin_minimum"
+          android:orientation="vertical">
+
+        <include
+            layout="@layout/layout_tab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="1dp" />
+
+
+        <com.booking.rtlviewpager.RtlViewPager
+            android:id="@+id/mview_pager"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+      </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <include layout="@layout/layout_loading" />
+  </FrameLayout>
+
+</LinearLayout>

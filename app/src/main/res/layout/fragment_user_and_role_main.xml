@@ -1,25 +1,80 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edt_search"
-        style="@style/custom_normal_edittext_style"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin"
-        android:padding="@dimen/padding"
-        android:maxLines="1"
-        android:lines="1"
-        android:drawableLeft="@drawable/ic_search"
-        android:hint="@string/search_hint"
-        tools:ignore="RtlHardcoded" />
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="@dimen/margin"
+            android:background="@drawable/border_search"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="@dimen/padding_minimum">
+
+            <ImageView
+                android:id="@+id/img_delete_search"
+                style="@style/custom_selected_style"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_margin="@dimen/margin"
+                app:srcCompat="@drawable/ic_circle_delete" />
+
+            <EditText
+                android:id="@+id/edt_search"
+                style="@style/custom_normal_edittext_style"
+                android:layout_width="0dp"
+                android:layout_height="35dp"
+                android:layout_weight="1"
+                android:background="@color/color_White"
+                android:hint="@string/search_hint"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:lines="1"
+                android:maxLines="1"
+                android:layout_marginTop="@dimen/margin_minimum"
+                android:layout_marginBottom="@dimen/margin_minimum"
+                android:layout_marginRight="@dimen/margin"
+                android:layout_marginLeft="@dimen/margin"
+                android:singleLine="true"
+                tools:ignore="RtlHardcoded" />
+
+            <ImageView
+                android:id="@+id/img_search"
+                style="@style/custom_selected_style"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_margin="@dimen/margin"
+                app:srcCompat="@drawable/ic_search" />
+        </LinearLayout>
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ln_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@color/dialog_background"
+            android:gravity="center"
+            android:visibility="gone">
+
+            <include
+                layout="@layout/item_loading"
+                android:layout_width="24dp"
+                android:layout_height="24dp" />
+
+        </LinearLayout>
+    </FrameLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv_main"
-        style="@style/custom_item_rcv_style"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>

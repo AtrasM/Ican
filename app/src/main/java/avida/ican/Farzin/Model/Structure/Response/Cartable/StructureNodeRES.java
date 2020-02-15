@@ -17,6 +17,8 @@ public class StructureNodeRES {
     String ReceiveDate;
     @SerializedName("@ResponseDate")
     String ResponseDate;
+    @SerializedName("@ReceiveDescription")
+    String ReceiveDescription;
     @SerializedName("@ReceiveDateGeorgian")
     String ReceiveDateGeorgian;
     @SerializedName("@ResponseDateGeorgian")
@@ -38,6 +40,16 @@ public class StructureNodeRES {
     @SerializedName("@LastName")
     String LastName;
     StructurePrivateHamesh PrivateHamesh = new StructurePrivateHamesh();
+
+    public boolean isLnMoreVisible() {
+        return isLnMoreVisible;
+    }
+
+    public void setLnMoreVisible(boolean lnMoreVisible) {
+        isLnMoreVisible = lnMoreVisible;
+    }
+
+    private boolean isLnMoreVisible;
 
     public String getReceiveAction() {
         return ReceiveAction;
@@ -158,6 +170,14 @@ public class StructureNodeRES {
 
     public void setResponseDateGeorgian(String responseDateGeorgian) {
         ResponseDateGeorgian = responseDateGeorgian;
+    }
+
+    public String getReceiveDescription() {
+        return ReceiveDescription;
+    }
+
+    public void setReceiveDescription(String receiveDescription) {
+        ReceiveDescription = receiveDescription;
     }
 
     //__________**************_StructurePrivateHamesh_***************_________________

@@ -13,9 +13,6 @@ import android.widget.LinearLayout;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -59,20 +56,20 @@ public class DialogImageViewer {
     }
 
     public void show(byte[] byteArray) {
+        Creat();
         if (dialogImageViewer != null) {
             Bitmap bmp = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
             setImage(bmp);
             dialogImageViewer.show();
         }
-
     }
 
     public void show(Bitmap bmp) {
+        Creat();
         if (dialogImageViewer != null) {
             setImage(bmp);
             dialogImageViewer.show();
         }
-
     }
 
     private void setImage(Bitmap bmp) {
@@ -84,7 +81,7 @@ public class DialogImageViewer {
         height = new CustomFunction(context).getWidthOrHeightColums(false);
         width = (int) (new CustomFunction().dpToPx(width) / 1.2);
         height = (int) (new CustomFunction().dpToPx(height) / 1.2);
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
         context.runOnUiThread(new Runnable() {
             @Override

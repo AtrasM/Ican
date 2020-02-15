@@ -57,51 +57,37 @@ public class DialogQuestion {
         return this;
     }
 
-
     public void dismiss() {
         dialogQuestion.dismiss();
         App.canBack = true;
     }
 
     public void Show() {
-
-        BaseActivity.closeKeboard();
+        BaseActivity.closeKeyboard();
         App.canBack = false;
-        context.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        context.runOnUiThread(() -> {
+            dialogQuestion = DialogPlus.newDialog(context)
+                    .setContentHolder(new ViewHolder(R.layout.dialog_question))
+                    .setGravity(Gravity.CENTER)
+                    .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                    .setCancelable(false)
+                    .setContentBackgroundResource(R.drawable.border_dialog)
+                    .create();
+            viewHolder = new Binding(dialogQuestion.getHolderView());
 
-                dialogQuestion = DialogPlus.newDialog(context)
-                        .setContentHolder(new ViewHolder(R.layout.dialog_question))
-                        .setGravity(Gravity.CENTER)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setCancelable(false)
-                        .setContentBackgroundResource(R.drawable.border_dialog)
-                        .create();
-                viewHolder = new Binding(dialogQuestion.getHolderView());
+            viewHolder.txtTitleDialogQuestion.setText(mTitle);
+            viewHolder.btnDialogQuestionOk.setOnClickListener(view -> {
+                if (listenerQuestion != null) listenerQuestion.onSuccess();
+                dismiss();
 
-                viewHolder.txtTitleDialogQuestion.setText(mTitle);
-                viewHolder.btnDialogQuestionOk.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listenerQuestion != null) listenerQuestion.onSuccess();
-                        dismiss();
-
-                    }
-                });
-                viewHolder.btnDialogQuestionCancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if (listenerQuestion != null) listenerQuestion.onCancel();
-                        dismiss();
-                    }
-                });
-                dialogQuestion.show();
-
-            }
+            });
+            viewHolder.btnDialogQuestionCancel.setOnClickListener(view -> {
+                if (listenerQuestion != null) listenerQuestion.onCancel();
+                dismiss();
+            });
+            dialogQuestion.show();
 
         });
-
 
     }
 

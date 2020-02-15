@@ -3,6 +3,7 @@ package avida.ican.Farzin.Presenter.Message;
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
+import org.acra.ACRA;
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
@@ -75,7 +76,7 @@ public class GetMessageAttachmentFromServerPresenter {
             @Override
             protected Void doInBackground(Void... voids) {
                 try {
-                    if (data.contains(App.RESPONSEPATH)) {
+                    if (data.contains(App.getResponsePath())) {
                         MessageAttachmentSaxHandler messageAttachmentSaxHandler = xmlToObject.parseXmlWithSax(data, new MessageAttachmentSaxHandler());
                         structureGetMessageAttachmentRES[0] = messageAttachmentSaxHandler.getObject();
                         sleep();
@@ -84,8 +85,8 @@ public class GetMessageAttachmentFromServerPresenter {
                         structureGetMessageAttachmentRES[0] = xmlToObject.DeserializationSimpleXml(xml, StructureGetMessageAttachmentRES.class);
                     }
                 } catch (Exception e) {
-
                     e.printStackTrace();
+                    ACRA.getErrorReporter().handleSilentException(e);
                 }
 
                 return null;

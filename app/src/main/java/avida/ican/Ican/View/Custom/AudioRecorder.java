@@ -43,7 +43,7 @@ public class AudioRecorder extends AppCompatActivity {
 
     private void initDefultValue() {
         color = Resorse.getColor(R.color.colorPrimaryDark);
-        filePath = App.DEFAULTPATH + "/recorded_audio.wav";
+        filePath = App.getDefaultPath() + "/recorded_audio.wav";
         autoStart = false;
         keepDisplayOn = false;
     }

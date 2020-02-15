@@ -1,10 +1,12 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.util.Log;
+
 import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 
-import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionsListListener;
+import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentActionListListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureCartableDocumentActionRES;
@@ -34,7 +36,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
         farzinPrefrences = getFarzinPrefrences();
     }
 
-    public void CallRequest(int ETC, final CartableDocumentActionsListListener listener) {
+    public void CallRequest(int ETC, final CartableDocumentActionListListener listener) {
 
         CallApi(MethodName, EndPoint, getSoapObject(ETC), new DataProcessListener() {
             @Override
@@ -54,7 +56,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
         });
     }
 
-    private void initStructure(String xml, CartableDocumentActionsListListener listener) {
+    private void initStructure(String xml, CartableDocumentActionListListener listener) {
         StructureCartableDocumentActionsRES structureCartableDocumentActionsRES = xmlToObject.DeserializationGsonXml(xml, StructureCartableDocumentActionsRES.class);
         if (structureCartableDocumentActionsRES.getStrErrorMsg() == null || structureCartableDocumentActionsRES.getStrErrorMsg().isEmpty()) {
             ArrayList<StructureCartableDocumentActionRES> structureCartableDocumentActionRES = new ArrayList<>(structureCartableDocumentActionsRES.getGetListOfActionsResult().getRows().getAction());
@@ -63,7 +65,6 @@ public class GetListOfDocumentActionsFromServerPresenter {
             } else {
                 listener.onFailed("" + structureCartableDocumentActionsRES.getStrErrorMsg());
             }
-
         } else {
             listener.onFailed("" + structureCartableDocumentActionsRES.getStrErrorMsg());
         }
@@ -73,6 +74,7 @@ public class GetListOfDocumentActionsFromServerPresenter {
         SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         //SoapObject Filter = new SoapObject(NameSpace, "filter");
         soapObject.addProperty("ETC", ETC);
+        Log.i("DocumentAction", "DocumentAction ETC= " + ETC);
         return soapObject;
     }
 

@@ -74,7 +74,7 @@ public class GetCartableHameshFromServerPresenter {
         task = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                if (data.contains(App.RESPONSEPATH)) {
+                if (data.contains(App.getResponsePath())) {
                     HameshSaxHandler hameshSaxHandler = xmlToObject.parseXmlWithSax(data, new HameshSaxHandler());
                     structureHameshListRES[0] = hameshSaxHandler.getObject();
                     sleep();
@@ -118,7 +118,7 @@ public class GetCartableHameshFromServerPresenter {
         soapObject.addProperty("EC", EntityCode);
         return soapObject;
     }
-    
+
     private void CallApi(String MethodName, String EndPoint, SoapObject soapObject, final DataProcessListener dataProcessListener) {
         String ServerUrl = farzinPrefrences.getServerUrl();
         String BaseUrl = farzinPrefrences.getBaseUrl();
@@ -148,7 +148,7 @@ public class GetCartableHameshFromServerPresenter {
             }
             String Xml = webServiceResponse.getHttpTransportSE().responseDump;
             try {
-                //Xml = changeXml.CharDecoder(Xml);
+                //Xml = changeXml.saxCharEncoder(Xml);
                 Xml = changeXml.CropAsResponseTag(Xml, MethodName);
                 if (!Xml.isEmpty()) {
                     dataProcessListener.onSuccess(Xml);

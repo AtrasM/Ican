@@ -15,6 +15,10 @@ public class StructureCartableDocumentActionRES {
     String ActionName;
     @SerializedName("@ActionOrder")
     int ActionOrder;
+    @SerializedName("@IsActiveForCardTable")
+    int IsActiveForCardTable;
+    @SerializedName("@IsActiveForSend")
+    int IsActiveForSend;
     @SerializedName("@FarsiDescription")
     String FarsiDescription;
     int ETC;
@@ -56,5 +60,21 @@ public class StructureCartableDocumentActionRES {
 
     public void setETC(int ETC) {
         this.ETC = ETC;
+    }
+
+    public int getIsActiveForCardTable() {
+        return IsActiveForCardTable;
+    }
+
+    public void setIsActiveForCardTable(int isActiveForCardTable) {
+        IsActiveForCardTable = isActiveForCardTable;
+    }
+
+    public int getIsActiveForSend() {
+        return IsActiveForSend;
+    }
+
+    public void setIsActiveForSend(int isActiveForSend) {
+        IsActiveForSend = isActiveForSend;
     }
 }

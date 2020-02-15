@@ -35,12 +35,11 @@ import avida.ican.R;
                 .beginConfig()
                 .textColor(Resorse.getColor(R.color.color_White))
                 .useFont(getFont())
-                .bold()
                 .endConfig()
                 .buildRound(string, mGenerator.getColor(string));
     }
 
     private static Typeface getFont() {
-        return Typeface.createFromAsset(App.CurentActivity.getAssets(), App.fontPath);
+        return Typeface.createFromAsset(App.CurentActivity.getAssets(), App.getFontPath());
     }
 }

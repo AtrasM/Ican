@@ -1,10 +1,14 @@
 package avida.ican.Farzin.Presenter.Cartable;
 
+import android.app.Activity;
 import android.os.Handler;
+
+import org.acra.ACRA;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentDataListener;
@@ -13,7 +17,12 @@ import avida.ican.Farzin.Model.Interface.Cartable.CartableDocumentQuerySaveListe
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Response.Cartable.StructureInboxDocumentRES;
+import avida.ican.Farzin.Presenter.Notification.CartableDocumentNotificationPresenter;
+import avida.ican.Ican.App;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.R;
 
 /**
  * Created by AtrasVida on 2018-12-26 at 5:30 PM
@@ -22,17 +31,22 @@ import avida.ican.Ican.View.Custom.TimeValue;
 public class FarzinCartableDocumentListPresenter {
     private final long DELAY = TimeValue.SecondsInMilli() * 15;
     private final long FAILED_DELAY = TimeValue.SecondsInMilli() * 2;
-    private Handler handler = new Handler();
     private FarzinCartableQuery farzinCartableQuery;
     private GetCartableDocumentFromServerPresenter getCartableDocumentFromServerPresenter;
     private CartableDocumentDataListener cartableDocumentDataListener;
     private CartableDocumentListListener cartableDocumentListListenerMain;
     private Status status;
-    private int Count = 500;
+    private int Count = 200;
     private int existCont = 0;
     private int dataSize = 0;
+    private boolean isGetManual = false;
+    private Activity context;
+    private static int newCount = 0;
+    private CartableDocumentNotificationPresenter cartableDocumentNotificationPresenter;
 
-    public FarzinCartableDocumentListPresenter(CartableDocumentDataListener cartableDocumentDataListener) {
+    public FarzinCartableDocumentListPresenter(Activity context, CartableDocumentDataListener cartableDocumentDataListener) {
+        this.context = context;
+        cartableDocumentNotificationPresenter = new CartableDocumentNotificationPresenter(context);
         this.cartableDocumentDataListener = cartableDocumentDataListener;
         initCartableDocumentListListener();
     }
@@ -57,7 +71,7 @@ public class FarzinCartableDocumentListPresenter {
             public void onFailed(String message) {
                 cartableDocumentDataListener.onFailed(message);
               /*  if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
-                    App.getHandler().postDelayed(() -> onFailed(""), 300);
+                    App.getHandler().postDelayed(() -> invalidLogin(""), 300);
                 } else {
                     reGetData();
                 }*/
@@ -71,20 +85,33 @@ public class FarzinCartableDocumentListPresenter {
         };
     }
 
-    public void GetFromServer() {
+    public void getFromServer() {
+        newCount = 0;
         getCartableDocumentFromServerPresenter.GetCartableDocumentList(Count, cartableDocumentListListenerMain);
     }
 
-    public void GetFromServer(String startDateTime, String finishDateTime) {
-        getCartableDocumentFromServerPresenter.GetCartableDocumentList(startDateTime, finishDateTime, cartableDocumentListListenerMain);
+    public void getFromServer(String startDateTime, String finishDateTime, boolean isGetManual) {
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            cartableDocumentDataListener.onFailed(Resorse.getString(R.string.unable_get_data_in_ofline_mode));
+        } else {
+            newCount = 0;
+            this.isGetManual = isGetManual;
+            getCartableDocumentFromServerPresenter.GetCartableDocumentList(startDateTime, finishDateTime, cartableDocumentListListenerMain);
+
+        }
+
     }
 
-    public List<StructureInboxDocumentDB> GetFromLocal(int actionCode, long Start, long Count) {
+    public List<StructureInboxDocumentDB> getFromLocal(int actionCode, long Start, long Count) {
         return farzinCartableQuery.getCartableDocuments(actionCode, null, Start, Count);
     }
 
-    public List<StructureInboxDocumentDB> GetFromLocal(int actionCode, Status status, long Start, long Count) {
+    public List<StructureInboxDocumentDB> getFromLocal(int actionCode, Status status, long Start, long Count) {
         return farzinCartableQuery.getCartableDocuments(actionCode, status, Start, Count);
+    }
+
+    public StructureInboxDocumentDB getLastRecord() {
+        return farzinCartableQuery.getLastItemCartableDocument();
     }
 
     private void SaveData(final ArrayList<StructureInboxDocumentRES> inboxCartableDocumentList) {
@@ -99,13 +126,23 @@ public class FarzinCartableDocumentListPresenter {
             } else {
                 status = Status.UnRead;
             }
-
         }
 
         farzinCartableQuery.saveCartableDocument(structureInboxDocumentRES, Type.RECEIVED, status, new CartableDocumentQuerySaveListener() {
-
             @Override
             public void onSuccess(StructureInboxDocumentDB structureInboxDocumentDB) {
+
+                if (structureInboxDocumentDB == null || structureInboxDocumentDB.getId() <= 0) {
+                    existCont++;
+                } else {
+                    if (getFarzinPrefrences().isCartableDocumentForFirstTimeSync() && getFarzinPrefrences().isDataForFirstTimeSync()) {
+                        farzinCartableQuery.updateCartableDocumentIsNewStatus(structureInboxDocumentDB.getId(), true);
+                    }
+                    if (!structureInboxDocumentDB.isRead()) {
+                        newCount++;
+                    }
+                }
+
                 try {
                     inboxCartableDocumentList.remove(0);
                 } catch (Exception e) {
@@ -113,11 +150,10 @@ public class FarzinCartableDocumentListPresenter {
                 }
 
                 if (inboxCartableDocumentList.size() == 0) {
-                    cartableDocumentDataListener.newData();
+                    callMulltiNotification();
                 } else {
                     SaveData(inboxCartableDocumentList);
                 }
-
             }
 
             @Override
@@ -125,10 +161,19 @@ public class FarzinCartableDocumentListPresenter {
                 existCont++;
                 inboxCartableDocumentList.remove(0);
                 if (inboxCartableDocumentList.size() == 0) {
-                    if (existCont == dataSize || existCont > 50) {
-                        cartableDocumentDataListener.noData();
+                    if (isGetManual) {
+                        if (existCont == dataSize) {
+                            cartableDocumentDataListener.noData();
+                        } else {
+                            callMulltiNotification();
+                        }
+
                     } else {
-                        cartableDocumentDataListener.newData();
+                        if (existCont == dataSize || existCont > 50) {
+                            cartableDocumentDataListener.noData();
+                        } else {
+                            callMulltiNotification();
+                        }
                     }
 
                 } else {
@@ -139,8 +184,7 @@ public class FarzinCartableDocumentListPresenter {
 
             @Override
             public void onFailed(final String message) {
-
-                handler.postDelayed(() -> {
+                App.getHandlerMainThread().postDelayed(() -> {
                     if (inboxCartableDocumentList.size() == 0) {
                         cartableDocumentDataListener.onFailed(message);
                     } else {
@@ -159,7 +203,7 @@ public class FarzinCartableDocumentListPresenter {
 
             @Override
             public void onCancel() {
-                handler.postDelayed(() -> {
+                App.getHandlerMainThread().postDelayed(() -> {
                     if (inboxCartableDocumentList.size() == 0) {
                         cartableDocumentDataListener.onFailed("");
                     } else {
@@ -178,7 +222,25 @@ public class FarzinCartableDocumentListPresenter {
 
     }
 
+    private void callMulltiNotification() {
+        try {
+            if (newCount > 0) {
+                long count = new FarzinCartableQuery().getNewCartableDocumentCount();
+                if (count > 0) {
+                    String title = Resorse.getString(context, R.string.Cartable);
+                    String message = count + " " + Resorse.getString(context, R.string.NewCartableDocument);
+                    cartableDocumentNotificationPresenter.callNotification(title, "" + message, cartableDocumentNotificationPresenter.GetNotificationPendingIntent(cartableDocumentNotificationPresenter.GetNotificationManagerIntent()));
+                }
+            }
+            newCount = 0;
+            cartableDocumentDataListener.newData();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ACRA.getErrorReporter().handleSilentException(e);
+        }
 
+
+    }
 
     private FarzinPrefrences getFarzinPrefrences() {
         return new FarzinPrefrences().init();

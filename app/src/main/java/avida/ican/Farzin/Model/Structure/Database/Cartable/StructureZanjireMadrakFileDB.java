@@ -5,6 +5,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 
@@ -28,14 +29,34 @@ public class StructureZanjireMadrakFileDB implements Serializable {
     int ETC;
     @DatabaseField()
     int EC;
+    @DatabaseField()
+    private String CreationFullName;
+    @DatabaseField()
+    private String CreationRoleName;
+    @DatabaseField()
+    private String CreationDate;
 
     public StructureZanjireMadrakFileDB() {
     }
 
-    public StructureZanjireMadrakFileDB(String file_name, String file_path, String file_extension, ZanjireMadrakFileTypeEnum fileTypeEnum, int ETC, int EC) {
+    public StructureZanjireMadrakFileDB(String file_name, String file_path, String file_extension, String creationFullName, String creationRoleName, String creationDate, ZanjireMadrakFileTypeEnum fileTypeEnum, int ETC, int EC) {
         this.file_name = file_name;
         this.file_path = file_path;
         this.file_extension = file_extension;
+        if (creationFullName == null) {
+            creationFullName = "-";
+        }
+        this.CreationFullName = creationFullName;
+
+        if (creationRoleName == null) {
+            creationRoleName = "-";
+        }
+        this.CreationRoleName = creationRoleName;
+
+        if (creationDate == null) {
+            creationDate = "";
+        }
+        this.CreationDate = creationDate;
         this.fileTypeEnum = fileTypeEnum;
         this.ETC = ETC;
         this.EC = EC;
@@ -95,6 +116,30 @@ public class StructureZanjireMadrakFileDB implements Serializable {
 
     public void setEC(int EC) {
         this.EC = EC;
+    }
+
+    public String getCreationFullName() {
+        return CreationFullName;
+    }
+
+    public void setCreationFullName(String creationFullName) {
+        CreationFullName = creationFullName;
+    }
+
+    public String getCreationRoleName() {
+        return CreationRoleName;
+    }
+
+    public void setCreationRoleName(String creationRoleName) {
+        CreationRoleName = creationRoleName;
+    }
+
+    public String getCreationDate() {
+        return CreationDate;
+    }
+
+    public void setCreationDate(String creationDate) {
+        CreationDate = creationDate;
     }
 }
 

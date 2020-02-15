@@ -1,9 +1,13 @@
 package avida.ican.Farzin.Model.Structure.Database.Cartable;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+
+import avida.ican.Farzin.Model.Enum.DocumentContentFileTypeEnum;
+import avida.ican.Farzin.Model.Enum.ZanjireMadrakFileTypeEnum;
 
 /**
  * Created by AtrasVida in 2018-12-05 at 11:40 AM
@@ -19,6 +23,8 @@ public class StructureCartableDocumentContentDB implements Serializable {
     private String file_path;
     @DatabaseField()
     private String file_extension;
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
+    private DocumentContentFileTypeEnum fileTypeEnum;
     @DatabaseField()
     int ETC;
     @DatabaseField()
@@ -32,10 +38,11 @@ public class StructureCartableDocumentContentDB implements Serializable {
         this.EC = -1;
     }
 
-    public StructureCartableDocumentContentDB(String file_name, String file_path, String file_extension, int ETC, int EC) {
+    public StructureCartableDocumentContentDB(String file_name, String file_path, String file_extension, DocumentContentFileTypeEnum fileTypeEnum, int ETC, int EC) {
         this.file_name = file_name;
         this.file_path = file_path;
         this.file_extension = file_extension;
+        this.fileTypeEnum = fileTypeEnum;
         this.ETC = ETC;
         this.EC = EC;
     }
@@ -83,6 +90,14 @@ public class StructureCartableDocumentContentDB implements Serializable {
 
     public void setEC(int EC) {
         this.EC = EC;
+    }
+
+    public DocumentContentFileTypeEnum getFileTypeEnum() {
+        return fileTypeEnum;
+    }
+
+    public void setFileTypeEnum(DocumentContentFileTypeEnum fileTypeEnum) {
+        this.fileTypeEnum = fileTypeEnum;
     }
 }
 

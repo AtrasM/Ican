@@ -7,15 +7,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.ms.square.android.expandabletextview.ExpandableTextView;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import java.io.File;
 import java.util.ArrayList;
 
+import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Farzin.Model.Structure.Bundle.StructureDetailMessageBND;
@@ -25,16 +28,19 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.Message.FarzinGetMessageAttachmentPresenter;
+import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.View.Dialog.DialogShowMore;
 import avida.ican.Farzin.View.Enum.PutExtraEnum;
 import avida.ican.Farzin.View.Interface.Message.MessageQueryAttachmentListListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
+import avida.ican.Ican.Model.ChangeXml;
 import avida.ican.Ican.Model.Structure.StructureAttach;
 import avida.ican.Ican.View.Adapter.AdapterAttach;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
 import avida.ican.Ican.View.Custom.Resorse;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
 import avida.ican.Ican.View.Interface.ListenerAdapterAttach;
 import avida.ican.R;
 import butterknife.BindString;
@@ -65,10 +71,14 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     ExpandableTextView exTxtMessage;
     @BindView(R.id.ln_main)
     LinearLayout lnMain;
-    @BindView(R.id.ln_loading)
-    LinearLayout lnLoading;
     @BindView(R.id.ln_divider)
     LinearLayout lnDivider;
+    @BindView(R.id.ln_main_download)
+    LinearLayout lnMainDownload;
+    @BindView(R.id.ln_download)
+    LinearLayout lnDownload;
+    @BindView(R.id.av_loading_download)
+    AVLoadingIndicatorView avLoadingDownload;
 
     @BindString(R.string.TitleDetailMessage)
     String Title;
@@ -81,6 +91,7 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     private Bundle bundleObject = new Bundle();
     private String receiveNames = "";
     private FarzinGetMessageAttachmentPresenter farzinGetMessageAttachmentPresenter;
+    private String messageContent = "";
 
     @Override
     protected void onResume() {
@@ -102,34 +113,44 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    /*  Bundle bundleObject = getIntent().getExtras();
-        structureDetailMessageBND = (StructureDetailMessageBND) bundleObject.getSerializable(PutExtraEnum.BundleMessage.getValue());
-       */
-        lnMain.setVisibility(View.GONE);
-        lnLoading.setVisibility(View.VISIBLE);
+        lnMainDownload.setVisibility(View.GONE);
+        FarzinMessageQuery farzinMessageQuery = new FarzinMessageQuery();
         farzinGetMessageAttachmentPresenter = new FarzinGetMessageAttachmentPresenter(intPresenterListener());
+        farzinMessageQuery.UpdateMessageStatus(structureDetailMessageBND.getId(), Status.READ);
+        farzinMessageQuery.updateMessageIsNewStatus(structureDetailMessageBND.getId(), false);
+
         if (structureDetailMessageBND.getMessageType() == Type.SENDED) {
             lnReply.setVisibility(View.GONE);
         }
         initTollBar(Title);
         txtSubject.setText(structureDetailMessageBND.getSubject());
-        txtRoleName.setText(structureDetailMessageBND.getReceiverRoleName());
+        if (structureDetailMessageBND.getReceiverRoleName().isEmpty()) {
+            txtRoleName.setVisibility(View.GONE);
+        } else {
+            txtRoleName.setText(structureDetailMessageBND.getReceiverRoleName());
+        }
+
         txtDate.setText(structureDetailMessageBND.getSent_date());
         txtTime.setText(structureDetailMessageBND.getSent_time());
-        new CustomFunction(this).setHtmlText(exTxtMessage, structureDetailMessageBND.getContent());
-        initRcvAndAdapter();
+        messageContent = new ChangeXml().saxCharEncoder(structureDetailMessageBND.getContent());
+        messageContent = new ChangeXml().charDecoder(messageContent);
+        if (messageContent.contains("<div ")) {
+            messageContent = messageContent.replaceAll("<div>", "").replaceAll("</div>", "") + "</div>";
+        }
+        new CustomFunction(this).setHtmlText(exTxtMessage, messageContent);
+        CheckAttachment();
 
         new CustomFunction(this).ChengeDrawableColorAndSetToImageView(imgDelet, R.drawable.ic_trash, R.color.color_Icons);
-        imgReply.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                gotoActivityWriteMessage(true);
-            }
-        });
+        imgReply.setOnClickListener(view -> gotoActivityWriteMessage(true));
         imgForward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                gotoActivityWriteMessage(false);
+                if (structureDetailMessageBND.getAttachmentCount() > 0 && !structureDetailMessageBND.isFilesDownloaded()){
+                    App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_forward_message),SnackBarEnum.SNACKBAR_LONG_TIME);
+                }else{
+                    gotoActivityWriteMessage(false);
+                }
+
             }
         });
 
@@ -150,28 +171,31 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
         }
 
         txtName.setText(receiveNames);
-        txtName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (structureDetailMessageBND.getStructureReceiverDBS().size() > 1) {
-                    DialogShowMore dialogShowMore = new DialogShowMore(App.CurentActivity);
-                    dialogShowMore.setData(Resorse.getString(R.string.receivers), receiveNames);
-                    dialogShowMore.Creat();
-                }
+        txtName.setOnClickListener(view -> {
+            if (structureDetailMessageBND.getStructureReceiverDBS().size() > 1) {
+                DialogShowMore dialogShowMore = new DialogShowMore(App.CurentActivity);
+                dialogShowMore.setData(Resorse.getString(R.string.receivers), receiveNames);
+                dialogShowMore.Creat();
             }
+        });
+
+        lnDownload.setOnClickListener(view -> {
+            lnDownload.setVisibility(View.GONE);
+            avLoadingDownload.setVisibility(View.VISIBLE);
+            farzinGetMessageAttachmentPresenter.getData(structureDetailMessageBND.getId(), structureDetailMessageBND.getMain_id());
+
         });
     }
 
     private MessageQueryAttachmentListListener intPresenterListener() {
+
         MessageQueryAttachmentListListener messageQueryAttachmentListListener = new MessageQueryAttachmentListListener() {
             @Override
             public void newData(ArrayList<StructureMessageFileDB> structureMessageFilesDB) {
                 runOnUiThread(() -> {
-                    initAttachment(structureMessageFilesDB);
+                    initRcvAndAdapterAttachment(structureMessageFilesDB);
                     structureDetailMessageBND.setFilesDownloaded(true);
                     App.fragmentMessageList.UpdateLastMessageShowData();
-                    lnMain.setVisibility(View.VISIBLE);
-                    lnLoading.setVisibility(View.GONE);
                 });
             }
 
@@ -179,31 +203,40 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
             public void noData() {
                 runOnUiThread(() -> {
                     structureDetailMessageBND.setFilesDownloaded(true);
-                    lnMain.setVisibility(View.VISIBLE);
-                    lnLoading.setVisibility(View.GONE);
+                    lnMainDownload.setVisibility(View.GONE);
                 });
             }
 
             @Override
             public void onFailed(String message) {
                 runOnUiThread(() -> {
-                    lnMain.setVisibility(View.VISIBLE);
-                    lnLoading.setVisibility(View.GONE);
+                    lnMainDownload.setVisibility(View.VISIBLE);
+                    lnDownload.setVisibility(View.VISIBLE);
+                    avLoadingDownload.setVisibility(View.GONE);
+                    App.getHandlerMainThread().postDelayed(() -> {
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_get_file_faild), SnackBarEnum.SNACKBAR_LONG_TIME);
+
+                    }, 100);
                 });
             }
 
             @Override
             public void onCancel() {
-                runOnUiThread(() ->
-                        lnLoading.setVisibility(View.GONE)
-                );
+                runOnUiThread(() -> {
+                    lnMainDownload.setVisibility(View.VISIBLE);
+                    lnDownload.setVisibility(View.VISIBLE);
+                    avLoadingDownload.setVisibility(View.GONE);
+                    App.getHandlerMainThread().postDelayed(() -> {
+                        App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_get_file_faild), SnackBarEnum.SNACKBAR_LONG_TIME);
+                    }, 100);
+                });
             }
         };
         return messageQueryAttachmentListListener;
     }
 
     private void gotoActivityWriteMessage(boolean isReply) {
-        StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getReceiverFullName(), structureDetailMessageBND.getReceiverRoleName(), structureDetailMessageBND.getSubject(), exTxtMessage.getText().toString(), structureAttaches, isReply);
+        StructureFwdReplyBND structureFwdReplyBND = new StructureFwdReplyBND(structureDetailMessageBND.getSender_user_id(), structureDetailMessageBND.getSender_role_id(), structureDetailMessageBND.getReceiverFullName(), structureDetailMessageBND.getReceiverRoleName(), structureDetailMessageBND.getSubject(), messageContent, structureAttaches, isReply);
         FarzinActivityWriteMessage.structureFwdReplyBND = structureFwdReplyBND;
         // bundleObject.putSerializable(PutExtraEnum.ISFwdReplyMessage.getValue(), structureFwdReplyBND);
         Intent intent = new Intent(App.CurentActivity, FarzinActivityWriteMessage.class);
@@ -211,21 +244,15 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
         goToActivity(intent);
     }
 
-    private void initRcvAndAdapter() {
-
+    private void CheckAttachment() {
         if (structureDetailMessageBND.getAttachmentCount() > 0) {
             if (structureDetailMessageBND.isFilesDownloaded()) {
-                initAttachment(structureDetailMessageBND.getMessage_files());
-                lnMain.setVisibility(View.VISIBLE);
-                lnLoading.setVisibility(View.GONE);
+                initRcvAndAdapterAttachment(structureDetailMessageBND.getMessage_files());
             } else {
-                // TODO: 2019-05-20 main structure message isFilesDownloaded shold refresh
-                farzinGetMessageAttachmentPresenter.getData(structureDetailMessageBND.getMain_id());
+                lnMainDownload.setVisibility(View.VISIBLE);
             }
         } else {
             lnDivider.setVisibility(View.GONE);
-            lnMain.setVisibility(View.VISIBLE);
-            lnLoading.setVisibility(View.GONE);
         }
 
         /* if (structureDetailMessageBND.getMessage_files() == null || structureDetailMessageBND.getMessage_files().size() <= 0) {
@@ -235,7 +262,10 @@ public class FarzinActivityDetailMessage extends BaseToolbarActivity {
 
     }
 
-    private void initAttachment(ArrayList<StructureMessageFileDB> message_files) {
+    private void initRcvAndAdapterAttachment(ArrayList<StructureMessageFileDB> message_files) {
+        lnMainDownload.setVisibility(View.GONE);
+        lnDownload.setVisibility(View.VISIBLE);
+        avLoadingDownload.setVisibility(View.GONE);
         for (StructureMessageFileDB MessageFileDB : message_files) {
             StructureAttach structureAttach = new StructureAttach(MessageFileDB.getFile_path(), MessageFileDB.getFile_name(), MessageFileDB.getFile_extension());
             structureAttaches.add(structureAttach);
