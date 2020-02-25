@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/srl_refresh"
         android:layout_width="match_parent"
@@ -25,10 +24,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
-                    <com.github.bassaer.chatmessageview.view.MessageView
-                        android:id="@+id/message_view"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"/>
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/rcv_chat_room"
                         style="@style/custom_item_rcv_style"

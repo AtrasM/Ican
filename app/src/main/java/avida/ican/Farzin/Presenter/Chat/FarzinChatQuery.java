@@ -205,7 +205,7 @@ public class FarzinChatQuery {
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
-            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", true).distinct().query();
+            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", false).distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }

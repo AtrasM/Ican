@@ -13,6 +13,7 @@ import avida.ican.Farzin.Presenter.Chat.FarzinChatQuery;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
+import avida.ican.Ican.View.Enum.NetworkStatus;
 
 /**
  * Created by AtrasVida on 2020-01-12 at 5:26 PM
@@ -27,6 +28,7 @@ public class FarzinChatRoomMessagePresenter {
     private static int counterFailed = 0;
     private int MaxTry = 2;
     private StructureDataFromServerBundle structureDataFromServerBundle = new StructureDataFromServerBundle();
+    private boolean isFirst = true;
 
     public FarzinChatRoomMessagePresenter(ChatRoomMessageDataListener chatRoomMessageDataListener) {
         if (chatRoomMessageDataListener == null) {
@@ -66,7 +68,9 @@ public class FarzinChatRoomMessagePresenter {
                     chatRoomMessageDataListener.noData();
                     counterFailed = 0;
                 } else {
-                    farzinChatQuery.clearChatRoomMessageList();
+                    if (isFirst) {
+                        farzinChatQuery.clearChatRoomMessageList();
+                    }
                     SaveData(structureChatRoomMessagesModelRES);
                 }
             }
@@ -84,18 +88,33 @@ public class FarzinChatRoomMessagePresenter {
     }
 
     public void getDataFromServer(String chatRoomId) {
-        structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId);
-        getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, getChatRoomMessageListListener);
+        isFirst = true;
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            chatRoomMessageDataListener.noData();
+        } else {
+            structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId);
+            getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, getChatRoomMessageListListener);
+        }
     }
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID) {
-        structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId, tableExtension, lastMessageID);
-        getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, tableExtension, lastMessageID, getChatRoomMessageListListener);
+        isFirst = false;
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            chatRoomMessageDataListener.noData();
+        } else {
+            structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId, tableExtension, lastMessageID);
+            getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, tableExtension, lastMessageID, getChatRoomMessageListListener);
+        }
     }
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID, String toMessageID, String toTableExtension) {
-        structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId, tableExtension, lastMessageID, toMessageID, toTableExtension);
-        getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, tableExtension, lastMessageID, toMessageID, toTableExtension, getChatRoomMessageListListener);
+        isFirst = false;
+        if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
+            chatRoomMessageDataListener.noData();
+        } else {
+            structureDataFromServerBundle = new StructureDataFromServerBundle(chatRoomId, tableExtension, lastMessageID, toMessageID, toTableExtension);
+            getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, tableExtension, lastMessageID, toMessageID, toTableExtension, getChatRoomMessageListListener);
+        }
     }
 
     public List<StructureChatRoomMessageDB> getDataFromLocal(int Start, int Count, String chatRoomID) {

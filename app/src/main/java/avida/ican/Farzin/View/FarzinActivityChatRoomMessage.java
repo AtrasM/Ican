@@ -139,7 +139,6 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
                     lnLoading.setVisibility(View.GONE);
                     updateData(chatRoomId);
                 });
-
             }
         });
         getDataFromServer();

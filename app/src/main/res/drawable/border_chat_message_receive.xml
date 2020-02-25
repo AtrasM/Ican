@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+  <corners
+      android:bottomRightRadius="@dimen/maximum_radios"
+      android:topLeftRadius="@dimen/maximum_radios"
+      android:topRightRadius="@dimen/maximum_radios" />
+  <solid android:color="@color/color_bg_chat_message_receive" />
+  <stroke android:color="@color/color_border" android:width="@dimen/minimum_radios"/>
+</shape>

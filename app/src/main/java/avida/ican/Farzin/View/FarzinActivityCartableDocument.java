@@ -183,8 +183,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
                         imgMoveUp.setVisibility(View.GONE);
                         isshow = false;
                     }
-                }
-                if (dy > 0) //check for scroll down
+                } else if (dy > 0) //check for scroll down
                 {
                     if (canLoading) {
                         totalItemCount = gridLayoutManager.getItemCount();
@@ -550,7 +549,7 @@ public class FarzinActivityCartableDocument extends BaseToolbarActivity {
             @Override
             public void onSuccess(int response) {
                 lnLoading.setVisibility(View.VISIBLE);
-                App.getHandlerMainThread().postDelayed(() -> continueWorkFlow(structureInboxDocumentDB.getReceiverCode(), response, structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode()),TimeValue.SecondsInMilli());
+                App.getHandlerMainThread().postDelayed(() -> continueWorkFlow(structureInboxDocumentDB.getReceiverCode(), response, structureInboxDocumentDB.getEntityTypeCode(), structureInboxDocumentDB.getEntityCode()), TimeValue.SecondsInMilli());
             }
 
             @Override

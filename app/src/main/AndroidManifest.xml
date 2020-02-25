@@ -236,7 +236,9 @@
     <activity
         android:name=".Farzin.View.FarzinActivityChatRoom"
         android:configChanges="orientation|screenSize"
-        android:windowSoftInputMode="stateHidden|adjustResize" />
+        android:windowSoftInputMode="stateHidden|adjustResize">
+
+    </activity>
     <activity
         android:name=".Farzin.View.FarzinActivityChatRoomMessage"
         android:configChanges="orientation|screenSize"

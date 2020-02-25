@@ -92,7 +92,7 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
         adapter.addFrag(fragmentChatRoomGroup, R.string.titleChatRoomGroup);
         adapter.addFrag(fragmentChatRoomChannel, R.string.titleChatRoomChannel);
         mViewPager.setAdapter(adapter);
-        // mViewPager.setOffscreenPageLimit(3);//where 3 is the amount of pages to keep in memory on either side of the current page.
+         mViewPager.setOffscreenPageLimit(3);//where 3 is the amount of pages to keep in memory on either side of the current page.
         smartTabLayout.setViewPager(mViewPager);
         smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -161,7 +161,7 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
         if (chatRoomTypeEnum == ChatRoomTypeEnum.All) {
             fragmentChatRoomPrivate.reGetData();
             fragmentChatRoomGroup.reGetData();
-            fragmentChatRoomPrivate.reGetData();
+            fragmentChatRoomChannel.reGetData();
         } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Private) {
             fragmentChatRoomPrivate.reGetData();
         } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Room) {
