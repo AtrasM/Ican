@@ -24,6 +24,7 @@ import avida.ican.Farzin.Presenter.Chat.RoomMessage.FarzinChatRoomMessagePresent
 import avida.ican.Farzin.View.Adapter.Chat.AdapterChatRoomMessage;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
+import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ListenerAdapterChatRoomMessage;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
@@ -115,12 +116,6 @@ public class FragmentChatRoomMessageList extends BaseFragment {
                 pastVisiblesItems = gridLayoutManager.findFirstVisibleItemPositions(null);
                 if (dy > 0) {
                     CustomLogger.setLog("visibleItemCount= " + visibleItemCount + " | pastVisiblesItems= " + pastVisiblesItems[0]);
-
-                  /*  if ((visibleItemCount + pastVisiblesItems[0]) <= 5 && !isshow) {
-                        animator.slideInFromDown(imgMoveDown);
-                        imgMoveDown.setVisibility(View.VISIBLE);
-                        isshow = true;
-                    } else*/
                     if ((pastVisiblesItems[0]) < 1 && isshow) {
                         imgMoveDown.setVisibility(View.GONE);
                         isshow = false;
@@ -148,6 +143,13 @@ public class FragmentChatRoomMessageList extends BaseFragment {
 
     private void initPresenter() {
         farzinChatRoomMessagePresenter = new FarzinChatRoomMessagePresenter(new ChatRoomMessageDataListener() {
+            @Override
+            public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                int messageID = adapterChatRoomMessage.getLastMessage().getId();
+                StructureChatRoomMessageDB replyMessage = farzinChatRoomMessagePresenter.getLastDataFromLocal(chatRoomMessageID);
+                loadDataFromLocal(messageID, replyMessage.getId());
+            }
+
             @Override
             public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
                 loadDate();
@@ -232,9 +234,71 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         });
     }
 
+    private void loadDataFromLocal(int fromID, int toID) {
+        App.getHandlerMainThread().post(() -> {
+            txtNoData.setVisibility(View.GONE);
+            lnLoading.setVisibility(View.VISIBLE);
+            List<StructureChatRoomMessageDB> structureChatRoomMessagesDB = farzinChatRoomMessagePresenter.getDataFromLocalBetween(fromID, toID, chatRoomMessageID);
+            if (structureChatRoomMessagesDB.size() > 0) {
+                start = start + structureChatRoomMessagesDB.size();
+                adapterChatRoomMessage.addDataToEnd(structureChatRoomMessagesDB);
+                canLoading = true;
+                moveToMessage(adapterChatRoomMessage.getItemCount());
+            }
+            srlRefresh.setRefreshing(false);
+            lnLoading.setVisibility(View.GONE);
+        });
+
+    }
+
     private void initAdapter(List<StructureChatRoomMessageDB> structureChatRoomMessageDBS) {
-        adapterChatRoomMessage = new AdapterChatRoomMessage(structureChatRoomMessageDBS);
+        adapterChatRoomMessage = new AdapterChatRoomMessage(structureChatRoomMessageDBS, new ListenerAdapterChatRoomMessage() {
+            @Override
+            public void onReplyClick(StructureChatRoomMessageDB structureChatRoomMessageDB, int maxSize, int currentPos) {
+                lnLoading.setVisibility(View.VISIBLE);
+
+                int currentID = structureChatRoomMessageDB.getId();
+                int replyID = farzinChatRoomMessagePresenter.findReplyMessageID(currentID, structureChatRoomMessageDB.getReplyToMessageID(), chatRoomMessageID);
+                if (replyID > currentID) {
+                    int diff = replyID - currentID;
+                    int betweenSize = maxSize - currentPos;
+                    if (diff <= betweenSize) {
+                        int replyPos = currentPos + diff;
+                        moveToMessage(replyPos);
+                        lnLoading.setVisibility(View.GONE);
+                    } else {
+                        int messageID = adapterChatRoomMessage.getLastMessage().getId();
+                        loadDataFromLocal(messageID, replyID);
+                    }
+                } else {
+                    loadReplyMessageFromServer(structureChatRoomMessageDB);
+                }
+
+            }
+
+            @Override
+            public void onDelet(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+
+            }
+
+            @Override
+            public void onItemClick(StructureChatRoomMessageDB structureChatRoomMessageDB, int position) {
+
+            }
+        });
         rcvChatRoomMessage.setAdapter(adapterChatRoomMessage);
+    }
+
+    private void loadReplyMessageFromServer(StructureChatRoomMessageDB currentMessage) {
+        StructureChatRoomMessageDB lastMessage = farzinChatRoomMessagePresenter.getLastDataFromLocal(chatRoomMessageID);
+        farzinChatRoomMessagePresenter.getDataFromServer(chatRoomMessageID, lastMessage.getTableExtension(), lastMessage.getMessageIDString(), currentMessage.getReplyToMessageIDString(), currentMessage.getReplyToMessageTableExtension());
+    }
+
+    private void moveToMessage(int position) {
+        rcvChatRoomMessage.smoothScrollToPosition(position);
+        animator.slideInFromDown(imgMoveDown);
+        imgMoveDown.setVisibility(View.VISIBLE);
+        isshow = true;
     }
 
     @Override

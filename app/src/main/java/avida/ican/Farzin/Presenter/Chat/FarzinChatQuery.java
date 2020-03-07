@@ -212,6 +212,47 @@ public class FarzinChatQuery {
         return structureChatRoomMessagesDB;
     }
 
+    public List<StructureChatRoomMessageDB> getChatRoomMessageListBetween(int fromID, int toID, String chatRoomID) {
+        QueryBuilder<StructureChatRoomMessageDB, Integer> queryBuilder = chatRoomMessageDao.queryBuilder();
+        List<StructureChatRoomMessageDB> structureChatRoomMessagesDB = new ArrayList<>();
+        try {
+            queryBuilder.where().eq("ChatRoomIDString", chatRoomID).and().between("id", fromID, toID);
+            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", false).distinct().query();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureChatRoomMessagesDB;
+    }
+
+    public int findReplyMessageID(int idCurrentMessage, int replyToMessageID, String chatRoomID) {
+        QueryBuilder<StructureChatRoomMessageDB, Integer> queryBuilder = chatRoomMessageDao.queryBuilder();
+        StructureChatRoomMessageDB structureChatRoomMessagesDB;
+        int id = -1;
+        try {
+            queryBuilder.where().eq("ChatRoomIDString", chatRoomID).and().gt("id", idCurrentMessage).and().eq("MessageID", replyToMessageID);
+            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", false).distinct().queryForFirst();
+            if (structureChatRoomMessagesDB != null) {
+                id = structureChatRoomMessagesDB.getId();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return id;
+    }
+
+    public StructureChatRoomMessageDB getLastMessage(String chatRoomID) {
+        QueryBuilder<StructureChatRoomMessageDB, Integer> queryBuilder = chatRoomMessageDao.queryBuilder();
+        StructureChatRoomMessageDB structureChatRoomMessagesDB = new StructureChatRoomMessageDB();
+        int id = -1;
+        try {
+            queryBuilder.where().eq("ChatRoomIDString", chatRoomID);
+            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", true).distinct().queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureChatRoomMessagesDB;
+    }
+
     public boolean deletChatRoomMessageList() {
         boolean isDelet = false;
         try {

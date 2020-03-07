@@ -7,6 +7,9 @@ import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChat
  */
 
 public interface ListenerAdapterChatRoomMessage {
+    void onReplyClick(StructureChatRoomMessageDB structureChatRoomMessageDB,int maxSize,int currentPos);
+
     void onDelet(StructureChatRoomMessageDB structureChatRoomMessageDB);
+
     void onItemClick(StructureChatRoomMessageDB structureChatRoomMessageDB, int position);
 }

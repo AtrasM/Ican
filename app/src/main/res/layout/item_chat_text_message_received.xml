@@ -7,8 +7,11 @@
     android:layout_height="wrap_content"
     android:layout_gravity="left"
     android:layoutDirection="ltr"
+    android:orientation="vertical"
     android:padding="@dimen/padding"
     tools:ignore="RtlHardcoded">
+
+  <include layout="@layout/item_chat_message_creat_date" />
 
   <LinearLayout
       android:layout_width="wrap_content"
@@ -26,14 +29,16 @@
           android:id="@+id/ln_reply"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_margin="@dimen/margin"
+          android:background="@drawable/border"
           android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="2dp"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/margin_minimum"
-            android:layout_marginTop="@dimen/margin"
+            android:layout_marginTop="@dimen/margin_minimum"
             android:layout_marginRight="@dimen/margin_minimum"
+            android:layout_marginBottom="@dimen/margin_minimum"
             android:background="@color/color_Red" />
 
         <LinearLayout
@@ -51,7 +56,7 @@
               android:gravity="right"
               android:padding="@dimen/padding_minimum"
               android:text="name"
-              android:textColor="@color/color_Hint" />
+              android:textColor="@color/color_txt_SubTitle" />
 
           <TextView
               android:id="@+id/txt_reply_message"
@@ -61,7 +66,7 @@
               android:gravity="right"
               android:padding="0dp"
               android:text="name"
-              android:textColor="@color/color_Hint"
+              android:textColor="@color/color_txt_SubTitle"
               tools:ignore="InefficientWeight" />
 
         </LinearLayout>
@@ -111,7 +116,7 @@
 
           <TextView
               android:id="@+id/text_message_time"
-              android:layout_width="match_parent"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:gravity="left"
               android:padding="0dp"

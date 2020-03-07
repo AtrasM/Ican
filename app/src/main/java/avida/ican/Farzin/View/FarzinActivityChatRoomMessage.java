@@ -68,7 +68,7 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.canBack = true;
-        chatRoomId=getIntent().getStringExtra(ChatPutExtraEnum.RoomMessageIDString.getValue());
+        chatRoomId = getIntent().getStringExtra(ChatPutExtraEnum.RoomMessageIDString.getValue());
         mfragmentManager = getSupportFragmentManager();
         animator = new Animator(App.CurentActivity);
         lnLoading.setVisibility(View.VISIBLE);
@@ -125,6 +125,11 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
 
     private void initPresenter() {
         farzinChatRoomMessagePresenter = new FarzinChatRoomMessagePresenter(new ChatRoomMessageDataListener() {
+            @Override
+            public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+
+            }
+
             @Override
             public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
                 App.CurentActivity.runOnUiThread(() -> {

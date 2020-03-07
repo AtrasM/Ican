@@ -29,6 +29,7 @@ public class FarzinChatRoomMessagePresenter {
     private int MaxTry = 2;
     private StructureDataFromServerBundle structureDataFromServerBundle = new StructureDataFromServerBundle();
     private boolean isFirst = true;
+    private boolean isReplyData = false;
 
     public FarzinChatRoomMessagePresenter(ChatRoomMessageDataListener chatRoomMessageDataListener) {
         if (chatRoomMessageDataListener == null) {
@@ -46,6 +47,11 @@ public class FarzinChatRoomMessagePresenter {
 
     private void initDataListener() {
         this.chatRoomMessageDataListener = new ChatRoomMessageDataListener() {
+
+            @Override
+            public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+
+            }
 
             @Override
             public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
@@ -89,6 +95,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId) {
         isFirst = true;
+        isReplyData=false;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -99,6 +106,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID) {
         isFirst = false;
+        isReplyData=false;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -109,6 +117,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID, String toMessageID, String toTableExtension) {
         isFirst = false;
+        isReplyData=true;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -117,8 +126,20 @@ public class FarzinChatRoomMessagePresenter {
         }
     }
 
+    public StructureChatRoomMessageDB getLastDataFromLocal(String chatRoomID) {
+        return farzinChatQuery.getLastMessage(chatRoomID);
+    }
+
     public List<StructureChatRoomMessageDB> getDataFromLocal(int Start, int Count, String chatRoomID) {
         return farzinChatQuery.getChatRoomMessageList(Start, Count, chatRoomID);
+    }
+
+    public List<StructureChatRoomMessageDB> getDataFromLocalBetween(int fromID, int toID, String chatRoomID) {
+        return farzinChatQuery.getChatRoomMessageListBetween(fromID, toID, chatRoomID);
+    }
+
+    public int findReplyMessageID(int idCurrentMessage, int replyToMessageID, String chatRoomID) {
+        return farzinChatQuery.findReplyMessageID(idCurrentMessage, replyToMessageID, chatRoomID);
     }
 
     private void SaveData(final ArrayList<StructureChatRoomMessageModelRES> chatRoomMessagesModelRES) {
@@ -134,7 +155,12 @@ public class FarzinChatRoomMessagePresenter {
                 if (chatRoomMessagesModelRES.size() > 0) {
                     SaveData(chatRoomMessagesModelRES);
                 } else {
-                    chatRoomMessageDataListener.newData(structureChatRoomMessageDB);
+                    if(isReplyData){
+                        chatRoomMessageDataListener.downloadedReplyData(structureChatRoomMessageDB);
+                    }else{
+                        chatRoomMessageDataListener.newData(structureChatRoomMessageDB);
+                    }
+
                     counterFailed = 0;
                 }
             }
