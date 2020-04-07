@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.UpdateBuilder;
 
 import org.acra.ACRA;
 
@@ -17,7 +18,7 @@ import avida.ican.Farzin.Model.Enum.Chat.ChatMessageTypeEnum;
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.Interface.Chat.Room.ChatRoomModelQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Chat.RoomMessage.ChatRoomMessageModelQuerySaveListener;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
@@ -31,7 +32,7 @@ public class FarzinChatQuery {
 
     //_______________________***Dao***______________________________
 
-    private Dao<StructureChatRoomListDB, Integer> chatRoomDao = null;
+    private Dao<StructureChatRoomDB, Integer> chatRoomDao = null;
     private Dao<StructureChatRoomMessageDB, Integer> chatRoomMessageDao = null;
 
     public FarzinChatQuery() {
@@ -70,6 +71,7 @@ public class FarzinChatQuery {
             int lastMessageRoomType = structureChatRoomModelRES[0].getLastMessageType();
 
             //-------------------------------------------------------------------
+
             if (roomType == ChatRoomTypeEnum.Private.getIntValue()) {
                 chatRoomTypeEnum = ChatRoomTypeEnum.Private;
             } else if (roomType == ChatRoomTypeEnum.Room.getIntValue()) {
@@ -89,11 +91,13 @@ public class FarzinChatQuery {
             } else {
                 chatMessageTypeEnum = ChatMessageTypeEnum.Text;
             }
+
             //-------------------------------------------------------------------
 
             creationDate = new Date(CustomFunction.StandardizeTheDateFormat(structureChatRoomModelRES[0].getCreationDate()));
             lastMessageCreationDate = new Date(CustomFunction.StandardizeTheDateFormat(structureChatRoomModelRES[0].getLastMessageCreationDate()));
-            StructureChatRoomListDB structureChatRoomDB = new StructureChatRoomListDB(structureChatRoomModelRES[0].getChatRoomID(), structureChatRoomModelRES[0].getChatRoomActorID(), structureChatRoomModelRES[0].getChatRoomIDString(), structureChatRoomModelRES[0].getChatRoomActorIDString(), structureChatRoomModelRES[0].getUserID(), structureChatRoomModelRES[0].isChatRoomActorIsActive(), structureChatRoomModelRES[0].getName(), structureChatRoomModelRES[0].isActive(), structureChatRoomModelRES[0].isAddUserForAll(), structureChatRoomModelRES[0].isMuteNotification(), structureChatRoomModelRES[0].getUnseenCount(), structureChatRoomModelRES[0].getMessageLength(), structureChatRoomModelRES[0].getFileSize(), structureChatRoomModelRES[0].isUploadFile(), chatRoomTypeEnum, structureChatRoomModelRES[0].getLastMessageContent(), creationDate, lastMessageCreationDate, structureChatRoomModelRES[0].getLastMessageCreationTime(), chatMessageTypeEnum, structureChatRoomModelRES[0].isHasPicture());
+            StructureChatRoomDB structureChatRoomDB = new StructureChatRoomDB(structureChatRoomModelRES[0].getChatRoomID(), structureChatRoomModelRES[0].getChatRoomActorID(), structureChatRoomModelRES[0].getChatRoomIDString(), structureChatRoomModelRES[0].getChatRoomActorIDString(), structureChatRoomModelRES[0].getUserID(), structureChatRoomModelRES[0].isChatRoomActorIsActive(), structureChatRoomModelRES[0].getName(), structureChatRoomModelRES[0].isActive(), structureChatRoomModelRES[0].isAddUserForAll(), structureChatRoomModelRES[0].isMuteNotification(), structureChatRoomModelRES[0].getUnseenCount(), structureChatRoomModelRES[0].getMessageLength(), structureChatRoomModelRES[0].getFileSize(), structureChatRoomModelRES[0].isUploadFile(), chatRoomTypeEnum, structureChatRoomModelRES[0].getLastMessageContent(), creationDate, lastMessageCreationDate, structureChatRoomModelRES[0].getLastMessageCreationTime(), chatMessageTypeEnum, structureChatRoomModelRES[0].isHasPicture());
+
             try {
                 chatRoomDao.create(structureChatRoomDB);
                 chatRoomModelQuerySaveListener.onSuccess(structureChatRoomDB);
@@ -148,11 +152,23 @@ public class FarzinChatQuery {
         }
     }
 
+
+    public void saveInputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB, ChatRoomMessageModelQuerySaveListener chatRoomMessageModelQuerySaveListener) {
+        try {
+            chatRoomMessageDao.create(structureChatRoomMessageDB);
+            chatRoomMessageModelQuerySaveListener.onSuccess(structureChatRoomMessageDB);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            chatRoomMessageModelQuerySaveListener.onFailed(e.toString());
+            ACRA.getErrorReporter().handleSilentException(e);
+            App.ShowMessage().ShowToast(" مشکل در ذخیره داده ها", ToastEnum.TOAST_LONG_TIME);
+        }
+    }
     //--------------------------------*****ChatRoom*****-------------------------------------------------------
 
-    public List<StructureChatRoomListDB> getChatRoomList(long start, long count, ChatRoomTypeEnum chatRoomTypeEnum) {
-        QueryBuilder<StructureChatRoomListDB, Integer> queryBuilder = chatRoomDao.queryBuilder();
-        List<StructureChatRoomListDB> structureChatRoomListDB = new ArrayList<>();
+    public List<StructureChatRoomDB> getChatRoomList(long start, long count, ChatRoomTypeEnum chatRoomTypeEnum) {
+        QueryBuilder<StructureChatRoomDB, Integer> queryBuilder = chatRoomDao.queryBuilder();
+        List<StructureChatRoomDB> structureChatRoomDB = new ArrayList<>();
         try {
             if (chatRoomTypeEnum != ChatRoomTypeEnum.All) {
                 queryBuilder.where().eq("ChatRoomTypeEnum", chatRoomTypeEnum);
@@ -161,17 +177,63 @@ public class FarzinChatQuery {
             if (count > 0) {
                 queryBuilder.offset(start).limit(count);
             }
-            structureChatRoomListDB = queryBuilder.orderBy("LastMessageCreationDate", false).distinct().query();
+            structureChatRoomDB = queryBuilder.orderBy("LastMessageCreationDate", false).distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return structureChatRoomListDB;
+        return structureChatRoomDB;
+    }
+
+    public void replaceChatRoomAllColumn(int chatRoomID, StructureChatRoomModelRES chatRoomModelRES, ChatRoomModelQuerySaveListener chatRoomModelQuerySaveListener) {
+        if (deletChatRoom(chatRoomID)) {
+            saveChatRoom(chatRoomModelRES, chatRoomModelQuerySaveListener);
+        }
+
+    }
+
+    public void updateChatRoomLastMessageContent(int chatRoomID, String lastMessageContent) {
+        UpdateBuilder<StructureChatRoomDB, Integer> updateBuilder = chatRoomDao.updateBuilder();
+
+        try {
+            updateBuilder.where().eq("ChatRoomID", chatRoomID);
+            updateBuilder.updateColumnValue("LastMessageContent",lastMessageContent);
+            updateBuilder.update();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean deletChatRoom(int chatRoomID) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureChatRoomDB, Integer> deleteBuilder = chatRoomDao.deleteBuilder();
+            deleteBuilder.where().eq("ChatRoomID", chatRoomID);
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
     }
 
     public boolean deletChatRoomList() {
         boolean isDelet = false;
         try {
-            DeleteBuilder<StructureChatRoomListDB, Integer> deleteBuilder = chatRoomDao.deleteBuilder();
+            DeleteBuilder<StructureChatRoomDB, Integer> deleteBuilder = chatRoomDao.deleteBuilder();
+            deleteBuilder.delete();
+            isDelet = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return isDelet;
+    }
+
+    public boolean deletChatRoomMessage(String tempMessageID) {
+        boolean isDelet = false;
+        try {
+            DeleteBuilder<StructureChatRoomMessageDB, Integer> deleteBuilder = chatRoomMessageDao.deleteBuilder();
+            deleteBuilder.where().eq("MessageIDString", tempMessageID);
+
             deleteBuilder.delete();
             isDelet = true;
         } catch (SQLException e) {
@@ -191,6 +253,20 @@ public class FarzinChatQuery {
         return isClear;
     }
 
+    public boolean isChatRoomExist(int chatRoomID) {
+        boolean existing = false;
+        QueryBuilder<StructureChatRoomDB, Integer> queryBuilder = chatRoomDao.queryBuilder();
+        try {
+            queryBuilder.setWhere(queryBuilder.where().eq("ChatRoomID", chatRoomID));
+            queryBuilder.setCountOf(true);
+            long count = chatRoomDao.countOf(queryBuilder.distinct().prepare());
+            // long count = queryBuilder.countOf();
+            if (count > 0) existing = true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return existing;
+    }
     //--------------------------------*****ChatRoom*****-------------------------------------------------------
 
 
@@ -202,10 +278,10 @@ public class FarzinChatQuery {
         try {
             queryBuilder.where().eq("ChatRoomIDString", chatRoomID);
 
-            if (count > 0) {
+          /*  if (count > 0) {
                 queryBuilder.offset(start).limit(count);
-            }
-            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", false).distinct().query();
+            }*/
+            structureChatRoomMessagesDB = queryBuilder.orderBy("isSendedFromApp", false).orderBy("MessageID", false).distinct().query();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -243,10 +319,21 @@ public class FarzinChatQuery {
     public StructureChatRoomMessageDB getLastMessage(String chatRoomID) {
         QueryBuilder<StructureChatRoomMessageDB, Integer> queryBuilder = chatRoomMessageDao.queryBuilder();
         StructureChatRoomMessageDB structureChatRoomMessagesDB = new StructureChatRoomMessageDB();
-        int id = -1;
         try {
             queryBuilder.where().eq("ChatRoomIDString", chatRoomID);
             structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", true).distinct().queryForFirst();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return structureChatRoomMessagesDB;
+    }
+
+    public StructureChatRoomMessageDB getLastMessageSend(String chatRoomID) {
+        QueryBuilder<StructureChatRoomMessageDB, Integer> queryBuilder = chatRoomMessageDao.queryBuilder();
+        StructureChatRoomMessageDB structureChatRoomMessagesDB = new StructureChatRoomMessageDB();
+        try {
+            queryBuilder.where().eq("ChatRoomIDString", chatRoomID).and().eq("isSendedFromApp", true);
+            structureChatRoomMessagesDB = queryBuilder.orderBy("MessageID", false).distinct().queryForFirst();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -275,6 +362,7 @@ public class FarzinChatQuery {
         }
         return isClear;
     }
+
 
     //--------------------------------*****ChatRoomMessage*****-------------------------------------------------------
 

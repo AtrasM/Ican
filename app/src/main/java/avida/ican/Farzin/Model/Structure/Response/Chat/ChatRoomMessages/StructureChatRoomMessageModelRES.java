@@ -63,6 +63,8 @@ public class StructureChatRoomMessageModelRES {
     private String PersianCreationDate;
     @Element(required = false)
     private String PersianCreationDay;
+    @Element(required = false)
+    private String CreationDate;
 
     public int getMessageID() {
         return MessageID;

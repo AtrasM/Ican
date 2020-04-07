@@ -5,7 +5,8 @@ package avida.ican.Farzin.Model.Enum.Chat;
  */
 
 public enum ChatRoomTypeEnum {
-    All(-1),
+    NoType(-1),
+    All(0),
     Private(1),
     Room(2),
     Channele(3),

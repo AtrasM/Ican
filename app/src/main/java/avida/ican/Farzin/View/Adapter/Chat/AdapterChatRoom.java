@@ -17,7 +17,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.View.Interface.Chat.Room.ListenerAdapterChatRoom;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -36,12 +36,12 @@ import butterknife.ButterKnife;
 
 public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHolder> {
 
-    private List<StructureChatRoomListDB> itemList;
+    private List<StructureChatRoomDB> itemList;
     private int layout = R.layout.item_chat_room_list;
     private ImageLoader imageLoader;
     private ListenerAdapterChatRoom listenerAdapterChatRoom;
 
-    public AdapterChatRoom(List<StructureChatRoomListDB> itemList, ListenerAdapterChatRoom listenerAdapterChatRoom) {
+    public AdapterChatRoom(List<StructureChatRoomDB> itemList, ListenerAdapterChatRoom listenerAdapterChatRoom) {
         imageLoader = App.getImageLoader();
         this.itemList = new ArrayList<>(itemList);
         this.listenerAdapterChatRoom = listenerAdapterChatRoom;
@@ -108,7 +108,7 @@ public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHo
     @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
-        final StructureChatRoomListDB item = itemList.get(position);
+        final StructureChatRoomDB item = itemList.get(position);
 
         /*String[] splitDateTime = CustomFunction.MiladyToJalaly(item.getLastMessageCreationDate().toString()).split(" ");
         final String date = splitDateTime[0];
@@ -147,12 +147,12 @@ public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHo
         viewHolder.itemView.setOnClickListener(view -> listenerAdapterChatRoom.onItemClick(item, position));
     }
 
-    public void updateItem(StructureChatRoomListDB structureChatRoomListDBS) {
+    public void updateItem(StructureChatRoomDB structureChatRoomDBS) {
         for (int i = 0; i < itemList.size(); i++) {
-            if (itemList.get(i).getId() == structureChatRoomListDBS.getId()) {
+            if (itemList.get(i).getId() == structureChatRoomDBS.getId()) {
                 itemList.remove(i);
                 notifyItemRemoved(i);
-                itemList.add(i, structureChatRoomListDBS);
+                itemList.add(i, structureChatRoomDBS);
                 notifyDataSetChanged();
                 break;
             }
@@ -160,9 +160,9 @@ public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHo
     }
 
 
-    public void updateData(List<StructureChatRoomListDB> structureChatRoomListDBS) {
+    public void updateData(List<StructureChatRoomDB> structureChatRoomDBS) {
         itemList.clear();
-        itemList.addAll(new ArrayList<>(structureChatRoomListDBS));
+        itemList.addAll(new ArrayList<>(structureChatRoomDBS));
         this.notifyDataSetChanged();
     }
 
@@ -171,38 +171,38 @@ public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHo
     }
 
 
-    public void AddNewData(int pos, List<StructureChatRoomListDB> structureChatRoomListDBS) {
+    public void AddNewData(int pos, List<StructureChatRoomDB> structureChatRoomDBS) {
         //itemList.clear();
         if (pos == -1) {
             int start = itemList.size();
-            itemList.addAll(structureChatRoomListDBS);
-            notifyItemRangeInserted(start, structureChatRoomListDBS.size());
+            itemList.addAll(structureChatRoomDBS);
+            notifyItemRangeInserted(start, structureChatRoomDBS.size());
         } else {
-            itemList.addAll(pos, structureChatRoomListDBS);
-            notifyItemRangeInserted(pos, structureChatRoomListDBS.size());
+            itemList.addAll(pos, structureChatRoomDBS);
+            notifyItemRangeInserted(pos, structureChatRoomDBS.size());
         }
         notifyDataSetChanged();
     }
 
-    public void AddNewData(int pos, StructureChatRoomListDB structureChatRoomListDBS) {
+    public void AddNewData(int pos, StructureChatRoomDB structureChatRoomDBS) {
         //itemList.clear();
         if (pos == -1) {
             int start = itemList.size();
-            itemList.add(structureChatRoomListDBS);
+            itemList.add(structureChatRoomDBS);
             notifyItemRangeInserted(start, 1);
         } else {
-            itemList.add(pos, structureChatRoomListDBS);
+            itemList.add(pos, structureChatRoomDBS);
             notifyItemRangeInserted(pos, 1);
         }
 
         notifyDataSetChanged();
     }
 
-    public void updateData(int pos, StructureChatRoomListDB structureChatRoomListDBS) {
+    public void updateData(int pos, StructureChatRoomDB structureChatRoomDBS) {
         if (pos >= 0) {
             itemList.remove(pos);
             notifyItemRemoved(pos);
-            itemList.add(pos, structureChatRoomListDBS);
+            itemList.add(pos, structureChatRoomDBS);
             notifyItemRangeInserted(pos, 1);
         }
         notifyDataSetChanged();
@@ -212,9 +212,9 @@ public class AdapterChatRoom extends RecyclerView.Adapter<AdapterChatRoom.ViewHo
         notifyItemRangeChanged(start, count);
     }
 
-    public void filter(List<StructureChatRoomListDB> structureChatRoomListDBS) {
+    public void filter(List<StructureChatRoomDB> structureChatRoomDBS) {
         itemList = new ArrayList<>();
-        itemList.addAll(structureChatRoomListDBS);
+        itemList.addAll(structureChatRoomDBS);
         App.CurentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {

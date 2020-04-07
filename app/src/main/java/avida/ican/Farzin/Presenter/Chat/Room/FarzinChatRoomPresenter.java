@@ -6,7 +6,7 @@ import java.util.List;
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.Interface.Chat.Room.ChatRoomModelQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Chat.Room.GetChatRoomListListener;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
 import avida.ican.Farzin.Presenter.Chat.FarzinChatQuery;
 import avida.ican.Farzin.View.Interface.Chat.Room.ChatRoomDataListener;
@@ -43,7 +43,7 @@ public class FarzinChatRoomPresenter {
     private void initDataListener() {
         this.chatRoomDataListener = new ChatRoomDataListener() {
             @Override
-            public void newData(StructureChatRoomListDB structureChatRoomListDB) {
+            public void newData(StructureChatRoomDB structureChatRoomDB) {
 
             }
 
@@ -84,7 +84,7 @@ public class FarzinChatRoomPresenter {
         getChatRoomListFromServerPresenter.getRoomList(getChatRoomListListener);
     }
 
-    public List<StructureChatRoomListDB> getDataFromLocal(int Start, int Count, ChatRoomTypeEnum chatRoomTypeEnum) {
+    public List<StructureChatRoomDB> getDataFromLocal(int Start, int Count, ChatRoomTypeEnum chatRoomTypeEnum) {
         return farzinChatQuery.getChatRoomList(Start, Count, chatRoomTypeEnum);
     }
 
@@ -94,7 +94,7 @@ public class FarzinChatRoomPresenter {
         farzinChatQuery.saveChatRoom(structureChatRoomModelRES, new ChatRoomModelQuerySaveListener() {
 
             @Override
-            public void onSuccess(StructureChatRoomListDB structureChatRoomListDB) {
+            public void onSuccess(StructureChatRoomDB structureChatRoomDB) {
 
                 try {
                     chatRoomModelListRES.remove(0);
@@ -104,7 +104,7 @@ public class FarzinChatRoomPresenter {
                 if (chatRoomModelListRES.size() > 0) {
                     SaveData(chatRoomModelListRES);
                 } else {
-                    chatRoomDataListener.newData(structureChatRoomListDB);
+                    chatRoomDataListener.newData(structureChatRoomDB);
                     counterFailed = 0;
                 }
             }

@@ -15,7 +15,7 @@ import avida.ican.Ican.View.Custom.CustomFunction;
  * Created by AtrasVida on 2018-06-19 at 1:24 PM
  */
 @DatabaseTable(tableName = "chat_room")
-public class StructureChatRoomListDB implements Serializable {
+public class StructureChatRoomDB implements Serializable {
     final private String FIELD_NAME_ID = "id";
     @DatabaseField(columnName = FIELD_NAME_ID, generatedId = true)
     private int id;
@@ -62,11 +62,11 @@ public class StructureChatRoomListDB implements Serializable {
     @DatabaseField()
     private boolean HasPicture;
 
-    public StructureChatRoomListDB() {
+    public StructureChatRoomDB() {
     }
 
 
-    public StructureChatRoomListDB(int chatRoomID, int chatRoomActorID, String chatRoomIDString, String chatRoomActorIDString, int userID, boolean chatRoomActorIsActive, String name, boolean active, boolean addUserForAll, boolean muteNotification, int unseenCount, long messageLength, long fileSize, boolean uploadFile, avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum chatRoomTypeEnum, String lastMessageContent, Date creationDate, Date lastMessageCreationDate, String lastMessageCreationTime, ChatMessageTypeEnum lastMessageType, boolean hasPicture) {
+    public StructureChatRoomDB(int chatRoomID, int chatRoomActorID, String chatRoomIDString, String chatRoomActorIDString, int userID, boolean chatRoomActorIsActive, String name, boolean active, boolean addUserForAll, boolean muteNotification, int unseenCount, long messageLength, long fileSize, boolean uploadFile, avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum chatRoomTypeEnum, String lastMessageContent, Date creationDate, Date lastMessageCreationDate, String lastMessageCreationTime, ChatMessageTypeEnum lastMessageType, boolean hasPicture) {
         ChatRoomID = chatRoomID;
         ChatRoomActorID = chatRoomActorID;
         if (userID <= 0) {

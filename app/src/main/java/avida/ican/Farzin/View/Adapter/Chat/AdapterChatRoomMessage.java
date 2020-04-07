@@ -1,5 +1,6 @@
 package avida.ican.Farzin.View.Adapter.Chat;
 
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ListenerAdapterChatRoomMessage;
+import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.R;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -110,7 +112,6 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
         }
     }*/
 
-
     class SentMessageHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ln_chat_message_date)
         LinearLayout lnDate;
@@ -126,6 +127,8 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
         TextView messageText;
         @BindView(R.id.text_message_time)
         TextView timeText;
+        @BindView(R.id.img_state)
+        ImageView imgState;
 
         SentMessageHolder(View itemView) {
             super(itemView);
@@ -142,6 +145,16 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
                 lnDate.setVisibility(View.GONE);
             }
 
+            if (message.isSendedFromApp()) {
+                timeText.setVisibility(View.GONE);
+                imgState.setImageDrawable(Resorse.getDrawable(R.drawable.ic_waiting));
+            } else {
+                if (message.getSeenCount() > 1) {
+                    imgState.setImageDrawable(Resorse.getDrawable(R.drawable.ic_d_tick));
+                } else {
+                    imgState.setImageDrawable(Resorse.getDrawable(R.drawable.ic_tick));
+                }
+            }
 
             if (message.getReplyToMessageID() > 0) {
                 lnReply.setVisibility(View.VISIBLE);
@@ -189,7 +202,8 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
         TextView nameText;
         @BindView(R.id.image_message_profile)
         ImageView profileImage;
-
+        @BindView(R.id.img_state)
+        ImageView imgState;
 
         ReceivedMessageHolder(View itemView) {
             super(itemView);
@@ -204,6 +218,12 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
             } else {
                 lnDate.setVisibility(View.GONE);
             }
+
+            /*if (message.isSeen()) {
+                imgState.setImageDrawable(Resorse.getDrawable(R.drawable.ic_d_tick));
+            } else {
+                imgState.setImageDrawable(Resorse.getDrawable(R.drawable.ic_tick));
+            }*/
 
             if (message.getReplyToMessageID() > 0) {
                 lnReply.setVisibility(View.VISIBLE);
@@ -249,6 +269,33 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
 
     public void addDataToEnd(List<StructureChatRoomMessageDB> messageList) {
         mMessageList.addAll(mMessageList.size(), messageList);
+        notifyDataSetChanged();
+    }
+
+    public void addDataToEnd(StructureChatRoomMessageDB message) {
+        mMessageList.add(mMessageList.size(), message);
+        notifyDataSetChanged();
+    }
+
+    public void addDataToFirst(StructureChatRoomMessageDB message) {
+        mMessageList.add(0, message);
+        notifyDataSetChanged();
+    }
+
+    public void deletItem(String messageIDString) {
+        //StructureChatRoomMessageDB message = new StructureChatRoomMessageDB();
+        //message.setMessageIDString(messageIDString);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            mMessageList.removeIf((StructureChatRoomMessageDB message) -> message.getMessageIDString().equals(messageIDString));
+        } else {
+            for (int i = 0; i < mMessageList.size(); i++) {
+                if (mMessageList.get(i).getMessageIDString().equals(messageIDString)) {
+                    mMessageList.remove(i);
+                    notifyItemRemoved(i);
+                    break;
+                }
+            }
+        }
         notifyDataSetChanged();
     }
 

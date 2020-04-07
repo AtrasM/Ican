@@ -254,6 +254,14 @@ public class FarzinActivityLogin extends BaseActivity {
                 App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_access_denied), SnackBarEnum.SNACKBAR_LONG_TIME);
             }
 
+            @Override
+            public void invalidLicense(String error) {
+                farzinPrefrences.putIsRemember(false);
+                loading.Hide();
+                App.ShowMessage().ShowSnackBar(error, SnackBarEnum.SNACKBAR_INDEFINITE);
+
+            }
+
         });
     }
 
@@ -307,6 +315,14 @@ public class FarzinActivityLogin extends BaseActivity {
                     public void invalidLogin(String error) {
                         App.ShowMessage().ShowSnackBar(Resorse.getString(R.string.error_access_denied), SnackBarEnum.SNACKBAR_LONG_TIME);
                         loading.Hide();
+                    }
+
+                    @Override
+                    public void invalidLicense(String error) {
+
+                        farzinPrefrences.putIsRemember(false);
+                        loading.Hide();
+                        App.ShowMessage().ShowSnackBar(error, SnackBarEnum.SNACKBAR_INDEFINITE);
                     }
 
 

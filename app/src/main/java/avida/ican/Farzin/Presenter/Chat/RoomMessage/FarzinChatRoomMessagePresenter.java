@@ -1,13 +1,17 @@
 package avida.ican.Farzin.Presenter.Chat.RoomMessage;
 
+import android.view.View;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
+import avida.ican.Farzin.Model.Interface.Chat.Room.ChatRoomModelQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Chat.RoomMessage.ChatRoomMessageModelQuerySaveListener;
 import avida.ican.Farzin.Model.Interface.Chat.RoomMessage.GetChatRoomMessageListListener;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
+import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
 import avida.ican.Farzin.Presenter.Chat.FarzinChatQuery;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
@@ -54,6 +58,11 @@ public class FarzinChatRoomMessagePresenter {
             }
 
             @Override
+            public void inputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+
+            }
+
+            @Override
             public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
 
             }
@@ -95,7 +104,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId) {
         isFirst = true;
-        isReplyData=false;
+        isReplyData = false;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -106,7 +115,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID) {
         isFirst = false;
-        isReplyData=false;
+        isReplyData = false;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -117,7 +126,7 @@ public class FarzinChatRoomMessagePresenter {
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID, String toMessageID, String toTableExtension) {
         isFirst = false;
-        isReplyData=true;
+        isReplyData = true;
         if (App.networkStatus != NetworkStatus.Connected && App.networkStatus != NetworkStatus.Syncing) {
             chatRoomMessageDataListener.noData();
         } else {
@@ -128,6 +137,10 @@ public class FarzinChatRoomMessagePresenter {
 
     public StructureChatRoomMessageDB getLastDataFromLocal(String chatRoomID) {
         return farzinChatQuery.getLastMessage(chatRoomID);
+    }
+
+    public StructureChatRoomMessageDB getLastMessageSend(String chatRoomID) {
+        return farzinChatQuery.getLastMessageSend(chatRoomID);
     }
 
     public List<StructureChatRoomMessageDB> getDataFromLocal(int Start, int Count, String chatRoomID) {
@@ -155,9 +168,9 @@ public class FarzinChatRoomMessagePresenter {
                 if (chatRoomMessagesModelRES.size() > 0) {
                     SaveData(chatRoomMessagesModelRES);
                 } else {
-                    if(isReplyData){
+                    if (isReplyData) {
                         chatRoomMessageDataListener.downloadedReplyData(structureChatRoomMessageDB);
-                    }else{
+                    } else {
                         chatRoomMessageDataListener.newData(structureChatRoomMessageDB);
                     }
 
@@ -183,6 +196,163 @@ public class FarzinChatRoomMessagePresenter {
 
         });
 
+    }
+
+
+    public void saveInputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+        farzinChatQuery.saveInputMessage(structureChatRoomMessageDB, new ChatRoomMessageModelQuerySaveListener() {
+            @Override
+            public void onSuccess(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                chatRoomMessageDataListener.inputMessage(structureChatRoomMessageDB);
+                counterFailed = 0;
+            }
+
+            @Override
+            public void onExisting() {
+                chatRoomMessageDataListener.noData();
+                counterFailed = 0;
+            }
+
+            @Override
+            public void onFailed(String message) {
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+        });
+
+    }
+
+
+    public void saveInputMessage(StructureChatRoomMessageModelRES message, String tempMessageID) {
+        farzinChatQuery.deletChatRoomMessage(tempMessageID);
+        farzinChatQuery.saveChatRoomMessage(message, new ChatRoomMessageModelQuerySaveListener() {
+            @Override
+            public void onSuccess(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                chatRoomMessageDataListener.inputMessage(structureChatRoomMessageDB);
+                counterFailed = 0;
+            }
+
+            @Override
+            public void onExisting() {
+                chatRoomMessageDataListener.noData();
+                counterFailed = 0;
+            }
+
+            @Override
+            public void onFailed(String message) {
+            }
+
+            @Override
+            public void onCancel() {
+            }
+
+        });
+
+    }
+
+    public void saveInputMessage(StructureChatRoomMessageModelRES message, StructureChatRoomModelRES room) {
+        if (!farzinChatQuery.isChatRoomExist(room.getChatRoomID())) {
+            farzinChatQuery.saveChatRoom(room, new ChatRoomModelQuerySaveListener() {
+                @Override
+                public void onSuccess(StructureChatRoomDB structureChatRoomDB) {
+                    saveInputMessage(message, "");
+                    App.hasChatRoomChanged=structureChatRoomDB.getChatRoomTypeEnum();
+                }
+
+                @Override
+                public void onExisting() {
+
+                }
+
+                @Override
+                public void onFailed(String errorMessage) {
+
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+        } else {
+            //room.setLastMessageContent(message.getMessageContent());
+            replaceChatRoomAllColumn(room.getChatRoomID(), room);
+            saveInputMessage(message, "");
+        }
+
+    }
+
+    public void replaceChatRoomAllColumn(int chatRoomID, StructureChatRoomModelRES chatRoomModelRES) {
+        farzinChatQuery.replaceChatRoomAllColumn(chatRoomID, chatRoomModelRES, new ChatRoomModelQuerySaveListener() {
+            @Override
+            public void onSuccess(StructureChatRoomDB structureChatRoomDB) {
+                App.hasChatRoomChanged = structureChatRoomDB.getChatRoomTypeEnum();
+            }
+
+            @Override
+            public void onExisting() {
+                App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
+            }
+
+            @Override
+            public void onFailed(String errorMessage) {
+                App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
+            }
+
+            @Override
+            public void onCancel() {
+                App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
+            }
+        });
+    }
+
+    public void updateChatRoomLastMessageContent(int chatRoomID, String lastMessageContent, int chatRoomTypeEnum) {
+        farzinChatQuery.updateChatRoomLastMessageContent(chatRoomID, lastMessageContent);
+        App.hasChatRoomChanged = getChatRoomTypeEnum(chatRoomTypeEnum);
+    }
+
+
+    public ChatRoomTypeEnum getChatRoomTypeEnum(int chatRoomType) {
+        if (chatRoomType == ChatRoomTypeEnum.All.getIntValue()) {
+            return ChatRoomTypeEnum.All;
+        } else if (chatRoomType == ChatRoomTypeEnum.Private.getIntValue()) {
+            return ChatRoomTypeEnum.Private;
+        } else if (chatRoomType == ChatRoomTypeEnum.Room.getIntValue()) {
+            return ChatRoomTypeEnum.Room;
+        } else if (chatRoomType == ChatRoomTypeEnum.Channele.getIntValue()) {
+            return ChatRoomTypeEnum.Channele;
+        } else {
+            return ChatRoomTypeEnum.NoType;
+        }
+
+    }
+
+    private void reGetData() {
+        counterFailed++;
+        if (counterFailed >= MaxTry) {
+            chatRoomMessageDataListener.noData();
+            counterFailed = 0;
+        } else {
+            App.getHandlerMainThread().postDelayed(() -> {
+                switch (structureDataFromServerBundle.getId()) {
+                    case 1: {
+                        getDataFromServer(structureDataFromServerBundle.getChatRoomId());
+                        break;
+                    }
+                    case 2: {
+                        getDataFromServer(structureDataFromServerBundle.getChatRoomId(), structureDataFromServerBundle.getTableExtension(), structureDataFromServerBundle.getLastMessageID());
+                        break;
+                    }
+                    case 3: {
+                        getDataFromServer(structureDataFromServerBundle.getChatRoomId(), structureDataFromServerBundle.getTableExtension(), structureDataFromServerBundle.getLastMessageID(), structureDataFromServerBundle.getToMessageID(), structureDataFromServerBundle.getToTableExtension());
+                        break;
+                    }
+                }
+            }, DELAY);
+        }
     }
 
     private static class StructureDataFromServerBundle {
@@ -242,31 +412,5 @@ public class FarzinChatRoomMessagePresenter {
             return toTableExtension;
         }
     }
-
-    private void reGetData() {
-        counterFailed++;
-        if (counterFailed >= MaxTry) {
-            chatRoomMessageDataListener.noData();
-            counterFailed = 0;
-        } else {
-            App.getHandlerMainThread().postDelayed(() -> {
-                switch (structureDataFromServerBundle.getId()) {
-                    case 1: {
-                        getDataFromServer(structureDataFromServerBundle.getChatRoomId());
-                        break;
-                    }
-                    case 2: {
-                        getDataFromServer(structureDataFromServerBundle.getChatRoomId(), structureDataFromServerBundle.getTableExtension(), structureDataFromServerBundle.getLastMessageID());
-                        break;
-                    }
-                    case 3: {
-                        getDataFromServer(structureDataFromServerBundle.getChatRoomId(), structureDataFromServerBundle.getTableExtension(), structureDataFromServerBundle.getLastMessageID(), structureDataFromServerBundle.getToMessageID(), structureDataFromServerBundle.getToTableExtension());
-                        break;
-                    }
-                }
-            }, DELAY);
-        }
-    }
-
 
 }

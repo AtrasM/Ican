@@ -34,6 +34,7 @@ import java.util.Stack;
 import avida.ican.BuildConfig;
 import avida.ican.Farzin.FarzinBroadcastReceiver;
 import avida.ican.Farzin.Model.CustomLogger;
+import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.FarzinDatabaseHelper;
 import avida.ican.Farzin.Model.Interface.JobServiceCartableSchedulerListener;
 import avida.ican.Farzin.Model.Interface.JobServiceMessageSchedulerListener;
@@ -86,6 +87,7 @@ public class App extends MultiDexApplication {
     //public static JobServiceMessageSchedulerListener jobServiceMessageSchedulerListener;
     public static boolean needToReGetMessageList = false;
     public static boolean needToReGetCartableDocumentList = false;
+    public static ChatRoomTypeEnum hasChatRoomChanged = ChatRoomTypeEnum.NoType;
 
     @Override
     public void onCreate() {

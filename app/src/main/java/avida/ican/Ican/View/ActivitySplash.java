@@ -27,6 +27,7 @@ import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.DialogReCheckPermision;
 import avida.ican.Ican.View.Enum.RequestCode;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
 import butterknife.BindView;
@@ -81,7 +82,7 @@ public class ActivitySplash extends BaseActivity {
 
 
     private void continueProcess() {
-        long userAndRoleRowsCount=0;
+        long userAndRoleRowsCount = 0;
         try {
             userAndRoleListDao = App.getFarzinDatabaseHelper().getUserAndRoleListDao();
             userAndRoleRowsCount = userAndRoleListDao.countOf();
@@ -89,7 +90,7 @@ public class ActivitySplash extends BaseActivity {
             e.printStackTrace();
         }
         avLoadingIndicatorView.setVisibility(View.VISIBLE);
-        if(userAndRoleRowsCount<=0 &&  farzinPrefrences.isMetaDataForFirstTimeSync()){
+        if (userAndRoleRowsCount <= 0 && farzinPrefrences.isMetaDataForFirstTimeSync()) {
             App.getHandlerMainThread().postDelayed(() -> CustomFunction.resetApp(App.CurentActivity, new ListenerQuestion() {
                 @Override
                 public void onSuccess() {
@@ -98,10 +99,10 @@ public class ActivitySplash extends BaseActivity {
 
                 @Override
                 public void onCancel() {
-                   finish();
+                    finish();
                 }
             }), TimeValue.SecondsInMilli());
-        }else{
+        } else {
             if (farzinPrefrences.isAnableAppLock() || !isRemember) {
                 App.getHandlerMainThread().postDelayed(() -> {
                     goToActivityLogin();
@@ -131,6 +132,13 @@ public class ActivitySplash extends BaseActivity {
 
                         @Override
                         public void invalidLogin(String error) {
+                            App.ShowMessage().ShowToast(error, ToastEnum.TOAST_LONG_TIME);
+                            goToActivityLogin();
+                        }
+
+                        @Override
+                        public void invalidLicense(String error) {
+                            App.ShowMessage().ShowToast(error, ToastEnum.TOAST_LONG_TIME);
                             goToActivityLogin();
                         }
 

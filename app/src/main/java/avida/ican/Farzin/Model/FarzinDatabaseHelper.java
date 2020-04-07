@@ -17,7 +17,7 @@ import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureHameshDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureInboxDocumentDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakEntityDB;
 import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakFileDB;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureMessageFileDB;
@@ -57,7 +57,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     private Dao<StructureCreatDocumentQueueDB, Integer> mStructureCreatDocumentQueueDBDao = null;
     private Dao<StructureZanjireMadrakEntityDB, Integer> mStructureZanjireMadrakEntityDBDao = null;
     private Dao<StructureLogDB, Integer> mStructureLogDBDao = null;
-    private Dao<StructureChatRoomListDB, Integer> mChatRoomListDBDao = null;
+    private Dao<StructureChatRoomDB, Integer> mChatRoomListDBDao = null;
     private Dao<StructureChatRoomMessageDB, Integer> mChatRoomMessageListDBDao = null;
 
     private static FarzinDatabaseHelper mInstance = null;
@@ -95,7 +95,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
             TableUtils.createTable(connectionSource, StructureCreatDocumentQueueDB.class);
             TableUtils.createTable(connectionSource, StructureZanjireMadrakEntityDB.class);
             TableUtils.createTable(connectionSource, StructureLogDB.class);
-            TableUtils.createTable(connectionSource, StructureChatRoomListDB.class);
+            TableUtils.createTable(connectionSource, StructureChatRoomDB.class);
             TableUtils.createTable(connectionSource, StructureChatRoomMessageDB.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -271,9 +271,9 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
         return mStructureLogDBDao;
     }
 
-    public Dao<StructureChatRoomListDB, Integer> getChatRoomListDBDao() throws SQLException {
+    public Dao<StructureChatRoomDB, Integer> getChatRoomListDBDao() throws SQLException {
         if (mChatRoomListDBDao == null) {
-            mChatRoomListDBDao = getDao(StructureChatRoomListDB.class);
+            mChatRoomListDBDao = getDao(StructureChatRoomDB.class);
         }
         return mChatRoomListDBDao;
     }
@@ -401,7 +401,7 @@ public class FarzinDatabaseHelper extends OrmLiteSqliteOpenHelper {
     }
 
     public void clearChatRoomListDB() throws SQLException {
-        TableUtils.clearTable(getConnectionSource(), StructureChatRoomListDB.class);
+        TableUtils.clearTable(getConnectionSource(), StructureChatRoomDB.class);
     }
 
     public void clearChatRoomMessageListDB() throws SQLException {

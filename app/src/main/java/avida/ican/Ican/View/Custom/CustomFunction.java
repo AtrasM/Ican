@@ -1042,6 +1042,9 @@ public class CustomFunction {
     }
 
     public void setHtmlText(TextView myTextView, String myText) {
+        if (myText == null || myText.isEmpty()) {
+            myText = "";
+        }
         ChangeXml changeXml = new ChangeXml();
         if (myText.contains("![CDATA[")) {
             myText = changeXml.RemoveTag(myText, "<![CDATA[", "]]>");
@@ -1297,8 +1300,9 @@ public class CustomFunction {
     public static String getOsVersionCode() {
         return Build.VERSION.RELEASE;
     }
+
     public static String getDeviceSERIAL() {
-       return android.os.Build.SERIAL;
+        return android.os.Build.SERIAL;
     }
 
     public static String getDeviceModel() {

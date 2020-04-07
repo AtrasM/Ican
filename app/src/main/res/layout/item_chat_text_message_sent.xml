@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="right"
     android:layoutDirection="rtl"
-    android:padding="@dimen/padding"
     android:orientation="vertical"
+    android:padding="@dimen/padding"
     tools:ignore="RtlHardcoded">
+
   <include layout="@layout/item_chat_message_creat_date" />
+
   <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
@@ -20,89 +23,105 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
+
 
       <LinearLayout
-          android:id="@+id/ln_reply"
-          android:layout_margin="@dimen/margin"
-          android:background="@drawable/border"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:orientation="horizontal">
+          android:layout_weight="1"
+          android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_minimum"
-            android:layout_marginBottom="@dimen/margin_minimum"
-            android:layout_marginRight="@dimen/margin_minimum"
-            android:layout_marginLeft="@dimen/margin_minimum"
-            android:background="@color/color_Red" />
-
-        <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/ln_reply"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="@dimen/margin"
+            android:background="@drawable/border"
+            android:orientation="horizontal">
+
+          <LinearLayout
+              android:layout_width="2dp"
+              android:layout_height="match_parent"
+              android:layout_marginLeft="@dimen/margin_minimum"
+              android:layout_marginTop="@dimen/margin_minimum"
+              android:layout_marginRight="@dimen/margin_minimum"
+              android:layout_marginBottom="@dimen/margin_minimum"
+              android:background="@color/color_Red" />
+
+          <LinearLayout
+              android:layout_width="0dp"
+              android:layout_height="wrap_content"
+              android:layout_weight="1"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/padding">
+
+            <TextView
+                android:id="@+id/txt_reply_name"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="@dimen/padding_minimum"
+                android:text="name"
+                android:textColor="@color/color_txt_SubTitle" />
+
+            <TextView
+                android:id="@+id/txt_reply_message"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="0dp"
+                android:text="name"
+                android:textColor="@color/color_txt_SubTitle"
+                tools:ignore="InefficientWeight" />
+
+          </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin_minimum"
+            android:layout_marginTop="@dimen/margin_minimum"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_minimum"
             android:orientation="vertical"
-            android:paddingBottom="@dimen/padding">
+            tools:ignore="MissingConstraints">
 
           <TextView
-              android:id="@+id/txt_reply_name"
-              style="@style/custom_Txt_Sub_Title_style"
-              android:layout_width="match_parent"
+              android:id="@+id/text_message_body"
+              style="@style/custom_Txt_Normal_style"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
               android:gravity="right"
+              android:maxWidth="240dp"
               android:padding="@dimen/padding_minimum"
-              android:text="name"
-              android:textColor="@color/color_txt_SubTitle" />
+              android:text="hello, hello!" />
 
           <TextView
-              android:id="@+id/txt_reply_message"
+              android:id="@+id/text_message_time"
               style="@style/custom_Txt_Sub_Title_style"
-              android:layout_width="match_parent"
+              android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:gravity="right"
+              android:layout_gravity="left|bottom"
+              android:gravity="left"
               android:padding="0dp"
-              android:text="name"
-              android:textColor="@color/color_txt_SubTitle"
-              tools:ignore="InefficientWeight" />
-
+              android:text="11:40"
+              android:textColor="@color/color_White"
+              tools:ignore="MissingConstraints" />
         </LinearLayout>
 
       </LinearLayout>
 
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="@dimen/margin_minimum"
-          android:layout_marginTop="@dimen/margin_minimum"
-          android:layout_marginRight="@dimen/margin"
-          android:layout_marginBottom="@dimen/margin_minimum"
-          android:orientation="vertical"
-          tools:ignore="MissingConstraints">
-
-        <TextView
-            android:id="@+id/text_message_body"
-            style="@style/custom_Txt_Normal_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="right"
-            android:maxWidth="240dp"
-            android:padding="@dimen/padding_minimum"
-            android:text="hello, hello!" />
-
-        <TextView
-            android:id="@+id/text_message_time"
-            style="@style/custom_Txt_Sub_Title_style"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left|bottom"
-            android:gravity="left"
-            android:text="11:40"
-            android:padding="0dp"
-            android:textColor="@color/color_White"
-            tools:ignore="MissingConstraints" />
-      </LinearLayout>
+      <ImageView
+          android:id="@+id/img_state"
+          android:layout_width="12dp"
+          android:layout_height="12dp"
+          android:layout_gravity="center|bottom"
+          android:layout_margin="@dimen/margin"/>
     </LinearLayout>
   </LinearLayout>
 

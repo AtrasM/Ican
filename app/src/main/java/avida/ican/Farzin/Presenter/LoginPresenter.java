@@ -1,5 +1,7 @@
 package avida.ican.Farzin.Presenter;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.util.Log;
 
 import org.acra.ACRA;
@@ -19,8 +21,8 @@ import avida.ican.Farzin.Model.Structure.Response.StructureLoginRES;
 import avida.ican.Farzin.Model.Structure.Response.StructureUserRoleRES;
 import avida.ican.Farzin.Presenter.Cartable.ChangeActiveRolePresenter;
 import avida.ican.Farzin.Presenter.Queue.FarzinCartableDocumentPublicQueuePresenter;
-import avida.ican.Farzin.Presenter.Queue.FarzinDocumentOperatorsQueuePresenter;
 import avida.ican.Farzin.View.Dialog.DialogUserRoleList;
+import avida.ican.Farzin.View.FarzinActivityLogin;
 import avida.ican.Farzin.View.Interface.CompareCurrentUserNameWithLastUserNameListener;
 import avida.ican.Farzin.View.Interface.ListenerDialogUserRole;
 import avida.ican.Farzin.View.Interface.LoginViewListener;
@@ -39,9 +41,13 @@ import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Dialog.Loading;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.SnackBarEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
+import avida.ican.Ican.View.Interface.ListenerCloseActivitys;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.Ican.View.Interface.ListenerQuestion;
 import avida.ican.R;
+
+import static avida.ican.Ican.BaseActivity.getActivityFromStackMap;
 
 
 /**
@@ -130,7 +136,7 @@ public class LoginPresenter {
         } else {
             //loginViewListener.onAccessDenied();
             App.getHandlerMainThread().post(() -> {
-                loginViewListener.invalidLogin("UserName= "+farzinPrefrences.getUserName());
+                loginViewListener.invalidLogin("UserName= " + farzinPrefrences.getUserName());
             });
         }
     }
@@ -427,21 +433,73 @@ public class LoginPresenter {
             }
 
             @Override
-
-            public void onFailed(String errorCode) {
+            public void onFailed(int errorCode, String errorMsg) {
                 ACRA.getErrorReporter().handleSilentException(new Exception("setLicenseKey Error code= " + errorCode));
-                if (errorCode.equals("2")) {
-                    checkLicenseKey();
-                } else if (errorCode.equals("3")) {
 
-                } else if (errorCode.equals("4")) {
-
-                } else if (errorCode.equals("5")) {
-                    checkLicenseKey();
+                switch (errorCode) {
+                    case 2:
+                    case 5: {
+                        checkLicenseKey();
+                        break;
+                    }
+                    case 3:
+                    case 4: {
+                        processLicenseError(errorMsg, false);
+                        break;
+                    }
+                    case 6:
+                    case 7:
+                    case 8: {
+                        processLicenseError(errorMsg, true);
+                        break;
+                    }
                 }
-                //loginViewListener.onAccessDenied();
+
             }
+
         });
+    }
+
+    private void processLicenseError(String errorMsg, boolean logOut) {
+        if (logOut) {
+            App.getHandlerMainThread().post(() -> BaseActivity.CloseActivitys(true, new ListenerCloseActivitys() {
+                @Override
+                public void onFinish() {
+
+                    continuProccessLicenseError(errorMsg, logOut);
+                }
+
+                @Override
+                public void onCancel() {
+                    continuProccessLicenseError(errorMsg, logOut);
+                }
+            }));
+        } else {
+            App.ShowMessage().ShowToast(errorMsg, ToastEnum.TOAST_LONG_TIME);
+            loginViewListener.invalidLicense(errorMsg);
+        }
+
+    }
+
+    private void continuProccessLicenseError(String errorMsg, boolean logOut) {
+        App.ShowMessage().ShowToast(errorMsg, ToastEnum.TOAST_LONG_TIME);
+        if (App.activityStacks == null) {
+            farzinPrefrences.putAnableAppLock(false);
+            farzinPrefrences.putIsRemember(false);
+            App.getFarzinBroadCastReceiver().stopServices();
+        } else {
+            Activity activity = getActivityFromStackMap(FarzinActivityLogin.class.getSimpleName());
+            if (activity != null) {
+                loginViewListener.invalidLicense(errorMsg);
+            } else {
+                Intent intent = new Intent(App.getServiceContext(), FarzinActivityLogin.class);
+                intent.putExtra("LogOut", logOut);
+                App.getServiceContext().startActivity(intent);
+                App.isLoading = false;
+                App.canBack = true;
+                App.CurentActivity.finish();
+            }
+        }
     }
 
     public void setLicenseKey(final SetLicenseKeyListener setLicenseKeyListener) {

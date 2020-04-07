@@ -103,8 +103,6 @@ public class FragmentCartableDocumentContent extends BaseFragment {
 
     private void initPresenter() {
         cartableDocumentContentPresenter = new CartableDocumentContentPresenter(Etc, Ec, new ListenerCartableDocumentContent() {
-
-
             @Override
             public void newData(List<StructureCartableDocumentContentDB> structureCartableDocumentContentDBS) {
                 App.CurentActivity.runOnUiThread(() -> initSpiner(structureCartableDocumentContentDBS));

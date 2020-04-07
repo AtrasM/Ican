@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ln_chat_message_input"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/padding"
+    tools:ignore="RtlHardcoded">
+
+  <com.stfalcon.chatkit.messages.MessageInput
+      android:id="@+id/msg_input"
+      app:showAttachmentButton="true"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_alignParentBottom="true"
+      app:inputHint="@string/hint_enter_a_message" />
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center"
+      android:layout_margin="@dimen/margin"
+      android:background="@drawable/border_cadr"
+      android:gravity="center"
+      android:orientation="horizontal"
+      android:padding="@dimen/padding"
+      android:visibility="gone">
+
+    <EditText
+        android:id="@+id/edt_input_message"
+        style="@style/custom_normal_edittext_style"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/hint_enter_a_message"
+        android:padding="@dimen/padding" />
+
+    <ImageView
+        android:id="@+id/img_send_message"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@drawable/circle"
+        android:padding="@dimen/padding_minimum"
+        app:srcCompat="@drawable/ic_send" />
+  </LinearLayout>
+
+
+</LinearLayout>

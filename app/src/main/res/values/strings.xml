@@ -233,6 +233,7 @@
   <string name="workFlowResponse_1">بازگشت</string>
   <string name="title_workflow">ادامه فرایند</string>
   <string name="title_error">پیغام خطا</string>
+  <string name="hint_enter_a_message">پیام</string>
   <!--<string name="ENGLISH_DIGIT">"0,1,2,3,4,5,6,7,8,9,*,qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM,_,-"</string>-->
 
 </resources>

@@ -17,15 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
-import avida.ican.Farzin.Model.Structure.Bundle.StructureCartableDocumentDetailBND;
-import avida.ican.Farzin.Model.Structure.Database.Cartable.StructureZanjireMadrakEntityDB;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Presenter.Chat.Room.FarzinChatRoomPresenter;
 import avida.ican.Farzin.View.Adapter.Chat.AdapterChatRoom;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Enum.ChatPutExtraEnum;
-import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.FarzinActivityCartableDocumentDetail;
 import avida.ican.Farzin.View.FarzinActivityChatRoomMessage;
 import avida.ican.Farzin.View.Interface.Chat.Room.ListenerAdapterChatRoom;
 import avida.ican.Ican.App;
@@ -96,52 +92,52 @@ public class FragmentChatRoomList extends BaseFragment {
         initData();
     }
 
-    public void updateData(List<StructureChatRoomListDB> structureChatRoomListDB) {
+    public void updateData(List<StructureChatRoomDB> structureChatRoomDB) {
         if (this.adapterChatRoom != null) {
-            adapterChatRoom.updateData(structureChatRoomListDB);
+            adapterChatRoom.updateData(structureChatRoomDB);
             adapterChatRoom.notifyDataSetChanged();
         }
     }
 
     private void initData() {
         lnLoading.setVisibility(View.VISIBLE);
-        List<StructureChatRoomListDB> structureChatRoomListDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);
+        List<StructureChatRoomDB> structureChatRoomDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);
         lnLoading.setVisibility(View.GONE);
-        if (structureChatRoomListDBS.size() <= 0) {
+        if (structureChatRoomDBS.size() <= 0) {
             txtNoData.setVisibility(View.VISIBLE);
         }
 
-        start = structureChatRoomListDBS.size();
-        initAdapter(new ArrayList<>(structureChatRoomListDBS));
+        start = structureChatRoomDBS.size();
+        initAdapter(new ArrayList<>(structureChatRoomDBS));
     }
 
     public void reGetData() {
         start = 0;
         txtNoData.setVisibility(View.GONE);
-        List<StructureChatRoomListDB> structureChatRoomListDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);
+        List<StructureChatRoomDB> structureChatRoomDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);
 
         if (!srlRefresh.isRefreshing()) {
             lnLoading.setVisibility(View.VISIBLE);
         }
-        if (structureChatRoomListDBS.size() <= 0) {
+        if (structureChatRoomDBS.size() <= 0) {
             txtNoData.setVisibility(View.VISIBLE);
         }
         srlRefresh.setRefreshing(false);
         lnLoading.setVisibility(View.GONE);
 
-        start = structureChatRoomListDBS.size();
-        adapterChatRoom.updateData(structureChatRoomListDBS);
+        start = structureChatRoomDBS.size();
+        adapterChatRoom.updateData(structureChatRoomDBS);
     }
 
-    private void initAdapter(List<StructureChatRoomListDB> structureChatRoomListDBS) {
-        adapterChatRoom = new AdapterChatRoom(structureChatRoomListDBS, new ListenerAdapterChatRoom() {
+    private void initAdapter(List<StructureChatRoomDB> structureChatRoomDBS) {
+        adapterChatRoom = new AdapterChatRoom(structureChatRoomDBS, new ListenerAdapterChatRoom() {
             @Override
-            public void onDelet(StructureChatRoomListDB structureChatRoomListDB) {
+            public void onDelet(StructureChatRoomDB structureChatRoomDB) {
 
             }
 
             @Override
-            public void onItemClick(StructureChatRoomListDB structureChatRoomDB, int position) {
+            public void onItemClick(StructureChatRoomDB structureChatRoomDB, int position) {
                 gotoActivityChatRoomMessage(structureChatRoomDB);
             }
 
@@ -149,7 +145,7 @@ public class FragmentChatRoomList extends BaseFragment {
         rcvChatRoom.setAdapter(adapterChatRoom);
     }
 
-    private void gotoActivityChatRoomMessage(StructureChatRoomListDB structureChatRoomDB) {
+    private void gotoActivityChatRoomMessage(StructureChatRoomDB structureChatRoomDB) {
         App.getHandlerMainThread().post(() -> {
             App.canBack = true;
             // StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(zanjireMadrakEntityDB.getETC(), zanjireMadrakEntityDB.getEC(), zanjireMadrakEntityDB.getTitle(), zanjireMadrakEntityDB.getEntityNumber(), zanjireMadrakEntityDB.getImportEntityNumber());

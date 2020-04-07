@@ -12,4 +12,5 @@ public interface LoginViewListener {
     void onFailed(String error);
 
     void invalidLogin(String error);
+    void invalidLicense(String error);
 }

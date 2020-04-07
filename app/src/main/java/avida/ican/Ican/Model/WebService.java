@@ -53,6 +53,8 @@ import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.Resorse;
 import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
+import avida.ican.Ican.View.Enum.SnackBarEnum;
+import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 
@@ -381,6 +383,21 @@ public class WebService {
                         } else {
                             gotoActivityLogin();
                         }*/
+                        if (App.activityStacks == null) {
+                            if (App.getFarzinBroadCastReceiver() != null) {
+                                App.getFarzinBroadCastReceiver().stopServices();
+                            }
+                            callNotificationLogOut();
+                            //App.getHandlerMainThread().postDelayed(() -> checkValidationLogin(invalidLogin, invalidUserOrPass, webServiceResponse), FaeildDelay);
+                        } else {
+                            gotoActivityLogin();
+                        }
+                    }
+
+                    @Override
+                    public void invalidLicense(String error) {
+                        App.getHandlerMainThread().post(() -> App.ShowMessage().ShowToast(error, ToastEnum.TOAST_LONG_TIME));
+
                         if (App.activityStacks == null) {
                             if (App.getFarzinBroadCastReceiver() != null) {
                                 App.getFarzinBroadCastReceiver().stopServices();

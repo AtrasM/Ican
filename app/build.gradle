@@ -161,5 +161,7 @@ dependencies {
 
     //implementation 'com.github.shrikanth7698:ChatView:v4.4.9'
 
+    implementation 'com.github.stfalcon:chatkit:0.3.3'
+
 
 }

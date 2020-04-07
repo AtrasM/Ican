@@ -12,16 +12,10 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
-import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
-import avida.ican.Farzin.Presenter.Chat.Room.FarzinChatRoomPresenter;
 import avida.ican.Farzin.Presenter.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
 import avida.ican.Farzin.View.Enum.ChatPutExtraEnum;
-import avida.ican.Farzin.View.Enum.PutExtraEnum;
-import avida.ican.Farzin.View.Fragment.Chat.FragmentChatRoomList;
 import avida.ican.Farzin.View.Fragment.Chat.FragmentChatRoomMessageList;
-import avida.ican.Farzin.View.Interface.Chat.Room.ChatRoomDataListener;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseToolbarActivity;
@@ -54,6 +48,8 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
     private FarzinChatRoomMessagePresenter farzinChatRoomMessagePresenter;
     private String chatRoomId;
 
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -74,6 +70,7 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
         lnLoading.setVisibility(View.VISIBLE);
         initTollBar(Title);
         initView();
+
     }
 
     @SuppressLint("SetTextI18n")
@@ -122,11 +119,15 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
         initPresenter();
     }
 
-
     private void initPresenter() {
         farzinChatRoomMessagePresenter = new FarzinChatRoomMessagePresenter(new ChatRoomMessageDataListener() {
             @Override
             public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+
+            }
+
+            @Override
+            public void inputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB) {
 
             }
 
@@ -165,6 +166,9 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
 
         lnLoading.setVisibility(View.GONE);
     }
+
+
+
 
 
     @Override

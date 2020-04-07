@@ -50,12 +50,12 @@ public class SetLicenseKeyPresenter {
 
             @Override
             public void onFailed() {
-                setLicenseKeyListener.onFailed("");
+                setLicenseKeyListener.onFailed(-1, "onFailed");
             }
 
             @Override
             public void onCancel() {
-                setLicenseKeyListener.onFailed("");
+                setLicenseKeyListener.onFailed(-1, "onCancel");
             }
         });
 
@@ -67,10 +67,10 @@ public class SetLicenseKeyPresenter {
             if (structureSetLicenseKeyRES.isSetLicenseKeyResult()) {
                 setLicenseKeyListener.onSuccess();
             } else {
-                setLicenseKeyListener.onFailed("" + structureSetLicenseKeyRES.getiErrorCode());
+                setLicenseKeyListener.onFailed(structureSetLicenseKeyRES.getiErrorCode(), "invalid LicenseKey.no error Message");
             }
         } else {
-            setLicenseKeyListener.onFailed("" + structureSetLicenseKeyRES.getiErrorCode());
+            setLicenseKeyListener.onFailed(structureSetLicenseKeyRES.getiErrorCode(), structureSetLicenseKeyRES.getStrErrorMsg());
         }
     }
 
@@ -91,7 +91,7 @@ public class SetLicenseKeyPresenter {
     public SoapObject getSoapObject() {
         SoapObject soapObject = new SoapObject(NameSpace, MethodName);
         String uuid = CustomFunction.getRandomUUID();
-        StructureSetLicenseKeyBND structureSetLicenseKeyBND = new StructureSetLicenseKeyBND(GetApplicationName(), GetRandom(uuid),uuid);
+        StructureSetLicenseKeyBND structureSetLicenseKeyBND = new StructureSetLicenseKeyBND(GetApplicationName(), GetRandom(uuid), uuid);
         soapObject.addProperty("ApplicationName", structureSetLicenseKeyBND.getApplicationName());
         soapObject.addProperty("Challenge", structureSetLicenseKeyBND.getChallenge());
         soapObject.addProperty("Random", structureSetLicenseKeyBND.getRandom());

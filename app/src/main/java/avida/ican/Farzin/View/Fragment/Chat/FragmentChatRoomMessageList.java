@@ -7,20 +7,26 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.stfalcon.chatkit.messages.MessageInput;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import avida.ican.Farzin.Model.CustomLogger;
+import avida.ican.Farzin.Model.Enum.Chat.ChatMessageTypeEnum;
+import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
+import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
+import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
 import avida.ican.Farzin.Presenter.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
+import avida.ican.Farzin.Presenter.SignalR.SignalRSingleton;
 import avida.ican.Farzin.View.Adapter.Chat.AdapterChatRoomMessage;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
@@ -28,11 +34,14 @@ import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ListenerAdapterChatRoom
 import avida.ican.Ican.App;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
+import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
+import microsoft.aspnet.signalr.client.Action;
 
 public class FragmentChatRoomMessageList extends BaseFragment {
 
@@ -46,6 +55,8 @@ public class FragmentChatRoomMessageList extends BaseFragment {
     LinearLayout lnLoading;
     @BindView(R.id.img_move_down)
     ImageView imgMoveDown;
+    @BindView(R.id.msg_input)
+    MessageInput msgInput;
 
     private Activity context;
     private GridLayoutManagerWithSmoothScroller gridLayoutManager;
@@ -62,6 +73,7 @@ public class FragmentChatRoomMessageList extends BaseFragment {
     private boolean isshow = false;
     private Animator animator = null;
     private boolean canLoading = true;
+
 
     public FragmentChatRoomMessageList newInstance(Activity context, String chatRoomMessageID) {
         this.context = context;
@@ -96,7 +108,56 @@ public class FragmentChatRoomMessageList extends BaseFragment {
             isshow = false;
         });
         initRcv();
+        SignalRSingleton signalRInstance = SignalRSingleton.getInstance();
+
+       /* App.fragmentStacks.put("chatRoomMessage", new Stack<>());
+        App.fragmentStacks.get(tab).push(fragment);*/
+
+
+        //__________________________________________________________________________________
+
+        App.getHandlerMainThread().postDelayed(() -> {
+            signalRInstance.getChatHubProxy().on("receiveMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES) -> {
+                App.getHandlerMainThread().post(() -> farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageModelRES, structureChatRoomModelRES));
+            }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class);
+
+            //--------------------------------------------------
+
+            signalRInstance.getChatHubProxy().on("showSendMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES, tempMessageID) -> {
+                App.getHandlerMainThread().post(() -> {
+
+                    structureChatRoomMessageModelRES.setCurrentUserIsWriter(true);
+                    farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageModelRES, tempMessageID);
+                    adapterChatRoomMessage.deletItem(tempMessageID);
+                    farzinChatRoomMessagePresenter.updateChatRoomLastMessageContent(structureChatRoomModelRES.getChatRoomID(), structureChatRoomMessageModelRES.getMessageContent(), structureChatRoomModelRES.getRoomType());
+                   /* structureChatRoomModelRES.setLastMessageContent(structureChatRoomMessageModelRES.getMessageContent());
+                    farzinChatRoomMessagePresenter.replaceChatRoomAllColumn(structureChatRoomModelRES.getChatRoomID(), structureChatRoomModelRES);
+*/
+                });
+
+            }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class, String.class);
+
+        }, TimeValue.SecondsInMilli() * 3);
+
+        //__________________________________________________________________________________
+
+        msgInput.setInputListener(message -> {
+            String randomMessageID = CustomFunction.getRandomUUID();
+            StructureChatRoomMessageDB lastMessageSend = farzinChatRoomMessagePresenter.getLastMessageSend(chatRoomMessageID);
+            int messageID = 0;
+            if (lastMessageSend != null) {
+                messageID = (lastMessageSend.getMessageID()) + 1;
+            }
+            StructureChatRoomMessageDB structureChatRoomMessageDB = new StructureChatRoomMessageDB(chatRoomMessageID, randomMessageID, messageID, message.toString(), ChatMessageTypeEnum.Text, CustomFunction.getCurentLocalDateTimeAsStringFormat());
+            farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageDB);
+
+            signalRInstance.sendMessage(message.toString(), chatRoomMessageID, randomMessageID);
+            return false;
+        });
+
+
     }
+
 
     private void initRcv() {
         gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
@@ -107,6 +168,46 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         initScrollListener();
         initPresenter();
     }
+
+    private void initPresenter() {
+        farzinChatRoomMessagePresenter = new FarzinChatRoomMessagePresenter(new ChatRoomMessageDataListener() {
+            @Override
+            public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                int messageID = adapterChatRoomMessage.getLastMessage().getId();
+                StructureChatRoomMessageDB replyMessage = farzinChatRoomMessagePresenter.getLastDataFromLocal(chatRoomMessageID);
+                loadDataFromLocal(messageID, replyMessage.getId());
+            }
+
+            @Override
+            public void inputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                if (structureChatRoomMessageDB.getChatRoomIDString().equals(adapterChatRoomMessage.getLastMessage().getChatRoomIDString())) {
+                    App.getHandlerMainThread().post(() -> {
+                        msgInput.getInputEditText().setText("");
+                        adapterChatRoomMessage.addDataToFirst(structureChatRoomMessageDB);
+                        rcvChatRoomMessage.smoothScrollToPosition(0);
+                    });
+                }
+
+            }
+
+            @Override
+            public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
+                loadDate();
+            }
+
+            @Override
+            public void noData() {
+                App.getHandlerMainThread().post(() -> {
+                    srlRefresh.setRefreshing(true);
+                    lnLoading.setVisibility(View.GONE);
+                    canLoading = false;
+                });
+
+            }
+        });
+        initData();
+    }
+
 
     private void initScrollListener() {
         rcvChatRoomMessage.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -130,9 +231,9 @@ public class FragmentChatRoomMessageList extends BaseFragment {
                     if (canLoading) {
                         totalItemCount = gridLayoutManager.getItemCount();
                         if ((visibleItemCount + pastVisiblesItems[0]) >= totalItemCount - 2) {
-                            canLoading = false;
+                          /*  canLoading = false;
                             loadDate();
-                            App.ShowMessage().ShowToast("position= " + pastVisiblesItems[0], ToastEnum.TOAST_LONG_TIME);
+                            App.ShowMessage().ShowToast("position= " + pastVisiblesItems[0], ToastEnum.TOAST_LONG_TIME);*/
                         }
                     }
                 }
@@ -140,30 +241,6 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         });
     }
 
-
-    private void initPresenter() {
-        farzinChatRoomMessagePresenter = new FarzinChatRoomMessagePresenter(new ChatRoomMessageDataListener() {
-            @Override
-            public void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
-                int messageID = adapterChatRoomMessage.getLastMessage().getId();
-                StructureChatRoomMessageDB replyMessage = farzinChatRoomMessagePresenter.getLastDataFromLocal(chatRoomMessageID);
-                loadDataFromLocal(messageID, replyMessage.getId());
-            }
-
-            @Override
-            public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
-                loadDate();
-            }
-
-            @Override
-            public void noData() {
-                srlRefresh.setRefreshing(true);
-                lnLoading.setVisibility(View.GONE);
-                canLoading = false;
-            }
-        });
-        initData();
-    }
 
     public void updateData(List<StructureChatRoomMessageDB> structureChatRoomMessageDBS) {
         if (this.adapterChatRoomMessage != null) {

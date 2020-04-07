@@ -7,5 +7,5 @@ package avida.ican.Farzin.View.Interface;
 public interface SetLicenseKeyListener {
     void onSuccess();
 
-    void onFailed(String error);
+    void onFailed(int errorCode,String errorMsg);
 }

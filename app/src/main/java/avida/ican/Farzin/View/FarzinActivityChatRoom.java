@@ -14,7 +14,7 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
-import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomListDB;
+import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Presenter.Chat.Room.FarzinChatRoomPresenter;
 import avida.ican.Farzin.View.Fragment.Chat.FragmentChatRoomList;
 import avida.ican.Farzin.View.Interface.Chat.Room.ChatRoomDataListener;
@@ -53,6 +53,16 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
 
     @Override
     protected void onResume() {
+
+        if (App.hasChatRoomChanged != ChatRoomTypeEnum.NoType) {
+            try {
+                App.CurentActivity.runOnUiThread(() -> updateData(App.hasChatRoomChanged));
+                App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
         super.onResume();
     }
 
@@ -92,7 +102,7 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
         adapter.addFrag(fragmentChatRoomGroup, R.string.titleChatRoomGroup);
         adapter.addFrag(fragmentChatRoomChannel, R.string.titleChatRoomChannel);
         mViewPager.setAdapter(adapter);
-         mViewPager.setOffscreenPageLimit(3);//where 3 is the amount of pages to keep in memory on either side of the current page.
+        mViewPager.setOffscreenPageLimit(3);//where 3 is the amount of pages to keep in memory on either side of the current page.
         smartTabLayout.setViewPager(mViewPager);
         smartTabLayout.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -126,7 +136,7 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
     private void initPresenter() {
         farzinChatRoomPresenter = new FarzinChatRoomPresenter(new ChatRoomDataListener() {
             @Override
-            public void newData(StructureChatRoomListDB structureChatRoomListDB) {
+            public void newData(StructureChatRoomDB structureChatRoomDB) {
                 App.CurentActivity.runOnUiThread(() -> {
                     lnLoading.setVisibility(View.GONE);
                     updateData(tmpChatRoomTypeEnum);

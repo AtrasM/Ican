@@ -23,108 +23,126 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
       <LinearLayout
-          android:id="@+id/ln_reply"
-          android:layout_width="match_parent"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
-          android:layout_margin="@dimen/margin"
-          android:background="@drawable/border"
-          android:orientation="horizontal">
+          android:layout_weight="1"
+          android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_minimum"
-            android:layout_marginRight="@dimen/margin_minimum"
-            android:layout_marginBottom="@dimen/margin_minimum"
-            android:background="@color/color_Red" />
-
-        <LinearLayout
-            android:layout_width="0dp"
+            android:id="@+id/ln_reply"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/padding">
+            android:layout_margin="@dimen/margin"
+            android:background="@drawable/border"
+            android:orientation="horizontal">
 
-          <TextView
-              android:id="@+id/txt_reply_name"
-              style="@style/custom_Txt_Sub_Title_style"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="right"
-              android:padding="@dimen/padding_minimum"
-              android:text="name"
-              android:textColor="@color/color_txt_SubTitle" />
+          <LinearLayout
+              android:layout_width="2dp"
+              android:layout_height="match_parent"
+              android:layout_marginTop="@dimen/margin_minimum"
+              android:layout_marginRight="@dimen/margin_minimum"
+              android:layout_marginBottom="@dimen/margin_minimum"
+              android:background="@color/color_Red" />
 
-          <TextView
-              android:id="@+id/txt_reply_message"
-              style="@style/custom_Txt_Sub_Title_style"
-              android:layout_width="match_parent"
+          <LinearLayout
+              android:layout_width="0dp"
               android:layout_height="wrap_content"
-              android:gravity="right"
-              android:padding="0dp"
-              android:text="name"
-              android:textColor="@color/color_txt_SubTitle"
-              tools:ignore="InefficientWeight" />
+              android:layout_weight="1"
+              android:orientation="vertical"
+              android:paddingBottom="@dimen/padding">
+
+            <TextView
+                android:id="@+id/txt_reply_name"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="@dimen/padding_minimum"
+                android:text="name"
+                android:textColor="@color/color_txt_SubTitle" />
+
+            <TextView
+                android:id="@+id/txt_reply_message"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:padding="0dp"
+                android:text="name"
+                android:textColor="@color/color_txt_SubTitle"
+                tools:ignore="InefficientWeight" />
+
+          </LinearLayout>
 
         </LinearLayout>
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:layout_marginLeft="@dimen/margin"
-          android:layout_marginTop="@dimen/margin"
-          android:layout_marginRight="@dimen/margin"
-          android:layout_marginBottom="@dimen/margin_minimum"
-          android:orientation="horizontal"
-          tools:ignore="MissingConstraints">
-
-        <ImageView
-            android:id="@+id/image_message_profile"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginLeft="@dimen/padding"
-            android:background="@drawable/circle"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginTop="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_marginBottom="@dimen/margin_minimum"
+            android:orientation="horizontal"
+            tools:ignore="MissingConstraints">
 
-          <TextView
-              android:id="@+id/text_message_name"
-              style="@style/custom_Txt_Sub_Title_style"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
+          <ImageView
+              android:id="@+id/image_message_profile"
+              android:layout_width="32dp"
+              android:layout_height="32dp"
               android:layout_marginLeft="@dimen/padding"
-              android:text="John Doe" />
+              android:background="@drawable/circle"
+              app:layout_constraintLeft_toLeftOf="parent"
+              app:layout_constraintTop_toTopOf="parent" />
 
-          <TextView
-              android:id="@+id/text_message_body"
-              style="@style/custom_Txt_Normal_style"
-              android:layout_width="wrap_content"
+          <LinearLayout
+              android:layout_width="match_parent"
               android:layout_height="wrap_content"
-              android:maxWidth="240dp"
-              android:padding="@dimen/padding_minimum"
-              android:text="hi man, how are you?" />
+              android:orientation="vertical">
 
-          <TextView
-              android:id="@+id/text_message_time"
-              android:layout_width="wrap_content"
-              android:layout_height="wrap_content"
-              android:gravity="left"
-              android:padding="0dp"
-              android:text="11:40"
-              android:textSize="10sp" />
+            <TextView
+                android:id="@+id/text_message_name"
+                style="@style/custom_Txt_Sub_Title_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/padding"
+                android:text="John Doe" />
+
+            <TextView
+                android:id="@+id/text_message_body"
+                style="@style/custom_Txt_Normal_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="240dp"
+                android:padding="@dimen/padding_minimum"
+                android:text="hi man, how are you?" />
+
+            <TextView
+                android:id="@+id/text_message_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left"
+                android:padding="0dp"
+                android:text="11:40"
+                android:textSize="10sp" />
+          </LinearLayout>
+
         </LinearLayout>
-
       </LinearLayout>
+
+      <ImageView
+          android:id="@+id/img_state"
+          android:layout_width="12dp"
+          android:layout_height="12dp"
+          android:layout_gravity="center|bottom"
+          android:layout_margin="@dimen/margin"
+          android:visibility="gone"
+          app:srcCompat="@drawable/ic_waiting" />
+
+
     </LinearLayout>
   </LinearLayout>
 </LinearLayout>

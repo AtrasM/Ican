@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import avida.ican.Farzin.FarzinBroadcastReceiver;
+import avida.ican.Farzin.Model.CustomLogger;
 import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
@@ -44,13 +45,16 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureUserRoleREQ;
+import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
+import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
 import avida.ican.Farzin.Presenter.Cartable.ChangeActiveRolePresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Queue.FarzinCartableDocumentPublicQueuePresenter;
-import avida.ican.Farzin.Presenter.Service.SignalR.SignalRService;
+import avida.ican.Farzin.Presenter.SignalR.SignalRService;
+import avida.ican.Farzin.Presenter.SignalR.SignalRSingleton;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Farzin.View.Dialog.DialogNewData;
 import avida.ican.Farzin.View.Dialog.DialogUserRoleList;
@@ -75,6 +79,7 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
+import microsoft.aspnet.signalr.client.Action;
 
 import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
@@ -89,7 +94,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     @BindView(R.id.ln_loading)
     LinearLayout lnLoading;
 
-    //private static BottomNavigationViewEx staticbottomNavigation;
     @BindString(R.string.title_home)
     String Title;
     private boolean menuShow = false;
@@ -111,7 +115,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private ChangeActiveRoleListener mChangeActiveRoleListener;
     private FarzinMetaDataQuery farzinMetaDataQuery;
     private String notificationTag = "";
-
     private SignalRService mService;
     private boolean mBound = false;
     private FirebaseJobDispatcher dispatcher;
@@ -195,6 +198,26 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             }
         }).init();
+
+       /* App.getHandlerMainThread().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SignalRSingleton.getInstance().getChatHubProxy().invoke("SendMessage", "e2fb501f623748daaa7d32c220498e15", "Test3", "randomID1").done(new Action<Void>() {
+                    @Override
+                    public void run(Void aVoid) throws Exception {
+                        aVoid.toString();
+                    }
+                });
+
+
+                SignalRSingleton.getInstance().getChatHubProxy().on("receiveMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES) -> {
+                    structureChatRoomMessageModelRES.getChatRoomID();
+                    CustomLogger.setLog("chat receiveMessage on getMessageContent= " + structureChatRoomMessageModelRES.getMessageContent());
+                }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class);
+            }
+        }, TimeValue.SecondsInMilli() * 2);*/
+
+
     }
 
     private void initChangeActiveRoleListener() {
@@ -600,7 +623,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         FarzinCartableQuery farzinCartableQuery = new FarzinCartableQuery();
         App.getHandlerMainThread().post(() -> {
             if (farzinCartableQuery.IsDocumentExist(item.getReceiverCode())) {
-                StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(item.getEntityTypeCode(), item.getEntityCode(), item.getSendCode(), item.getReceiverCode(), item.getReceiveDate(), item.getTitle(), item.getSenderName(), item.getSenderRoleName(), item.getEntityNumber(), item.getImportEntityNumber(),item.isbInWorkFlow());
+                StructureCartableDocumentDetailBND cartableDocumentDetailBND = new StructureCartableDocumentDetailBND(item.getEntityTypeCode(), item.getEntityCode(), item.getSendCode(), item.getReceiverCode(), item.getReceiveDate(), item.getTitle(), item.getSenderName(), item.getSenderRoleName(), item.getEntityNumber(), item.getImportEntityNumber(), item.isbInWorkFlow());
                 farzinCartableQuery.updateCartableDocumentIsNewStatus(item.getId(), false);
                 bundleObject.putSerializable(PutExtraEnum.BundleCartableDocumentDetail.getValue(), cartableDocumentDetailBND);
                 Intent intent = new Intent(App.CurentActivity, FarzinActivityCartableDocumentDetail.class);
@@ -820,43 +843,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
         }
     }
 
-/*
-    public void startSignalRService(){
-        Intent intent = new Intent();
-        intent.setClass(App.getAppContext(), SignalRService.class);
-        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-    }
 
-    @Override
-    protected void onStop() {
-        // Unbind from the service
-        if (mBound) {
-            unbindService(mConnection);
-            mBound = false;
-        }
-        super.onStop();
-    }
-    */
-
-    /**
-     * Defines callbacks for service binding, passed to bindService()
-     *//*
-    public final ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
-            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
-            mService = binder.getService();
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };*/
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -885,6 +872,16 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
         super.onDestroy();
     }
+
+/*    @Override
+    protected void onStop() {
+        // Unbind from the service
+        if (signalRPresenter.getBound()) {
+            unbindService(signalRPresenter.mConnection);
+            signalRPresenter.setBound(false);
+        }
+        super.onStop();
+    }*/
 
     @Override
     public void onBackPressed() {

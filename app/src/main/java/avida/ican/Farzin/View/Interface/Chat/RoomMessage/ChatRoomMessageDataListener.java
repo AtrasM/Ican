@@ -8,6 +8,7 @@ import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChat
 
 public interface ChatRoomMessageDataListener {
     void downloadedReplyData(StructureChatRoomMessageDB structureChatRoomMessageDB);
+    void inputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB);
     void newData(StructureChatRoomMessageDB structureChatRoomMessageDB);
     void noData();
 }

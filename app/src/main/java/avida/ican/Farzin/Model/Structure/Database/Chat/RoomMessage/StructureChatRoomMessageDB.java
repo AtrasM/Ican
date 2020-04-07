@@ -5,6 +5,8 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
+import java.util.Random;
+import java.util.UUID;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatMessageTypeEnum;
 import avida.ican.Ican.View.Custom.CustomFunction;
@@ -37,19 +39,19 @@ public class StructureChatRoomMessageDB implements Serializable {
     private String MessageContent;
     @DatabaseField(canBeNull = false)
     private String UserFullName;
-    @DatabaseField(dataType = DataType.ENUM_INTEGER,canBeNull = false)
+    @DatabaseField(dataType = DataType.ENUM_INTEGER, canBeNull = false)
     private ChatMessageTypeEnum MessageType;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField()
     private int ReplyToMessageID;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField()
     private String ReplyToMessageIDString;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField()
     private String ReplyToMessageContent;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField()
     private String ReplyToMessageUser;
-    @DatabaseField(dataType = DataType.ENUM_INTEGER,canBeNull = false)
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private ChatMessageTypeEnum ReplyToMessageType;
-    @DatabaseField(canBeNull = false)
+    @DatabaseField()
     private String ReplyToMessageTableExtension;
     @DatabaseField(canBeNull = false)
     private int SeenCount;
@@ -73,8 +75,37 @@ public class StructureChatRoomMessageDB implements Serializable {
     private String PersianCreationDate;
     @DatabaseField(canBeNull = false)
     private String PersianCreationDay;
+    @DatabaseField(canBeNull = false)
+    private boolean isSendedFromApp;
 
     public StructureChatRoomMessageDB() {
+    }
+
+    public StructureChatRoomMessageDB(String chatRoomIDString, String messageIDString,int messageID, String messageContent, ChatMessageTypeEnum messageType, String creationDate) {
+        ChatRoomIDString = chatRoomIDString;
+        MessageIDString = messageIDString;
+        MessageContent = CustomFunction.convertNullToEmpety(messageContent);
+        MessageType = messageType;
+        PersianCreationDay = creationDate;
+        CurrentUserIsWriter = true;
+        isSendedFromApp = true;
+        MessageID = messageID;
+        ChatRoomID = -1;
+        ActorIDString = "";
+        OriginalMessageID = -1;
+        OriginalMessageIDString = "";
+        Seen = false;
+
+        UserFullName = "";
+        SeenCount = -1;
+        FaSeenCount = "-1";
+        Deleted = false;
+        Extension = "";
+        TableExtension = "";
+        CreationDay = creationDate;
+        PersianCreationTime = "";
+        PersianCreationTimeWithoutSecond = "";
+        PersianCreationDate = creationDate;
     }
 
     public StructureChatRoomMessageDB(int messageID, String messageIDString, int chatRoomID, String chatRoomIDString, String actorIDString, int originalMessageID, String originalMessageIDString, boolean seen, String messageContent, String userFullName, ChatMessageTypeEnum messageType, int replyToMessageID, String replyToMessageIDString, String replyToMessageContent, String replyToMessageUser, ChatMessageTypeEnum replyToMessageType, String replyToMessageTableExtension, int seenCount, String faSeenCount, boolean deleted, String extension, String tableExtension, boolean currentUserIsWriter, String creationDay, String persianCreationTime, String persianCreationTimeWithoutSecond, String persianCreationDate, String persianCreationDay) {
@@ -338,5 +369,13 @@ public class StructureChatRoomMessageDB implements Serializable {
 
     public void setPersianCreationDay(String persianCreationDay) {
         PersianCreationDay = persianCreationDay;
+    }
+
+    public boolean isSendedFromApp() {
+        return isSendedFromApp;
+    }
+
+    public void setSendedFromApp(boolean sendedFromApp) {
+        isSendedFromApp = sendedFromApp;
     }
 }
