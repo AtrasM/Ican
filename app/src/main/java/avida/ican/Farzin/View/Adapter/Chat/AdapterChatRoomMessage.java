@@ -295,8 +295,9 @@ public class AdapterChatRoomMessage extends RecyclerView.Adapter {
                     break;
                 }
             }
+            notifyDataSetChanged();
         }
-        notifyDataSetChanged();
+
     }
 
     public StructureChatRoomMessageDB getLastMessage() {

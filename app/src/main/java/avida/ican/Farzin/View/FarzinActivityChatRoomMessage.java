@@ -1,7 +1,10 @@
 package avida.ican.Farzin.View;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -12,12 +15,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
+import avida.ican.Farzin.Model.Structure.Bundle.chat.StructureChatHubProxyONBND;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
-import avida.ican.Farzin.Presenter.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
-import avida.ican.Farzin.View.Enum.ChatPutExtraEnum;
+import avida.ican.Farzin.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
+import avida.ican.Farzin.View.Enum.Chat.ChatPutExtraEnum;
 import avida.ican.Farzin.View.Fragment.Chat.FragmentChatRoomMessageList;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseChatToolbarActivity;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Animator;
@@ -27,7 +32,7 @@ import butterknife.BindString;
 import butterknife.BindView;
 
 
-public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
+public class FarzinActivityChatRoomMessage extends BaseChatToolbarActivity {
     @Nullable
     @BindView(R.id.smart_tabLayout)
     SmartTabLayout smartTabLayout;
@@ -47,8 +52,8 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
     private Animator animator;
     private FarzinChatRoomMessagePresenter farzinChatRoomMessagePresenter;
     private String chatRoomId;
-
-
+    private BroadcastReceiver updateUIReciver;
+    public static StructureChatHubProxyONBND chatHubProxyONBND = new StructureChatHubProxyONBND();
 
     @Override
     protected void onResume() {
@@ -67,11 +72,11 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
         chatRoomId = getIntent().getStringExtra(ChatPutExtraEnum.RoomMessageIDString.getValue());
         mfragmentManager = getSupportFragmentManager();
         animator = new Animator(App.CurentActivity);
-        lnLoading.setVisibility(View.VISIBLE);
         initTollBar(Title);
         initView();
-
+        initUpdateUiReceiver();
     }
+
 
     @SuppressLint("SetTextI18n")
     private void initView() {
@@ -135,7 +140,7 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
             public void newData(StructureChatRoomMessageDB structureChatRoomMessageDB) {
                 App.CurentActivity.runOnUiThread(() -> {
                     lnLoading.setVisibility(View.GONE);
-                    updateData(chatRoomId);
+                    reGetDataFromLocal();
                 });
             }
 
@@ -143,33 +148,74 @@ public class FarzinActivityChatRoomMessage extends BaseToolbarActivity {
             public void noData() {
                 App.CurentActivity.runOnUiThread(() -> {
                     lnLoading.setVisibility(View.GONE);
-                    updateData(chatRoomId);
+                    reGetDataFromLocal();
                 });
             }
         });
-        getDataFromServer();
+        checkData();
     }
 
-    private void getDataFromServer() {
-        lnLoading.setVisibility(View.VISIBLE);
+    private void checkData() {
         if (App.networkStatus == NetworkStatus.Connected) {
+           /* if (!farzinChatRoomMessagePresenter.hasChatRoomMessageData(chatRoomId)) {
+                lnLoading.setVisibility(View.VISIBLE);
+                farzinChatRoomMessagePresenter.getDataFromServer(chatRoomId);
+            }  */
+            lnLoading.setVisibility(View.VISIBLE);
             farzinChatRoomMessagePresenter.getDataFromServer(chatRoomId);
-        } else {
-            lnLoading.setVisibility(View.GONE);
-            // App.getHandlerMainThread().postDelayed(() -> updateData(chatRoomTypeEnum), TimeValue.SecondsInMilli());
         }
 
     }
 
-    private void updateData(String chatRoomId) {
-        fragmentChatRoomMessageList.reGetData(chatRoomId);
+ /*   private void initDataFromLocal() {
+        lnLoading.setVisibility(View.VISIBLE);
+        fragmentChatRoomMessageList.initData();
+
+        lnLoading.setVisibility(View.GONE);
+    }*/
+
+    private void reGetDataFromLocal() {
+        lnLoading.setVisibility(View.VISIBLE);
+        fragmentChatRoomMessageList.reGetDataFromLocal();
 
         lnLoading.setVisibility(View.GONE);
     }
 
+    private void initUpdateUiReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ChatPutExtraEnum.MessageReceiver.getValue());
+        updateUIReciver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //UI update here
+                if (intent != null) {
+                    if (intent.getAction().equals(ChatPutExtraEnum.MessageReceiver.getValue())) {
+                        Bundle bundleObject = getIntent().getExtras();
+                        //StructureChatHubProxyONBND chatHubProxyONBND = (StructureChatHubProxyONBND) bundleObject.getSerializable(ChatPutExtraEnum.MessageBND.getValue());
+                        switch (chatHubProxyONBND.getMessageActionsEnum()) {
+                            case ReceiveMessage: {
+                                fragmentChatRoomMessageList.receiveMessageOnline(chatHubProxyONBND);
+                                break;
+                            }
+                            case ShowSendMessage: {
+                                fragmentChatRoomMessageList.showSendMessageOnline(chatHubProxyONBND);
+                                break;
+                            }
+                        }
+                    }
 
+                }
+                chatHubProxyONBND = new StructureChatHubProxyONBND();
+            }
+        };
+        registerReceiver(updateUIReciver, filter);
+    }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(updateUIReciver);           //<-- Unregister to avoid memoryleak
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

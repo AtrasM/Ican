@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter.Chat.Room;
+package avida.ican.Farzin.Chat.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import avida.ican.Farzin.Model.Interface.Chat.Room.ChatRoomModelQuerySaveListene
 import avida.ican.Farzin.Model.Interface.Chat.Room.GetChatRoomListListener;
 import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
-import avida.ican.Farzin.Presenter.Chat.FarzinChatQuery;
+import avida.ican.Farzin.Chat.FarzinChatQuery;
 import avida.ican.Farzin.View.Interface.Chat.Room.ChatRoomDataListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
@@ -86,6 +86,10 @@ public class FarzinChatRoomPresenter {
 
     public List<StructureChatRoomDB> getDataFromLocal(int Start, int Count, ChatRoomTypeEnum chatRoomTypeEnum) {
         return farzinChatQuery.getChatRoomList(Start, Count, chatRoomTypeEnum);
+    }
+
+    public boolean hasChatRoomData(ChatRoomTypeEnum chatRoomTypeEnum) {
+        return farzinChatQuery.hasChatRoomData(chatRoomTypeEnum);
     }
 
     private void SaveData(final ArrayList<StructureChatRoomModelRES> chatRoomModelListRES) {

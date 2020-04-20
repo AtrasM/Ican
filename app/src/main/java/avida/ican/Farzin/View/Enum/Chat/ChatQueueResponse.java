@@ -1,17 +1,17 @@
-package avida.ican.Farzin.View.Enum;
+package avida.ican.Farzin.View.Enum.Chat;
 
 /**
- * Created by AtrasVida on 2018-08-07 at 15:00 AM
+ * Created by AtrasVida on 2020-04-14 at 13:50 PM
  */
 
-public enum ChatPutExtraEnum {
-    RoomMessageIDString("RoomMessageIDString");
-
-
+public enum ChatQueueResponse {
+    ShowSendMessage("showSendMessage"),
+    Failed("Failed");
+    //ReceiveMessage("receiveMessage");
 
     private final String name;
 
-    private ChatPutExtraEnum(String s) {
+    private ChatQueueResponse(String s) {
         name = s;
     }
 

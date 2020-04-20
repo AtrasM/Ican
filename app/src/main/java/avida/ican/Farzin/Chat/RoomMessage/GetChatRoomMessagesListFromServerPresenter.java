@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter.Chat.RoomMessage;
+package avida.ican.Farzin.Chat.RoomMessage;
 
 import androidx.annotation.Nullable;
 
@@ -6,7 +6,6 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.util.ArrayList;
 
-import avida.ican.Farzin.Model.Interface.Chat.Room.GetChatRoomListListener;
 import avida.ican.Farzin.Model.Interface.Chat.RoomMessage.GetChatRoomMessageListListener;
 import avida.ican.Farzin.Model.Interface.DataProcessListener;
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;

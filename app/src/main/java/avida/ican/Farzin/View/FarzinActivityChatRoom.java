@@ -1,7 +1,10 @@
 package avida.ican.Farzin.View;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -15,20 +18,23 @@ import com.ogaclejapan.smarttablayout.SmartTabLayout;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
-import avida.ican.Farzin.Presenter.Chat.Room.FarzinChatRoomPresenter;
+import avida.ican.Farzin.Chat.Room.FarzinChatRoomPresenter;
+import avida.ican.Farzin.View.Enum.Chat.ChatPutExtraEnum;
 import avida.ican.Farzin.View.Fragment.Chat.FragmentChatRoomList;
 import avida.ican.Farzin.View.Interface.Chat.Room.ChatRoomDataListener;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseChatToolbarActivity;
 import avida.ican.Ican.BaseToolbarActivity;
 import avida.ican.Ican.View.Adapter.ViewPagerAdapter;
 import avida.ican.Ican.View.Custom.Animator;
+import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
 
 
-public class FarzinActivityChatRoom extends BaseToolbarActivity {
+public class FarzinActivityChatRoom extends BaseChatToolbarActivity {
     @Nullable
     @BindView(R.id.smart_tabLayout)
     SmartTabLayout smartTabLayout;
@@ -50,13 +56,14 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
     private Animator animator;
     private FarzinChatRoomPresenter farzinChatRoomPresenter;
     private ChatRoomTypeEnum tmpChatRoomTypeEnum = ChatRoomTypeEnum.All;
+    private BroadcastReceiver updateUIReciver;
 
     @Override
     protected void onResume() {
 
         if (App.hasChatRoomChanged != ChatRoomTypeEnum.NoType) {
             try {
-                App.CurentActivity.runOnUiThread(() -> updateData(App.hasChatRoomChanged));
+                App.CurentActivity.runOnUiThread(() -> reGetDataFromLocal(App.hasChatRoomChanged));
                 App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -77,9 +84,9 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
         App.canBack = true;
         mfragmentManager = getSupportFragmentManager();
         animator = new Animator(App.CurentActivity);
-        lnLoading.setVisibility(View.VISIBLE);
         initTollBar(Title);
         initView();
+        initUpdateUiReceiver();
     }
 
     @SuppressLint("SetTextI18n")
@@ -139,7 +146,7 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
             public void newData(StructureChatRoomDB structureChatRoomDB) {
                 App.CurentActivity.runOnUiThread(() -> {
                     lnLoading.setVisibility(View.GONE);
-                    updateData(tmpChatRoomTypeEnum);
+                    reGetDataFromLocal(tmpChatRoomTypeEnum);
                 });
             }
 
@@ -147,42 +154,109 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
             public void noData() {
                 App.CurentActivity.runOnUiThread(() -> {
                     lnLoading.setVisibility(View.GONE);
-                    updateData(tmpChatRoomTypeEnum);
+                    reGetDataFromLocal(tmpChatRoomTypeEnum);
                 });
 
             }
         });
-        getDataFromServer(ChatRoomTypeEnum.All);
+
+        checkData(ChatRoomTypeEnum.All);
     }
 
-    private void getDataFromServer(ChatRoomTypeEnum chatRoomTypeEnum) {
-        lnLoading.setVisibility(View.VISIBLE);
+    private void checkData(ChatRoomTypeEnum chatRoomTypeEnum) {
+
         tmpChatRoomTypeEnum = chatRoomTypeEnum;
         if (App.networkStatus == NetworkStatus.Connected) {
+          /*  if (!farzinChatRoomPresenter.hasChatRoomData(ChatRoomTypeEnum.All)) {
+                lnLoading.setVisibility(View.VISIBLE);
+                farzinChatRoomPresenter.getDataFromServer();
+            }*/
+            lnLoading.setVisibility(View.VISIBLE);
             farzinChatRoomPresenter.getDataFromServer();
-        } else {
-            lnLoading.setVisibility(View.GONE);
-            // App.getHandlerMainThread().postDelayed(() -> updateData(chatRoomTypeEnum), TimeValue.SecondsInMilli());
+
         }
 
     }
 
-    private void updateData(ChatRoomTypeEnum chatRoomTypeEnum) {
+    private void reGetDataFromLocal(ChatRoomTypeEnum chatRoomTypeEnum) {
         if (chatRoomTypeEnum == ChatRoomTypeEnum.All) {
-            fragmentChatRoomPrivate.reGetData();
-            fragmentChatRoomGroup.reGetData();
-            fragmentChatRoomChannel.reGetData();
+            fragmentChatRoomPrivate.reGetDataFromLocal();
+            fragmentChatRoomGroup.reGetDataFromLocal();
+            fragmentChatRoomChannel.reGetDataFromLocal();
         } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Private) {
-            fragmentChatRoomPrivate.reGetData();
+            fragmentChatRoomPrivate.reGetDataFromLocal();
         } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Room) {
-            fragmentChatRoomGroup.reGetData();
+            fragmentChatRoomGroup.reGetDataFromLocal();
         } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Channele) {
-            fragmentChatRoomChannel.reGetData();
+            fragmentChatRoomChannel.reGetDataFromLocal();
         }
 
         lnLoading.setVisibility(View.GONE);
     }
 
+   /* private void initDataFromLocal(ChatRoomTypeEnum chatRoomTypeEnum) {
+        lnLoading.setVisibility(View.VISIBLE);
+        if (chatRoomTypeEnum == ChatRoomTypeEnum.All) {
+            fragmentChatRoomPrivate.initDataFromLocal();
+            fragmentChatRoomGroup.initDataFromLocal();
+            fragmentChatRoomChannel.initDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Private) {
+            fragmentChatRoomPrivate.initDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Room) {
+            fragmentChatRoomGroup.initDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Channele) {
+            fragmentChatRoomChannel.initDataFromLocal();
+        }
+
+        lnLoading.setVisibility(View.GONE);
+    }*/
+
+    private void reGetDataFromLocal(int chatRoomTypeEnum) {
+        if (chatRoomTypeEnum == ChatRoomTypeEnum.All.getIntValue()) {
+            fragmentChatRoomPrivate.reGetDataFromLocal();
+            fragmentChatRoomGroup.reGetDataFromLocal();
+            fragmentChatRoomChannel.reGetDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Private.getIntValue()) {
+            fragmentChatRoomPrivate.reGetDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Room.getIntValue()) {
+            fragmentChatRoomGroup.reGetDataFromLocal();
+        } else if (chatRoomTypeEnum == ChatRoomTypeEnum.Channele.getIntValue()) {
+            fragmentChatRoomChannel.reGetDataFromLocal();
+        }
+
+        lnLoading.setVisibility(View.GONE);
+    }
+
+    private void initUpdateUiReceiver() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ChatPutExtraEnum.RoomReceiver.getValue());
+        updateUIReciver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //UI update here
+                if (intent != null) {
+                    if (intent.getAction().equals(ChatPutExtraEnum.RoomReceiver.getValue())) {
+                        int chatRoomTypeEnum = intent.getIntExtra(ChatPutExtraEnum.UpdateRoom.getValue(), -1);
+                        String connectionState = intent.getStringExtra(ChatPutExtraEnum.ConnectionStatus.getValue());
+
+                        if (chatRoomTypeEnum != ChatRoomTypeEnum.NoType.getIntValue()) {
+                            App.getHandlerMainThread().postDelayed(() -> {
+                                try {
+                                    reGetDataFromLocal(chatRoomTypeEnum);
+                                    App.hasChatRoomChanged = ChatRoomTypeEnum.NoType;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }, TimeValue.SecondsInMilli());
+
+                        }
+                    }
+
+                }
+            }
+        };
+        registerReceiver(updateUIReciver, filter);
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -193,6 +267,5 @@ public class FarzinActivityChatRoom extends BaseToolbarActivity {
             fragmentZanjireMadrak.reGetData();
         }*/
     }
-
 
 }

@@ -236,7 +236,12 @@ public class App extends MultiDexApplication {
     }
 
     public static FarzinBroadcastReceiver getFarzinBroadCastReceiver() {
-        return App.farzinBroadCastReceiver;
+        if (farzinBroadCastReceiver == null) {
+            return initBroadcastReceiver();
+        } else {
+            return App.farzinBroadCastReceiver;
+        }
+
     }
 
     public static FarzinDatabaseHelper getFarzinDatabaseHelper() {

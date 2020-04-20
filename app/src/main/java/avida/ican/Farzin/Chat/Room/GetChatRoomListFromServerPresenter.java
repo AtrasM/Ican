@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter.Chat.Room;
+package avida.ican.Farzin.Chat.Room;
 
 import org.ksoap2.serialization.SoapObject;
 

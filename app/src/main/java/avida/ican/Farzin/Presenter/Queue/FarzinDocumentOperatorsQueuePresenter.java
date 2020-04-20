@@ -230,7 +230,7 @@ public class FarzinDocumentOperatorsQueuePresenter {
             @Override
             public void onFailed(String message) {
                 documentOperatorQueuesListener.onFailed(message);
-             }
+            }
         });
 
     }

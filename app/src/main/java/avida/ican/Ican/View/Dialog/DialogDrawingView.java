@@ -88,7 +88,7 @@ public class DialogDrawingView {
         screanHeightPX = new CustomFunction(context).dpToPx((screanHeightPX - 27) / 2);
         int drawViewHeight = screanHeightPX;
 
-        BaseActivity.closeKeyboard();
+
         App.canBack = false;
         context.runOnUiThread(() -> {
             dialogOpticalPen = DialogPlus.newDialog(context)

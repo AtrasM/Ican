@@ -23,22 +23,23 @@ public class StructureDocumentOperatorsQueueDB implements Serializable {
     private int EC;
     @DatabaseField()
     private boolean isLock;
-    @DatabaseField(dataType =  DataType.ENUM_INTEGER)
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private DocumentOperatoresTypeEnum documentOpratoresTypeEnum;
     @DatabaseField()
     private int priority;
-    @DatabaseField(dataType =  DataType.ENUM_INTEGER)
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
     private QueueStatus queueStatus;
     @DatabaseField()
     private String strError;
     @DatabaseField()
     private String strDataREQ;
 
-    int count=0;
+    int count = 0;
+
     public StructureDocumentOperatorsQueueDB() {
     }
 
-    public StructureDocumentOperatorsQueueDB(int ETC, int EC,boolean isLock, DocumentOperatoresTypeEnum documentOpratoresTypeEnum, int priority, QueueStatus queueStatus, String strError, String strDataREQ) {
+    public StructureDocumentOperatorsQueueDB(int ETC, int EC, boolean isLock, DocumentOperatoresTypeEnum documentOpratoresTypeEnum, int priority, QueueStatus queueStatus, String strError, String strDataREQ) {
         this.ETC = ETC;
         this.EC = EC;
         this.isLock = isLock;

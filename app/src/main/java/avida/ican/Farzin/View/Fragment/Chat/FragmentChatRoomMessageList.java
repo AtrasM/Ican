@@ -17,31 +17,27 @@ import com.stfalcon.chatkit.messages.MessageInput;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 import avida.ican.Farzin.Model.CustomLogger;
 import avida.ican.Farzin.Model.Enum.Chat.ChatMessageTypeEnum;
-import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
+import avida.ican.Farzin.Model.Structure.Bundle.chat.StructureChatHubProxyONBND;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
-import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
-import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
-import avida.ican.Farzin.Presenter.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
-import avida.ican.Farzin.Presenter.SignalR.SignalRSingleton;
+import avida.ican.Farzin.Chat.RoomMessage.FarzinChatRoomMessagePresenter;
+import avida.ican.Farzin.Chat.SignalR.SignalRSingleton;
 import avida.ican.Farzin.View.Adapter.Chat.AdapterChatRoomMessage;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ListenerAdapterChatRoomMessage;
 import avida.ican.Ican.App;
+import avida.ican.Ican.BaseActivity;
 import avida.ican.Ican.BaseFragment;
 import avida.ican.Ican.View.Custom.Animator;
 import avida.ican.Ican.View.Custom.CustomFunction;
 import avida.ican.Ican.View.Custom.GridLayoutManagerWithSmoothScroller;
-import avida.ican.Ican.View.Custom.TimeValue;
 import avida.ican.Ican.View.Enum.NetworkStatus;
 import avida.ican.Ican.View.Enum.ToastEnum;
 import avida.ican.R;
 import butterknife.BindView;
-import microsoft.aspnet.signalr.client.Action;
 
 public class FragmentChatRoomMessageList extends BaseFragment {
 
@@ -66,7 +62,7 @@ public class FragmentChatRoomMessageList extends BaseFragment {
     private FarzinChatRoomMessagePresenter farzinChatRoomMessagePresenter;
     public final String Tag = "FragmentChatRoomMessageList";
     private boolean showInDialog = false;
-    private String chatRoomMessageID;
+    private static String chatRoomMessageID;
     private int[] pastVisiblesItems;
     private int visibleItemCount;
     private int totalItemCount;
@@ -99,7 +95,7 @@ public class FragmentChatRoomMessageList extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        srlRefresh.setOnRefreshListener(() -> reGetData(chatRoomMessageID));
+        srlRefresh.setOnRefreshListener(() -> reGetDataFromLocal());
         animator = new Animator(App.CurentActivity);
         imgMoveDown.setOnClickListener(v -> {
             //gridLayoutManager.scrollToPositionWithOffset(2, 20);
@@ -110,37 +106,6 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         initRcv();
         SignalRSingleton signalRInstance = SignalRSingleton.getInstance();
 
-       /* App.fragmentStacks.put("chatRoomMessage", new Stack<>());
-        App.fragmentStacks.get(tab).push(fragment);*/
-
-
-        //__________________________________________________________________________________
-
-        App.getHandlerMainThread().postDelayed(() -> {
-            signalRInstance.getChatHubProxy().on("receiveMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES) -> {
-                App.getHandlerMainThread().post(() -> farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageModelRES, structureChatRoomModelRES));
-            }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class);
-
-            //--------------------------------------------------
-
-            signalRInstance.getChatHubProxy().on("showSendMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES, tempMessageID) -> {
-                App.getHandlerMainThread().post(() -> {
-
-                    structureChatRoomMessageModelRES.setCurrentUserIsWriter(true);
-                    farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageModelRES, tempMessageID);
-                    adapterChatRoomMessage.deletItem(tempMessageID);
-                    farzinChatRoomMessagePresenter.updateChatRoomLastMessageContent(structureChatRoomModelRES.getChatRoomID(), structureChatRoomMessageModelRES.getMessageContent(), structureChatRoomModelRES.getRoomType());
-                   /* structureChatRoomModelRES.setLastMessageContent(structureChatRoomMessageModelRES.getMessageContent());
-                    farzinChatRoomMessagePresenter.replaceChatRoomAllColumn(structureChatRoomModelRES.getChatRoomID(), structureChatRoomModelRES);
-*/
-                });
-
-            }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class, String.class);
-
-        }, TimeValue.SecondsInMilli() * 3);
-
-        //__________________________________________________________________________________
-
         msgInput.setInputListener(message -> {
             String randomMessageID = CustomFunction.getRandomUUID();
             StructureChatRoomMessageDB lastMessageSend = farzinChatRoomMessagePresenter.getLastMessageSend(chatRoomMessageID);
@@ -148,10 +113,14 @@ public class FragmentChatRoomMessageList extends BaseFragment {
             if (lastMessageSend != null) {
                 messageID = (lastMessageSend.getMessageID()) + 1;
             }
-            StructureChatRoomMessageDB structureChatRoomMessageDB = new StructureChatRoomMessageDB(chatRoomMessageID, randomMessageID, messageID, message.toString(), ChatMessageTypeEnum.Text, CustomFunction.getCurentLocalDateTimeAsStringFormat());
-            farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageDB);
 
+            String strDate = CustomFunction.MiladyToJalaly(CustomFunction.getCurentLocalDateTimeAsStringFormat());
+            String[] splitDateTime = strDate.split(" ");
+            final String date = splitDateTime[0];
+            StructureChatRoomMessageDB structureChatRoomMessageDB = new StructureChatRoomMessageDB(chatRoomMessageID, randomMessageID, messageID, message.toString(), ChatMessageTypeEnum.Text, date);
+            farzinChatRoomMessagePresenter.saveInputMessage(structureChatRoomMessageDB);
             signalRInstance.sendMessage(message.toString(), chatRoomMessageID, randomMessageID);
+
             return false;
         });
 
@@ -161,8 +130,6 @@ public class FragmentChatRoomMessageList extends BaseFragment {
 
     private void initRcv() {
         gridLayoutManager = new GridLayoutManagerWithSmoothScroller(1, StaggeredGridLayoutManager.VERTICAL);
-        //LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        //mLayoutManager.setReverseLayout(true);
         gridLayoutManager.setReverseLayout(true);
         rcvChatRoomMessage.setLayoutManager(gridLayoutManager);
         initScrollListener();
@@ -180,13 +147,14 @@ public class FragmentChatRoomMessageList extends BaseFragment {
 
             @Override
             public void inputMessage(StructureChatRoomMessageDB structureChatRoomMessageDB) {
-                if (structureChatRoomMessageDB.getChatRoomIDString().equals(adapterChatRoomMessage.getLastMessage().getChatRoomIDString())) {
+                showNewSendMessageDraft();
+              /*  if (structureChatRoomMessageDB.getChatRoomIDString().equals(adapterChatRoomMessage.getLastMessage().getChatRoomIDString())) {
                     App.getHandlerMainThread().post(() -> {
                         msgInput.getInputEditText().setText("");
                         adapterChatRoomMessage.addDataToFirst(structureChatRoomMessageDB);
                         rcvChatRoomMessage.smoothScrollToPosition(0);
                     });
-                }
+                }*/
 
             }
 
@@ -231,9 +199,9 @@ public class FragmentChatRoomMessageList extends BaseFragment {
                     if (canLoading) {
                         totalItemCount = gridLayoutManager.getItemCount();
                         if ((visibleItemCount + pastVisiblesItems[0]) >= totalItemCount - 2) {
-                          /*  canLoading = false;
+                            canLoading = false;
                             loadDate();
-                            App.ShowMessage().ShowToast("position= " + pastVisiblesItems[0], ToastEnum.TOAST_LONG_TIME);*/
+                            App.ShowMessage().ShowToast("position= " + pastVisiblesItems[0], ToastEnum.TOAST_LONG_TIME);
                         }
                     }
                 }
@@ -261,8 +229,7 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         initAdapter(new ArrayList<>(structureChatRoomMessageDBS));
     }
 
-    public void reGetData(String chatRoomMessageID) {
-        this.chatRoomMessageID = chatRoomMessageID;
+    public void reGetDataFromLocal() {
         start = 0;
         txtNoData.setVisibility(View.GONE);
         List<StructureChatRoomMessageDB> structureChatRoomMessageDBS = farzinChatRoomMessagePresenter.getDataFromLocal(start, COUNT, chatRoomMessageID);
@@ -376,6 +343,53 @@ public class FragmentChatRoomMessageList extends BaseFragment {
         animator.slideInFromDown(imgMoveDown);
         imgMoveDown.setVisibility(View.VISIBLE);
         isshow = true;
+    }
+
+
+    public void receiveMessageOnline(StructureChatHubProxyONBND chatHubProxyONBND) {
+        if (chatHubProxyONBND.getChatRoomMessageModelRES().getChatRoomIDString().equals(adapterChatRoomMessage.getLastMessage().getChatRoomIDString())) {
+            App.getHandlerMainThread().post(() -> {
+                lnLoading.setVisibility(View.GONE);
+                txtNoData.setVisibility(View.GONE);
+                StructureChatRoomMessageDB lastMessage = farzinChatRoomMessagePresenter.getNewMessageFromLocal(chatHubProxyONBND.getChatRoomMessageModelRES().getChatRoomIDString());
+                if (lastMessage.getMessageID() != adapterChatRoomMessage.getLastMessage().getMessageID()) {
+                    adapterChatRoomMessage.addDataToFirst(lastMessage);
+                    rcvChatRoomMessage.smoothScrollToPosition(0);
+                }
+
+            });
+        }
+    }
+
+    public void showSendMessageOnline(StructureChatHubProxyONBND chatHubProxyONBND) {
+        adapterChatRoomMessage.deletItem(chatHubProxyONBND.getTempMessageID());
+
+        App.getHandlerMainThread().post(() -> {
+            lnLoading.setVisibility(View.GONE);
+            txtNoData.setVisibility(View.GONE);
+            StructureChatRoomMessageDB lastMessage = farzinChatRoomMessagePresenter.getNewMessageFromLocal(chatHubProxyONBND.getChatRoomMessageModelRES().getChatRoomIDString());
+            if (lastMessage.getMessageID() != adapterChatRoomMessage.getLastMessage().getMessageID()) {
+                adapterChatRoomMessage.addDataToFirst(lastMessage);
+                rcvChatRoomMessage.smoothScrollToPosition(0);
+                msgInput.getInputEditText().setText("");
+                BaseActivity.closeKeyboard();
+            }
+
+        });
+    }
+
+    public void showNewSendMessageDraft() {
+
+        App.getHandlerMainThread().post(() -> {
+            StructureChatRoomMessageDB lastMessageSend = farzinChatRoomMessagePresenter.getLastMessageSend(chatRoomMessageID);
+            if (lastMessageSend != null && lastMessageSend.getMessageID() != adapterChatRoomMessage.getLastMessage().getMessageID()) {
+                adapterChatRoomMessage.addDataToFirst(lastMessageSend);
+                rcvChatRoomMessage.smoothScrollToPosition(0);
+                msgInput.getInputEditText().setText("");
+                BaseActivity.closeKeyboard();
+            }
+
+        });
     }
 
     @Override

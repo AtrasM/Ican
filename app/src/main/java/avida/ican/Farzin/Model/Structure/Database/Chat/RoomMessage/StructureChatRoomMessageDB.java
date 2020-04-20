@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.UUID;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatMessageTypeEnum;
+import avida.ican.Farzin.Model.Enum.QueueStatus;
 import avida.ican.Ican.View.Custom.CustomFunction;
 
 /**
@@ -77,11 +78,17 @@ public class StructureChatRoomMessageDB implements Serializable {
     private String PersianCreationDay;
     @DatabaseField(canBeNull = false)
     private boolean isSendedFromApp;
+    @DatabaseField(dataType = DataType.ENUM_INTEGER)
+    private QueueStatus queueStatus;
+    @DatabaseField()
+    private String strError;
+    @DatabaseField()
+    private int errorCount;
 
     public StructureChatRoomMessageDB() {
     }
 
-    public StructureChatRoomMessageDB(String chatRoomIDString, String messageIDString,int messageID, String messageContent, ChatMessageTypeEnum messageType, String creationDate) {
+    public StructureChatRoomMessageDB(String chatRoomIDString, String messageIDString, int messageID, String messageContent, ChatMessageTypeEnum messageType, String creationDate) {
         ChatRoomIDString = chatRoomIDString;
         MessageIDString = messageIDString;
         MessageContent = CustomFunction.convertNullToEmpety(messageContent);
@@ -377,5 +384,29 @@ public class StructureChatRoomMessageDB implements Serializable {
 
     public void setSendedFromApp(boolean sendedFromApp) {
         isSendedFromApp = sendedFromApp;
+    }
+
+    public QueueStatus getQueueStatus() {
+        return queueStatus;
+    }
+
+    public void setQueueStatus(QueueStatus queueStatus) {
+        this.queueStatus = queueStatus;
+    }
+
+    public String getStrError() {
+        return strError;
+    }
+
+    public void setStrError(String strError) {
+        this.strError = strError;
+    }
+
+    public int getErrorCount() {
+        return errorCount;
+    }
+
+    public void setErrorCount(int errorCount) {
+        this.errorCount = errorCount;
     }
 }

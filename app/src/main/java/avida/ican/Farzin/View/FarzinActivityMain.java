@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
 
+import avida.ican.Farzin.Chat.SignalR.SignalRSingleton;
 import avida.ican.Farzin.FarzinBroadcastReceiver;
-import avida.ican.Farzin.Model.CustomLogger;
 import avida.ican.Farzin.Model.Enum.DataSyncingNameEnum;
 import avida.ican.Farzin.Model.Enum.Status;
 import avida.ican.Farzin.Model.Enum.Type;
@@ -45,16 +45,13 @@ import avida.ican.Farzin.Model.Structure.Database.Message.StructureReceiverDB;
 import avida.ican.Farzin.Model.Structure.Database.Message.StructureUserAndRoleDB;
 import avida.ican.Farzin.Model.Structure.Database.StructureUserRoleDB;
 import avida.ican.Farzin.Model.Structure.Request.StructureUserRoleREQ;
-import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
-import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
 import avida.ican.Farzin.Presenter.Cartable.ChangeActiveRolePresenter;
 import avida.ican.Farzin.Presenter.Cartable.FarzinCartableQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataQuery;
 import avida.ican.Farzin.Presenter.FarzinMetaDataSync;
 import avida.ican.Farzin.Presenter.Message.FarzinMessageQuery;
 import avida.ican.Farzin.Presenter.Queue.FarzinCartableDocumentPublicQueuePresenter;
-import avida.ican.Farzin.Presenter.SignalR.SignalRService;
-import avida.ican.Farzin.Presenter.SignalR.SignalRSingleton;
+import avida.ican.Farzin.Chat.SignalR.SignalRService;
 import avida.ican.Farzin.View.Dialog.DialogDataSyncing;
 import avida.ican.Farzin.View.Dialog.DialogNewData;
 import avida.ican.Farzin.View.Dialog.DialogUserRoleList;
@@ -79,7 +76,6 @@ import avida.ican.Ican.View.Interface.ListenerNetwork;
 import avida.ican.R;
 import butterknife.BindString;
 import butterknife.BindView;
-import microsoft.aspnet.signalr.client.Action;
 
 import static avida.ican.Farzin.View.Enum.SettingEnum.MANUALLY;
 import static avida.ican.Farzin.View.Enum.SettingEnum.SYNC;
@@ -121,6 +117,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     private DialogNewData dialogNewData;
     private Bundle bundleObject = new Bundle();
     private int DOCUMENTDETAILCODE = 001;
+    private SignalRSingleton signalRInstance;
 
     @Override
     protected int getLayoutResource() {
@@ -198,24 +195,6 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
             }
         }).init();
-
-       /* App.getHandlerMainThread().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                SignalRSingleton.getInstance().getChatHubProxy().invoke("SendMessage", "e2fb501f623748daaa7d32c220498e15", "Test3", "randomID1").done(new Action<Void>() {
-                    @Override
-                    public void run(Void aVoid) throws Exception {
-                        aVoid.toString();
-                    }
-                });
-
-
-                SignalRSingleton.getInstance().getChatHubProxy().on("receiveMessage", (structureChatRoomMessageModelRES, structureChatRoomModelRES) -> {
-                    structureChatRoomMessageModelRES.getChatRoomID();
-                    CustomLogger.setLog("chat receiveMessage on getMessageContent= " + structureChatRoomMessageModelRES.getMessageContent());
-                }, StructureChatRoomMessageModelRES.class, StructureChatRoomModelRES.class);
-            }
-        }, TimeValue.SecondsInMilli() * 2);*/
 
 
     }
@@ -297,6 +276,8 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
 
         if (!farzinPrefrences.isMetaDataForFirstTimeSync()) {
             callDialogDataSyncing(DataSyncingNameEnum.getMetaDataCount(), true);
+        } else {
+            signalRInstance = SignalRSingleton.getInstance();
         }
 
     }
@@ -760,6 +741,7 @@ public class FarzinActivityMain extends BaseNavigationDrawerActivity implements 
     }
 
     private void runServices() {
+
         String lastDate = farzinPrefrences.getConfirmationListDataSyncDate();
         if (lastDate == null || lastDate.isEmpty()) {
             lastDate = farzinPrefrences.getCartableDocumentDataSyncDate();

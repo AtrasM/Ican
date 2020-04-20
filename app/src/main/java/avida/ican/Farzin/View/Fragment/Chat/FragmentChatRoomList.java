@@ -18,10 +18,10 @@ import java.util.List;
 
 import avida.ican.Farzin.Model.Enum.Chat.ChatRoomTypeEnum;
 import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
-import avida.ican.Farzin.Presenter.Chat.Room.FarzinChatRoomPresenter;
+import avida.ican.Farzin.Chat.Room.FarzinChatRoomPresenter;
 import avida.ican.Farzin.View.Adapter.Chat.AdapterChatRoom;
 import avida.ican.Farzin.View.Dialog.DialogCartableHameshList;
-import avida.ican.Farzin.View.Enum.ChatPutExtraEnum;
+import avida.ican.Farzin.View.Enum.Chat.ChatPutExtraEnum;
 import avida.ican.Farzin.View.FarzinActivityChatRoomMessage;
 import avida.ican.Farzin.View.Interface.Chat.Room.ListenerAdapterChatRoom;
 import avida.ican.Ican.App;
@@ -50,7 +50,7 @@ public class FragmentChatRoomList extends BaseFragment {
     private FarzinChatRoomPresenter farzinChatRoomPresenter;
     public final String Tag = "FragmentChatRoomList";
     private boolean showInDialog = false;
-    private ChatRoomTypeEnum chatRoomTypeEnum;
+    private static ChatRoomTypeEnum chatRoomTypeEnum;
 
     public FragmentChatRoomList newInstance(Activity context, ChatRoomTypeEnum chatRoomTypeEnum) {
         this.context = context;
@@ -76,7 +76,7 @@ public class FragmentChatRoomList extends BaseFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        srlRefresh.setOnRefreshListener(() -> reGetData());
+        srlRefresh.setOnRefreshListener(() -> reGetDataFromLocal());
 
         initRcv();
     }
@@ -89,7 +89,7 @@ public class FragmentChatRoomList extends BaseFragment {
 
     private void initPresenter() {
         farzinChatRoomPresenter = new FarzinChatRoomPresenter();
-        initData();
+        initDataFromLocal();
     }
 
     public void updateData(List<StructureChatRoomDB> structureChatRoomDB) {
@@ -99,7 +99,7 @@ public class FragmentChatRoomList extends BaseFragment {
         }
     }
 
-    private void initData() {
+    private void initDataFromLocal() {
         lnLoading.setVisibility(View.VISIBLE);
         List<StructureChatRoomDB> structureChatRoomDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);
         lnLoading.setVisibility(View.GONE);
@@ -111,7 +111,7 @@ public class FragmentChatRoomList extends BaseFragment {
         initAdapter(new ArrayList<>(structureChatRoomDBS));
     }
 
-    public void reGetData() {
+    public void reGetDataFromLocal() {
         start = 0;
         txtNoData.setVisibility(View.GONE);
         List<StructureChatRoomDB> structureChatRoomDBS = farzinChatRoomPresenter.getDataFromLocal(start, COUNT, chatRoomTypeEnum);

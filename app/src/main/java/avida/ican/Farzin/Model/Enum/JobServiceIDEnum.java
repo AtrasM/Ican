@@ -15,7 +15,8 @@ public enum JobServiceIDEnum {
     GET_CARTABLE_DOCUMENT_SERVICE_JOBID("GetCartableDocumentJobServiceID"),
     GET_RECIEVE_MESSAGE_SERVICE_JOBID("GetRecieveMessageJobServiceID"),
     GET_SENT_MESSAGE_SERVICE_JOBID("GetSentMessageJob"),
-    SEND_MESSAGE_SERVICE_JOBID("SendMessageJobService");
+    SEND_MESSAGE_SERVICE_JOBID("SendMessageJobService"),
+    SEND_CHAT_MESSAGE_QUEUE_SERVICE_JOBID("SendChatMessageQueueJobService");
     private String strValue;
     private int intValue;
 

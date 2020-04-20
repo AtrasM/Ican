@@ -145,8 +145,16 @@
         <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
       </intent-filter>
     </service>
+
     <service
-        android:name=".Farzin.Presenter.SignalR.SignalRService"
+        android:name=".Farzin.Chat.ChatMessageQueueJobService"
+        android:exported="false">
+      <intent-filter>
+        <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+      </intent-filter>
+    </service>
+    <service
+        android:name=".Farzin.Chat.SignalR.SignalRService"
         android:exported="false">
       <!-- <intent-filter>
          <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />

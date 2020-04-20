@@ -9,6 +9,7 @@ import android.util.Log;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 
+import avida.ican.Farzin.Chat.ChatMessageQueueJobService;
 import avida.ican.Farzin.Model.CustomLogger;
 import avida.ican.Farzin.Model.Enum.CartableJobServiceNameEnum;
 import avida.ican.Farzin.Model.Enum.JobServiceIDEnum;
@@ -40,6 +41,7 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
     private JobServiceMessageSchedulerListener jobServiceMessageSchedulerListener;
     private CartableParentJobService cartableParentJobService;
     private MessageParentJobService messageParentJobService;
+    private ChatMessageQueueJobService chatMessageQueueJobService;
     private static final String SERVICETAG = "IcanJobService";
     private boolean isServiceRun = false;
 
@@ -93,12 +95,18 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
 
         cancellJob(context, JobServiceIDEnum.CARTABLE_PARENT_SERVICE_JOBID.getStringValue());
         cancellJob(context, JobServiceIDEnum.MESSAGE_PARENT_SERVICE_JOBID.getStringValue());
+        cancellJob(context, JobServiceIDEnum.SEND_CHAT_MESSAGE_QUEUE_SERVICE_JOBID.getStringValue());
     }
 
     public void runBaseService() {
         if (!isServiceRun) {
             restartServices();
         }
+    }
+
+    public void runChatMessageQueueJobService() {
+        cancellJob(context, JobServiceIDEnum.SEND_CHAT_MESSAGE_QUEUE_SERVICE_JOBID.getStringValue());
+        getChatMessageQueueJobService().initJob();
     }
 
     public void restartServices() {
@@ -116,6 +124,10 @@ public class FarzinBroadcastReceiver extends BroadcastReceiver {
 
     private CartableParentJobService getCartableParentJobService() {
         return cartableParentJobService = new CartableParentJobService().getInstance(context);
+    }
+
+    private ChatMessageQueueJobService getChatMessageQueueJobService() {
+        return chatMessageQueueJobService = new ChatMessageQueueJobService().getInstance(context);
     }
 
 

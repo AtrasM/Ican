@@ -1,6 +1,4 @@
-package avida.ican.Farzin.Presenter.Chat.RoomMessage;
-
-import android.view.View;
+package avida.ican.Farzin.Chat.RoomMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +11,7 @@ import avida.ican.Farzin.Model.Structure.Database.Chat.Room.StructureChatRoomDB;
 import avida.ican.Farzin.Model.Structure.Database.Chat.RoomMessage.StructureChatRoomMessageDB;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoom.StructureChatRoomModelRES;
 import avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages.StructureChatRoomMessageModelRES;
-import avida.ican.Farzin.Presenter.Chat.FarzinChatQuery;
+import avida.ican.Farzin.Chat.FarzinChatQuery;
 import avida.ican.Farzin.View.Interface.Chat.RoomMessage.ChatRoomMessageDataListener;
 import avida.ican.Ican.App;
 import avida.ican.Ican.View.Custom.TimeValue;
@@ -112,6 +110,9 @@ public class FarzinChatRoomMessagePresenter {
             getChatRoomMessagesListFromServerPresenter.getMessageList(chatRoomId, getChatRoomMessageListListener);
         }
     }
+    public boolean hasChatRoomMessageData(String chatRoomId) {
+       return  farzinChatQuery.hasChatRoomMessageData(chatRoomId);
+    }
 
     public void getDataFromServer(String chatRoomId, String tableExtension, String lastMessageID) {
         isFirst = false;
@@ -136,7 +137,11 @@ public class FarzinChatRoomMessagePresenter {
     }
 
     public StructureChatRoomMessageDB getLastDataFromLocal(String chatRoomID) {
-        return farzinChatQuery.getLastMessage(chatRoomID);
+        return farzinChatQuery.getLastMessageFromLocal(chatRoomID);
+    }
+
+    public StructureChatRoomMessageDB getNewMessageFromLocal(String chatRoomID) {
+        return farzinChatQuery.getNewMessageFromLocal(chatRoomID);
     }
 
     public StructureChatRoomMessageDB getLastMessageSend(String chatRoomID) {
@@ -259,7 +264,7 @@ public class FarzinChatRoomMessagePresenter {
                 @Override
                 public void onSuccess(StructureChatRoomDB structureChatRoomDB) {
                     saveInputMessage(message, "");
-                    App.hasChatRoomChanged=structureChatRoomDB.getChatRoomTypeEnum();
+                    App.hasChatRoomChanged = structureChatRoomDB.getChatRoomTypeEnum();
                 }
 
                 @Override

@@ -2,11 +2,13 @@ package avida.ican.Farzin.Model.Structure.Response.Chat.ChatRoomMessages;
 
 import org.simpleframework.xml.Element;
 
+import java.io.Serializable;
+
 /**
  * Created by AtrasVida on 2019-12-22 at 12:55 PM
  */
 
-public class StructureChatRoomMessageModelRES {
+public class StructureChatRoomMessageModelRES implements Serializable {
     @Element(required = false)
     private int MessageID;
     @Element(required = false)

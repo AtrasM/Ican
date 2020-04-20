@@ -1,4 +1,4 @@
-package avida.ican.Farzin.Presenter.SignalR;
+package avida.ican.Farzin.Chat.SignalR;
 
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
@@ -9,10 +9,9 @@ import android.os.AsyncTask;
 import android.os.IBinder;
 import android.util.Log;
 
-import java.util.UUID;
-
 import avida.ican.Farzin.Model.Prefrences.FarzinPrefrences;
 import avida.ican.Ican.App;
+import microsoft.aspnet.signalr.client.Action;
 import microsoft.aspnet.signalr.client.ErrorCallback;
 import microsoft.aspnet.signalr.client.Logger;
 import microsoft.aspnet.signalr.client.SignalRFuture;
@@ -50,10 +49,18 @@ public class SignalRSingleton {
             protected Void doInBackground(Void... voids) {
                 Intent intent = new Intent();
                 intent.setClass(App.getAppContext(), SignalRService.class);
-                App.CurentActivity.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+                App.getAppContext().bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+
                 return null;
             }
-        }.execute();
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                App.getFarzinBroadCastReceiver().runChatMessageQueueJobService();
+                super.onPostExecute(aVoid);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 
     }
 
@@ -91,7 +98,7 @@ public class SignalRSingleton {
 
     public void setmHubConnection() {
         String query = "userID=" + farzinPrefrences.getRoleIDToken() + "&actorID=" + farzinPrefrences.getActorIDToken() + "&mainActorID=" + farzinPrefrences.getActorIDToken() + "&clientType=MOBILE&ApplicationName=CHAT_NOTIFICATION&appVersion=" + App.getAppVersionName();
-        String serverUrl = "http://192.168.3.229/FarzinSoft/";
+        String serverUrl = farzinPrefrences.getServerUrl() + "FarzinSoft/";
         Logger logger = (s, logLevel) -> s.toString();
         mHubConnection = new microsoft.aspnet.signalr.client.hubs.HubConnection(serverUrl, query, true, logger);
     }
@@ -106,17 +113,33 @@ public class SignalRSingleton {
         fnsHubProxy = getHubConnection().createHubProxy(fnsHubName);
     }
 
-
     /**
      * method for clients (activities)
      *
      * @return
      */
-    public SignalRFuture<Void> sendMessage(String message, String roomID,String randomID) {
+    public SignalRFuture<Void> sendMessage(String message, String roomID, String randomID) {
         if (chatHubProxy == null) {
             setChatHubProxy();
         }
         return chatHubProxy.invoke("SendMessage", roomID, message.trim(), randomID);
+       /* SignalRFuture<Void> signalRFuture = chatHubProxy.invoke("SendMessage", roomID, message.trim(), randomID);
+        signalRFuture.done(new Action<Void>() {
+            @Override
+            public void run(Void aVoid) throws Exception {
+            }
+        }).onError(new ErrorCallback() {
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+        }).onCancelled(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+        return signalRFuture;*/
     }
 
     public void validation() {

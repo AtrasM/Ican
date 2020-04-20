@@ -48,9 +48,9 @@ public class DocumentOpreratorsQueueJobService extends JobService {
     public DocumentOpreratorsQueueJobService() {
     }
 
-    public DocumentOpreratorsQueueJobService getInstance(Context context,JobServiceCartableSchedulerListener jobServiceCartableSchedulerListener) {
+    public DocumentOpreratorsQueueJobService getInstance(Context context, JobServiceCartableSchedulerListener jobServiceCartableSchedulerListener) {
         this.context = context;
-       this.jobServiceCartableSchedulerListener=jobServiceCartableSchedulerListener;
+        this.jobServiceCartableSchedulerListener = jobServiceCartableSchedulerListener;
         return this;
     }
 
